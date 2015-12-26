@@ -1,0 +1,34 @@
+{
+    "name": "prolic/humus-amqp",
+    "type": "library",
+    "description": "PHP-AMQP library with RabbitMQ Extensions",
+    "keywords": ["rabbit", "rabbitmq", "queue", "amqp", "humus"],
+    "homepage": "https://github.com/prolic/HumusAmqp",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sascha-Oliver Prolic",
+            "email": "saschaprolic@googlemail.com"
+        }
+    ],
+    "require": {
+        "php": "~5.5",
+        "ext-amqp": "^1.6.1",
+        "beberlei/assert": "^2.4"
+    },
+    "require-dev": {
+        "container-interop/container-interop": "^1.1",
+        "zendframework/zend-servicemanager": "^2.6.0",
+        "phpunit/phpunit": "~4.8",
+        "fabpot/php-cs-fixer": "1.7.*",
+        "satooshi/php-coveralls": "dev-master"
+    },
+    "suggest": {
+        "ext-pcntl": "For process control management"
+    },
+    "autoload": {
+        "psr-4": {
+            "Humus\\Amqp\\": "src"
+        }
+    }
+}
