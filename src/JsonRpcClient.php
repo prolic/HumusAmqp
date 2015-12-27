@@ -18,6 +18,7 @@
 
 namespace Humus\Amqp;
 
+use AMQPEnvelope;
 use AMQPExchange;
 use AMQPQueue;
 use Assert\Assertion;
@@ -41,7 +42,7 @@ final class JsonRpcClient
     /**
      * @var array
      */
-    private $replies = array();
+    private $replies = [];
 
     /**
      * @var int
@@ -111,8 +112,8 @@ final class JsonRpcClient
      * Example:
      *
      * array(
-     *     'message_id_1' => 'foo',
-     *     'message_id_2' => 'bar'
+     *     'message_id_1' => ['success' => true, 'result' => 'foo'],
+     *     'message_id_2' => ['success' => false, 'error' => 'invalid parameters']
      * )
      *
      * @return array
@@ -124,7 +125,7 @@ final class JsonRpcClient
         do {
             $message = $this->queue->get(AMQP_AUTOACK);
 
-            if ($message) {
+            if ($message instanceof AMQPEnvelope) {
                 $this->replies[$message->getCorrelationId()] = json_decode($message->getBody());
             } else {
                 usleep($this->waitMicros);
@@ -132,8 +133,8 @@ final class JsonRpcClient
 
             $time = microtime(1);
         } while (
-            (count($this->replies) < $this->requests)
-            || (($time - $now) < $this->timeout)
+            count($this->replies) < $this->requests
+            || ($time - $now) < $this->timeout
         );
 
         $this->requests = 0;
@@ -148,18 +149,16 @@ final class JsonRpcClient
      */
     private function getExchange($name)
     {
-        if (isset($this->exchanges[$name])) {
-            return $this->exchanges[$name];
+        if (! isset($this->exchanges[$name])) {
+            $channel = $this->queue->getChannel();
+
+            $exchange = new AMQPExchange($channel);
+            $exchange->setName($name);
+
+            $this->exchanges[$name] = $exchange;
         }
 
-        $channel = $this->queue->getChannel();
-
-        $exchange = new AMQPExchange($channel);
-        $exchange->setName($name);
-
-        $this->exchanges[$name] = $exchange;
-
-        return $exchange;
+        return $this->exchanges[$name];
     }
 
     /**

@@ -57,7 +57,7 @@ final class PlainProducer implements Producer
 
     /**
      * Publish a message
-     * 
+     *
      * @param string  $message     The message to publish.
      * @param string  $routingKey  The optional routing key to which to
      *                             publish to.

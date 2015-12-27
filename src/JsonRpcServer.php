@@ -29,17 +29,17 @@ use InfiniteIterator;
  * Class JsonRpcServer
  * @package Humus\Amqp
  */
-class JsonRpcServer extends MultiQueueConsumer
+final class JsonRpcServer extends AbstractMultiQueueConsumer
 {
     /**
      * @var AMQPExchange
      */
-    protected $exchange;
+    private $exchange;
 
     /**
      * @var string|null
      */
-    protected $appId;
+    private $appId;
 
     /**
      * Constructor
@@ -79,15 +79,14 @@ class JsonRpcServer extends MultiQueueConsumer
      */
     public function handleDelivery(AMQPEnvelope $message, AMQPQueue $queue)
     {
-        try {
-            $this->countMessagesConsumed++;
-            $this->countMessagesUnacked++;
-            $this->lastDeliveryTag = $message->getDeliveryTag();
-            $this->timestampLastMessage = microtime(1);
-            $this->ack();
+        $this->countMessagesConsumed++;
+        $this->countMessagesUnacked++;
+        $this->lastDeliveryTag = $message->getDeliveryTag();
+        $this->timestampLastMessage = microtime(1);
+        $this->ack();
 
-            $callback = $this->deliveryCallback;
-            $result = $callback($message, $queue, $this);
+        try {
+            $result = parent::handleDelivery($message, $queue);
 
             $response = ['success' => true, 'result' => $result];
         } catch (\Exception $e) {

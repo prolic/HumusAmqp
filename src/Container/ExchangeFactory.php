@@ -68,7 +68,7 @@ final class ExchangeFactory extends AbstractFactory
         }
 
         $exchange = new AMQPExchange($this->channel);
-        
+
         $exchange->setArguments($options['arguments']);
         $exchange->setName($options['name']);
         $exchange->setFlags($this->getFlags($options));

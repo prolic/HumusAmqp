@@ -42,7 +42,7 @@ abstract class AbstractFactory
      *
      * @return string[] List with mandatory options
      */
-    abstract function mandatoryOptions();
+    abstract public function mandatoryOptions();
 
     /**
      * Returns a list of default options, which are merged in \Interop\Config\RequiresConfig::options
