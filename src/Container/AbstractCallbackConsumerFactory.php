@@ -69,7 +69,7 @@ abstract class AbstractCallbackConsumerFactory extends AbstractFactory
             $flushCallback = null;
         }
 
-        if (isset($spec['error_callback'])) {
+        if (isset($options['error_callback'])) {
             if (!$container->has($options['error_callback'])) {
                 throw new Exception\InvalidArgumentException(
                     'The required callback ' . $options['error_callback'] . ' can not be found'
