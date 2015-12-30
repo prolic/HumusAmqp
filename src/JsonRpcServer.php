@@ -42,18 +42,25 @@ final class JsonRpcServer extends AbstractConsumer
     private $appId;
 
     /**
+     * @var bool
+     */
+    private $returnTrace;
+
+    /**
      * Constructor
      *
      * @param AMQPQueue $queue
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
      * @param string|null $appId
+     * @param bool $returnTrace
      */
-    public function __construct(AMQPQueue $queue, $idleTimeout, $consumerTag = null, $appId = null)
+    public function __construct(AMQPQueue $queue, $idleTimeout, $consumerTag = null, $appId = null, $returnTrace = false)
     {
         Assertion::float($idleTimeout);
         Assertion::nullOrString($consumerTag);
         Assertion::nullOrString($appId);
+        Assertion::boolean($returnTrace);
 
         if (null === $consumerTag) {
             $consumerTag = uniqid('', true);
@@ -74,6 +81,7 @@ final class JsonRpcServer extends AbstractConsumer
         $this->queue = $queue;
         $this->consumerTag = $consumerTag;
         $this->appId = $appId;
+        $this->returnTrace = $returnTrace;
     }
 
     /**
@@ -95,6 +103,9 @@ final class JsonRpcServer extends AbstractConsumer
             $response = ['success' => true, 'result' => $result];
         } catch (\Exception $e) {
             $response = ['success' => false, 'error' => $e->getMessage()];
+            if ($this->returnTrace) {
+                $response['trace'] = $e->getTraceAsString();
+            }
         }
         $this->sendReply($response, $message->getReplyTo(), $message->getCorrelationId());
     }
