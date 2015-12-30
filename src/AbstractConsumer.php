@@ -18,21 +18,26 @@
 
 namespace Humus\Amqp;
 
+use AMQPConnectionException;
 use AMQPEnvelope;
 use AMQPQueue;
 use Assert\Assertion;
-use InfiniteIterator;
 
 /**
- * Class AbstractMultiQueueConsumer
+ * Class AbstractConsumer
  * @package Humus\Amqp
  */
-abstract class AbstractMultiQueueConsumer implements Consumer
+abstract class AbstractConsumer implements Consumer
 {
     /**
-     * @var InfiniteIterator
+     * @var AMQPQueue
      */
-    protected $queues;
+    protected $queue;
+
+    /**
+     * @var string|null
+     */
+    protected $consumerTag;
 
     /**
      * Number of consumed messages
@@ -66,13 +71,6 @@ abstract class AbstractMultiQueueConsumer implements Consumer
      * @var float
      */
     protected $idleTimeout;
-
-    /**
-     * Wait timeout in microseconds
-     *
-     * @var int
-     */
-    protected $waitTimeout;
 
     /**
      * The blocksize (see prefetch_count)
@@ -122,6 +120,7 @@ abstract class AbstractMultiQueueConsumer implements Consumer
      * Start consumer
      *
      * @param int $msgAmount
+     * @throws AMQPConnectionException
      */
     public function consume($msgAmount = 0)
     {
@@ -129,24 +128,18 @@ abstract class AbstractMultiQueueConsumer implements Consumer
 
         $this->target = $msgAmount;
 
-        foreach ($this->queues as $index => $queue) {
-            if (!$this->timestampLastAck) {
-                $this->timestampLastAck = microtime(true);
-            }
+        if (!$this->timestampLastAck) {
+            $this->timestampLastAck = microtime(true);
+        }
 
-            $message = $queue->get();
-
-            if ($message instanceof AMQPEnvelope) {
-                try {
-                    $processFlag = $this->handleDelivery($message, $queue);
-                } catch (\Exception $e) {
-                    $this->handleException($e);
-                    $processFlag = false;
-                }
-                $this->handleProcessFlag($message, $processFlag);
-            } elseif (0 == $index) { // all queues checked, no messages found
-                usleep($this->waitTimeout);
+        $callback = function(AMQPEnvelope $message) {
+            try {
+                $processFlag = $this->handleDelivery($message, $this->queue);
+            } catch (\Exception $e) {
+                $this->handleException($e);
+                $processFlag = false;
             }
+            $this->handleProcessFlag($message, $processFlag);
 
             $now = microtime(true);
 
@@ -163,16 +156,23 @@ abstract class AbstractMultiQueueConsumer implements Consumer
             }
 
             if (!$this->keepAlive || (0 != $this->target && $this->countMessagesConsumed >= $this->target)) {
-                break;
+                $this->queue->cancel($this->consumerTag);
+            }
+        };
+
+        while($this->keepAlive) {
+            try {
+                $this->queue->consume($callback, AMQP_NOPARAM, $this->consumerTag);
+            } catch (AMQPConnectionException $e) {
+                if (!$this->queue->getConnection()->reconnect()) {
+                    throw $e;
+                }
+                $this->ackOrNackBlock();
+                gc_collect_cycles();
             }
         }
     }
 
-    /**
-     * @param AMQPEnvelope $message
-     * @param AMQPQueue $queue
-     * @return bool|null
-     */
     /**
      * @param AMQPEnvelope $message
      * @param AMQPQueue $queue
@@ -245,10 +245,10 @@ abstract class AbstractMultiQueueConsumer implements Consumer
     {
         if ($flag === self::MSG_REJECT || false === $flag) {
             $this->ackOrNackBlock();
-            $this->getQueue()->reject($message->getDeliveryTag(), AMQP_NOPARAM);
+            $this->queue->reject($message->getDeliveryTag(), AMQP_NOPARAM);
         } elseif ($flag === self::MSG_REJECT_REQUEUE) {
             $this->ackOrNackBlock();
-            $this->getQueue()->reject($message->getDeliveryTag(), AMQP_REQUEUE);
+            $this->queue->reject($message->getDeliveryTag(), AMQP_REQUEUE);
         } elseif ($flag === self::MSG_ACK || true === $flag) {
             $this->countMessagesConsumed++;
             $this->countMessagesUnacked++;
@@ -264,17 +264,7 @@ abstract class AbstractMultiQueueConsumer implements Consumer
     }
 
     /**
-     * Get the current queue
-     *
-     * @return AMQPQueue
-     */
-    protected function getQueue()
-    {
-        return $this->queues->current();
-    }
-
-    /**
-     * Ack all deferred messages
+     * Acknowledge all deferred messages
      *
      * This will be called every time the block size (see prefetch_count) or timeout is reached
      *
@@ -282,7 +272,7 @@ abstract class AbstractMultiQueueConsumer implements Consumer
      */
     protected function ack()
     {
-        $this->getQueue()->ack($this->lastDeliveryTag, AMQP_MULTIPLE);
+        $this->queue->ack($this->lastDeliveryTag, AMQP_MULTIPLE);
         $this->lastDeliveryTag = null;
         $this->timestampLastAck = microtime(true);
         $this->countMessagesUnacked = 0;
@@ -300,11 +290,11 @@ abstract class AbstractMultiQueueConsumer implements Consumer
         if ($requeue) {
             $flags |= AMQP_REQUEUE;
         }
-        $this->getQueue()->nack($this->lastDeliveryTag, $flags);
+        $this->queue->nack($this->lastDeliveryTag, $flags);
     }
 
     /**
-     * Handle deferred acks
+     * Handle deferred acknowledgments
      *
      * @return void
      */

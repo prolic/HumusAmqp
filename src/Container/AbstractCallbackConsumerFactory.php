@@ -4,53 +4,51 @@ namespace Humus\Amqp\Container;
 
 use AMQPChannel;
 use Humus\Amqp\Exception;
-use Humus\Amqp\MultiQueueConsumer;
+use Humus\Amqp\CallbackConsumer;
 use Interop\Container\ContainerInterface;
 
 /**
- * Class AbstractConsumerFactory
+ * Class AbstractCallbackConsumerFactory
  * @package Humus\Amqp\Container
  */
-abstract class AbstractConsumerFactory extends AbstractFactory
+abstract class AbstractCallbackConsumerFactory extends AbstractFactory
 {
     /**
      * @param ContainerInterface $container
-     * @return MultiQueueConsumer
+     * @return CallbackConsumer
      */
     public function __invoke(ContainerInterface $container)
     {
         $config = $container->get('config');
         $options = $this->options($config);
 
-        $connectionFactory = new ConnectionFactory($options['connection']);
+        $connectionName = $options['connection'];
+        $connectionFactory = new ConnectionFactory($connectionName);
         $connection = $connectionFactory($container);
 
         $channel = new AMQPChannel($connection);
         $channel->qos($options['qos']['prefetch_size'], $options['qos']['prefetch_count']);
 
         $autoSetupFabric = $options['auto_setup_fabric'];
-        $queues = [];
 
-        foreach ($options['queues'] as $queue) {
-            if ($autoSetupFabric) {
-                // will create the exchange to declare it on the channel
-                // the created exchange will not be used afterwards
-                if (!isset($config[$this->vendorName()][$this->packageName()]['queue'][$options['queue']]['exchange'])) {
-                    throw new Exception\InvalidArgumentException(
-                        sprintf('The exchange name for provided queue "%s" was not found in configuration',
-                            $options['queue']
-                        )
-                    );
-                }
-
-                $exchangeName = $config[$this->vendorName()][$this->packageName()]['queue'][$options['queue']]['exchange'];
-                $exchangeFactory = new ExchangeFactory($channel, $exchangeName, $connectionName, true);
-                $exchangeFactory($container);
+        if ($autoSetupFabric) {
+            // will create the exchange to declare it on the channel
+            // the created exchange will not be used afterwards
+            if (!isset($config[$this->vendorName()][$this->packageName()]['queue'][$options['queue']]['exchange'])) {
+                throw new Exception\InvalidArgumentException(
+                    sprintf('The exchange name for provided queue "%s" was not found in configuration',
+                        $options['queue']
+                    )
+                );
             }
 
-            $queueFactory = new QueueFactory($channel, $queue, $connectionName, $autoSetupFabric);
-            $queues[] = $queueFactory($container);
+            $exchangeName = $config[$this->vendorName()][$this->packageName()]['queue'][$options['queue']]['exchange'];
+            $exchangeFactory = new ExchangeFactory($channel, $exchangeName, $connectionName, true);
+            $exchangeFactory($container);
         }
+
+        $queueFactory = new QueueFactory($channel, $options['queue'], $connectionName, $autoSetupFabric);
+        $queue = $queueFactory($container);
 
         if (! $container->has($options['delivery_callback'])) {
             throw new Exception\InvalidArgumentException(
@@ -66,7 +64,7 @@ abstract class AbstractConsumerFactory extends AbstractFactory
                     'The required callback ' . $options['flush_callback'] . ' can not be found'
                 );
             }
-            $flushCallback = $connection->get($options['flush_callback']);
+            $flushCallback = $container->get($options['flush_callback']);
         } else {
             $flushCallback = null;
         }
@@ -82,13 +80,13 @@ abstract class AbstractConsumerFactory extends AbstractFactory
             $errorCallback = null;
         }
 
-        return new MultiQueueConsumer(
-            $queues,
+        return new CallbackConsumer(
+            $queue,
             $options['idle_timeout'],
-            $options['wait_timeout'],
             $deliveryCallback,
             $flushCallback,
-            $errorCallback
+            $errorCallback,
+            $options['consumer_tag']
         );
     }
 
@@ -97,7 +95,7 @@ abstract class AbstractConsumerFactory extends AbstractFactory
      */
     public function componentName()
     {
-        return 'multi_queue_consumer';
+        return 'callback_consumer';
     }
 
     /**
@@ -106,16 +104,16 @@ abstract class AbstractConsumerFactory extends AbstractFactory
     public function mandatoryOptions()
     {
         return [
-            'queues',
-            'callback',
+            'queue',
+            'delivery_callback',
             'connection',
             'qos' => [
                 'prefetchCount',
                 'prefetchSize'
             ],
             'idle_timeout',
-            'wait_timeout',
-            'auto_setup_fabric'
+            'auto_setup_fabric',
+            'consumer_tag',
         ];
     }
 
@@ -131,8 +129,8 @@ abstract class AbstractConsumerFactory extends AbstractFactory
                 'prefetch_size' => 0,
             ],
             'idle_timeout' => 5.0,
-            'wait_timeout' => 100000,
             'auto_setup_fabric' => false,
+            'consumer_tag' => null,
         ];
     }
 }

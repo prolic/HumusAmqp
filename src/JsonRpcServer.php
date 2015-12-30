@@ -29,7 +29,7 @@ use InfiniteIterator;
  * Class JsonRpcServer
  * @package Humus\Amqp
  */
-final class JsonRpcServer extends AbstractMultiQueueConsumer
+final class JsonRpcServer extends AbstractConsumer
 {
     /**
      * @var AMQPExchange
@@ -46,14 +46,18 @@ final class JsonRpcServer extends AbstractMultiQueueConsumer
      *
      * @param AMQPQueue $queue
      * @param float $idleTimeout in seconds
-     * @param int $waitTimeout in microseconds
+     * @param string|null $consumerTag
      * @param string|null $appId
      */
-    public function __construct(AMQPQueue $queue, $idleTimeout, $waitTimeout, $appId = null)
+    public function __construct(AMQPQueue $queue, $idleTimeout, $consumerTag = null, $appId = null)
     {
         Assertion::float($idleTimeout);
-        Assertion::integer($waitTimeout);
+        Assertion::nullOrString($consumerTag);
         Assertion::nullOrString($appId);
+
+        if (null === $consumerTag) {
+            $consumerTag = uniqid('', true);
+        }
 
         if (function_exists('pcntl_signal_dispatch')) {
             $this->usePcntlSignalDispatch = true;
@@ -67,8 +71,8 @@ final class JsonRpcServer extends AbstractMultiQueueConsumer
 
         $this->blockSize = $queue->getChannel()->getPrefetchCount();
         $this->idleTimeout = (float) $idleTimeout;
-        $this->waitTimeout = (int) $waitTimeout;
-        $this->queues = new InfiniteIterator(new ArrayIterator([$queue]));
+        $this->queue = $queue;
+        $this->consumerTag = $consumerTag;
         $this->appId = $appId;
     }
 
@@ -139,7 +143,7 @@ final class JsonRpcServer extends AbstractMultiQueueConsumer
             return $this->exchange;
         }
 
-        $channel = $this->getQueue()->getChannel();
+        $channel = $this->queue->getChannel();
 
         $this->exchange = new AMQPExchange($channel);
         $this->exchange->setType(AMQP_EX_TYPE_DIRECT);

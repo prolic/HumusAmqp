@@ -19,41 +19,43 @@
 namespace Humus\Amqp;
 
 use AMQPQueue;
-use ArrayIterator;
 use Assert\Assertion;
-use InfiniteIterator;
 
 /**
  * The consumer attaches to a single queue
  *
  * The used block size is the configured prefetch size of the queue's channel
  *
- * Class MultiQueueConsumer
+ * Class CallbackConsumer
  * @package Humus\Amqp
  */
-final class MultiQueueConsumer extends AbstractMultiQueueConsumer
+final class CallbackConsumer extends AbstractConsumer
 {
     /**
      * Constructor
      *
-     * @param AMQPQueue[] $queues
+     * @param AMQPQueue $queue
      * @param float $idleTimeout in seconds
-     * @param int $waitTimeout in microseconds
      * @param callable $deliveryCallback,
      * @param callable|null $flushCallback,
      * @param callable|null $errorCallback
+     * @param string|null $consumerTag
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(
-        array $queues,
+        AMQPQueue $queue,
         $idleTimeout,
-        $waitTimeout,
         callable $deliveryCallback,
         callable $flushCallback = null,
-        callable $errorCallback = null
+        callable $errorCallback = null,
+        $consumerTag = null
     ) {
         Assertion::float($idleTimeout);
-        Assertion::integer($waitTimeout);
+        Assertion::nullOrString($consumerTag);
+
+        if (null === $consumerTag) {
+            $consumerTag = uniqid('', true);
+        }
 
         if (function_exists('pcntl_signal_dispatch')) {
             $this->usePcntlSignalDispatch = true;
@@ -65,27 +67,9 @@ final class MultiQueueConsumer extends AbstractMultiQueueConsumer
             pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
-        if (empty($queues)) {
-            throw new Exception\InvalidArgumentException(
-                'No queues given'
-            );
-        }
-
-        $q = [];
-        foreach ($queues as $queue) {
-            if (!$queue instanceof AMQPQueue) {
-                throw new Exception\InvalidArgumentException(
-                    'Queue must be an instance of AMQPQueue, '
-                    . is_object($queue) ? get_class($queue) : gettype($queue) . ' given'
-                );
-            }
-            if (null === $this->blockSize) {
-                $this->blockSize = $queue->getChannel()->getPrefetchCount();
-            }
-            $q[] = $queue;
-        }
+        $this->blockSize = $queue->getChannel()->getPrefetchCount();
         $this->idleTimeout = (float) $idleTimeout;
-        $this->waitTimeout = (int) $waitTimeout;
-        $this->queues = new InfiniteIterator(new ArrayIterator($q));
+        $this->consumerTag = $consumerTag;
+        $this->queue = $queue;
     }
 }
