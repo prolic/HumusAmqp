@@ -73,7 +73,7 @@ abstract class AbstractConsumer implements Consumer
     protected $idleTimeout;
 
     /**
-     * The blocksize (see prefetch_count)
+     * How many messages are handled in one block without acknowledgement
      *
      * @var int
      */
@@ -132,7 +132,38 @@ abstract class AbstractConsumer implements Consumer
             $this->timestampLastAck = microtime(true);
         }
 
-        $callback = function(AMQPEnvelope $message) {
+        $callback = function (AMQPEnvelope $message) {
+            if (__NAMESPACE__ === $message->getAppId()
+                && 'shutdown' === $message->getType()
+            ) {
+                $this->shutdown();
+
+                return self::MSG_ACK;
+            }
+
+            if (__NAMESPACE__ === $message->getAppId()
+                && 'reconfigure' === $message->getType()
+            ) {
+                try {
+                    list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($message->getBody());
+
+                    Assertion::float($idleTimeout);
+                    Assertion::min($blockSize, 1);
+                    Assertion::min($target, 0);
+                    Assertion::min($prefetchSize, 0);
+                    Assertion::min($prefetchCount, 0);
+                } catch (\Exception $e) {
+                    return self::MSG_REJECT;
+                }
+
+                $this->idleTimeout = $idleTimeout;
+                $this->blockSize = $blockSize;
+                $this->target = $target;
+                $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
+
+                return self::MSG_ACK;
+            }
+
             try {
                 $processFlag = $this->handleDelivery($message, $this->queue);
             } catch (\Exception $e) {
@@ -160,7 +191,7 @@ abstract class AbstractConsumer implements Consumer
             }
         };
 
-        while($this->keepAlive) {
+        do {
             try {
                 $this->queue->consume($callback, AMQP_NOPARAM, $this->consumerTag);
             } catch (AMQPConnectionException $e) {
@@ -170,7 +201,7 @@ abstract class AbstractConsumer implements Consumer
                 $this->ackOrNackBlock();
                 gc_collect_cycles();
             }
-        }
+        } while ($this->keepAlive);
     }
 
     /**

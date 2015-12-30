@@ -21,9 +21,7 @@ namespace Humus\Amqp;
 use AMQPEnvelope;
 use AMQPExchange;
 use AMQPQueue;
-use ArrayIterator;
 use Assert\Assertion;
-use InfiniteIterator;
 
 /**
  * Class JsonRpcServer
@@ -76,7 +74,6 @@ final class JsonRpcServer extends AbstractConsumer
             pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
-        $this->blockSize = $queue->getChannel()->getPrefetchCount();
         $this->idleTimeout = (float) $idleTimeout;
         $this->queue = $queue;
         $this->consumerTag = $consumerTag;

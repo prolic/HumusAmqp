@@ -40,6 +40,7 @@ final class CallbackConsumer extends AbstractConsumer
      * @param callable|null $flushCallback,
      * @param callable|null $errorCallback
      * @param string|null $consumerTag
+     * @param int $blockSize
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(
@@ -48,10 +49,12 @@ final class CallbackConsumer extends AbstractConsumer
         callable $deliveryCallback,
         callable $flushCallback = null,
         callable $errorCallback = null,
-        $consumerTag = null
+        $consumerTag = null,
+        $blockSize = 50
     ) {
         Assertion::float($idleTimeout);
         Assertion::nullOrString($consumerTag);
+        Assertion::min($blockSize, 1);
 
         if (null === $consumerTag) {
             $consumerTag = uniqid('', true);
@@ -67,9 +70,9 @@ final class CallbackConsumer extends AbstractConsumer
             pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
-        $this->blockSize = $queue->getChannel()->getPrefetchCount();
+        $this->queue = $queue;
         $this->idleTimeout = (float) $idleTimeout;
         $this->consumerTag = $consumerTag;
-        $this->queue = $queue;
+        $this->blockSize = $blockSize;
     }
 }
