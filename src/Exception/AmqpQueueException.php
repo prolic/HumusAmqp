@@ -3,9 +3,9 @@
 namespace Humus\Amqp\Exception;
 
 /**
- * Class AmqpChannelException
+ * Class AmqpQueueException
  * @package Humus\Amqp\Exception
  */
-class AmqpChannelException extends AmqpException
+class AmqpQueueException extends AmqpException
 {
 }

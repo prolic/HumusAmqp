@@ -7,20 +7,23 @@ use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Represents a AMQP channel between PHP and a AMQP server.
+ *
+ * Interface AmqpChannel
+ * @package Humus\Amqp\Driver
  */
 interface AmqpChannel
 {
     /**
      * Create an instance of an AMQPChannel object.
      *
-     * @param AmqpConnection $amqpConnection An instance of AmqpConnection
+     * @param AmqpConnection $AmqpConnection An instance of AmqpConnection
      *                                        with an active connection to a
      *                                        broker.
      *
      * @throws AmqpConnectionException        If the connection to the broker
      *                                        was lost.
      */
-    public function __construct(AmqpConnection $amqpConnection);
+    public function __construct(AmqpConnection $AmqpConnection);
 
     /**
      * Check the channel connection.
@@ -139,16 +142,16 @@ interface AmqpChannel
      *
      * @throws AmqpChannelException    If no transaction was started prior to
      *                                 calling this method.
-     * @throws AMQPConnectionException If the connection to the broker was lost.
+     * @throws AmqpConnectionException If the connection to the broker was lost.
      *
      * @return bool TRUE on success or FALSE on failure.
      */
     public function rollbackTransaction();
 
     /**
-     * Get the AMQPConnection object in use
+     * Get the AmqpConnection object in use
      *
-     * @return AMQPConnection
+     * @return AmqpConnection
      */
     public function getConnection();
 
