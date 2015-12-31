@@ -19,9 +19,9 @@
 namespace Humus\Amqp\Exception;
 
 /**
- * Interface ExceptionInterface
+ * Interface Exception
  * @package Humus\Amqp\Exception
  */
-interface ExceptionInterface
+interface Exception
 {
 }

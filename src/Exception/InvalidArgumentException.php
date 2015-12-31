@@ -22,6 +22,6 @@ namespace Humus\Amqp\Exception;
  * Class InvalidArgumentException
  * @package Humus\Amqp\Exception
  */
-class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
+class InvalidArgumentException extends \InvalidArgumentException implements Exception
 {
 }
