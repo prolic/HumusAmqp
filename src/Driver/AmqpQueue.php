@@ -15,17 +15,6 @@ use Humus\Amqp\Exception\AmqpQueueException;
 interface AmqpQueue
 {
     /**
-     * Create an instance of an AmqpQueue object.
-     *
-     * @param AmqpChannel $amqpChannel The amqp channel to use.
-     *
-     * @throws AmqpQueueException      When amqp_channel is not connected to a
-     *                                 broker.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
-     */
-    public function __construct(AmqpChannel $amqpChannel);
-
-    /**
      * Get the configured name.
      *
      * @return string The configured name as a string.
@@ -121,7 +110,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function bind($exchangeName, $routingKey = null, array $arguments = array());
+    public function bind($exchangeName, $routingKey = null, array $arguments = []);
 
     /**
      * Retrieve the next message from the queue.
@@ -177,11 +166,7 @@ interface AmqpQueue
      *
      * @return void
      */
-    public function consume(
-        callable $callback = null,
-        $flags = AMQP_NOPARAM,
-        $consumerTag = null
-    );
+    public function consume(callable $callback = null, $flags = AMQP_NOPARAM, $consumerTag = null);
 
     /**
      * Acknowledge the receipt of a message.
@@ -284,7 +269,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function unbind($exchangeName, $routingKey = null, array $arguments = array());
+    public function unbind($exchangeName, $routingKey = null, array $arguments = []);
 
     /**
      * Delete a queue from the broker.
