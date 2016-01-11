@@ -28,6 +28,14 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     }
 
     /**
+     * @return \AMQPConnection
+     */
+    public function getAmqpExtensionConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
      * @inheritdoc
      */
     public function isConnected()

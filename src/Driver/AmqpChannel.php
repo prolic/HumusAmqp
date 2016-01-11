@@ -14,18 +14,6 @@ use Humus\Amqp\Exception\AmqpConnectionException;
 interface AmqpChannel
 {
     /**
-     * Create an instance of an AMQPChannel object.
-     *
-     * @param AmqpConnection $AmqpConnection An instance of AmqpConnection
-     *                                        with an active connection to a
-     *                                        broker.
-     *
-     * @throws AmqpConnectionException        If the connection to the broker
-     *                                        was lost.
-     */
-    public function __construct(AmqpConnection $AmqpConnection);
-
-    /**
      * Check the channel connection.
      *
      * @return bool Indicates whether the channel is connected.
