@@ -15,22 +15,6 @@ use Humus\Amqp\Exception\AmqpExchangeException;
 interface AmqpExchange
 {
     /**
-     * Create an instance of AMQPExchange.
-     *
-     * Returns a new instance of an AMQPExchange object, associated with the
-     * given AmqpChannel object.
-     *
-     * @param AmqpChannel $amqpChannel A valid AmqpChannel object, connected
-     *                                  to a broker.
-     *
-     * @throws AmqpExchangeException   When amqp_channel is not connected to
-     *                                 a broker.
-     * @throws AmqpConnectionException If the connection to the broker was
-     *                                 lost.
-     */
-    public function __construct(AmqpChannel $amqpChannel);
-
-    /**
      * Get the configured name.
      *
      * @return string The configured name as a string.
@@ -203,12 +187,7 @@ interface AmqpExchange
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function publish(
-        $message,
-        $routingKey = null,
-        $flags = AMQP_NOPARAM,
-        array $attributes = array()
-    );
+    public function publish($message, $routingKey = null, $flags = AMQP_NOPARAM, array $attributes = []);
 
     /**
      * Get the AmqpChannel object in use
@@ -218,7 +197,7 @@ interface AmqpExchange
     public function getChannel();
 
     /**
-     * Get the AMQPConnection object in use
+     * Get the AmqpConnection object in use
      *
      * @return AMQPConnection
      */

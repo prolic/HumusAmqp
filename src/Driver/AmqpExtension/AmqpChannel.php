@@ -38,8 +38,16 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
         try {
             $this->channel = new \AMQPChannel($amqpConnection->getAmqpExtensionConnection());
         } catch (\AMQPConnectionException $e) {
-            throw new AmqpConnectionException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpConnectionException::fromAmqpExtension($e);
         }
+    }
+
+    /**
+     * @return \AMQPChannel
+     */
+    public function getAmqpExtensionChannel()
+    {
+        return $this->channel;
     }
 
     /**
@@ -66,7 +74,7 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
         try {
             return $this->channel->setPrefetchSize($size);
         } catch (\AMQPConnectionException $e) {
-            throw new AmqpConnectionException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpConnectionException::fromAmqpExtension($e);
         }
     }
 
@@ -86,7 +94,7 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
         try {
             return $this->channel->setPrefetchCount($count);
         } catch (\AMQPConnectionException $e) {
-            throw new AmqpConnectionException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpConnectionException::fromAmqpExtension($e);
         }
     }
 
@@ -106,7 +114,7 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
         try {
             return $this->channel->qos($size, $count);
         } catch (\AMQPConnectionException $e) {
-            throw new AmqpConnectionException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpConnectionException::fromAmqpExtension($e);
         }
     }
 
@@ -118,7 +126,7 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
         try {
             return $this->channel->startTransaction();
         } catch (\AMQPConnectionException $e) {
-            throw new AmqpConnectionException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpConnectionException::fromAmqpExtension($e);
         }
     }
 
@@ -130,9 +138,9 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
         try {
             return $this->channel->commitTransaction();
         } catch (\AMQPConnectionException $e) {
-            throw new AmqpConnectionException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpConnectionException::fromAmqpExtension($e);
         } catch (\AMQPChannelException $e) {
-            throw new AmqpChannelException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpChannelException::fromAmqpExtension($e);
         }
     }
 
@@ -144,9 +152,9 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
         try {
             return $this->channel->rollbackTransaction();
         } catch (\AMQPConnectionException $e) {
-            throw new AmqpConnectionException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpConnectionException::fromAmqpExtension($e);
         } catch (\AMQPChannelException $e) {
-            throw new AmqpChannelException($e->getMessage(), $e->getCode(), $e);
+            throw AmqpChannelException::fromAmqpExtension($e);
         }
     }
 
