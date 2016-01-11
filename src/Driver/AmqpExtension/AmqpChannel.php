@@ -34,7 +34,7 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
     public function __construct(AmqpConnection $amqpConnection)
     {
         $this->connection = $amqpConnection;
-        
+
         try {
             $this->channel = new \AMQPChannel($amqpConnection->getAmqpExtensionConnection());
         } catch (\AMQPConnectionException $e) {

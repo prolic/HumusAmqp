@@ -11,9 +11,16 @@ namespace Humus\Amqp\Driver;
 interface AmqpEnvelope
 {
     /**
-     * Get the body of the message.
+     * Get the raw (undecoded) body of the message.
      *
-     * @return string The contents of the message body.
+     * @return string The raw contents of the message body.
+     */
+    public function getRawBody();
+
+    /**
+     * Get the (decoded) body of the message.
+     *
+     * @return string The (decoded) contents of the message body.
      */
     public function getBody();
 
