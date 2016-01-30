@@ -34,11 +34,19 @@ final class PlainProducer implements Producer
     /**
      * @var array
      */
-    private $defaultAttributes = [
-        'content_type' => 'text/plain',
-        'content_encoding' => 'UTF-8',
-        'delivery_mode' => 2 // persistent
-    ];
+    private $defaultAttributes;
+
+    /**
+     * @return array
+     */
+    public static function defaultAttributes()
+    {
+        return [
+            'content_type' => 'text/plain',
+            'content_encoding' => 'UTF-8',
+            'delivery_mode' => 2, // persistent
+        ];
+    }
 
     /**
      * Constructor
@@ -52,6 +60,8 @@ final class PlainProducer implements Producer
 
         if (null !== $defaultAttributes) {
             $this->defaultAttributes = $defaultAttributes;
+        } else {
+            $this->defaultAttributes = self::defaultAttributes();
         }
     }
 
