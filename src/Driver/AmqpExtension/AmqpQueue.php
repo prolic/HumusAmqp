@@ -2,9 +2,6 @@
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Driver\AmqpExtension\AmqpEnvelope;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpQueueException;
@@ -148,17 +145,17 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     {
         try {
             $envelope = $this->queue->get($flags);
-
-            if ($envelope instanceof \AMQPEnvelope) {
-                $envelope = new AmqpEnvelope($envelope);
-            }
-
-            return $envelope;
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         } catch (\AMQPChannelException $e) {
             throw AmqpChannelException::fromAmqpExtension($e);
         }
+
+        if ($envelope instanceof \AMQPEnvelope) {
+            $envelope = new AmqpEnvelope($envelope);
+        }
+
+        return $envelope;
     }
 
     /**
