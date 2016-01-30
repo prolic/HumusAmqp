@@ -18,24 +18,12 @@
 
 namespace Humus\Amqp;
 
-use AMQPExchange;
-
 /**
  * Class PlainProducer
  * @package Humus\Amqp
  */
-final class PlainProducer implements Producer
+final class PlainProducer extends AbstractProducer
 {
-    /**
-     * @var AMQPExchange
-     */
-    private $exchange;
-
-    /**
-     * @var array
-     */
-    private $defaultAttributes;
-
     /**
      * @return array
      */
@@ -46,23 +34,6 @@ final class PlainProducer implements Producer
             'content_encoding' => 'UTF-8',
             'delivery_mode' => 2, // persistent
         ];
-    }
-
-    /**
-     * Constructor
-     *
-     * @param AMQPExchange $exchange
-     * @param array|null $defaultAttributes
-     */
-    public function __construct(AMQPExchange $exchange, array $defaultAttributes = null)
-    {
-        $this->exchange = $exchange;
-
-        if (null !== $defaultAttributes) {
-            $this->defaultAttributes = $defaultAttributes;
-        } else {
-            $this->defaultAttributes = self::defaultAttributes();
-        }
     }
 
     /**

@@ -18,41 +18,22 @@
 
 namespace Humus\Amqp;
 
-use AMQPExchange;
-
 /**
  * Class JsonProducer
  * @package Humus\Amqp
  */
-final class JsonProducer implements Producer
+final class JsonProducer extends AbstractProducer
 {
     /**
-     * @var AMQPExchange
+     * @return array
      */
-    private $exchange;
-
-    /**
-     * @var array
-     */
-    private $defaultAttributes = [
-        'content_type' => 'application/json',
-        'content_encoding' => 'UTF-8',
-        'delivery_mode' => 2 // persistent
-    ];
-
-    /**
-     * Constructor
-     *
-     * @param AMQPExchange $exchange
-     * @param array|null $defaultAttributes
-     */
-    public function __construct(AMQPExchange $exchange, array $defaultAttributes = null)
+    public static function defaultAttributes()
     {
-        $this->exchange = $exchange;
-
-        if (null !== $defaultAttributes) {
-            $this->defaultAttributes = $defaultAttributes;
-        }
+        return [
+            'content_type' => 'application/json',
+            'content_encoding' => 'UTF-8',
+            'delivery_mode' => 2 // persistent
+        ];
     }
 
     /**

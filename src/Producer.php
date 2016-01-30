@@ -18,6 +18,9 @@
 
 namespace Humus\Amqp;
 
+use Humus\Amqp\Exception\AmqpChannelException;
+use Humus\Amqp\Exception\AmqpConnectionException;
+
 /**
  * Interface Producer
  * @package Humus\Amqp
@@ -36,4 +39,46 @@ interface Producer
      *                             priority, timestamp, expiration or type.
      */
     public function publish($message, $routingKey = null, $flags = AMQP_NOPARAM, array $attributes = []);
+
+    /**
+     * Start a transaction.
+     *
+     * This method must be called on the given channel prior to calling
+     * Producer::commitTransaction() or Producer::rollbackTransaction().
+     *
+     * @throws AmqpConnectionException If the connection to the broker was lost.
+     *
+     * @return bool TRUE on success or FALSE on failure.
+     */
+    public function startTransaction();
+
+    /**
+     * Commit a pending transaction.
+     *
+     * @throws AmqpChannelException    If no transaction was started prior to
+     *                                 calling this method.
+     * @throws AmqpConnectionException If the connection to the broker was lost.
+     *
+     * @return bool TRUE on success or FALSE on failure.
+     */
+    public function commitTransaction();
+
+    /**
+     * Rollback a transaction.
+     *
+     * Rollback an existing transaction. Producer::startTransaction() must
+     * be called prior to this.
+     *
+     * @throws AmqpChannelException    If no transaction was started prior to
+     *                                 calling this method.
+     * @throws AmqpConnectionException If the connection to the broker was lost.
+     *
+     * @return bool TRUE on success or FALSE on failure.
+     */
+    public function rollbackTransaction();
+
+    /**
+     * @return array
+     */
+    public static function defaultAttributes();
 }
