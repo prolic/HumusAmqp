@@ -24,7 +24,9 @@
         "satooshi/php-coveralls": "dev-master"
     },
     "suggest": {
-        "ext-pcntl": "For process control management"
+        "ext-pcntl": "For process control management",
+        "ext-amqp": "For usage together with php amqp extension",
+        "videlalvaro/php-amqplib": "For usage together with php-amqplib"
     },
     "autoload": {
         "psr-4": {
