@@ -42,14 +42,14 @@ final class PlainProducer extends AbstractProducer
      * @param string  $message     The message to publish.
      * @param string  $routingKey  The optional routing key to which to
      *                             publish to.
-     * @param integer $flags       One or more of AMQP_MANDATORY and
-     *                             AMQP_IMMEDIATE.
+     * @param integer $flags       One or more of Constants::AMQP_MANDATORY and
+     *                             Constants::AMQP_IMMEDIATE.
      * @param array   $attributes  One of content_type, content_encoding,
      *                             correlation_id, reply_to, headers,
      *                             message_id, user_id, app_id, delivery_mode,
      *                             priority, timestamp, expiration or type.
      */
-    public function publish($message, $routingKey = null, $flags = AMQP_NOPARAM, array $attributes = [])
+    public function publish($message, $routingKey = null, $flags = Constants::AMQP_NOPARAM, array $attributes = [])
     {
         $attributes = array_merge($this->defaultAttributes, $attributes);
 

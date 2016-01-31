@@ -127,7 +127,7 @@ final class JsonRpcServer extends AbstractConsumer
             $attributes['app_id'] = $this->appId;
         }
 
-        $this->getExchange()->publish(json_encode($response), $replyTo, AMQP_NOPARAM, $attributes);
+        $this->getExchange()->publish(json_encode($response), $replyTo, Constants::AMQP_NOPARAM, $attributes);
     }
 
     /**
@@ -154,7 +154,7 @@ final class JsonRpcServer extends AbstractConsumer
         $channel = $this->queue->getChannel();
 
         $this->exchange = new AMQPExchange($channel);
-        $this->exchange->setType(AMQP_EX_TYPE_DIRECT);
+        $this->exchange->setType('direct');
 
         return $this->exchange;
     }

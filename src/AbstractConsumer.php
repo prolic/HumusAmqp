@@ -193,7 +193,7 @@ abstract class AbstractConsumer implements Consumer
 
         do {
             try {
-                $this->queue->consume($callback, AMQP_NOPARAM, $this->consumerTag);
+                $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
             } catch (AMQPConnectionException $e) {
                 if (!$this->queue->getConnection()->reconnect()) {
                     throw $e;
@@ -276,10 +276,10 @@ abstract class AbstractConsumer implements Consumer
     {
         if ($flag === self::MSG_REJECT || false === $flag) {
             $this->ackOrNackBlock();
-            $this->queue->reject($message->getDeliveryTag(), AMQP_NOPARAM);
+            $this->queue->reject($message->getDeliveryTag(), Constants::AMQP_NOPARAM);
         } elseif ($flag === self::MSG_REJECT_REQUEUE) {
             $this->ackOrNackBlock();
-            $this->queue->reject($message->getDeliveryTag(), AMQP_REQUEUE);
+            $this->queue->reject($message->getDeliveryTag(), Constants::AMQP_REQUEUE);
         } elseif ($flag === self::MSG_ACK || true === $flag) {
             $this->countMessagesConsumed++;
             $this->countMessagesUnacked++;
@@ -303,7 +303,7 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function ack()
     {
-        $this->queue->ack($this->lastDeliveryTag, AMQP_MULTIPLE);
+        $this->queue->ack($this->lastDeliveryTag, Constants::AMQP_MULTIPLE);
         $this->lastDeliveryTag = null;
         $this->timestampLastAck = microtime(true);
         $this->countMessagesUnacked = 0;
@@ -317,9 +317,9 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function nackAll($requeue = false)
     {
-        $flags = AMQP_MULTIPLE;
+        $flags = Constants::AMQP_MULTIPLE;
         if ($requeue) {
-            $flags |= AMQP_REQUEUE;
+            $flags |= Constants::AMQP_REQUEUE;
         }
         $this->queue->nack($this->lastDeliveryTag, $flags);
     }

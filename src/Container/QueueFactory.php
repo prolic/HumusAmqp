@@ -20,6 +20,7 @@ namespace Humus\Amqp\Container;
 
 use AMQPChannel;
 use AMQPQueue;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
 use Interop\Container\ContainerInterface;
 
@@ -168,10 +169,10 @@ final class QueueFactory extends AbstractFactory
     public function getFlags($options)
     {
         $flags = 0;
-        $flags |= $options['passive'] ? AMQP_PASSIVE : 0;
-        $flags |= $options['durable'] ? AMQP_DURABLE : 0;
-        $flags |= $options['exclusive'] ? AMQP_EXCLUSIVE : 0;
-        $flags |= $options['auto_delete'] ? AMQP_AUTODELETE : 0;
+        $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;
+        $flags |= $options['durable'] ? Constants::AMQP_DURABLE : 0;
+        $flags |= $options['exclusive'] ? Constants::AMQP_EXCLUSIVE : 0;
+        $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0;
 
         return $flags;
     }

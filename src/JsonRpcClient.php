@@ -97,7 +97,7 @@ final class JsonRpcClient
         $attributes = $this->createAttributes($request);
 
         $exchange = $this->getExchange($request->server());
-        $exchange->publish(json_encode($request->payload()), $request->routingKey(), AMQP_NOPARAM, $attributes);
+        $exchange->publish(json_encode($request->payload()), $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
         $this->requests++;
 
@@ -123,7 +123,7 @@ final class JsonRpcClient
         $now = microtime(1);
         $this->replies = [];
         do {
-            $message = $this->queue->get(AMQP_AUTOACK);
+            $message = $this->queue->get(Constants::AMQP_AUTOACK);
 
             if ($message instanceof AMQPEnvelope) {
                 $this->replies[$message->getCorrelationId()] = json_decode($message->getBody());

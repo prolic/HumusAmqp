@@ -20,6 +20,7 @@ namespace Humus\Amqp\Container;
 
 use AMQPChannel;
 use AMQPExchange;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
 use Interop\Container\ContainerInterface;
 
@@ -136,7 +137,7 @@ final class ExchangeFactory extends AbstractFactory
             'passive' => false,
             'durable' => true,
             'name' => '',
-            'type' => AMQP_EX_TYPE_DIRECT,
+            'type' => 'direct',
         ];
     }
 
@@ -164,9 +165,9 @@ final class ExchangeFactory extends AbstractFactory
     public function getFlags($options)
     {
         $flags = 0;
-        $flags |= $options['passive'] ? AMQP_PASSIVE : 0;
-        $flags |= $options['durable'] ? AMQP_DURABLE : 0;
-        $flags |= $options['auto_delete'] ? AMQP_AUTODELETE : 0; // RabbitMQ Extension
+        $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;
+        $flags |= $options['durable'] ? Constants::AMQP_DURABLE : 0;
+        $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0; // RabbitMQ Extension
 
         return $flags;
     }
