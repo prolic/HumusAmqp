@@ -18,7 +18,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     protected $connection;
 
     /**
-     * @return \AMQPConnection
+     * @return AbstractConnection
      */
     public function getPhpAmqpLibConnection()
     {
