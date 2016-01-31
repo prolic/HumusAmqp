@@ -237,7 +237,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
         }
 
         try {
-            return $this->channel->getPhpAmqpLibChannel()->basic_publish(
+            $this->channel->getPhpAmqpLibChannel()->basic_publish(
                 $message,
                 $this->name,
                 $routingKey,
@@ -248,6 +248,8 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
         } catch (\Exception $e) {
             throw AmqpExchangeException::fromAmqpExtension($e);
         }
+
+        return true;
     }
 
     /**
