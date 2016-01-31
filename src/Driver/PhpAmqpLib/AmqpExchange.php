@@ -221,9 +221,9 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     }
 
     /**
-     * Get the AmqpConnection object in use
+     * Get the AbstractAmqpConnection object in use
      *
-     * @return AmqpConnection
+     * @return AbstractAmqpConnection
      */
     public function getConnection()
     {

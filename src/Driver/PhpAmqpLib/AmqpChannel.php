@@ -12,7 +12,7 @@ use Humus\Amqp\Exception\AmqpConnectionException;
 class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
 {
     /**
-     * @var AmqpConnection
+     * @var AbstractAmqpConnection
      */
     private $connection;
 
@@ -24,19 +24,19 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
     /**
      * Create an instance of an AMQPChannel object.
      *
-     * @param AmqpConnection $amqpConnection  An instance of AmqpConnection
+     * @param AbstractAmqpConnection $amqpConnection  An instance of AbstractAmqpConnection
      *                                        with an active connection to a
      *                                        broker.
      *
      * @throws AmqpConnectionException        If the connection to the broker
      *                                        was lost.
      */
-    public function __construct(AmqpConnection $amqpConnection)
+    public function __construct(AbstractAmqpConnection $amqpConnection)
     {
         $this->connection = $amqpConnection;
 
         try {
-            $this->channel = new \AMQPChannel($amqpConnection->getAmqpExtensionConnection());
+            $this->channel = new \PhpAmqpLib\Channel\AMQPChannel($amqpConnection->getAmqpExtensionConnection());
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }

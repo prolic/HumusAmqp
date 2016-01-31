@@ -18,29 +18,10 @@
 
 namespace Humus\Amqp\Exception;
 
-use PhpAmqpLib\Exception\AMQPExceptionInterface;
-
 /**
- * Interface AmqpException
+ * Class BadMethodCallException
  * @package Humus\Amqp\Exception
  */
-class AmqpException extends \Exception
+final class BadMethodCallException extends \BadMethodCallException implements Exception
 {
-    /**
-     * @param \AMQPConnectionException $e
-     * @return AmqpConnectionException
-     */
-    public static function fromAmqpExtension(\AMQPConnectionException $e)
-    {
-        return new self($e->getMessage(), $e->getCode(), $e);
-    }
-
-    /**
-     * @param AMQPExceptionInterface $e
-     * @return AmqpConnectionException
-     */
-    public static function fromPhpAmqpLib(AMQPExceptionInterface $e)
-    {
-        return new self($e->getMessage(), $e->getCode(), $e);
-    }
 }
