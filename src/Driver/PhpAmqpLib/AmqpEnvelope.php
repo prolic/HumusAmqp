@@ -18,6 +18,8 @@
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
+use PhpAmqpLib\Message\AMQPMessage;
+
 /**
  * Class AmqpEnvelope
  * @package Humus\Amqp\Driver\AmqpExtension
@@ -25,17 +27,17 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
 {
     /**
-     * @var \AMQPEnvelope
+     * @var AMQPMessage
      */
     private $envelope;
 
     /**
      * AmqpEnvelope constructor.
-     * @param \AMQPEnvelope $envelope
+     * @param AMQPMessage $message
      */
-    public function __construct(\AMQPEnvelope $envelope)
+    public function __construct(AMQPMessage $message)
     {
-        $this->envelope = $envelope;
+        $this->envelope = $message;
     }
 
     /**
@@ -43,7 +45,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getBody()
     {
-        return $this->envelope->getBody();
+        return $this->envelope->body;
     }
 
     /**
@@ -51,7 +53,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getRoutingKey()
     {
-        return $this->envelope->getRoutingKey();
+        return $this->envelope->get('routing_key');
     }
 
     /**
@@ -59,7 +61,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getDeliveryTag()
     {
-        return $this->envelope->getDeliveryTag();
+        return $this->envelope->get('delivery_tag');
     }
 
     /**
@@ -67,7 +69,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getDeliveryMode()
     {
-        return $this->envelope->getDeliveryMode();
+        return $this->envelope->get('delivery_mode');
     }
 
     /**
@@ -75,7 +77,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getExchangeName()
     {
-        return $this->envelope->getExchangeName();
+        return $this->envelope->get('exchange');
     }
 
     /**
@@ -83,7 +85,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function isRedelivery()
     {
-        return $this->envelope->isRedelivery();
+        return $this->envelope->get('redelivered');
     }
 
     /**
@@ -91,7 +93,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getContentType()
     {
-        return $this->envelope->getContentType();
+        return $this->envelope->get('content_type');
     }
 
     /**
@@ -99,7 +101,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getContentEncoding()
     {
-        return $this->envelope->getContentEncoding();
+        return $this->envelope->get('content_encoding');
     }
 
     /**
@@ -107,7 +109,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getType()
     {
-        return $this->envelope->getType();
+        return $this->envelope->get('type');
     }
 
     /**
@@ -115,7 +117,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getTimeStamp()
     {
-        return $this->envelope->getTimeStamp();
+        return $this->envelope->get('timestamp');
     }
 
     /**
@@ -123,7 +125,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getPriority()
     {
-        return $this->envelope->getPriority();
+        return $this->envelope->get('priority');
     }
 
     /**
@@ -131,7 +133,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getExpiration()
     {
-        return $this->envelope->getExpiration();
+        return $this->envelope->get('expiration');
     }
 
     /**
@@ -139,7 +141,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getUserId()
     {
-        return $this->envelope->getUserId();
+        return $this->envelope->get('user_id');
     }
 
     /**
@@ -147,7 +149,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getAppId()
     {
-        return $this->envelope->getAppId();
+        return $this->envelope->get('app_id');
     }
 
     /**
@@ -155,7 +157,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getMessageId()
     {
-        return $this->envelope->getMessageId();
+        return $this->envelope->get('message_id');
     }
 
     /**
@@ -163,7 +165,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getReplyTo()
     {
-        return $this->envelope->getReplyTo();
+        return $this->envelope->get('reply_to');
     }
 
     /**
@@ -171,7 +173,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getCorrelationId()
     {
-        return $this->envelope->getCorrelationId();
+        return $this->envelope->get('correlation_id');
     }
 
     /**
@@ -179,7 +181,7 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getHeaders()
     {
-        return $this->envelope->getHeaders();
+        return $this->envelope->get('application_headers');
     }
 
     /**
@@ -187,6 +189,8 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getHeader($headerKey)
     {
-        return $this->envelope->getHeader($headerKey);
+        $headers = $this->getHeaders();
+
+        return isset($headers[$headerKey]) ? $headers[$headerKey] : false;
     }
 }
