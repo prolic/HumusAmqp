@@ -25,7 +25,7 @@ use Humus\Amqp\Exception\AmqpExchangeException;
 
 /**
  * Represents a AMQP exchange
- * 
+ *
  * Interface AmqpExchange
  * @package Humus\Amqp\Driver
  */
@@ -161,7 +161,7 @@ interface AmqpExchange
      * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return boolean true on success or false on failure.
      */
-    public function bind($exchangeName, $routingKey = '', array $arguments = array());
+    public function bind($exchangeName, $routingKey = '', array $arguments = []);
 
     /**
      * Remove binding to another exchange.
@@ -177,7 +177,7 @@ interface AmqpExchange
      * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return boolean true on success or false on failure.
      */
-    public function unbind($exchangeName, $routingKey = '', array $arguments = array());
+    public function unbind($exchangeName, $routingKey = '', array $arguments = []);
 
     /**
      * Publish a message to an exchange.
@@ -214,5 +214,5 @@ interface AmqpExchange
      *
      * @return AMQPConnection
      */
-    public function getConnection();    
+    public function getConnection();
 }

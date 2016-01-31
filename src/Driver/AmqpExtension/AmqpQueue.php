@@ -181,7 +181,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     public function consume(callable $callback = null, $flags = Constants::AMQP_NOPARAM, $consumerTag = null)
     {
         if (null !== $callback) {
-            $innerCallback = function(\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
+            $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
                 $envelope = new AmqpEnvelope($envelope);
                 return $callback($envelope, $this);
             };

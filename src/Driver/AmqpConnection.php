@@ -22,7 +22,7 @@ use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Represents a AMQP connection between PHP and a AMQP server.
- * 
+ *
  * Interface AmqpConnection
  * @package Humus\Amqp\Driver
  */

@@ -21,7 +21,6 @@ namespace Humus\Amqp\Driver;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
-use Humus\Amqp\Exception\AmqpQueueException;
 
 /**
  * Represents a AMQP queue

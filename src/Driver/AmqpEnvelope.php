@@ -20,7 +20,7 @@ namespace Humus\Amqp\Driver;
 
 /**
  * Represents a AMQP envelope
- * 
+ *
  * Interface AmqpEnvelope
  * @package Humus\Amqp\Driver
  */

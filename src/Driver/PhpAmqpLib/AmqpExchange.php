@@ -19,8 +19,6 @@
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\Exception\AmqpChannelException;
-use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpExchangeException;
 use PhpAmqpLib\Message\AMQPMessage;
 

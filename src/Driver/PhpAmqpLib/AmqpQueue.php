@@ -19,8 +19,6 @@
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\Exception\AmqpChannelException;
-use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpQueueException;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -197,7 +195,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     public function consume(callable $callback = null, $flags = Constants::AMQP_NOPARAM, $consumerTag = null)
     {
         if (null !== $callback) {
-            $innerCallback = function(AMQPMessage $envelope) use ($callback) {
+            $innerCallback = function (AMQPMessage $envelope) use ($callback) {
                 $envelope = new AmqpEnvelope($envelope);
                 return $callback($envelope, $this);
             };
