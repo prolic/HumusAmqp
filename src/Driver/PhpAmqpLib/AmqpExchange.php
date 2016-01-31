@@ -2,6 +2,7 @@
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
+use Humus\Amqp\Constants;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpExchangeException;
@@ -148,7 +149,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function delete($exchangeName = null, $flags = AMQP_NOPARAM)
+    public function delete($exchangeName = null, $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->exchange->delete($exchangeName, $flags);
@@ -196,7 +197,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function publish($message, $routingKey = null, $flags = AMQP_NOPARAM, array $attributes = [])
+    public function publish($message, $routingKey = null, $flags = Constants::AMQP_NOPARAM, array $attributes = [])
     {
         try {
             return $this->exchange->publish($message, $routingKey, $flags, $attributes);

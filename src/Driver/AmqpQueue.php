@@ -18,6 +18,7 @@
 
 namespace Humus\Amqp\Driver;
 
+use Humus\Amqp\Constants;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpQueueException;
@@ -58,8 +59,8 @@ interface AmqpQueue
      * Set the flags on the queue.
      *
      * @param integer $flags A bitmask of flags:
-     *                       AMQP_DURABLE, AMQP_PASSIVE,
-     *                       AMQP_EXCLUSIVE, AMQP_AUTODELETE.
+     *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE,
+     *                       Constants::AMQP_EXCLUSIVE, Constants::AMQP_AUTODELETE.
      *
      * @return boolean
      */
@@ -135,13 +136,13 @@ interface AmqpQueue
      * present in the queue, this function will return FALSE immediately. This
      * is a non blocking alternative to the AmqpQueue::consume() method.
      * Currently, the only supported flag for the flags parameter is
-     * AMQP_AUTOACK. If this flag is passed in, then the message returned will
+     * Constants::AMQP_AUTOACK. If this flag is passed in, then the message returned will
      * automatically be marked as acknowledged by the broker as soon as the
      * frames are sent to the client.
      *
      * @param integer $flags A bitmask of supported flags for the
      *                       method call. Currently, the only the
-     *                       supported flag is AMQP_AUTOACK. If this
+     *                       supported flag is Constants::AMQP_AUTOACK. If this
      *                       value is not provided, it will use the
      *                       value of ini-setting amqp.auto_ack.
      *
@@ -150,7 +151,7 @@ interface AmqpQueue
      *
      * @return AmqpEnvelope|boolean
      */
-    public function get($flags = AMQP_NOPARAM);
+    public function get($flags = Constants::AMQP_NOPARAM);
 
     /**
      * Consume messages from a queue.
@@ -173,7 +174,7 @@ interface AmqpQueue
      *                              be made available to the first real callback
      *                              registered. That allows one to have a single
      *                              callback consuming from multiple queues.
-     * @param integer  $flags       A bitmask of any of the flags: AMQP_AUTOACK.
+     * @param integer  $flags       A bitmask of any of the flags: Constants::AMQP_AUTOACK.
      * @param string   $consumerTag A string describing this consumer. Used
      *                              for canceling subscriptions with cancel().
      *
@@ -182,26 +183,26 @@ interface AmqpQueue
      *
      * @return void
      */
-    public function consume(callable $callback = null, $flags = AMQP_NOPARAM, $consumerTag = null);
+    public function consume(callable $callback = null, $flags = Constants::AMQP_NOPARAM, $consumerTag = null);
 
     /**
      * Acknowledge the receipt of a message.
      *
      * This method allows the acknowledgement of a message that is retrieved
-     * without the AMQP_AUTOACK flag through AmqpQueue::get() or
+     * without the Constants::AMQP_AUTOACK flag through AmqpQueue::get() or
      * AmqpQueue::consume()
      *
      * @param string  $deliveryTag The message delivery tag of which to
      *                              acknowledge receipt.
      * @param integer $flags        The only valid flag that can be passed is
-     *                              AMQP_MULTIPLE.
+     *                              Constants::AMQP_MULTIPLE.
      *
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
      *
      * @return boolean
      */
-    public function ack($deliveryTag, $flags = AMQP_NOPARAM);
+    public function ack($deliveryTag, $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Mark a message as explicitly not acknowledged.
@@ -209,7 +210,7 @@ interface AmqpQueue
      * Mark the message identified by delivery_tag as explicitly not
      * acknowledged. This method can only be called on messages that have not
      * yet been acknowledged, meaning that messages retrieved with by
-     * AmqpQueue::consume() and AmqpQueue::get() and using the AMQP_AUTOACK
+     * AmqpQueue::consume() and AmqpQueue::get() and using the Constants::AMQP_AUTOACK
      * flag are not eligible. When called, the broker will immediately put the
      * message back onto the queue, instead of waiting until the connection is
      * closed. This method is only supported by the RabbitMQ broker. The
@@ -217,8 +218,8 @@ interface AmqpQueue
      * undefined.
      *
      * @param string  $deliveryTag Delivery tag of last message to reject.
-     * @param integer $flags        AMQP_REQUEUE to requeue the message(s),
-     *                              AMQP_MULTIPLE to nack all previous
+     * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s),
+     *                              Constants::AMQP_MULTIPLE to nack all previous
      *                              unacked messages as well.
      *
      * @throws AmqpChannelException    If the channel is not open.
@@ -226,7 +227,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function nack($deliveryTag, $flags = AMQP_NOPARAM);
+    public function nack($deliveryTag, $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Mark one message as explicitly not acknowledged.
@@ -234,18 +235,18 @@ interface AmqpQueue
      * Mark the message identified by delivery_tag as explicitly not
      * acknowledged. This method can only be called on messages that have not
      * yet been acknowledged, meaning that messages retrieved with by
-     * AmqpQueue::consume() and AmqpQueue::get() and using the AMQP_AUTOACK
+     * AmqpQueue::consume() and AmqpQueue::get() and using the Constants::AMQP_AUTOACK
      * flag are not eligible.
      *
      * @param string  $deliveryTag Delivery tag of the message to reject.
-     * @param integer $flags        AMQP_REQUEUE to requeue the message(s).
+     * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s).
      *
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
      *
      * @return boolean
      */
-    public function reject($deliveryTag, $flags = AMQP_NOPARAM);
+    public function reject($deliveryTag, $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Purge the contents of a queue.
@@ -292,7 +293,7 @@ interface AmqpQueue
      *
      * This includes its entire contents of unread or unacknowledged messages.
      *
-     * @param integer $flags        Optionally AMQP_IFUNUSED can be specified
+     * @param integer $flags        Optionally Constants::AMQP_IFUNUSED can be specified
      *                              to indicate the queue should not be
      *                              deleted until no clients are connected to
      *                              it.
@@ -302,7 +303,7 @@ interface AmqpQueue
      *
      * @return integer The number of deleted messages.
      */
-    public function delete($flags = AMQP_NOPARAM);
+    public function delete($flags = Constants::AMQP_NOPARAM);
 
     /**
      * Get the AmqpChannel object in use

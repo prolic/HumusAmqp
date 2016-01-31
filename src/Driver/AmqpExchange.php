@@ -18,6 +18,7 @@
 
 namespace Humus\Amqp\Driver;
 
+use Humus\Amqp\Constants;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpExchangeException;
@@ -56,11 +57,7 @@ interface AmqpExchange
     /**
      * Set the type of the exchange.
      *
-     * Set the type of the exchange. This can be any of AMQP_EX_TYPE_DIRECT,
-     * AMQP_EX_TYPE_FANOUT, AMQP_EX_TYPE_HEADERS or AMQP_EX_TYPE_TOPIC.
-     *
      * @param string $exchangeType The type of exchange as a string.
-     *
      * @return boolean TRUE on success or FALSE on failure.
      */
     public function setType($exchangeType);
@@ -78,8 +75,8 @@ interface AmqpExchange
      *
      * @param integer $flags A bitmask of flags. This call currently only
      *                       considers the following flags:
-     *                       AMQP_DURABLE, AMQP_PASSIVE
-     *                       (and AMQP_DURABLE, if librabbitmq version >= 0.5.3)
+     *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE
+     *                       and Constants::AMQP_DURABLE (needs librabbitmq version >= 0.5.3 when using with ext-amqp)
      *
      * @return boolean True on success or false on failure.
      */
@@ -137,7 +134,7 @@ interface AmqpExchange
      * Delete the exchange from the broker.
      *
      * @param string  $exchangeName Optional name of exchange to delete.
-     * @param integer $flags        Optionally AMQP_IFUNUSED can be specified
+     * @param integer $flags        Optionally Constants::AMQP_IFUNUSED can be specified
      *                              to indicate the exchange should not be
      *                              deleted until no clients are connected to
      *                              it.
@@ -148,7 +145,7 @@ interface AmqpExchange
      *
      * @return boolean true on success or false on failure.
      */
-    public function delete($exchangeName = null, $flags = AMQP_NOPARAM);
+    public function delete($exchangeName = null, $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Bind to another exchange.
@@ -190,8 +187,8 @@ interface AmqpExchange
      * @param string  $message     The message to publish.
      * @param string  $routingKey The optional routing key to which to
      *                             publish to.
-     * @param integer $flags       One or more of AMQP_MANDATORY and
-     *                             AMQP_IMMEDIATE.
+     * @param integer $flags       One or more of Constants::AMQP_MANDATORY and
+     *                             Constants::AMQP_IMMEDIATE.
      * @param array   $attributes  One of content_type, content_encoding,
      *                             message_id, user_id, app_id, delivery_mode,
      *                             priority, timestamp, expiration, type
@@ -203,7 +200,7 @@ interface AmqpExchange
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function publish($message, $routingKey = null, $flags = AMQP_NOPARAM, array $attributes = []);
+    public function publish($message, $routingKey = null, $flags = Constants::AMQP_NOPARAM, array $attributes = []);
 
     /**
      * Get the AmqpChannel object in use

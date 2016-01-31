@@ -18,6 +18,7 @@
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
+use Humus\Amqp\Constants;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpQueueException;
@@ -157,7 +158,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function get($flags = AMQP_NOPARAM)
+    public function get($flags = Constants::AMQP_NOPARAM)
     {
         try {
             $envelope = $this->queue->get($flags);
@@ -177,7 +178,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function consume(callable $callback = null, $flags = AMQP_NOPARAM, $consumerTag = null)
+    public function consume(callable $callback = null, $flags = Constants::AMQP_NOPARAM, $consumerTag = null)
     {
         if (null !== $callback) {
             $innerCallback = function(\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
@@ -200,7 +201,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function ack($deliveryTag, $flags = AMQP_NOPARAM)
+    public function ack($deliveryTag, $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->queue->ack($deliveryTag, $flags);
@@ -214,7 +215,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function nack($deliveryTag, $flags = AMQP_NOPARAM)
+    public function nack($deliveryTag, $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->queue->nack($deliveryTag, $flags);
@@ -228,7 +229,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function reject($deliveryTag, $flags = AMQP_NOPARAM)
+    public function reject($deliveryTag, $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->queue->reject($deliveryTag, $flags);
@@ -284,7 +285,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function delete($flags = AMQP_NOPARAM)
+    public function delete($flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->queue->delete($flags);

@@ -47,10 +47,10 @@ interface AmqpChannel
      * Set the window size to prefetch from the broker.
      *
      * Set the prefetch window size, in octets, during a call to
-     * AMQPQueue::consume() or AMQPQueue::get(). Any call to this method will
+     * AmqpQueue::consume() or AmqpQueue::get(). Any call to this method will
      * automatically set the prefetch message count to 0, meaning that the
      * prefetch message count setting will be ignored. If the call to either
-     * AMQPQueue::consume() or AMQPQueue::get() is done with the AMQP_AUTOACK
+     * AmqpQueue::consume() or AmqpQueue::get() is done with the Constants::AMQP_AUTOACK
      * flag set, this setting will be ignored.
      *
      * @param integer $size The window size, in octets, to prefetch.
@@ -72,7 +72,7 @@ interface AmqpChannel
      * Set the number of messages to prefetch from the broker.
      *
      * Set the number of messages to prefetch from the broker during a call to
-     * AMQPQueue::consume() or AMQPQueue::get(). Any call to this method will
+     * AmqpQueue::consume() or AmqpQueue::get(). Any call to this method will
      * automatically set the prefetch window size to 0, meaning that the
      * prefetch window size setting will be ignored.
      *
@@ -95,14 +95,14 @@ interface AmqpChannel
      * Set the Quality Of Service settings for the given channel.
      *
      * Specify the amount of data to prefetch in terms of window size (octets)
-     * or number of messages from a queue during a AMQPQueue::consume() or
-     * AMQPQueue::get() method call. The client will prefetch data up to size
+     * or number of messages from a queue during a AmqpQueue::consume() or
+     * AmqpQueue::get() method call. The client will prefetch data up to size
      * octets or count messages from the server, whichever limit is hit first.
      * Setting either value to 0 will instruct the client to ignore that
-     * particular setting. A call to AMQPChannel::qos() will overwrite any
-     * values set by calling AMQPChannel::setPrefetchSize() and
+     * particular setting. A call to AmqpChannel::qos() will overwrite any
+     * values set by calling AmqpChannel::setPrefetchSize() and
      * AmqpChannel::setPrefetchCount(). If the call to either
-     * AMQPQueue::consume() or AMQPQueue::get() is done with the AMQP_AUTOACK
+     * AmqpQueue::consume() or AmqpQueue::get() is done with the Constants::AMQP_AUTOACK
      * flag set, the client will not do any prefetching of data, regardless of
      * the QOS settings.
      *
