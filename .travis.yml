@@ -15,7 +15,7 @@ before_script:
   - phpenv config-rm xdebug.ini
   - composer self-update
   - composer install --prefer-source
-  - sudo rabbitmqctl add_vhost humus-amqp-test
+  - sudo rabbitmqctl add_vhost /humus-amqp-test
   - sudo rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
 
 script:
