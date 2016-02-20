@@ -165,4 +165,12 @@ interface AmqpChannel
      * @param bool $requeue
      */
     public function basicRecover($requeue = true);
+
+    /**
+     * Puts the channel into confirm mode
+     * Beware that only non-transactional channels may be put into confirm mode and vice versa
+     * 
+     * @return void
+     */
+    public function confirmSelect();
 }

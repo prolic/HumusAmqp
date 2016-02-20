@@ -53,6 +53,14 @@ final class JsonProducer extends AbstractProducer
     {
         $attributes = array_merge($this->defaultAttributes, $attributes);
 
+        if ($this->transactional) {
+            $this->startTransaction();
+        }
+
         $this->exchange->publish(json_encode($message), $routingKey, $flags, $attributes);
+
+        if ($this->transactional) {
+            $this->commitTransaction();
+        }
     }
 }

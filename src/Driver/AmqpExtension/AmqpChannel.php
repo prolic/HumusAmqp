@@ -40,7 +40,7 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
     /**
      * Create an instance of an AMQPChannel object.
      *
-     * @param AmqpConnection $amqpConnection  An instance of AmqpConnection
+     * @param AmqpConnection $amqpConnection An instance of AmqpConnection
      *                                        with an active connection to a
      *                                        broker.
      *
@@ -188,5 +188,13 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
     public function basicRecover($requeue = true)
     {
         $this->channel->basicRecover($requeue);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function confirmSelect()
+    {
+        throw new AmqpChannelException('Not implemented');
     }
 }

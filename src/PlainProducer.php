@@ -53,6 +53,14 @@ final class PlainProducer extends AbstractProducer
     {
         $attributes = array_merge($this->defaultAttributes, $attributes);
 
+        if ($this->transactional) {
+            $this->startTransaction();
+        }
+
         $this->exchange->publish($message, $routingKey, $flags, $attributes);
+
+        if ($this->transactional) {
+            $this->commitTransaction();
+        }
     }
 }

@@ -185,4 +185,12 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
     {
         $this->channel->basic_recover($requeue);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function confirmSelect()
+    {
+        $this->channel->confirm_select();
+    }
 }

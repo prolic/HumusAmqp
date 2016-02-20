@@ -18,7 +18,9 @@
 
 namespace Humus\Amqp;
 
+use Assert\Assertion;
 use Humus\Amqp\Driver\AmqpExchange;
+use Humus\Amqp\Exception\AmqpChannelException;
 
 /**
  * Class AbstractProducer
@@ -37,19 +39,44 @@ abstract class AbstractProducer implements Producer
     protected $defaultAttributes;
 
     /**
+     * @var bool
+     */
+    protected $confirm;
+
+    /**
+     * @var bool
+     */
+    protected $transactional;
+
+    /**
      * Constructor
      *
      * @param AmqpExchange $exchange
+     * @param bool $confirm
+     * @param bool $transactional
      * @param array|null $defaultAttributes
+     * @throws AmqpChannelException
      */
-    public function __construct(AmqpExchange $exchange, array $defaultAttributes = null)
+    public function __construct(AmqpExchange $exchange, $confirm, $transactional, array $defaultAttributes = null)
     {
+        Assertion::boolean($confirm);
+        Assertion::boolean($transactional);
+
+        if ($confirm && $transactional) {
+            throw new AmqpChannelException('Only non-transactional channels can be put in confirm mode');
+        }
+
+        $this->confirm = $confirm;
         $this->exchange = $exchange;
 
         if (null !== $defaultAttributes) {
             $this->defaultAttributes = $defaultAttributes;
         } else {
             $this->defaultAttributes = static::defaultAttributes();
+        }
+        
+        if ($confirm) {
+            $this->exchange->getChannel()->confirmSelect();
         }
     }
 
@@ -58,6 +85,10 @@ abstract class AbstractProducer implements Producer
      */
     public function startTransaction()
     {
+        if ($this->confirm) {
+            throw new AmqpChannelException('Channel is in confirm mode and transaction cannot be started');
+        }
+
         return $this->exchange->getChannel()->startTransaction();
     }
 
