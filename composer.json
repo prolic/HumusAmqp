@@ -12,8 +12,7 @@
         }
     ],
     "require": {
-        "php": "~5.5",
-        "ext-amqp": "^1.6.1",
+        "php": "~5.5|~7.0",
         "beberlei/assert": "^2.4"
     },
     "require-dev": {
@@ -21,7 +20,9 @@
         "zendframework/zend-servicemanager": "^2.6.0",
         "phpunit/phpunit": "~4.8",
         "fabpot/php-cs-fixer": "1.7.*",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "^1.0",
+        "ext-amqp": "for usage with PHP AMQP Extension",
+        "videlalvaro/php-amqplib": "^2.6"
     },
     "suggest": {
         "ext-pcntl": "For process control management",
