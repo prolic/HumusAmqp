@@ -21,7 +21,6 @@
         "phpunit/phpunit": "~4.8",
         "fabpot/php-cs-fixer": "1.7.*",
         "satooshi/php-coveralls": "^1.0",
-        "ext-amqp": "for usage with PHP AMQP Extension",
         "videlalvaro/php-amqplib": "^2.6"
     },
     "suggest": {
