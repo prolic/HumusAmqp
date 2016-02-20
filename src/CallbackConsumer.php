@@ -18,8 +18,8 @@
 
 namespace Humus\Amqp;
 
-use AMQPQueue;
 use Assert\Assertion;
+use Humus\Amqp\Driver\AmqpQueue;
 
 /**
  * The consumer attaches to a single queue
@@ -34,7 +34,7 @@ final class CallbackConsumer extends AbstractConsumer
     /**
      * Constructor
      *
-     * @param AMQPQueue $queue
+     * @param AmqpQueue $queue
      * @param float $idleTimeout in seconds
      * @param callable $deliveryCallback,
      * @param callable|null $flushCallback,
@@ -44,7 +44,7 @@ final class CallbackConsumer extends AbstractConsumer
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(
-        AMQPQueue $queue,
+        AmqpQueue $queue,
         $idleTimeout,
         callable $deliveryCallback,
         callable $flushCallback = null,

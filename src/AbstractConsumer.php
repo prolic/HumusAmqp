@@ -18,10 +18,8 @@
 
 namespace Humus\Amqp;
 
-use AMQPConnectionException;
-use AMQPEnvelope;
-use AMQPQueue;
 use Assert\Assertion;
+use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Class AbstractConsumer
@@ -120,7 +118,7 @@ abstract class AbstractConsumer implements Consumer
      * Start consumer
      *
      * @param int $msgAmount
-     * @throws AMQPConnectionException
+     * @throws AmqpConnectionException
      */
     public function consume($msgAmount = 0)
     {

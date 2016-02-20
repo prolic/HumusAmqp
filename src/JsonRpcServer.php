@@ -18,9 +18,9 @@
 
 namespace Humus\Amqp;
 
-use AMQPEnvelope;
-use AMQPExchange;
-use AMQPQueue;
+use Humus\Amqp\Driver\AmqpEnvelope;
+use Humus\Amqp\Driver\AmqpExchange;
+use Humus\Amqp\Driver\AmqpQueue;
 use Assert\Assertion;
 
 /**
@@ -30,7 +30,7 @@ use Assert\Assertion;
 final class JsonRpcServer extends AbstractConsumer
 {
     /**
-     * @var AMQPExchange
+     * @var AmqpExchange
      */
     private $exchange;
 
@@ -47,14 +47,21 @@ final class JsonRpcServer extends AbstractConsumer
     /**
      * Constructor
      *
-     * @param AMQPQueue $queue
+     * @param AmqpQueue $queue
+     * @param AmqpExchange $exchange
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
      * @param string|null $appId
      * @param bool $returnTrace
      */
-    public function __construct(AMQPQueue $queue, $idleTimeout, $consumerTag = null, $appId = null, $returnTrace = false)
-    {
+    public function __construct(
+        AmqpQueue $queue,
+        AmqpExchange $exchange,
+        $idleTimeout,
+        $consumerTag = null,
+        $appId = null,
+        $returnTrace = false
+    ) {
         Assertion::float($idleTimeout);
         Assertion::nullOrString($consumerTag);
         Assertion::nullOrString($appId);
@@ -76,17 +83,18 @@ final class JsonRpcServer extends AbstractConsumer
 
         $this->idleTimeout = (float) $idleTimeout;
         $this->queue = $queue;
+        $this->exchange = $exchange;
         $this->consumerTag = $consumerTag;
         $this->appId = $appId;
         $this->returnTrace = $returnTrace;
     }
 
     /**
-     * @param AMQPEnvelope $message
-     * @param AMQPQueue $queue
+     * @param AmqpEnvelope $message
+     * @param AmqpQueue $queue
      * @return bool|null
      */
-    public function handleDelivery(AMQPEnvelope $message, AMQPQueue $queue)
+    public function handleDelivery(AmqpEnvelope $message, AmqpQueue $queue)
     {
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
@@ -127,35 +135,18 @@ final class JsonRpcServer extends AbstractConsumer
             $attributes['app_id'] = $this->appId;
         }
 
-        $this->getExchange()->publish(json_encode($response), $replyTo, Constants::AMQP_NOPARAM, $attributes);
+        $this->exchange->publish(json_encode($response), $replyTo, Constants::AMQP_NOPARAM, $attributes);
     }
 
     /**
      * Handle process flag
      *
-     * @param AMQPEnvelope $message
+     * @param AmqpEnvelope $message
      * @param $flag
      * @return void
      */
-    protected function handleProcessFlag(AMQPEnvelope $message, $flag)
+    protected function handleProcessFlag(AmqpEnvelope $message, $flag)
     {
         // do nothing, message was already acknowledged
-    }
-
-    /**
-     * @return AMQPExchange
-     */
-    protected function getExchange()
-    {
-        if (null !== $this->exchange) {
-            return $this->exchange;
-        }
-
-        $channel = $this->queue->getChannel();
-
-        $this->exchange = new AMQPExchange($channel);
-        $this->exchange->setType('direct');
-
-        return $this->exchange;
     }
 }
