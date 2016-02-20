@@ -13,14 +13,12 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
 namespace Humus\Amqp\Exception;
-
-use PhpAmqpLib\Exception\AMQPExceptionInterface;
 
 /**
  * Interface AmqpException
@@ -38,10 +36,10 @@ class AmqpException extends \Exception
     }
 
     /**
-     * @param AMQPExceptionInterface $e
+     * @param \Exception $e
      * @return AmqpConnectionException
      */
-    public static function fromPhpAmqpLib(AMQPExceptionInterface $e)
+    public static function fromPhpAmqpLib(\Exception $e)
     {
         return new self($e->getMessage(), $e->getCode(), $e);
     }

@@ -13,7 +13,7 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
@@ -171,7 +171,7 @@ interface AmqpChannel
     /**
      * Puts the channel into confirm mode
      * Beware that only non-transactional channels may be put into confirm mode and vice versa
-     * 
+     *
      * @return void
      */
     public function confirmSelect();
