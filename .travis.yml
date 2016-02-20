@@ -1,0 +1,26 @@
+sudo: required
+
+language: php
+
+php:
+  - 5.5
+  - 5.6
+  - 7
+
+services:
+  - rabbitmq
+
+before_script:
+  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - phpenv config-rm xdebug.ini
+  - composer self-update
+  - composer install --prefer-source
+  - sudo rabbitmqctl add_vhost /humus-amqp-test
+  - sudo rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
+
+script:
+  - php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
+  - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
+
+after_script:
+  - php vendor/bin/coveralls -v

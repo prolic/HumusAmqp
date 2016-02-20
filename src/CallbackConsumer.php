@@ -1,25 +1,27 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/**
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  This software consists of voluntary contributions made by many individuals
+ *  and is licensed under the MIT license.
  */
 
 namespace Humus\Amqp;
 
-use AMQPQueue;
 use Assert\Assertion;
+use Humus\Amqp\Driver\AmqpQueue;
 
 /**
  * The consumer attaches to a single queue
@@ -34,7 +36,7 @@ final class CallbackConsumer extends AbstractConsumer
     /**
      * Constructor
      *
-     * @param AMQPQueue $queue
+     * @param AmqpQueue $queue
      * @param float $idleTimeout in seconds
      * @param callable $deliveryCallback,
      * @param callable|null $flushCallback,
@@ -44,7 +46,7 @@ final class CallbackConsumer extends AbstractConsumer
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(
-        AMQPQueue $queue,
+        AmqpQueue $queue,
         $idleTimeout,
         callable $deliveryCallback,
         callable $flushCallback = null,
@@ -72,6 +74,9 @@ final class CallbackConsumer extends AbstractConsumer
 
         $this->queue = $queue;
         $this->idleTimeout = (float) $idleTimeout;
+        $this->deliveryCallback = $deliveryCallback;
+        $this->flushCallback = $flushCallback;
+        $this->errorCallback = $errorCallback;
         $this->consumerTag = $consumerTag;
         $this->blockSize = $blockSize;
     }

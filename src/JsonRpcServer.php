@@ -1,26 +1,28 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/**
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  This software consists of voluntary contributions made by many individuals
+ *  and is licensed under the MIT license.
  */
 
 namespace Humus\Amqp;
 
-use AMQPEnvelope;
-use AMQPExchange;
-use AMQPQueue;
+use Humus\Amqp\Driver\AmqpEnvelope;
+use Humus\Amqp\Driver\AmqpExchange;
+use Humus\Amqp\Driver\AmqpQueue;
 use Assert\Assertion;
 
 /**
@@ -30,7 +32,7 @@ use Assert\Assertion;
 final class JsonRpcServer extends AbstractConsumer
 {
     /**
-     * @var AMQPExchange
+     * @var AmqpExchange
      */
     private $exchange;
 
@@ -47,14 +49,21 @@ final class JsonRpcServer extends AbstractConsumer
     /**
      * Constructor
      *
-     * @param AMQPQueue $queue
+     * @param AmqpQueue $queue
+     * @param AmqpExchange $exchange
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
      * @param string|null $appId
      * @param bool $returnTrace
      */
-    public function __construct(AMQPQueue $queue, $idleTimeout, $consumerTag = null, $appId = null, $returnTrace = false)
-    {
+    public function __construct(
+        AmqpQueue $queue,
+        AmqpExchange $exchange,
+        $idleTimeout,
+        $consumerTag = null,
+        $appId = null,
+        $returnTrace = false
+    ) {
         Assertion::float($idleTimeout);
         Assertion::nullOrString($consumerTag);
         Assertion::nullOrString($appId);
@@ -76,26 +85,27 @@ final class JsonRpcServer extends AbstractConsumer
 
         $this->idleTimeout = (float) $idleTimeout;
         $this->queue = $queue;
+        $this->exchange = $exchange;
         $this->consumerTag = $consumerTag;
         $this->appId = $appId;
         $this->returnTrace = $returnTrace;
     }
 
     /**
-     * @param AMQPEnvelope $message
-     * @param AMQPQueue $queue
+     * @param AmqpEnvelope $envelope
+     * @param AmqpQueue $queue
      * @return bool|null
      */
-    public function handleDelivery(AMQPEnvelope $message, AMQPQueue $queue)
+    public function handleDelivery(AmqpEnvelope $envelope, AmqpQueue $queue)
     {
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
-        $this->lastDeliveryTag = $message->getDeliveryTag();
+        $this->lastDeliveryTag = $envelope->getDeliveryTag();
         $this->timestampLastMessage = microtime(1);
         $this->ack();
 
         try {
-            $result = parent::handleDelivery($message, $queue);
+            $result = parent::handleDelivery($envelope, $queue);
 
             $response = ['success' => true, 'result' => $result];
         } catch (\Exception $e) {
@@ -104,7 +114,7 @@ final class JsonRpcServer extends AbstractConsumer
                 $response['trace'] = $e->getTraceAsString();
             }
         }
-        $this->sendReply($response, $message->getReplyTo(), $message->getCorrelationId());
+        $this->sendReply($response, $envelope->getReplyTo(), $envelope->getCorrelationId());
     }
 
     /**
@@ -127,35 +137,18 @@ final class JsonRpcServer extends AbstractConsumer
             $attributes['app_id'] = $this->appId;
         }
 
-        $this->getExchange()->publish(json_encode($response), $replyTo, AMQP_NOPARAM, $attributes);
+        $this->exchange->publish(json_encode($response), $replyTo, Constants::AMQP_NOPARAM, $attributes);
     }
 
     /**
      * Handle process flag
      *
-     * @param AMQPEnvelope $message
+     * @param AmqpEnvelope $envelope
      * @param $flag
      * @return void
      */
-    protected function handleProcessFlag(AMQPEnvelope $message, $flag)
+    protected function handleProcessFlag(AmqpEnvelope $envelope, $flag)
     {
         // do nothing, message was already acknowledged
-    }
-
-    /**
-     * @return AMQPExchange
-     */
-    protected function getExchange()
-    {
-        if (null !== $this->exchange) {
-            return $this->exchange;
-        }
-
-        $channel = $this->queue->getChannel();
-
-        $this->exchange = new AMQPExchange($channel);
-        $this->exchange->setType(AMQP_EX_TYPE_DIRECT);
-
-        return $this->exchange;
     }
 }

@@ -1,27 +1,29 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/**
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  This software consists of voluntary contributions made by many individuals
+ *  and is licensed under the MIT license.
  */
 
 namespace Humus\Amqp;
 
-use AMQPConnectionException;
-use AMQPEnvelope;
-use AMQPQueue;
 use Assert\Assertion;
+use Humus\Amqp\Driver\AmqpEnvelope;
+use Humus\Amqp\Driver\AmqpQueue;
+use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Class AbstractConsumer
@@ -30,7 +32,7 @@ use Assert\Assertion;
 abstract class AbstractConsumer implements Consumer
 {
     /**
-     * @var AMQPQueue
+     * @var AmqpQueue
      */
     protected $queue;
 
@@ -120,32 +122,33 @@ abstract class AbstractConsumer implements Consumer
      * Start consumer
      *
      * @param int $msgAmount
-     * @throws AMQPConnectionException
+     * @throws AmqpConnectionException
      */
     public function consume($msgAmount = 0)
     {
+        echo __LINE__ . PHP_EOL;
         Assertion::min($msgAmount, 0);
-
+        echo __LINE__ . PHP_EOL;
         $this->target = $msgAmount;
-
+        echo __LINE__ . PHP_EOL;
         if (!$this->timestampLastAck) {
             $this->timestampLastAck = microtime(true);
         }
-
-        $callback = function (AMQPEnvelope $message) {
-            if (__NAMESPACE__ === $message->getAppId()
-                && 'shutdown' === $message->getType()
+        echo __LINE__ . PHP_EOL;
+        $callback = function (AmqpEnvelope $envelope) {
+            if (__NAMESPACE__ === $envelope->getAppId()
+                && 'shutdown' === $envelope->getType()
             ) {
                 $this->shutdown();
 
                 return self::MSG_ACK;
             }
 
-            if (__NAMESPACE__ === $message->getAppId()
-                && 'reconfigure' === $message->getType()
+            if (__NAMESPACE__ === $envelope->getAppId()
+                && 'reconfigure' === $envelope->getType()
             ) {
                 try {
-                    list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($message->getBody());
+                    list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
 
                     Assertion::float($idleTimeout);
                     Assertion::min($blockSize, 1);
@@ -165,12 +168,12 @@ abstract class AbstractConsumer implements Consumer
             }
 
             try {
-                $processFlag = $this->handleDelivery($message, $this->queue);
+                $processFlag = $this->handleDelivery($envelope, $this->queue);
             } catch (\Exception $e) {
                 $this->handleException($e);
                 $processFlag = false;
             }
-            $this->handleProcessFlag($message, $processFlag);
+            $this->handleProcessFlag($envelope, $processFlag);
 
             $now = microtime(true);
 
@@ -190,30 +193,33 @@ abstract class AbstractConsumer implements Consumer
                 $this->queue->cancel($this->consumerTag);
             }
         };
-
+        echo __LINE__ . PHP_EOL;
         do {
             try {
-                $this->queue->consume($callback, AMQP_NOPARAM, $this->consumerTag);
-            } catch (AMQPConnectionException $e) {
+                echo __LINE__ . PHP_EOL;
+                $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
+            } catch (AmqpConnectionException $e) {
                 if (!$this->queue->getConnection()->reconnect()) {
                     throw $e;
                 }
                 $this->ackOrNackBlock();
                 gc_collect_cycles();
             }
+            echo __LINE__ . PHP_EOL;
         } while ($this->keepAlive);
+        echo __LINE__ . PHP_EOL;
     }
 
     /**
-     * @param AMQPEnvelope $message
-     * @param AMQPQueue $queue
+     * @param AmqpEnvelope $envelope
+     * @param AmqpQueue $queue
      * @return bool|null
      */
-    protected function handleDelivery(AMQPEnvelope $message, AMQPQueue $queue)
+    protected function handleDelivery(AmqpEnvelope $envelope, AmqpQueue $queue)
     {
         $callback = $this->deliveryCallback;
 
-        return $callback($message, $queue, $this);
+        return $callback($envelope, $queue);
     }
 
     /**
@@ -268,28 +274,28 @@ abstract class AbstractConsumer implements Consumer
     /**
      * Handle process flag
      *
-     * @param AMQPEnvelope $message
+     * @param AmqpEnvelope $envelope
      * @param $flag
      * @return void
      */
-    protected function handleProcessFlag(AMQPEnvelope $message, $flag)
+    protected function handleProcessFlag(AmqpEnvelope $envelope, $flag)
     {
         if ($flag === self::MSG_REJECT || false === $flag) {
             $this->ackOrNackBlock();
-            $this->queue->reject($message->getDeliveryTag(), AMQP_NOPARAM);
+            $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
         } elseif ($flag === self::MSG_REJECT_REQUEUE) {
             $this->ackOrNackBlock();
-            $this->queue->reject($message->getDeliveryTag(), AMQP_REQUEUE);
+            $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
         } elseif ($flag === self::MSG_ACK || true === $flag) {
             $this->countMessagesConsumed++;
             $this->countMessagesUnacked++;
-            $this->lastDeliveryTag = $message->getDeliveryTag();
+            $this->lastDeliveryTag = $envelope->getDeliveryTag();
             $this->timestampLastMessage = microtime(true);
             $this->ack();
         } else { // $flag === self::MSG_DEFER || null === $flag
             $this->countMessagesConsumed++;
             $this->countMessagesUnacked++;
-            $this->lastDeliveryTag = $message->getDeliveryTag();
+            $this->lastDeliveryTag = $envelope->getDeliveryTag();
             $this->timestampLastMessage = microtime(true);
         }
     }
@@ -303,7 +309,7 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function ack()
     {
-        $this->queue->ack($this->lastDeliveryTag, AMQP_MULTIPLE);
+        $this->queue->ack($this->lastDeliveryTag, Constants::AMQP_MULTIPLE);
         $this->lastDeliveryTag = null;
         $this->timestampLastAck = microtime(true);
         $this->countMessagesUnacked = 0;
@@ -317,9 +323,9 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function nackAll($requeue = false)
     {
-        $flags = AMQP_MULTIPLE;
+        $flags = Constants::AMQP_MULTIPLE;
         if ($requeue) {
-            $flags |= AMQP_REQUEUE;
+            $flags |= Constants::AMQP_REQUEUE;
         }
         $this->queue->nack($this->lastDeliveryTag, $flags);
     }

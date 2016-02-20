@@ -21,9 +21,26 @@
 namespace Humus\Amqp\Exception;
 
 /**
- * Class InvalidArgumentException
+ * Interface AmqpException
  * @package Humus\Amqp\Exception
  */
-class InvalidArgumentException extends \InvalidArgumentException implements Exception
+class AmqpException extends \Exception
 {
+    /**
+     * @param \AMQPConnectionException $e
+     * @return AmqpConnectionException
+     */
+    public static function fromAmqpExtension(\AMQPConnectionException $e)
+    {
+        return new self($e->getMessage(), $e->getCode(), $e);
+    }
+
+    /**
+     * @param \Exception $e
+     * @return AmqpConnectionException
+     */
+    public static function fromPhpAmqpLib(\Exception $e)
+    {
+        return new self($e->getMessage(), $e->getCode(), $e);
+    }
 }
