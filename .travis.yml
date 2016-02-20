@@ -10,11 +10,12 @@ services:
 
 before_script:
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - phpenv config-rm xdebug.ini
   - composer self-update
   - composer install --prefer-source
 
 script:
-  - php ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
+  - php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
 
 after_script:
