@@ -90,20 +90,20 @@ final class JsonRpcServer extends AbstractConsumer
     }
 
     /**
-     * @param AmqpEnvelope $message
+     * @param AmqpEnvelope $envelope
      * @param AmqpQueue $queue
      * @return bool|null
      */
-    public function handleDelivery(AmqpEnvelope $message, AmqpQueue $queue)
+    public function handleDelivery(AmqpEnvelope $envelope, AmqpQueue $queue)
     {
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
-        $this->lastDeliveryTag = $message->getDeliveryTag();
+        $this->lastDeliveryTag = $envelope->getDeliveryTag();
         $this->timestampLastMessage = microtime(1);
         $this->ack();
 
         try {
-            $result = parent::handleDelivery($message, $queue);
+            $result = parent::handleDelivery($envelope, $queue);
 
             $response = ['success' => true, 'result' => $result];
         } catch (\Exception $e) {
@@ -112,7 +112,7 @@ final class JsonRpcServer extends AbstractConsumer
                 $response['trace'] = $e->getTraceAsString();
             }
         }
-        $this->sendReply($response, $message->getReplyTo(), $message->getCorrelationId());
+        $this->sendReply($response, $envelope->getReplyTo(), $envelope->getCorrelationId());
     }
 
     /**
@@ -141,11 +141,11 @@ final class JsonRpcServer extends AbstractConsumer
     /**
      * Handle process flag
      *
-     * @param AmqpEnvelope $message
+     * @param AmqpEnvelope $envelope
      * @param $flag
      * @return void
      */
-    protected function handleProcessFlag(AmqpEnvelope $message, $flag)
+    protected function handleProcessFlag(AmqpEnvelope $envelope, $flag)
     {
         // do nothing, message was already acknowledged
     }
