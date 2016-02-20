@@ -74,6 +74,9 @@ final class CallbackConsumer extends AbstractConsumer
 
         $this->queue = $queue;
         $this->idleTimeout = (float) $idleTimeout;
+        $this->deliveryCallback = $deliveryCallback;
+        $this->flushCallback = $flushCallback;
+        $this->errorCallback = $errorCallback;
         $this->consumerTag = $consumerTag;
         $this->blockSize = $blockSize;
     }
