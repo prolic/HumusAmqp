@@ -13,6 +13,8 @@ before_script:
   - phpenv config-rm xdebug.ini
   - composer self-update
   - composer install --prefer-source
+  - rabbitmqctl add_vhost humus-amqp-test
+  - rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
 
 script:
   - php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
