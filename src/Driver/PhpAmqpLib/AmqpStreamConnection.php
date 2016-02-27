@@ -38,11 +38,18 @@ class AmqpStreamConnection extends AbstractAmqpConnection
         Assertion::keyExists($credentials, 'port');
         Assertion::keyExists($credentials, 'login');
         Assertion::keyExists($credentials, 'password');
-        Assertion::keyExists($credentials, 'login');
 
-        $readWriteTimeout = isset($credentials['read_timeout']) ? : isset($credentials['write_timeout']) ? : 3;
-        $connectTimeout = isset($credentials['connect_timeout']) ? : 3;
-        $vhost = isset($credentials['vhost']) ? : '/';
+        $readWriteTimeout = isset($credentials['read_timeout'])
+            ? $credentials['read_timeout']
+            : isset($credentials['write_timeout'])
+                ? $credentials['write_timeout']
+                : 3;
+        $connectTimeout = isset($credentials['connect_timeout'])
+            ? $credentials['connect_timeout']
+            : 3;
+        $vhost = isset($credentials['vhost'])
+            ? $credentials['vhost']
+            : '/';
 
         try {
             $this->connection = new \PhpAmqpLib\Connection\AMQPStreamConnection(

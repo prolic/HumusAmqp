@@ -21,12 +21,12 @@
         "phpunit/phpunit": "~4.8",
         "fabpot/php-cs-fixer": "1.7.*",
         "satooshi/php-coveralls": "^1.0",
-        "videlalvaro/php-amqplib": "^2.6"
+        "php-amqplib/php-amqplib": "^2.6"
     },
     "suggest": {
         "ext-pcntl": "For process control management",
         "ext-amqp": "For usage together with php amqp extension",
-        "videlalvaro/php-amqplib": "For usage together with php-amqplib"
+        "php-amqplib/php-amqplib": "For usage together with php-amqplib"
     },
     "autoload": {
         "psr-4": {

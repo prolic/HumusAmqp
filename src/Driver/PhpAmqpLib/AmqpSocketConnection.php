@@ -38,7 +38,6 @@ class AmqpSocketConnection extends AbstractAmqpConnection
         Assertion::keyExists($credentials, 'port');
         Assertion::keyExists($credentials, 'login');
         Assertion::keyExists($credentials, 'password');
-        Assertion::keyExists($credentials, 'login');
 
         $connectTimeout = isset($credentials['connect_timeout']) ? : 3;
         $vhost = isset($credentials['vhost']) ? : '/';

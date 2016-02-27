@@ -98,4 +98,10 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $this->assertSame('foo', $msg1->getBody());
         $this->assertSame('bar', $msg2->getBody());
     }
+
+    protected function tearDown()
+    {
+        $this->queue->delete();
+        $this->exchange->delete();
+    }
 }
