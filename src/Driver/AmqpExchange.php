@@ -38,7 +38,7 @@ interface AmqpExchange
      *
      * @return string The configured name as a string.
      */
-    public function getName();
+    public function getName() : string;
 
     /**
      * Set the name of the exchange.
@@ -47,14 +47,14 @@ interface AmqpExchange
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function setName($exchangeName);
+    public function setName(string $exchangeName) : bool;
 
     /**
      * Get the configured type.
      *
      * @return string The configured type as a string.
      */
-    public function getType();
+    public function getType() : string;
 
     /**
      * Set the type of the exchange.
@@ -62,7 +62,7 @@ interface AmqpExchange
      * @param string $exchangeType The type of exchange as a string.
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function setType($exchangeType);
+    public function setType(string $exchangeType) : bool;
 
     /**
      * Get all the flags currently set on the given exchange.
@@ -70,7 +70,7 @@ interface AmqpExchange
      * @return int An integer bitmask of all the flags currently set on this
      *             exchange object.
      */
-    public function getFlags();
+    public function getFlags() : int;
 
     /**
      * Set the flags on an exchange.
@@ -82,7 +82,7 @@ interface AmqpExchange
      *
      * @return boolean True on success or false on failure.
      */
-    public function setFlags($flags);
+    public function setFlags(int $flags) : bool;
 
     /**
      * Get the argument associated with the given key.
@@ -93,14 +93,14 @@ interface AmqpExchange
      *                                with the given key, or FALSE if the key
      *                                is not set.
      */
-    public function getArgument($key);
+    public function getArgument(string $key);
 
     /**
      * Get all arguments set on the given exchange.
      *
      * @return array An array containing all of the set key/value pairs.
      */
-    public function getArguments();
+    public function getArguments() : array;
 
     /**
      * Set the value for the given key.
@@ -110,7 +110,7 @@ interface AmqpExchange
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function setArgument($key, $value);
+    public function setArgument(string $key, $value) : bool;
 
     /**
      * Set all arguments on the exchange.
@@ -119,7 +119,7 @@ interface AmqpExchange
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function setArguments(array $arguments);
+    public function setArguments(array $arguments) : bool;
 
     /**
      * Declare a new exchange on the broker.
@@ -130,7 +130,7 @@ interface AmqpExchange
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function declareExchange();
+    public function declareExchange() : bool;
 
     /**
      * Delete the exchange from the broker.
@@ -147,7 +147,7 @@ interface AmqpExchange
      *
      * @return boolean true on success or false on failure.
      */
-    public function delete($exchangeName = null, $flags = Constants::AMQP_NOPARAM);
+    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM) : bool;
 
     /**
      * Bind to another exchange.
@@ -163,7 +163,7 @@ interface AmqpExchange
      * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return boolean true on success or false on failure.
      */
-    public function bind($exchangeName, $routingKey = '', array $arguments = []);
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool;
 
     /**
      * Remove binding to another exchange.
@@ -179,7 +179,7 @@ interface AmqpExchange
      * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return boolean true on success or false on failure.
      */
-    public function unbind($exchangeName, $routingKey = '', array $arguments = []);
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool;
 
     /**
      * Publish a message to an exchange.
@@ -202,19 +202,23 @@ interface AmqpExchange
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function publish($message, $routingKey = null, $flags = Constants::AMQP_NOPARAM, array $attributes = []);
+    public function publish(
+        string $message, 
+        string $routingKey = null, 
+        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
+    ) : bool;
 
     /**
      * Get the AmqpChannel object in use
      *
      * @return AmqpChannel
      */
-    public function getChannel();
+    public function getChannel() : AmqpChannel;
 
     /**
      * Get the AmqpConnection object in use
      *
-     * @return AMQPConnection
+     * @return AmqpConnection
      */
-    public function getConnection();
+    public function getConnection() : AmqpConnection;
 }

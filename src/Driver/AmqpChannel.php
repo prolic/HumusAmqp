@@ -36,14 +36,14 @@ interface AmqpChannel
      *
      * @return bool Indicates whether the channel is connected.
      */
-    public function isConnected();
+    public function isConnected() : bool;
 
     /**
      * Return internal channel ID
      *
      * @return integer
      */
-    public function getChannelId();
+    public function getChannelId() : int;
 
     /**
      * Set the window size to prefetch from the broker.
@@ -61,14 +61,14 @@ interface AmqpChannel
      *
      * @return bool TRUE on success or FALSE on failure.
      */
-    public function setPrefetchSize($size);
+    public function setPrefetchSize(int $size) : bool;
 
     /**
      * Get the window size to prefetch from the broker.
      *
      * @return integer
      */
-    public function getPrefetchSize();
+    public function getPrefetchSize() : int;
 
     /**
      * Set the number of messages to prefetch from the broker.
@@ -84,14 +84,14 @@ interface AmqpChannel
      *
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function setPrefetchCount($count);
+    public function setPrefetchCount(int $count) : bool;
 
     /**
      * Get the number of messages to prefetch from the broker.
      *
      * @return integer
      */
-    public function getPrefetchCount();
+    public function getPrefetchCount() : int;
 
     /**
      * Set the Quality Of Service settings for the given channel.
@@ -115,7 +115,7 @@ interface AmqpChannel
      *
      * @return bool TRUE on success or FALSE on failure.
      */
-    public function qos($size, $count);
+    public function qos(int $size, int $count) : bool;
 
     /**
      * Start a transaction.
@@ -127,7 +127,7 @@ interface AmqpChannel
      *
      * @return bool TRUE on success or FALSE on failure.
      */
-    public function startTransaction();
+    public function startTransaction() : bool;
 
     /**
      * Commit a pending transaction.
@@ -138,7 +138,7 @@ interface AmqpChannel
      *
      * @return bool TRUE on success or FALSE on failure.
      */
-    public function commitTransaction();
+    public function commitTransaction() : bool;
 
     /**
      * Rollback a transaction.
@@ -152,21 +152,22 @@ interface AmqpChannel
      *
      * @return bool TRUE on success or FALSE on failure.
      */
-    public function rollbackTransaction();
+    public function rollbackTransaction() : bool;
 
     /**
      * Get the AmqpConnection object in use
      *
      * @return AmqpConnection
      */
-    public function getConnection();
+    public function getConnection() : AmqpConnection;
 
     /**
      * Redeliver unacknowledged messages.
      *
      * @param bool $requeue
+     * @return void
      */
-    public function basicRecover($requeue = true);
+    public function basicRecover(bool $requeue = true);
 
     /**
      * Puts the channel into confirm mode
