@@ -37,7 +37,7 @@ interface AmqpQueue
      *
      * @return string The configured name as a string.
      */
-    public function getName();
+    public function getName() : string;
 
     /**
      * Set the queue name.
@@ -46,7 +46,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function setName($queueName);
+    public function setName(string $queueName) : bool;
 
     /**
      * Get all the flags currently set on the given queue.
@@ -54,7 +54,7 @@ interface AmqpQueue
      * @return int An integer bitmask of all the flags currently set on this
      *             exchange object.
      */
-    public function getFlags();
+    public function getFlags() : int;
 
     /**
      * Set the flags on the queue.
@@ -65,7 +65,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function setFlags($flags);
+    public function setFlags(int $flags) : bool;
 
     /**
      * Get the argument associated with the given key.
@@ -76,14 +76,14 @@ interface AmqpQueue
      *                                with the given key, or false if the key
      *                                is not set.
      */
-    public function getArgument($key);
+    public function getArgument(string $key);
 
     /**
      * Get all set arguments as an array of key/value pairs.
      *
      * @return array An array containing all of the set key/value pairs.
      */
-    public function getArguments();
+    public function getArguments() : array;
 
     /**
      * Set a queue argument.
@@ -93,7 +93,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function setArgument($key, $value);
+    public function setArgument(string $key, $value) : bool;
 
     /**
      * Set all arguments on the given queue.
@@ -104,7 +104,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function setArguments(array $arguments);
+    public function setArguments(array $arguments) : bool;
 
     /**
      * Declare a new queue on the broker.
@@ -114,7 +114,7 @@ interface AmqpQueue
      *
      * @return integer the message count.
      */
-    public function declareQueue();
+    public function declareQueue() : int;
 
     /**
      * Bind the given queue to a routing key on an exchange.
@@ -128,7 +128,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function bind($exchangeName, $routingKey = null, array $arguments = []);
+    public function bind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool;
 
     /**
      * Retrieve the next message from the queue.
@@ -152,7 +152,7 @@ interface AmqpQueue
      *
      * @return AmqpEnvelope|boolean
      */
-    public function get($flags = Constants::AMQP_NOPARAM);
+    public function get(int $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Consume messages from a queue.
@@ -184,7 +184,7 @@ interface AmqpQueue
      *
      * @return void
      */
-    public function consume(callable $callback = null, $flags = Constants::AMQP_NOPARAM, $consumerTag = null);
+    public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = null);
 
     /**
      * Acknowledge the receipt of a message.
@@ -203,7 +203,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function ack($deliveryTag, $flags = Constants::AMQP_NOPARAM);
+    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool;
 
     /**
      * Mark a message as explicitly not acknowledged.
@@ -228,7 +228,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function nack($deliveryTag, $flags = Constants::AMQP_NOPARAM);
+    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool;
 
     /**
      * Mark one message as explicitly not acknowledged.
@@ -247,7 +247,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function reject($deliveryTag, $flags = Constants::AMQP_NOPARAM);
+    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool;
 
     /**
      * Purge the contents of a queue.
@@ -257,7 +257,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function purge();
+    public function purge() : bool;
 
     /**
      * Cancel a queue that is already bound to an exchange and routing key.
@@ -271,7 +271,7 @@ interface AmqpQueue
      *
      * @return bool;
      */
-    public function cancel($consumerTag = '');
+    public function cancel(string $consumerTag = '') : bool;
 
     /**
      * Remove a routing key binding on an exchange from the given queue.
@@ -287,7 +287,7 @@ interface AmqpQueue
      *
      * @return boolean
      */
-    public function unbind($exchangeName, $routingKey = null, array $arguments = []);
+    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool;
 
     /**
      * Delete a queue from the broker.
@@ -304,19 +304,19 @@ interface AmqpQueue
      *
      * @return integer The number of deleted messages.
      */
-    public function delete($flags = Constants::AMQP_NOPARAM);
+    public function delete(int $flags = Constants::AMQP_NOPARAM) : int;
 
     /**
      * Get the AmqpChannel object in use
      *
      * @return AmqpChannel
      */
-    public function getChannel();
+    public function getChannel() : AmqpChannel;
 
     /**
      * Get the AmqpConnection object in use
      *
      * @return AmqpConnection
      */
-    public function getConnection();
+    public function getConnection() : AmqpConnection;
 }

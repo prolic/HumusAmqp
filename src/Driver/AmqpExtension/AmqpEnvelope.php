@@ -19,6 +19,7 @@
  */
 
 namespace Humus\Amqp\Driver\AmqpExtension;
+use Humus\Amqp\Exception\HeaderNotFound;
 
 /**
  * Class AmqpEnvelope
@@ -189,6 +190,12 @@ class AmqpEnvelope implements \Humus\Amqp\Driver\AmqpEnvelope
      */
     public function getHeader($headerKey)
     {
-        return $this->envelope->getHeader($headerKey);
+        $header = $this->envelope->getHeader($headerKey);
+        
+        if (false === $header) {
+            throw new HeaderNotFound(sprintf('Header with key %s not found', $headerKey));
+        }
+        
+        return $header;
     }
 }

@@ -19,6 +19,7 @@
  */
 
 namespace Humus\Amqp\Driver;
+use Humus\Amqp\Exception\HeaderNotFound;
 
 /**
  * Represents a AMQP envelope
@@ -33,35 +34,35 @@ interface AmqpEnvelope
      *
      * @return string The contents of the message body.
      */
-    public function getBody();
+    public function getBody() : string;
 
     /**
      * Get the routing key of the message.
      *
      * @return string The message routing key.
      */
-    public function getRoutingKey();
+    public function getRoutingKey() : string;
 
     /**
      * Get the delivery tag of the message.
      *
      * @return string The delivery tag of the message.
      */
-    public function getDeliveryTag();
+    public function getDeliveryTag() : string;
 
     /**
      * Get the delivery mode of the message.
      *
      * @return integer The delivery mode of the message.
      */
-    public function getDeliveryMode();
+    public function getDeliveryMode() : int;
 
     /**
      * Get the exchange name on which the message was published.
      *
      * @return string The exchange name on which the message was published.
      */
-    public function getExchangeName();
+    public function getExchangeName() : string;
 
     /**
      * Whether this is a redelivery of the message.
@@ -73,99 +74,99 @@ interface AmqpEnvelope
      *
      * @return bool TRUE if this is a redelivery, FALSE otherwise.
      */
-    public function isRedelivery();
+    public function isRedelivery() : bool;
 
     /**
      * Get the message content type.
      *
      * @return string The content type of the message.
      */
-    public function getContentType();
+    public function getContentType() : string;
 
     /**
      * Get the content encoding of the message.
      *
      * @return string The content encoding of the message.
      */
-    public function getContentEncoding();
+    public function getContentEncoding() : string;
 
     /**
      * Get the message type.
      *
      * @return string The message type.
      */
-    public function getType();
+    public function getType() : string;
 
     /**
      * Get the timestamp of the message.
      *
      * @return int The message timestamp.
      */
-    public function getTimeStamp();
+    public function getTimeStamp() : int;
 
     /**
      * Get the priority of the message.
      *
      * @return int The message priority.
      */
-    public function getPriority();
+    public function getPriority() : int;
 
     /**
      * Get the expiration of the message.
      *
      * @return string The message expiration.
      */
-    public function getExpiration();
+    public function getExpiration() : string;
 
     /**
      * Get the message user id.
      *
      * @return string The message user id.
      */
-    public function getUserId();
+    public function getUserId() : string;
 
     /**
      * Get the application id of the message.
      *
      * @return string The application id of the message.
      */
-    public function getAppId();
+    public function getAppId() : string;
 
     /**
      * Get the message id of the message.
      *
      * @return string The message id
      */
-    public function getMessageId();
+    public function getMessageId() : string;
 
     /**
      * Get the reply-to address of the message.
      *
      * @return string The contents of the reply to field.
      */
-    public function getReplyTo();
+    public function getReplyTo() : string;
 
     /**
      * Get the message correlation id.
      *
      * @return string The correlation id of the message.
      */
-    public function getCorrelationId();
+    public function getCorrelationId() : string;
 
     /**
      * Get the headers of the message.
      *
      * @return array An array of key value pairs associated with the message.
      */
-    public function getHeaders();
+    public function getHeaders() : array;
 
     /**
      * Get a specific message header.
      *
      * @param string $headerKey Name of the header to get the value from.
      *
-     * @return string|boolean The contents of the specified header or FALSE
-     *                        if not set.
+     * @return string The contents of the specified header
+     * @throws HeaderNotFound if header not set
      */
-    public function getHeader($headerKey);
+    public function getHeader($headerKey) : string;
 }
