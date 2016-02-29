@@ -61,7 +61,7 @@ interface AmqpConnection
      *
      * @return boolean True if connected, false otherwise.
      */
-    public function isConnected();
+    public function isConnected() : bool;
 
     /**
      * Establish a transient connection with the AMQP broker.
@@ -71,7 +71,7 @@ interface AmqpConnection
      * @throws AmqpConnectionException
      * @return boolean TRUE on success or throw an exception on failure.
      */
-    public function connect();
+    public function connect() : bool;
 
     /**
      * Establish a persistent connection with the AMQP broker.
@@ -82,7 +82,7 @@ interface AmqpConnection
      * @throws AmqpConnectionException
      * @return boolean TRUE on success or throws an exception on failure.
      */
-    public function pconnect();
+    public function pconnect() : bool;
 
     /**
      * Closes a persistent connection with the AMQP broker.
@@ -94,7 +94,7 @@ interface AmqpConnection
      *                 false if no persistent connection with this host,
      *                 port, vhost and login could be found,
      */
-    public function pdisconnect();
+    public function pdisconnect() : bool;
 
     /**
      * Closes the transient connection with the AMQP broker.
@@ -103,7 +103,7 @@ interface AmqpConnection
      *
      * @return boolean true if connection was successfully closed, false otherwise.
      */
-    public function disconnect();
+    public function disconnect() : bool;
 
     /**
      * Close any open transient connections and initiate a new one with the AMQP broker.
@@ -111,7 +111,7 @@ interface AmqpConnection
      * @throws AMQPConnectionException
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function reconnect();
+    public function reconnect() : bool;
 
     /**
      * Close any open persistent connections and initiate a new one with the AMQP broker.
@@ -119,5 +119,5 @@ interface AmqpConnection
      * @throws AMQPConnectionException
      * @return boolean TRUE on success or FALSE on failure.
      */
-    public function preconnect();
+    public function preconnect() : bool;
 }

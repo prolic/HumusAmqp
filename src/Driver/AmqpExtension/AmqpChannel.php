@@ -197,6 +197,6 @@ class AmqpChannel implements \Humus\Amqp\Driver\AmqpChannel
      */
     public function confirmSelect()
     {
-        throw new AmqpChannelException('Not implemented');
+        $this->channel->confirmSelect();
     }
 }
