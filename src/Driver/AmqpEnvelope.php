@@ -18,7 +18,10 @@
  *  and is licensed under the MIT license.
  */
 
+declare(strict_types=1);
+
 namespace Humus\Amqp\Driver;
+
 use Humus\Amqp\Exception\HeaderNotFound;
 
 /**
