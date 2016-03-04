@@ -18,7 +18,7 @@
  *  and is licensed under the MIT license.
  */
 
-declare(strict_types=1);
+declare (strict_types=1);
 
 namespace Humus\Amqp\Driver;
 
@@ -58,9 +58,7 @@ interface AmqpChannel
      * flag set, this setting will be ignored.
      *
      * @param integer $size The window size, in octets, to prefetch.
-     *
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
      * @return bool TRUE on success or FALSE on failure.
      */
     public function setPrefetchSize(int $size) : bool;
@@ -81,10 +79,8 @@ interface AmqpChannel
      * prefetch window size setting will be ignored.
      *
      * @param integer $count The number of messages to prefetch.
-     *
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function setPrefetchCount(int $count) : bool;
 
@@ -112,9 +108,7 @@ interface AmqpChannel
      *
      * @param integer $size  The window size, in octets, to prefetch.
      * @param integer $count The number of messages to prefetch.
-     *
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
      * @return bool TRUE on success or FALSE on failure.
      */
     public function qos(int $size, int $count) : bool;
@@ -126,7 +120,6 @@ interface AmqpChannel
      * AmqpChannel::commitTransaction() or AmqpChannel::rollbackTransaction().
      *
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
      * @return bool TRUE on success or FALSE on failure.
      */
     public function startTransaction() : bool;
@@ -137,7 +130,6 @@ interface AmqpChannel
      * @throws AmqpChannelException    If no transaction was started prior to
      *                                 calling this method.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
      * @return bool TRUE on success or FALSE on failure.
      */
     public function commitTransaction() : bool;
@@ -151,7 +143,6 @@ interface AmqpChannel
      * @throws AmqpChannelException    If no transaction was started prior to
      *                                 calling this method.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
      * @return bool TRUE on success or FALSE on failure.
      */
     public function rollbackTransaction() : bool;

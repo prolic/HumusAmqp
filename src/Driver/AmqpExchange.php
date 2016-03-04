@@ -18,7 +18,7 @@
  *  and is licensed under the MIT license.
  */
 
-declare(strict_types=1);
+declare (strict_types=1);
 
 namespace Humus\Amqp\Driver;
 
@@ -47,7 +47,7 @@ interface AmqpExchange
      *
      * @param string $exchangeName The name of the exchange to set as string.
      *
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function setName(string $exchangeName) : bool;
 
@@ -62,7 +62,7 @@ interface AmqpExchange
      * Set the type of the exchange.
      *
      * @param string $exchangeType The type of exchange as a string.
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function setType(string $exchangeType) : bool;
 
@@ -81,8 +81,7 @@ interface AmqpExchange
      *                       considers the following flags:
      *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE
      *                       and Constants::AMQP_DURABLE (needs librabbitmq version >= 0.5.3 when using with ext-amqp)
-     *
-     * @return boolean True on success or false on failure.
+     * @return bool True on success or false on failure.
      */
     public function setFlags(int $flags) : bool;
 
@@ -90,8 +89,7 @@ interface AmqpExchange
      * Get the argument associated with the given key.
      *
      * @param string $key The key to look up.
-     *
-     * @return string|integer|boolean The string or integer value associated
+     * @return string|integer|bool The string or integer value associated
      *                                with the given key, or FALSE if the key
      *                                is not set.
      */
@@ -109,8 +107,7 @@ interface AmqpExchange
      *
      * @param string         $key   Name of the argument to set.
      * @param string|integer $value Value of the argument to set.
-     *
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function setArgument(string $key, $value) : bool;
 
@@ -118,8 +115,7 @@ interface AmqpExchange
      * Set all arguments on the exchange.
      *
      * @param array $arguments An array of key/value pairs of arguments.
-     *
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function setArguments(array $arguments) : bool;
 
@@ -129,8 +125,7 @@ interface AmqpExchange
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function declareExchange() : bool;
 
@@ -142,12 +137,10 @@ interface AmqpExchange
      *                              to indicate the exchange should not be
      *                              deleted until no clients are connected to
      *                              it.
-     *
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
-     * @return boolean true on success or false on failure.
+     * @return bool true on success or false on failure.
      */
     public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM) : bool;
 
@@ -159,11 +152,10 @@ interface AmqpExchange
      * @param string $exchangeName Name of the exchange to bind.
      * @param string $routingKey   The routing key to use for binding.
      * @param array  $arguments     Additional binding arguments.
-     *
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return boolean true on success or false on failure.
+     * @return bool true on success or false on failure.
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool;
 
@@ -175,11 +167,10 @@ interface AmqpExchange
      * @param string $exchangeName Name of the exchange to bind.
      * @param string $routingKey   The routing key to use for binding.
      * @param array  $arguments     Additional binding arguments.
-     *
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return boolean true on success or false on failure.
+     * @return bool true on success or false on failure.
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool;
 
@@ -197,16 +188,14 @@ interface AmqpExchange
      *                             message_id, user_id, app_id, delivery_mode,
      *                             priority, timestamp, expiration, type
      *                             or reply_to, headers.
-     *
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function publish(
-        string $message, 
-        string $routingKey = null, 
+        string $message,
+        string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) : bool;
 

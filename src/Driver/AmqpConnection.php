@@ -18,7 +18,7 @@
  *  and is licensed under the MIT license.
  */
 
-declare(strict_types=1);
+declare (strict_types=1);
 
 namespace  Humus\Amqp\Driver;
 
@@ -61,7 +61,7 @@ interface AmqpConnection
      *
      * It does so by checking the return status of the last connect-command.
      *
-     * @return boolean True if connected, false otherwise.
+     * @return bool True if connected, false otherwise.
      */
     public function isConnected() : bool;
 
@@ -71,7 +71,7 @@ interface AmqpConnection
      * This method will initiate a connection with the AMQP broker.
      *
      * @throws AmqpConnectionException
-     * @return boolean TRUE on success or throw an exception on failure.
+     * @return bool TRUE on success or throw an exception on failure.
      */
     public function connect() : bool;
 
@@ -82,7 +82,7 @@ interface AmqpConnection
      * or reuse an existing one if present.
      *
      * @throws AmqpConnectionException
-     * @return boolean TRUE on success or throws an exception on failure.
+     * @return bool TRUE on success or throws an exception on failure.
      */
     public function pconnect() : bool;
 
@@ -92,7 +92,7 @@ interface AmqpConnection
      * This method will close an open persistent connection with the AMQP
      * broker.
      *
-     * @return boolean true if connection was found and closed,
+     * @return bool true if connection was found and closed,
      *                 false if no persistent connection with this host,
      *                 port, vhost and login could be found,
      */
@@ -103,7 +103,7 @@ interface AmqpConnection
      *
      * This method will close an open connection with the AMQP broker.
      *
-     * @return boolean true if connection was successfully closed, false otherwise.
+     * @return bool true if connection was successfully closed, false otherwise.
      */
     public function disconnect() : bool;
 
@@ -111,7 +111,7 @@ interface AmqpConnection
      * Close any open transient connections and initiate a new one with the AMQP broker.
      *
      * @throws AMQPConnectionException
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function reconnect() : bool;
 
@@ -119,7 +119,14 @@ interface AmqpConnection
      * Close any open persistent connections and initiate a new one with the AMQP broker.
      *
      * @throws AMQPConnectionException
-     * @return boolean TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure.
      */
     public function preconnect() : bool;
+
+    /**
+     * Get used amqp channels
+     *
+     * @return AmqpChannel[]
+     */
+    public function getUsedChannels() : array;
 }

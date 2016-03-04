@@ -18,11 +18,9 @@
  *  and is licensed under the MIT license.
  */
 
-declare(strict_types=1);
+declare (strict_types=1);
 
 namespace Humus\Amqp\Driver;
-
-use Humus\Amqp\Exception\HeaderNotFound;
 
 /**
  * Represents a AMQP envelope
@@ -167,9 +165,15 @@ interface AmqpEnvelope
      * Get a specific message header.
      *
      * @param string $headerKey Name of the header to get the value from.
-     *
-     * @return string The contents of the specified header
-     * @throws HeaderNotFound if header not set
+     * @return string|false The contents of the specified header, false if header not set
      */
-    public function getHeader($headerKey) : string;
+    public function getHeader($headerKey);
+
+
+    /**
+     * Check whether a specific message header is set.
+     *
+     * @return bool
+     */
+    public function hasHeader() : bool;
 }
