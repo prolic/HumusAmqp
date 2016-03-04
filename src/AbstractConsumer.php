@@ -18,6 +18,8 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp;
 
 use Assert\Assertion;
@@ -126,15 +128,11 @@ abstract class AbstractConsumer implements Consumer
      */
     public function consume($msgAmount = 0)
     {
-        echo __LINE__ . PHP_EOL;
         Assertion::min($msgAmount, 0);
-        echo __LINE__ . PHP_EOL;
         $this->target = $msgAmount;
-        echo __LINE__ . PHP_EOL;
         if (!$this->timestampLastAck) {
             $this->timestampLastAck = microtime(true);
         }
-        echo __LINE__ . PHP_EOL;
         $callback = function (AmqpEnvelope $envelope) {
             if (__NAMESPACE__ === $envelope->getAppId()
                 && 'shutdown' === $envelope->getType()
@@ -193,10 +191,9 @@ abstract class AbstractConsumer implements Consumer
                 $this->queue->cancel($this->consumerTag);
             }
         };
-        echo __LINE__ . PHP_EOL;
+
         do {
             try {
-                echo __LINE__ . PHP_EOL;
                 $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
             } catch (AmqpConnectionException $e) {
                 if (!$this->queue->getConnection()->reconnect()) {
@@ -205,9 +202,7 @@ abstract class AbstractConsumer implements Consumer
                 $this->ackOrNackBlock();
                 gc_collect_cycles();
             }
-            echo __LINE__ . PHP_EOL;
         } while ($this->keepAlive);
-        echo __LINE__ . PHP_EOL;
     }
 
     /**

@@ -18,15 +18,18 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp\Driver\AmqpExtension;
 
+use Humus\Amqp\Driver\AmqpConnection as ConnectionInterface;
 use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Class AmqpConnection
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
+class AmqpConnection implements ConnectionInterface
 {
     /**
      * @var \AMQPConnection
@@ -48,7 +51,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @return \AMQPConnection
      */
-    public function getAmqpExtensionConnection()
+    public function getAmqpExtensionConnection() : \AMQPConnection
     {
         return $this->connection;
     }
@@ -56,7 +59,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @inheritdoc
      */
-    public function isConnected()
+    public function isConnected() : bool
     {
         return $this->connection->isConnected();
     }
@@ -64,7 +67,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @inheritdoc
      */
-    public function connect()
+    public function connect() : bool
     {
         try {
             return $this->connection->connect();
@@ -76,7 +79,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @inheritdoc
      */
-    public function pconnect()
+    public function pconnect() : bool
     {
         try {
             return $this->connection->pconnect();
@@ -88,7 +91,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @inheritdoc
      */
-    public function pdisconnect()
+    public function pdisconnect() : bool
     {
         return $this->connection->pdisconnect();
     }
@@ -96,7 +99,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @inheritdoc
      */
-    public function disconnect()
+    public function disconnect() : bool
     {
         return $this->connection->disconnect();
     }
@@ -104,7 +107,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @inheritdoc
      */
-    public function reconnect()
+    public function reconnect() : bool
     {
         try {
             return $this->connection->reconnect();
@@ -116,7 +119,7 @@ class AmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
     /**
      * @inheritdoc
      */
-    public function preconnect()
+    public function preconnect() : bool
     {
         try {
             return $this->connection->preconnect();

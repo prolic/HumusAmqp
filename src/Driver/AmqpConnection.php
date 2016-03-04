@@ -122,11 +122,4 @@ interface AmqpConnection
      * @return bool TRUE on success or FALSE on failure.
      */
     public function preconnect() : bool;
-
-    /**
-     * Get used amqp channels
-     *
-     * @return AmqpChannel[]
-     */
-    public function getUsedChannels() : array;
 }

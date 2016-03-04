@@ -21,6 +21,9 @@
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Constants;
+use Humus\Amqp\Driver\AmqpChannel as AmqpChannelInterface;
+use Humus\Amqp\Driver\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\Driver\AmqpExchange as AmqpExchangeInterface;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpExchangeException;
@@ -29,7 +32,7 @@ use Humus\Amqp\Exception\AmqpExchangeException;
  * Class AmqpExchange
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
+class AmqpExchange implements AmqpExchangeInterface
 {
     /**
      * @var AmqpChannel
@@ -71,7 +74,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->exchange->getName();
     }
@@ -79,7 +82,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function setName($exchangeName)
+    public function setName(string $exchangeName) : bool
     {
         return $this->exchange->setName($exchangeName);
     }
@@ -87,7 +90,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function getType()
+    public function getType() : string
     {
         return $this->exchange->getType();
     }
@@ -95,7 +98,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function setType($exchangeType)
+    public function setType(string $exchangeType) : bool
     {
         return $this->exchange->setType($exchangeType);
     }
@@ -103,7 +106,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function getFlags()
+    public function getFlags() : int
     {
         return $this->exchange->getFlags();
     }
@@ -111,7 +114,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function setFlags($flags)
+    public function setFlags(int $flags) : bool
     {
         return $this->exchange->setFlags($flags);
     }
@@ -119,7 +122,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function getArgument($key)
+    public function getArgument(string $key)
     {
         return $this->exchange->getArgument($key);
     }
@@ -127,7 +130,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function getArguments()
+    public function getArguments() : array
     {
         return $this->exchange->getArguments();
     }
@@ -135,7 +138,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function setArgument($key, $value)
+    public function setArgument(string $key, $value) : bool
     {
         return $this->exchange->setArgument($key, $value);
     }
@@ -143,7 +146,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments) : bool
     {
         return $this->exchange->setArguments($arguments);
     }
@@ -151,7 +154,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function declareExchange()
+    public function declareExchange() : bool
     {
         try {
             return $this->exchange->declareExchange();
@@ -167,7 +170,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function delete($exchangeName = null, $flags = Constants::AMQP_NOPARAM)
+    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM) : bool
     {
         try {
             return $this->exchange->delete($exchangeName, $flags);
@@ -183,7 +186,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function bind($exchangeName, $routingKey = '', array $arguments = [])
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool
     {
         try {
             return $this->exchange->bind($exchangeName, $routingKey, $arguments);
@@ -199,7 +202,7 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function unbind($exchangeName, $routingKey = '', array $arguments = [])
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool
     {
         try {
             return $this->exchange->unbind($exchangeName, $routingKey, $arguments);
@@ -215,8 +218,12 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     /**
      * @inheritdoc
      */
-    public function publish($message, $routingKey = null, $flags = Constants::AMQP_NOPARAM, array $attributes = [])
-    {
+    public function publish(
+        string $message,
+        string $routingKey = null,
+        int $flags = Constants::AMQP_NOPARAM,
+        array $attributes = []
+    ) : bool {
         try {
             return $this->exchange->publish($message, $routingKey, $flags, $attributes);
         } catch (\AMQPConnectionException $e) {
@@ -229,21 +236,17 @@ class AmqpExchange implements \Humus\Amqp\Driver\AmqpExchange
     }
 
     /**
-     * Get the AmqpChannel object in use
-     *
-     * @return AmqpChannel
+     * @inheritdoc
      */
-    public function getChannel()
+    public function getChannel() : AmqpChannelInterface
     {
         return $this->channel;
     }
 
     /**
-     * Get the AmqpConnection object in use
-     *
-     * @return AmqpConnection
+     * @inheritdoc
      */
-    public function getConnection()
+    public function getConnection() : AmqpConnectionInterface
     {
         return $this->channel->getConnection();
     }
