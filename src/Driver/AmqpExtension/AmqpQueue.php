@@ -285,7 +285,7 @@ class AmqpQueue implements AmqpQueueInterface
         } catch (\AMQPChannelException $e) {
             throw AmqpChannelException::fromAmqpExtension($e);
         }
-        
+
         return true;
     }
 
@@ -301,7 +301,7 @@ class AmqpQueue implements AmqpQueueInterface
         } catch (\AMQPChannelException $e) {
             throw AmqpChannelException::fromAmqpExtension($e);
         }
-        
+
         return true;
     }
 

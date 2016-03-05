@@ -66,4 +66,18 @@ final class ConnectionTest extends AbstractConnectionTest
 
         $this->assertTrue($connection->isConnected());
     }
+
+    /**
+     * @test
+     */
+    public function it_uses_persistent_connection()
+    {
+        $connection = new AmqpConnection($this->validCredentials());
+
+        $this->assertFalse($connection->isConnected());
+
+        $connection->pconnect();
+
+        $this->assertTrue($connection->isConnected());
+    }
 }
