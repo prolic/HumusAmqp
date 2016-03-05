@@ -12,7 +12,7 @@ before_script:
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - phpenv config-rm xdebug.ini
   - composer self-update
-  - composer install --prefer-source
+  - composer update
   - sudo rabbitmqctl add_vhost /humus-amqp-test
   - sudo rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
 
@@ -20,5 +20,5 @@ script:
   - php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
 
-after_script:
+after_success:
   - php vendor/bin/coveralls -v
