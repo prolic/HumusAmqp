@@ -23,8 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp;
 
 use Assert\Assertion;
-use Humus\Amqp\AmqpEnvelope;
-use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**

@@ -38,7 +38,7 @@ abstract class AbstractChannelTest extends TestCase
      * @var AmqpConnection
      */
     protected $connection;
-    
+
     /**
      * @var AmqpChannel
      */
@@ -68,10 +68,10 @@ abstract class AbstractChannelTest extends TestCase
      */
     public function it_creates_multiple_channels()
     {
-        $this->getNewChannel();
+        $this->getNewChannel($this->connection);
     }
 
     abstract protected function getNewConnection() : AmqpConnection;
 
-    abstract protected function getNewChannel() : AmqpChannel;
+    abstract protected function getNewChannel(AmqpConnection $connection) : AmqpChannel;
 }

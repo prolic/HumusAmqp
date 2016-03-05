@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp;
 
 use Assert\Assertion;
-use Humus\Amqp\AmqpQueue;
 
 /**
  * The consumer attaches to a single queue

@@ -95,10 +95,12 @@ class AmqpChannel implements AmqpChannelInterface
     public function setPrefetchSize(int $size) : bool
     {
         try {
-            return $this->channel->basic_qos($size, 0, false);
+            $this->channel->basic_qos($size, 0, false);
         } catch (\Exception $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }
+
+        return true;
     }
 
     /**
@@ -115,10 +117,12 @@ class AmqpChannel implements AmqpChannelInterface
     public function setPrefetchCount(int $count) : bool
     {
         try {
-            return $this->channel->basic_qos(0, $count, false);
+            $this->channel->basic_qos(0, $count, false);
         } catch (\Exception $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }
+
+        return true;
     }
 
     /**
@@ -135,10 +139,12 @@ class AmqpChannel implements AmqpChannelInterface
     public function qos(int $size, int $count) : bool
     {
         try {
-            return $this->channel->basic_qos($size, $count, false);
+            $this->channel->basic_qos($size, $count, false);
         } catch (\Exception $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }
+
+        return true;
     }
 
     /**
@@ -171,10 +177,12 @@ class AmqpChannel implements AmqpChannelInterface
     public function rollbackTransaction() : bool
     {
         try {
-            return $this->channel->tx_rollback();
+            $this->channel->tx_rollback();
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }
+
+        return true;
     }
 
     /**
@@ -188,7 +196,7 @@ class AmqpChannel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function basicRecover(bool $requeue = true) : bool
+    public function basicRecover(bool $requeue = true)
     {
         $this->channel->basic_recover($requeue);
     }

@@ -23,55 +23,41 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\AmqpExtension;
 
 use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
+use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
 use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
 use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Exception\AmqpConnectionException;
-use HumusTest\Amqp\AbstractChannelTest;
+use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
+use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
+use HumusTest\Amqp\AbstractChannelRecoverTest;
 
 /**
- * Class ChannelTest
+ * Class ChannelRecoverTest
  * @package HumusTest\Amqp\AmqpExtension
  */
-final class ChannelTest extends AbstractChannelTest
+final class ChannelRecoverTest extends AbstractChannelRecoverTest
 {
     protected function setUp()
     {
         if (!extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
         }
-
-        $this->connection = $this->getNewConnection();
-        $this->connection->connect();
-        $this->channel = $this->getNewChannel($this->connection);
     }
 
-    /**
-     * @test
-     */
-    public function it_connects_the_channel()
+    protected function getNewChannelWithNewConnection() : AmqpChannelInterface
     {
-        $this->assertTrue($this->channel->isConnected());
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_cannot_create_channel()
-    {
-        $this->expectException(AmqpConnectionException::class);
-        $this->expectExceptionMessage('Could not create channel. No connection available.');
-
-        $this->getNewChannel($this->getNewConnection($this->getNewConnection()));
-    }
-
-    protected function getNewConnection() : AmqpConnectionInterface
-    {
-        return new AmqpConnection($this->validCredentials());
-    }
-
-    protected function getNewChannel(AmqpConnectionInterface $connection) : AmqpChannelInterface
-    {
+        $connection = new AmqpConnection($this->credentials());
+        $connection->connect();
         return new AmqpChannel($connection);
+    }
+
+    protected function getNewExchange(AmqpChannelInterface $channel) : AmqpExchangeInterface
+    {
+        return new AmqpExchange($channel);
+    }
+
+    protected function getNewQueue(AmqpChannelInterface $channel) : AmqpQueueInterface
+    {
+        return new AmqpQueue($channel);
     }
 }

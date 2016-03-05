@@ -22,9 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\AmqpEnvelope;
-use Humus\Amqp\AmqpExchange;
-use Humus\Amqp\AmqpQueue;
 use Assert\Assertion;
 
 /**

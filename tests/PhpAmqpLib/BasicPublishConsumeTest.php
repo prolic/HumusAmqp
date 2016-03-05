@@ -21,7 +21,7 @@
 namespace HumusTest\Amqp\PhpAmqpLib;
 
 use Humus\Amqp\CallbackConsumer;
-use Humus\Amqp\Driver\AmqpEnvelope;
+use Humus\Amqp\AmqpEnvelope;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;

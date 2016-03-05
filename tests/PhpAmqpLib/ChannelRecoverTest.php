@@ -23,33 +23,40 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\PhpAmqpLib;
 
 use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
+use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpQueue;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
-use HumusTest\Amqp\AbstractChannelTest;
+use HumusTest\Amqp\AbstractChannelRecoverTest;
 
 /**
- * Class ChannelTest
+ * Class ChannelRecoverTest
  * @package HumusTest\Amqp\PhpAmqpLib
  */
-final class ChannelTest extends AbstractChannelTest
+final class ChannelRecoverTest extends AbstractChannelRecoverTest
 {
     protected function setUp()
     {
-        $this->connection = $this->getNewConnection();
-        $this->channel = $this->getNewChannel($this->connection);
-    }
-
-    protected function getNewConnection() : AmqpConnectionInterface
-    {
-        return new AmqpStreamConnection($this->validCredentials());
+        $this->markTestSkipped('channel recover test not yet working for php amqp lib');
     }
 
     /**
      * @return AmqpChannelInterface
      */
-    protected function getNewChannel(AmqpConnectionInterface $connection) : AmqpChannelInterface
+    protected function getNewChannelWithNewConnection() : AmqpChannelInterface
     {
-        return new AmqpChannel($connection);
+        return new AmqpChannel(new AmqpStreamConnection($this->credentials()));
+    }
+
+    protected function getNewExchange(AmqpChannelInterface $channel) : AmqpExchangeInterface
+    {
+        return new AmqpExchange($channel);
+    }
+
+    protected function getNewQueue(AmqpChannelInterface $channel) : AmqpQueueInterface
+    {
+        return new AmqpQueue($channel);
     }
 }

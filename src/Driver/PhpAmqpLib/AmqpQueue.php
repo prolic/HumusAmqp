@@ -216,6 +216,10 @@ class AmqpQueue implements AmqpQueueInterface
             $innerCallback = null;
         }
 
+        if (null === $consumerTag) {
+            $consumerTag = '';
+        }
+
         try {
             $this->channel->getPhpAmqpLibChannel()->basic_consume(
                 $this->name,
@@ -228,6 +232,10 @@ class AmqpQueue implements AmqpQueueInterface
                 null,
                 $this->arguments
             );
+
+            while (count($this->channel->getPhpAmqpLibChannel()->callbacks)) {
+                $this->channel->getPhpAmqpLibChannel()->wait();
+            }
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
