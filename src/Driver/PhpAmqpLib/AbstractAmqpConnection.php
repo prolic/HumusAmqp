@@ -18,8 +18,11 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
+use Humus\Amqp\Driver\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Connection\AbstractConnection;
@@ -28,7 +31,7 @@ use PhpAmqpLib\Connection\AbstractConnection;
  * Class AbstractAmqpConnection
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnection
+abstract class AbstractAmqpConnection implements AmqpConnectionInterface
 {
     /**
      * @var AbstractConnection
@@ -38,7 +41,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @return AbstractConnection
      */
-    public function getPhpAmqpLibConnection()
+    public function getPhpAmqpLibConnection() : AbstractConnection
     {
         return $this->connection;
     }
@@ -46,7 +49,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @inheritdoc
      */
-    public function isConnected()
+    public function isConnected() : bool
     {
         return $this->connection->isConnected();
     }
@@ -54,7 +57,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @inheritdoc
      */
-    public function connect()
+    public function connect() : bool
     {
         throw new BadMethodCallException();
     }
@@ -62,7 +65,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @inheritdoc
      */
-    public function pconnect()
+    public function pconnect() : bool
     {
         throw new BadMethodCallException();
     }
@@ -70,7 +73,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @inheritdoc
      */
-    public function pdisconnect()
+    public function pdisconnect() : bool
     {
         throw new BadMethodCallException();
     }
@@ -78,7 +81,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @inheritdoc
      */
-    public function disconnect()
+    public function disconnect() : bool
     {
         throw new BadMethodCallException();
     }
@@ -86,7 +89,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @inheritdoc
      */
-    public function reconnect()
+    public function reconnect() : bool
     {
         try {
             $this->connection->reconnect();
@@ -100,7 +103,7 @@ abstract class AbstractAmqpConnection implements \Humus\Amqp\Driver\AmqpConnecti
     /**
      * @inheritdoc
      */
-    public function preconnect()
+    public function preconnect() : bool
     {
         throw new BadMethodCallException();
     }

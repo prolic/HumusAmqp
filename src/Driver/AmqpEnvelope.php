@@ -101,9 +101,9 @@ interface AmqpEnvelope
     /**
      * Get the timestamp of the message.
      *
-     * @return int The message timestamp.
+     * @return string The message timestamp.
      */
-    public function getTimeStamp() : int;
+    public function getTimeStamp() : string;
 
     /**
      * Get the priority of the message.
@@ -167,13 +167,14 @@ interface AmqpEnvelope
      * @param string $headerKey Name of the header to get the value from.
      * @return string|false The contents of the specified header, false if header not set
      */
-    public function getHeader($headerKey);
+    public function getHeader(string $headerKey);
 
 
     /**
      * Check whether a specific message header is set.
      *
+     * @param string $key
      * @return bool
      */
-    public function hasHeader() : bool;
+    public function hasHeader(string $key) : bool;
 }

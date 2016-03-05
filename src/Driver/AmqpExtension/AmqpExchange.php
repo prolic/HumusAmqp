@@ -84,7 +84,9 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setName(string $exchangeName) : bool
     {
-        return $this->exchange->setName($exchangeName);
+        $this->exchange->setName($exchangeName);
+        // @todo: see https://github.com/pdezwart/php-amqp/pull/207
+        return true;
     }
 
     /**
@@ -100,7 +102,9 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setType(string $exchangeType) : bool
     {
-        return $this->exchange->setType($exchangeType);
+        $this->exchange->setType($exchangeType);
+        // @todo: see https://github.com/pdezwart/php-amqp/pull/207
+        return true;
     }
 
     /**
@@ -116,7 +120,9 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setFlags(int $flags) : bool
     {
-        return $this->exchange->setFlags($flags);
+        $this->exchange->setFlags($flags);
+        // @todo: see https://github.com/pdezwart/php-amqp/pull/207
+        return true;
     }
 
     /**

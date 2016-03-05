@@ -21,6 +21,8 @@
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Constants;
+use Humus\Amqp\Driver\AmqpChannel as AmqpChannelInterface;
+use Humus\Amqp\Driver\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\Driver\AmqpQueue as AmqpQueueInterface;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
@@ -133,7 +135,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function declareQueue() : bool
+    public function declareQueue() : int
     {
         try {
             return $this->queue->declareQueue();
@@ -277,12 +279,14 @@ class AmqpQueue implements AmqpQueueInterface
     public function unbind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool
     {
         try {
-            return $this->queue->unbind($exchangeName, $routingKey, $arguments);
+            $this->queue->unbind($exchangeName, $routingKey, $arguments);
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         } catch (\AMQPChannelException $e) {
             throw AmqpChannelException::fromAmqpExtension($e);
         }
+        
+        return true;
     }
 
     /**
@@ -291,30 +295,28 @@ class AmqpQueue implements AmqpQueueInterface
     public function delete(int $flags = Constants::AMQP_NOPARAM) : bool
     {
         try {
-            return $this->queue->delete($flags);
+            $this->queue->delete($flags);
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         } catch (\AMQPChannelException $e) {
             throw AmqpChannelException::fromAmqpExtension($e);
         }
+        
+        return true;
     }
 
     /**
-     * Get the AmqpChannel object in use
-     *
-     * @return AmqpChannel
+     * @inheritdoc
      */
-    public function getChannel() : AmqpChannel
+    public function getChannel() : AmqpChannelInterface
     {
         return $this->channel;
     }
 
     /**
-     * Get the AmqpConnection object in use
-     *
-     * @return AmqpConnection
+     * @inheritdoc
      */
-    public function getConnection() : AmqpConnection
+    public function getConnection() : AmqpConnectionInterface
     {
         return $this->channel->getConnection();
     }

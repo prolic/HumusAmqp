@@ -18,9 +18,13 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Constants;
+use Humus\Amqp\Driver\AmqpChannel as AmqpChannelInterface;
+use Humus\Amqp\Driver\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\Exception\AmqpQueueException;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -63,7 +67,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -71,15 +75,16 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function setName($exchangeName)
+    public function setName(string $exchangeName) : bool
     {
-        return $this->name = $exchangeName;
+        $this->name = $exchangeName;
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function getFlags()
+    public function getFlags() : int
     {
         return $this->flags;
     }
@@ -87,15 +92,16 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function setFlags($flags)
+    public function setFlags(int $flags) : bool
     {
-        return $this->flags = (int) $flags;
+        $this->flags = (int) $flags;
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function getArgument($key)
+    public function getArgument(string $key)
     {
         return isset($this->arguments[$key]) ? $this->arguments[$key] : false;
     }
@@ -103,7 +109,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function getArguments()
+    public function getArguments() : array
     {
         return $this->arguments;
     }
@@ -111,7 +117,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function setArgument($key, $value)
+    public function setArgument(string $key, $value) : bool
     {
         $this->arguments[$key] = $value;
         return true;
@@ -120,7 +126,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments) : bool
     {
         return $this->arguments = $arguments;
     }
@@ -128,7 +134,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function declareQueue()
+    public function declareQueue() : int
     {
         try {
             return $this->channel->getPhpAmqpLibChannel()->queue_declare(
@@ -140,7 +146,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
                 (bool) ($this->flags & Constants::AMQP_NOWAIT),
                 $this->arguments,
                 null
-            );
+            )[1];
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
@@ -149,14 +155,14 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function bind($exchangeName, $routingKey = null, array $arguments = [])
+    public function bind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool
     {
         if (null === $routingKey) {
             $routingKey = '';
         }
 
         try {
-            return $this->channel->getPhpAmqpLibChannel()->queue_bind(
+            $this->channel->getPhpAmqpLibChannel()->queue_bind(
                 $this->name,
                 $exchangeName,
                 $routingKey,
@@ -164,6 +170,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
                 $arguments,
                 null
             );
+            return true;
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
@@ -172,7 +179,7 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function get($flags = Constants::AMQP_NOPARAM)
+    public function get(int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             $envelope = $this->channel->getPhpAmqpLibChannel()->basic_get(
@@ -194,8 +201,11 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function consume(callable $callback = null, $flags = Constants::AMQP_NOPARAM, $consumerTag = null)
-    {
+    public function consume(
+        callable $callback = null,
+        int $flags = Constants::AMQP_NOPARAM,
+        string $consumerTag = null
+    ) {
         if (null !== $callback) {
             $innerCallback = function (AMQPMessage $envelope) use ($callback) {
                 $envelope = new AmqpEnvelope($envelope);
@@ -225,25 +235,27 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
     /**
      * @inheritdoc
      */
-    public function ack($deliveryTag, $flags = Constants::AMQP_NOPARAM)
+    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
     {
         try {
-            return $this->channel->getPhpAmqpLibChannel()->basic_ack(
+            $this->channel->getPhpAmqpLibChannel()->basic_ack(
                 $deliveryTag,
                 (bool) ($flags & Constants::AMQP_MULTIPLE)
             );
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function nack($deliveryTag, $flags = Constants::AMQP_NOPARAM)
+    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
     {
         try {
-            return $this->channel->getPhpAmqpLibChannel()->basic_nack(
+            $this->channel->getPhpAmqpLibChannel()->basic_nack(
                 $deliveryTag,
                 (bool) ($flags & Constants::AMQP_MULTIPLE),
                 (bool) ($flags & Constants::AMQP_REQUEUE)
@@ -251,30 +263,34 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function reject($deliveryTag, $flags = Constants::AMQP_NOPARAM)
+    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
     {
         try {
-            return $this->channel->getPhpAmqpLibChannel()->basic_reject(
+            $this->channel->getPhpAmqpLibChannel()->basic_reject(
                 $deliveryTag,
                 (bool) ($flags & Constants::AMQP_REQUEUE)
             );
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function purge()
+    public function purge() : bool
     {
         try {
-            return $this->channel->getPhpAmqpLibChannel()->queue_purge(
+            $this->channel->getPhpAmqpLibChannel()->queue_purge(
                 $this->name,
                 (bool) ($this->flags & Constants::AMQP_NOWAIT),
                 null
@@ -282,15 +298,17 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function cancel($consumerTag = '')
+    public function cancel(string $consumerTag = '') : bool
     {
         try {
-            return $this->channel->getPhpAmqpLibChannel()->basic_cancel(
+            $this->channel->getPhpAmqpLibChannel()->basic_cancel(
                 $consumerTag,
                 (bool) ($this->flags & Constants::AMQP_NOWAIT),
                 false
@@ -298,19 +316,21 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function unbind($exchangeName, $routingKey = null, array $arguments = [])
+    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool
     {
         if (null === $routingKey) {
             $routingKey = '';
         }
 
         try {
-            return $this->channel->getPhpAmqpLibChannel()->queue_unbind(
+            $this->channel->getPhpAmqpLibChannel()->queue_unbind(
                 $this->name,
                 $exchangeName,
                 $routingKey,
@@ -320,15 +340,17 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function delete($flags = Constants::AMQP_NOPARAM)
+    public function delete(int $flags = Constants::AMQP_NOPARAM) : bool
     {
         try {
-            return $this->channel->getPhpAmqpLibChannel()->queue_delete(
+            $this->channel->getPhpAmqpLibChannel()->queue_delete(
                 $this->name,
                 (bool) ($flags & Constants::AMQP_IFUNUSED),
                 (bool) ($flags & Constants::AMQP_IFEMPTY),
@@ -338,24 +360,22 @@ class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
-     * Get the AmqpChannel object in use
-     *
-     * @return AmqpChannel
+     * @inheritdoc
      */
-    public function getChannel()
+    public function getChannel() : AmqpChannelInterface
     {
         return $this->channel;
     }
 
     /**
-     * Get the AbstractAmqpConnection object in use
-     *
-     * @return AbstractAmqpConnection
+     * @inheritdoc
      */
-    public function getConnection()
+    public function getConnection() : AmqpConnectionInterface
     {
         return $this->channel->getConnection();
     }

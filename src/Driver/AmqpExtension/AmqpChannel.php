@@ -190,7 +190,7 @@ class AmqpChannel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function basicRecover(bool $requeue = true)
+    public function basicRecover(bool $requeue = true) : bool
     {
         $this->channel->basicRecover($requeue);
     }
@@ -198,7 +198,7 @@ class AmqpChannel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function confirmSelect()
+    public function confirmSelect() : bool
     {
         $this->channel->confirmSelect();
     }

@@ -282,9 +282,9 @@ interface AmqpQueue
      *                              it.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return integer The number of deleted messages.
+     * @return bool
      */
-    public function delete(int $flags = Constants::AMQP_NOPARAM) : int;
+    public function delete(int $flags = Constants::AMQP_NOPARAM) : bool;
 
     /**
      * Get the AmqpChannel object in use

@@ -18,10 +18,13 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Assert\Assertion;
 use Humus\Amqp\Exception\AmqpConnectionException;
+use PhpAmqpLib\Connection\AMQPStreamConnection as BaseAMQPStreamConnection;
 
 /**
  * Class AmqpStreamConnection
@@ -39,20 +42,12 @@ class AmqpStreamConnection extends AbstractAmqpConnection
         Assertion::keyExists($credentials, 'login');
         Assertion::keyExists($credentials, 'password');
 
-        $readWriteTimeout = isset($credentials['read_timeout'])
-            ? $credentials['read_timeout']
-            : isset($credentials['write_timeout'])
-                ? $credentials['write_timeout']
-                : 3;
-        $connectTimeout = isset($credentials['connect_timeout'])
-            ? $credentials['connect_timeout']
-            : 3;
-        $vhost = isset($credentials['vhost'])
-            ? $credentials['vhost']
-            : '/';
+        $readWriteTimeout = $credentials['read_timeout'] ?? $credentials['write_timeout'] ?? 3;
+        $connectTimeout = $credentials['connect_timeout'] ?? 3;
+        $vhost = $credentials['vhost'] ?? '/';
 
         try {
-            $this->connection = new \PhpAmqpLib\Connection\AMQPStreamConnection(
+            $this->connection = new BaseAMQPStreamConnection(
                 $credentials['host'],
                 $credentials['port'],
                 $credentials['login'],
