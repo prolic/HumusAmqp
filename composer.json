@@ -33,5 +33,10 @@
         "psr-4": {
             "Humus\\Amqp\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HumusTest\\Amqp\\": "tests/"
+        }
     }
 }

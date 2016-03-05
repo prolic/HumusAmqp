@@ -13,12 +13,12 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
-namespace HumusTest\Amqp\Integration;
+namespace HumusTest\Amqp\AmqpExtension;
 
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Driver\AmqpEnvelope;
@@ -27,12 +27,13 @@ use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
 use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
 use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
 use Humus\Amqp\PlainProducer;
+use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
 
 /**
- * Class AmqpExtensionBasicPublishConsumeTest
- * @package HumusTest\Amqp\Integration
+ * Class BasicPublishConsumeTest
+ * @package HumusTest\Amqp\AmqpExtension
  */
-final class AmqpExtensionBasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
 {
     protected function setUp()
     {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -13,12 +13,12 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
-namespace HumusTest\Amqp\Integration;
+namespace HumusTest\Amqp;
 
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Constants;
@@ -30,7 +30,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractBasicPublishConsumeTest
- * @package HumusTest\Amqp\Integration
+ * @package HumusTest\Amqp
  */
 abstract class AbstractBasicPublishConsumeTest extends TestCase
 {
