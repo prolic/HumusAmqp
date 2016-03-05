@@ -20,29 +20,50 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Exception;
+namespace HumusTest\Amqp\AmqpExtension;
+
+use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
+use Humus\Amqp\Exception\AmqpConnectionException;
+use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
- * Interface AmqpException
- * @package Humus\Amqp\Exception
+ * Class ConnectionTest
+ * @package HumusTest\Amqp\AmqpExtension
  */
-class AmqpException extends \Exception
+final class ConnectionTest extends AbstractConnectionTest
 {
-    /**
-     * @param \AMQPConnectionException $e
-     * @return AmqpConnectionException
-     */
-    public static function fromAmqpExtension(\AMQPConnectionException $e)
+    protected function setUp()
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
     }
 
     /**
-     * @param \Exception $e
-     * @return AmqpConnectionException
+     * @test
      */
-    public static function fromPhpAmqpLib(\Exception $e)
+    public function it_throws_exception_with_invalid_credentials()
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        $this->expectException(AmqpConnectionException::class);
+
+        $connection = new AmqpConnection($this->invalidCredentials());
+
+        $this->assertFalse($connection->isConnected());
+
+        $connection->connect();
+    }
+
+    /**
+     * @test
+     */
+    public function it_connects_with_valid_credentials()
+    {
+        $connection = new AmqpConnection($this->validCredentials());
+
+        $this->assertFalse($connection->isConnected());
+
+        $connection->connect();
+
+        $this->assertTrue($connection->isConnected());
     }
 }

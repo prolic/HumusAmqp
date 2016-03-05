@@ -20,29 +20,35 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Exception;
+namespace HumusTest\Amqp\PhpAmqpLib;
+
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpSocketConnection;
+use Humus\Amqp\Exception\AmqpConnectionException;
+use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
- * Interface AmqpException
- * @package Humus\Amqp\Exception
+ * Class SocketConnectionTest
+ * @package HumusTest\Amqp\PhpAmqpLib
  */
-class AmqpException extends \Exception
+final class SocketConnectionTest extends AbstractConnectionTest
 {
     /**
-     * @param \AMQPConnectionException $e
-     * @return AmqpConnectionException
+     * @test
      */
-    public static function fromAmqpExtension(\AMQPConnectionException $e)
+    public function it_throws_exception_with_invalid_credentials()
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        $this->expectException(AmqpConnectionException::class);
+
+        new AmqpSocketConnection($this->invalidCredentials());
     }
 
     /**
-     * @param \Exception $e
-     * @return AmqpConnectionException
+     * @test
      */
-    public static function fromPhpAmqpLib(\Exception $e)
+    public function it_connects_with_valid_credentials()
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        $connection = new AmqpSocketConnection($this->validCredentials());
+
+        $this->assertTrue($connection->isConnected());
     }
 }

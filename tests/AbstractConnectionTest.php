@@ -20,29 +20,35 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Exception;
+namespace HumusTest\Amqp;
+
+use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * Interface AmqpException
- * @package Humus\Amqp\Exception
+ * Class AbstractConnectionTest
+ * @package HumusTest\Amqp
  */
-class AmqpException extends \Exception
+abstract class AbstractConnectionTest extends TestCase
 {
-    /**
-     * @param \AMQPConnectionException $e
-     * @return AmqpConnectionException
-     */
-    public static function fromAmqpExtension(\AMQPConnectionException $e)
+    protected function invalidCredentials() : array
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        return [
+            'vhost' => '/humus-amqp-test',
+            'host' => 'localhost',
+            'port' => 5672,
+            'login' => 'invalid',
+            'password' => 'invalid',
+        ];
     }
 
-    /**
-     * @param \Exception $e
-     * @return AmqpConnectionException
-     */
-    public static function fromPhpAmqpLib(\Exception $e)
+    protected function validCredentials() : array
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        return [
+            'vhost' => '/humus-amqp-test',
+            'host' => 'localhost',
+            'port' => 5672,
+            'login' => 'guest',
+            'password' => 'guest',
+        ];
     }
 }

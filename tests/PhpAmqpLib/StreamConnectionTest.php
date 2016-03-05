@@ -13,36 +13,42 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Exception;
+namespace HumusTest\Amqp\PhpAmqpLib;
+
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
+use Humus\Amqp\Exception\AmqpConnectionException;
+use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
- * Interface AmqpException
- * @package Humus\Amqp\Exception
+ * Class StreamConnectionTest
+ * @package HumusTest\Amqp\PhpAmqpLib
  */
-class AmqpException extends \Exception
+final class StreamConnectionTest extends AbstractConnectionTest
 {
     /**
-     * @param \AMQPConnectionException $e
-     * @return AmqpConnectionException
+     * @test
      */
-    public static function fromAmqpExtension(\AMQPConnectionException $e)
+    public function it_throws_exception_with_invalid_credentials()
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        $this->expectException(AmqpConnectionException::class);
+
+        new AmqpStreamConnection($this->invalidCredentials());
     }
 
     /**
-     * @param \Exception $e
-     * @return AmqpConnectionException
+     * @test
      */
-    public static function fromPhpAmqpLib(\Exception $e)
+    public function it_connects_with_valid_credentials()
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        $connection = new AmqpStreamConnection($this->validCredentials());
+
+        $this->assertTrue($connection->isConnected());
     }
 }
