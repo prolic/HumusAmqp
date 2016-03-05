@@ -13,7 +13,7 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
@@ -22,24 +22,20 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
-use PHPUnit_Framework_TestCase as TestCase;
-
 /**
- * Class AbstractConnectionTest
+ * Class ValidCredentialsTrait
  * @package HumusTest\Amqp
  */
-abstract class AbstractConnectionTest extends TestCase
+trait ValidCredentialsTrait
 {
-    use ValidCredentialsTrait;
-
-    protected function invalidCredentials() : array
+    protected function validCredentials() : array
     {
         return [
             'vhost' => '/humus-amqp-test',
             'host' => 'localhost',
             'port' => 5672,
-            'login' => 'invalid',
-            'password' => 'invalid',
+            'login' => 'guest',
+            'password' => 'guest',
         ];
     }
 }

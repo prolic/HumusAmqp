@@ -13,52 +13,53 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
 declare (strict_types=1);
 
-namespace HumusTest\Amqp\PhpAmqpLib;
+namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpSocketConnection;
-use Humus\Amqp\Exception\AmqpConnectionException;
-use HumusTest\Amqp\AbstractConnectionTest;
+use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
+use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
+use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
+use HumusTest\Amqp\AbstractChannelTest;
 
 /**
- * Class SocketConnectionTest
- * @package HumusTest\Amqp\PhpAmqpLib
+ * Class ChannelTest
+ * @package HumusTest\Amqp\AmqpExtension
  */
-final class SocketConnectionTest extends AbstractConnectionTest
+final class ChannelTest extends AbstractChannelTest
 {
-    /**
-     * @test
-     */
-    public function it_throws_exception_with_invalid_credentials()
+    protected function setUp()
     {
-        $this->expectException(AmqpConnectionException::class);
-
-        new AmqpSocketConnection($this->invalidCredentials());
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
+        
+        $this->connection = $this->getNewConnection();
+        $this->connection->connect();
+        $this->channel = $this->getNewChannel();
     }
 
     /**
      * @test
      */
-    public function it_connects_with_valid_credentials()
+    public function it_connects_the_channel()
     {
-        $connection = new AmqpSocketConnection($this->validCredentials());
-
-        $this->assertTrue($connection->isConnected());
+        $this->assertTrue($this->channel->isConnected());
     }
 
-    /**
-     * @test
-     */
-    public function it_returns_internal_connection()
+    protected function getNewConnection() : AmqpConnectionInterface
     {
-        $connection = new AmqpSocketConnection($this->validCredentials());
+        return new AmqpConnection($this->validCredentials());
+    }
 
-        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPSocketConnection::class, $connection->getPhpAmqpLibConnection());
+    protected function getNewChannel() : AmqpChannelInterface
+    {
+        return new AmqpChannel($this->connection);
     }
 }

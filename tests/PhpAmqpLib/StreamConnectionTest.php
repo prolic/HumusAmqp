@@ -51,4 +51,14 @@ final class StreamConnectionTest extends AbstractConnectionTest
 
         $this->assertTrue($connection->isConnected());
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_internal_connection()
+    {
+        $connection = new AmqpStreamConnection($this->validCredentials());
+
+        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPStreamConnection::class, $connection->getPhpAmqpLibConnection());
+    }
 }

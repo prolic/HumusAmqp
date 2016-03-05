@@ -22,43 +22,22 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpSocketConnection;
-use Humus\Amqp\Exception\AmqpConnectionException;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpLazyConnection;
 use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
- * Class SocketConnectionTest
+ * Class LazyConnectionTest
  * @package HumusTest\Amqp\PhpAmqpLib
  */
-final class SocketConnectionTest extends AbstractConnectionTest
+final class LazyConnectionTest extends AbstractConnectionTest
 {
-    /**
-     * @test
-     */
-    public function it_throws_exception_with_invalid_credentials()
-    {
-        $this->expectException(AmqpConnectionException::class);
-
-        new AmqpSocketConnection($this->invalidCredentials());
-    }
-
-    /**
-     * @test
-     */
-    public function it_connects_with_valid_credentials()
-    {
-        $connection = new AmqpSocketConnection($this->validCredentials());
-
-        $this->assertTrue($connection->isConnected());
-    }
-
     /**
      * @test
      */
     public function it_returns_internal_connection()
     {
-        $connection = new AmqpSocketConnection($this->validCredentials());
+        $connection = new AmqpLazyConnection($this->validCredentials());
 
-        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPSocketConnection::class, $connection->getPhpAmqpLibConnection());
+        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPLazyConnection::class, $connection->getPhpAmqpLibConnection());
     }
 }

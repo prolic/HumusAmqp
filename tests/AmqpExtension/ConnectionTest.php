@@ -65,6 +65,10 @@ final class ConnectionTest extends AbstractConnectionTest
         $connection->connect();
 
         $this->assertTrue($connection->isConnected());
+
+        $connection->disconnect();
+
+        $this->assertFalse($connection->isConnected());
     }
 
     /**
@@ -79,5 +83,55 @@ final class ConnectionTest extends AbstractConnectionTest
         $connection->pconnect();
 
         $this->assertTrue($connection->isConnected());
+
+        $connection->pdisconnect();
+
+        $this->assertFalse($connection->isConnected());
+    }
+
+    /**
+     * @test
+     */
+    public function it_reconnects()
+    {
+        $connection = new AmqpConnection($this->validCredentials());
+
+        $this->assertFalse($connection->isConnected());
+
+        $connection->connect();
+
+        $this->assertTrue($connection->isConnected());
+
+        $connection->reconnect();
+
+        $this->assertTrue($connection->isConnected());
+    }
+
+    /**
+     * @test
+     */
+    public function it_reconnects_a_persistent_connection()
+    {
+        $connection = new AmqpConnection($this->validCredentials());
+
+        $this->assertFalse($connection->isConnected());
+
+        $connection->pconnect();
+
+        $this->assertTrue($connection->isConnected());
+
+        $connection->preconnect();
+
+        $this->assertTrue($connection->isConnected());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_internal_connection()
+    {
+        $connection = new AmqpConnection($this->validCredentials());
+
+        $this->assertInstanceOf(\AMQPConnection::class, $connection->getAmqpExtensionConnection());
     }
 }

@@ -9,6 +9,7 @@
         processIsolation="false"
         backupGlobals="false"
         syntaxCheck="true"
+        bootstrap="vendor/autoload.php"
         >
     <testsuite name="Humus Amqp Test-Suite">
         <directory>./tests</directory>

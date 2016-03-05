@@ -20,45 +20,58 @@
 
 declare (strict_types=1);
 
-namespace HumusTest\Amqp\PhpAmqpLib;
+namespace HumusTest\Amqp;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpSocketConnection;
-use Humus\Amqp\Exception\AmqpConnectionException;
-use HumusTest\Amqp\AbstractConnectionTest;
+use Humus\Amqp\AmqpChannel;
+use Humus\Amqp\AmqpConnection;
+use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * Class SocketConnectionTest
- * @package HumusTest\Amqp\PhpAmqpLib
+ * Class AbstractChannelTest
+ * @package HumusTest\Amqp
  */
-final class SocketConnectionTest extends AbstractConnectionTest
+abstract class AbstractChannelTest extends TestCase
 {
+    use ValidCredentialsTrait;
+
+    /**
+     * @var AmqpConnection
+     */
+    protected $connection;
+    
+    /**
+     * @var AmqpChannel
+     */
+    protected $channel;
+
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_credentials()
+    public function it_returns_channel_id()
     {
-        $this->expectException(AmqpConnectionException::class);
-
-        new AmqpSocketConnection($this->invalidCredentials());
+        $this->assertEquals(1, $this->channel->getChannelId());
     }
 
     /**
      * @test
      */
-    public function it_connects_with_valid_credentials()
+    public function it_returns_connection()
     {
-        $connection = new AmqpSocketConnection($this->validCredentials());
+        $connection = $this->channel->getConnection();
 
-        $this->assertTrue($connection->isConnected());
+        $this->assertSame($this->connection, $connection);
+        $this->assertNotSame($this->getNewConnection(), $connection);
     }
 
     /**
      * @test
      */
-    public function it_returns_internal_connection()
+    public function it_creates_multiple_channels()
     {
-        $connection = new AmqpSocketConnection($this->validCredentials());
-
-        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPSocketConnection::class, $connection->getPhpAmqpLibConnection());
+        $this->getNewChannel();
     }
+
+    abstract protected function getNewConnection() : AmqpConnection;
+
+    abstract protected function getNewChannel() : AmqpChannel;
 }
