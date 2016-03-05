@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Humus\Amqp\Driver\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Connection\AbstractConnection;

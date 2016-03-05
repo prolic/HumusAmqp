@@ -22,9 +22,9 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Driver\AmqpEnvelope;
-use Humus\Amqp\Driver\AmqpExchange;
-use Humus\Amqp\Driver\AmqpQueue;
+use Humus\Amqp\AmqpEnvelope;
+use Humus\Amqp\AmqpExchange;
+use Humus\Amqp\AmqpQueue;
 use Assert\Assertion;
 
 /**

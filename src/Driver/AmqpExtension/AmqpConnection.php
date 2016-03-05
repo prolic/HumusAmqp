@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
-use Humus\Amqp\Driver\AmqpConnection as ConnectionInterface;
+use Humus\Amqp\AmqpConnection as ConnectionInterface;
 use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**

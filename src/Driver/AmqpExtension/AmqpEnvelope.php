@@ -20,7 +20,7 @@
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
-use Humus\Amqp\Driver\AmqpEnvelope as AmqpEnvelopeInterface;
+use Humus\Amqp\AmqpEnvelope as AmqpEnvelopeInterface;
 
 /**
  * Class AmqpEnvelope

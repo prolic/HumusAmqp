@@ -23,8 +23,9 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\Driver\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\Driver\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
+use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
 use Humus\Amqp\Exception\AmqpQueueException;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -32,7 +33,7 @@ use PhpAmqpLib\Message\AMQPMessage;
  * Class AmqpQueue
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpQueue implements \Humus\Amqp\Driver\AmqpQueue
+class AmqpQueue implements AmqpQueueInterface
 {
     /**
      * @var AmqpChannel

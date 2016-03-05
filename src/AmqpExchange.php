@@ -13,16 +13,15 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Driver;
+namespace Humus\Amqp;
 
-use Humus\Amqp\Constants;
 use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\AmqpExchangeException;
@@ -31,7 +30,7 @@ use Humus\Amqp\Exception\AmqpExchangeException;
  * Represents a AMQP exchange
  *
  * Interface AmqpExchange
- * @package Humus\Amqp\Driver
+ * @package Humus\Amqp
  */
 interface AmqpExchange
 {

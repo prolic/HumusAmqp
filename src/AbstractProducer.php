@@ -23,7 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp;
 
 use Assert\Assertion;
-use Humus\Amqp\Driver\AmqpExchange;
+use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\Exception\AmqpChannelException;
 
 /**
