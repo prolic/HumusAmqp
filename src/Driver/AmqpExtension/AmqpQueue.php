@@ -149,7 +149,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function bind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool
+    public function bind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
         try {
             return $this->queue->bind($exchangeName, $routingKey, $arguments);
@@ -206,7 +206,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->queue->ack($deliveryTag, $flags);
@@ -220,7 +220,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->queue->nack($deliveryTag, $flags);
@@ -234,7 +234,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->queue->reject($deliveryTag, $flags);
@@ -248,7 +248,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function purge() : bool
+    public function purge()
     {
         try {
             return $this->queue->purge();
@@ -262,7 +262,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function cancel(string $consumerTag = '') : bool
+    public function cancel(string $consumerTag = '')
     {
         try {
             return $this->queue->cancel($consumerTag);
@@ -276,7 +276,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool
+    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
         try {
             $this->queue->unbind($exchangeName, $routingKey, $arguments);
@@ -292,7 +292,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function delete(int $flags = Constants::AMQP_NOPARAM) : bool
+    public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             $this->queue->delete($flags);

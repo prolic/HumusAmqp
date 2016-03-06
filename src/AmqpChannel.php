@@ -120,9 +120,9 @@ interface AmqpChannel
      * AmqpChannel::commitTransaction() or AmqpChannel::rollbackTransaction().
      *
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function startTransaction() : bool;
+    public function startTransaction();
 
     /**
      * Commit a pending transaction.
@@ -130,9 +130,9 @@ interface AmqpChannel
      * @throws AmqpChannelException    If no transaction was started prior to
      *                                 calling this method.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function commitTransaction() : bool;
+    public function commitTransaction();
 
     /**
      * Rollback a transaction.
@@ -143,9 +143,9 @@ interface AmqpChannel
      * @throws AmqpChannelException    If no transaction was started prior to
      *                                 calling this method.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function rollbackTransaction() : bool;
+    public function rollbackTransaction();
 
     /**
      * Get the AmqpConnection object in use

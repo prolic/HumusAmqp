@@ -158,7 +158,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function declareExchange() : bool
+    public function declareExchange()
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->exchange_declare(
@@ -182,7 +182,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM)
     {
         if (null === $exchangeName) {
             $exchangeName = $this->name;
@@ -200,7 +200,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->exchange_bind(
@@ -221,7 +221,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->exchange_unbind(
@@ -245,7 +245,7 @@ class AmqpExchange implements AmqpExchangeInterface
         string $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
-    ) : bool {
+    ) {
         $message = new AMQPMessage($message, $attributes);
 
         if (isset($attributes['headers'])) {

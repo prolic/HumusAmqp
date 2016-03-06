@@ -154,7 +154,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function declareExchange() : bool
+    public function declareExchange()
     {
         try {
             return $this->exchange->declareExchange();
@@ -170,7 +170,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             return $this->exchange->delete($exchangeName, $flags);
@@ -186,7 +186,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
         try {
             return $this->exchange->bind($exchangeName, $routingKey, $arguments);
@@ -202,7 +202,7 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
         try {
             return $this->exchange->unbind($exchangeName, $routingKey, $arguments);
@@ -223,7 +223,7 @@ class AmqpExchange implements AmqpExchangeInterface
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
-    ) : bool {
+    ) {
         try {
             return $this->exchange->publish($message, $routingKey, $flags, $attributes);
         } catch (\AMQPConnectionException $e) {

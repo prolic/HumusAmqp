@@ -153,7 +153,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function bind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool
+    public function bind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
         if (null === $routingKey) {
             $routingKey = '';
@@ -168,7 +168,6 @@ class AmqpQueue implements AmqpQueueInterface
                 $arguments,
                 null
             );
-            return true;
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
@@ -243,7 +242,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->basic_ack(
@@ -260,7 +259,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->basic_nack(
@@ -278,7 +277,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM) : bool
+    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->basic_reject(
@@ -295,7 +294,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function purge() : bool
+    public function purge()
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->queue_purge(
@@ -313,7 +312,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function cancel(string $consumerTag = '') : bool
+    public function cancel(string $consumerTag = '')
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->basic_cancel(
@@ -331,7 +330,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = []) : bool
+    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
         if (null === $routingKey) {
             $routingKey = '';
@@ -355,7 +354,7 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function delete(int $flags = Constants::AMQP_NOPARAM) : bool
+    public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
         try {
             $this->channel->getPhpAmqpLibChannel()->queue_delete(
@@ -368,8 +367,6 @@ class AmqpQueue implements AmqpQueueInterface
         } catch (\Exception $e) {
             throw AmqpQueueException::fromPhpAmqpLib($e);
         }
-
-        return true;
     }
 
     /**

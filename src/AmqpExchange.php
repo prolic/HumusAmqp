@@ -124,9 +124,9 @@ interface AmqpExchange
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function declareExchange() : bool;
+    public function declareExchange();
 
     /**
      * Delete the exchange from the broker.
@@ -139,9 +139,9 @@ interface AmqpExchange
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool true on success or false on failure.
+     * @return void
      */
-    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM) : bool;
+    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Bind to another exchange.
@@ -154,9 +154,9 @@ interface AmqpExchange
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool true on success or false on failure.
+     * @return void
      */
-    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool;
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []);
 
     /**
      * Remove binding to another exchange.
@@ -169,9 +169,9 @@ interface AmqpExchange
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool true on success or false on failure.
+     * @return void
      */
-    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []) : bool;
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []);
 
     /**
      * Publish a message to an exchange.
@@ -190,13 +190,13 @@ interface AmqpExchange
      * @throws AmqpExchangeException   On failure.
      * @throws AmqpChannelException    If the channel is not open.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
     public function publish(
         string $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
-    ) : bool;
+    );
 
     /**
      * Get the AmqpChannel object in use
