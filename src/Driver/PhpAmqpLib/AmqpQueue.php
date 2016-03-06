@@ -179,7 +179,7 @@ class AmqpQueue implements AmqpQueueInterface
         if ($envelope instanceof AMQPMessage) {
             return new AmqpEnvelope($envelope);
         }
-        
+
         return false;
     }
 

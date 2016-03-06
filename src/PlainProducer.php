@@ -22,8 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange as PhpAmqpLibExchange;
-
 /**
  * Class PlainProducer
  * @package Humus\Amqp

@@ -187,8 +187,7 @@ class AmqpExchange implements AmqpExchangeInterface
         array $messages,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
-    )
-    {
+    ) {
         foreach ($messages as $message) {
             $this->exchange->publish($message, $routingKey, $flags, $attributes);
         }

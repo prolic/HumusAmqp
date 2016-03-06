@@ -35,7 +35,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 abstract class AbstractPlainConsumerTest extends TestCase
 {
     use ValidCredentialsTrait;
-    
+
     /**
      * @var AmqpChannel
      */
@@ -55,7 +55,7 @@ abstract class AbstractPlainConsumerTest extends TestCase
      * @var PlainProducer
      */
     protected $producer;
-    
+
     /**
      * @var callable
      */

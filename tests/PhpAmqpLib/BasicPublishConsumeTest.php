@@ -36,7 +36,7 @@ final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
     protected function setUp()
     {
         parent::setUp();
-        
+
         $connection = new AMQPStreamConnection($this->validCredentials());
 
         $channel = new AmqpChannel($connection);

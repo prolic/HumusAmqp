@@ -34,7 +34,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 abstract class AbstractBasicPublishConsumeTest extends TestCase
 {
     use ValidCredentialsTrait;
-    
+
     /**
      * @var AmqpChannel
      */

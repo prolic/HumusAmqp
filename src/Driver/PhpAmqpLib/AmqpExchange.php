@@ -269,7 +269,7 @@ class AmqpExchange implements AmqpExchangeInterface
                 null
             );
         }
-        
+
         $this->channel->getPhpAmqpLibChannel()->publish_batch();
     }
 
