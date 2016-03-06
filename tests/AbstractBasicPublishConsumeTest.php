@@ -20,11 +20,11 @@
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\AmqpChannel;
+use Humus\Amqp\AmqpExchange;
+use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Constants;
-use Humus\Amqp\Driver\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExchange;
-use Humus\Amqp\Driver\AmqpQueue;
 use Humus\Amqp\PlainProducer;
 use PHPUnit_Framework_TestCase as TestCase;
 
