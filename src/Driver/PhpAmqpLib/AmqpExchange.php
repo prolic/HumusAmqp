@@ -28,6 +28,7 @@ use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
 use Humus\Amqp\Exception\AmqpExchangeException;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 /**
  * Class AmqpExchange
@@ -246,6 +247,10 @@ class AmqpExchange implements AmqpExchangeInterface
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) : bool {
         $message = new AMQPMessage($message, $attributes);
+
+        if (isset($attributes['headers'])) {
+            $message->set('application_headers', new AMQPTable($attributes['headers']));
+        }
 
         if (null === $routingKey) {
             $routingKey = '';

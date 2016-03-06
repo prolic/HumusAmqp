@@ -64,7 +64,7 @@ final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
         $this->producer = new PlainProducer($exchange, false, false, null);
         $this->transactionalProducer = new PlainProducer($exchange, false, true, null);
 
-        $callback = function (AmqpEnvelope $envelope, \Humus\Amqp\Driver\AmqpQueue $queue) {
+        $callback = function (AmqpEnvelope $envelope, \Humus\Amqp\AmqpQueue $queue) {
               $this->results[] = $envelope->getBody();
         };
 

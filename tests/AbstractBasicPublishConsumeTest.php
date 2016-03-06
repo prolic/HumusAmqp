@@ -21,6 +21,7 @@
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\AmqpChannel;
+use Humus\Amqp\AmqpEnvelope;
 use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\CallbackConsumer;
@@ -97,6 +98,65 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
 
         $this->assertSame('foo', $msg1->getBody());
         $this->assertSame('bar', $msg2->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function it_purges_messages_from_queue()
+    {
+        $this->producer->publish('foo');
+        $this->producer->publish('bar');
+
+        $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertInstanceOf(AmqpEnvelope::class, $msg1);
+
+        $this->queue->purge();
+
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertFalse($msg2);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_envelope_information()
+    {
+        $this->producer->publish('foo');
+
+        $msg = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertEquals('UTF-8', $msg->getContentEncoding());
+        $this->assertEquals('text/plain', $msg->getContentType());
+        $this->assertEquals('test-exchange', $msg->getExchangeName());
+        $this->assertEquals(2, $msg->getDeliveryMode());
+        $this->assertEquals(1, $msg->getDeliveryTag());
+        $this->assertEmpty($msg->getHeaders());
+    }
+
+    /**
+     * @test
+     */
+    public function it_publishes_with_headers()
+    {
+        $this->producer->publish('foo', null, Constants::AMQP_NOPARAM, [
+            'headers' => [
+                'header1' => 'value1',
+                'header2' => 'value2'
+            ]
+        ]);
+
+        $msg = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertEquals(
+            [
+                'header1' => 'value1',
+                'header2' => 'value2'
+            ],
+            $msg->getHeaders()
+        );
     }
 
     protected function tearDown()

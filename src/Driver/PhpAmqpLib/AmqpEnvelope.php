@@ -24,6 +24,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\AmqpEnvelope as AmqpEnvelopeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 /**
  * Class AmqpEnvelope
@@ -186,7 +187,21 @@ class AmqpEnvelope implements AmqpEnvelopeInterface
      */
     public function getHeaders() : array
     {
-        return $this->envelope->get('application_headers');
+        try {
+            $headers = $this->envelope->get('application_headers');
+        } catch (\OutOfBoundsException $e) {
+            if ($e->getMessage() === 'No "application_headers" property') {
+                return [];
+            }
+
+            throw $e;
+        }
+
+        if ($headers instanceof AMQPTable) {
+            return $headers->getNativeData();
+        }
+
+        return [];
     }
 
     /**

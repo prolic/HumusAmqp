@@ -191,6 +191,8 @@ class AmqpQueue implements AmqpQueueInterface
 
         if ($envelope instanceof AMQPMessage) {
             $envelope = new AmqpEnvelope($envelope);
+        } else {
+            $envelope = false;
         }
 
         return $envelope;
