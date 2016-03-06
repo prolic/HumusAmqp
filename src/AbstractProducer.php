@@ -60,7 +60,7 @@ abstract class AbstractProducer implements Producer
      * @param array|null $defaultAttributes
      * @throws AmqpChannelException
      */
-    public function __construct(AmqpExchange $exchange, $confirm, $transactional, array $defaultAttributes = null)
+    public function __construct(AmqpExchange $exchange, bool $confirm, bool $transactional, array $defaultAttributes = null)
     {
         Assertion::boolean($confirm);
         Assertion::boolean($transactional);
@@ -69,8 +69,9 @@ abstract class AbstractProducer implements Producer
             throw new AmqpChannelException('Only non-transactional channels can be put in confirm mode');
         }
 
-        $this->confirm = $confirm;
         $this->exchange = $exchange;
+        $this->confirm = $confirm;
+        $this->transactional = $transactional;
 
         if (null !== $defaultAttributes) {
             $this->defaultAttributes = $defaultAttributes;

@@ -147,10 +147,12 @@ class AmqpChannel implements AmqpChannelInterface
     public function startTransaction() : bool
     {
         try {
-            return $this->channel->tx_select();
+            $this->channel->tx_select();
         } catch (\Exception $e) {
             throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
@@ -159,10 +161,12 @@ class AmqpChannel implements AmqpChannelInterface
     public function commitTransaction() : bool
     {
         try {
-            return $this->channel->tx_commit();
+            $this->channel->tx_commit();
         } catch (\Exception $e) {
             throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
+
+        return true;
     }
 
     /**
