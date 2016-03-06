@@ -20,18 +20,17 @@
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\AmqpEnvelope;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpQueue;
-use Humus\Amqp\PlainProducer;
 use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
 
 /**
  * Class BasicPublishConsumeTest
  * @package HumusTest\Amqp\PhpAmqpLib
+ * @group  my
  */
 final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
 {
@@ -48,26 +47,21 @@ final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
         $channel = new AmqpChannel($connection);
 
         $exchange = new AmqpExchange($channel);
-        $exchange->setType('direct');
+        $exchange->setType('topic');
         $exchange->setName('test-exchange');
         $exchange->declareExchange();
 
         $queue = new AmqpQueue($channel);
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
+        $queue->bind('test-exchange', '#');
 
         $this->channel = $channel;
         $this->exchange = $exchange;
         $this->queue = $queue;
 
-        $this->producer = new PlainProducer($exchange, false, false, null);
-        $this->transactionalProducer = new PlainProducer($exchange, false, true, null);
-
-        $callback = function (AmqpEnvelope $envelope, \Humus\Amqp\AmqpQueue $queue) {
+        $this->callback = function (AmqpEnvelope $envelope) {
               $this->results[] = $envelope->getBody();
         };
-
-        $this->consumer = new CallbackConsumer($queue, 1.0, $callback);
     }
 }

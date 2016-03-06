@@ -103,7 +103,7 @@ interface AmqpEnvelope
      *
      * @return string The message timestamp.
      */
-    public function getTimeStamp() : string;
+    public function getTimestamp() : string;
 
     /**
      * Get the priority of the message.

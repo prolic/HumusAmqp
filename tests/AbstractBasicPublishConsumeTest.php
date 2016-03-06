@@ -51,19 +51,9 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
     protected $queue;
 
     /**
-     * @var PlainProducer
+     * @var callable
      */
-    protected $producer;
-
-    /**
-     * @var PlainProducer
-     */
-    protected $transactionalProducer;
-
-    /**
-     * @var CallbackConsumer
-     */
-    protected $consumer;
+    protected $callback;
 
     /**
      * @var array
@@ -75,8 +65,8 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      */
     public function it_produces_and_get_messages_from_queue()
     {
-        $this->producer->publish('foo');
-        $this->producer->publish('bar');
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
 
         $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
@@ -90,8 +80,13 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      */
     public function it_produces_transactional_and_get_messages_from_queue()
     {
-        $this->transactionalProducer->publish('foo');
-        $this->transactionalProducer->publish('bar');
+        $this->channel->startTransaction();
+        $this->exchange->publish('foo');
+        $this->channel->commitTransaction();
+
+        $this->channel->startTransaction();
+        $this->exchange->publish('bar');
+        $this->channel->commitTransaction();
 
         $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
@@ -105,8 +100,10 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      */
     public function it_purges_messages_from_queue()
     {
-        $this->producer->publish('foo');
-        $this->producer->publish('bar');
+        $this->channel->startTransaction();
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+        $this->channel->commitTransaction();
 
         $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
 
@@ -124,24 +121,16 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      */
     public function it_returns_envelope_information()
     {
-        $this->producer->publish('foo');
-
-        $msg = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $this->assertEquals('UTF-8', $msg->getContentEncoding());
-        $this->assertEquals('text/plain', $msg->getContentType());
-        $this->assertEquals('test-exchange', $msg->getExchangeName());
-        $this->assertEquals(2, $msg->getDeliveryMode());
-        $this->assertEquals(1, $msg->getDeliveryTag());
-        $this->assertEmpty($msg->getHeaders());
-    }
-
-    /**
-     * @test
-     */
-    public function it_publishes_with_headers()
-    {
-        $this->producer->publish('foo', null, Constants::AMQP_NOPARAM, [
+        $this->exchange->publish('foo', 'routingKey', Constants::AMQP_NOPARAM, [
+            'content_type' => 'text/plain',
+            'content_encoding' => 'UTF-8',
+            'message_id' => 'some message id',
+            'app_id' => 'app id',
+            'delivery_mode' => 1,
+            'priority' => 5,
+            'timestamp' => 25,
+            'expiration' => 1000,
+            'type' => 'message type',
             'headers' => [
                 'header1' => 'value1',
                 'header2' => 'value2'
@@ -150,6 +139,18 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
 
         $msg = $this->queue->get(Constants::AMQP_AUTOACK);
 
+        $this->assertEquals('test-exchange', $msg->getExchangeName());
+        $this->assertEquals('text/plain', $msg->getContentType());
+        $this->assertEquals('UTF-8', $msg->getContentEncoding());
+        $this->assertEquals('some message id', $msg->getMessageId());
+        $this->assertEquals('app id', $msg->getAppId());
+        $this->assertEquals(1, $msg->getDeliveryMode());
+        $this->assertEquals(1, $msg->getDeliveryTag());
+        $this->assertEquals(5, $msg->getPriority());
+        $this->assertEquals(25, $msg->getTimestamp());
+        $this->assertEquals(1000, $msg->getExpiration());
+        $this->assertEquals('message type', $msg->getType());
+        $this->assertEquals('routingKey', $msg->getRoutingKey());
         $this->assertEquals(
             [
                 'header1' => 'value1',
@@ -161,7 +162,7 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
 
     protected function tearDown()
     {
-        $this->queue->delete();
         $this->exchange->delete();
+        $this->queue->delete();
     }
 }

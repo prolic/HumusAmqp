@@ -117,7 +117,7 @@ class AmqpEnvelope implements AmqpEnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getTimeStamp() : string
+    public function getTimestamp() : string
     {
         return $this->envelope->getTimeStamp();
     }
