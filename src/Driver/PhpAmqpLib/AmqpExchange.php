@@ -43,12 +43,12 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @var string
      */
-    private $name;
+    private $name = '';
 
     /**
      * @var string
      */
-    private $type;
+    private $type = '';
 
     /**
      * @var int
@@ -172,7 +172,7 @@ class AmqpExchange implements AmqpExchangeInterface
                 null
             );
         } catch (\Exception $e) {
-            throw AmqpExchangeException::fromAmqpExtension($e);
+            throw AmqpExchangeException::fromPhpAmqpLib($e);
         }
 
         return true;
@@ -190,7 +190,7 @@ class AmqpExchange implements AmqpExchangeInterface
         try {
             $this->channel->getPhpAmqpLibChannel()->exchange_delete($exchangeName, $flags);
         } catch (\Exception $e) {
-            throw AmqpExchangeException::fromAmqpExtension($e);
+            throw AmqpExchangeException::fromPhpAmqpLib($e);
         }
 
         return true;
@@ -211,7 +211,7 @@ class AmqpExchange implements AmqpExchangeInterface
                 null
             );
         } catch (\Exception $e) {
-            throw AmqpExchangeException::fromAmqpExtension($e);
+            throw AmqpExchangeException::fromPhpAmqpLib($e);
         }
 
         return true;
@@ -231,7 +231,7 @@ class AmqpExchange implements AmqpExchangeInterface
                 null
             );
         } catch (\Exception $e) {
-            throw AmqpExchangeException::fromAmqpExtension($e);
+            throw AmqpExchangeException::fromPhpAmqpLib($e);
         }
 
         return true;
@@ -261,7 +261,7 @@ class AmqpExchange implements AmqpExchangeInterface
                 null
             );
         } catch (\Exception $e) {
-            throw AmqpExchangeException::fromAmqpExtension($e);
+            throw AmqpExchangeException::fromPhpAmqpLib($e);
         }
 
         return true;

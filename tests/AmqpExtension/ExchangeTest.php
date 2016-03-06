@@ -13,36 +13,41 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Exception;
+namespace HumusTest\Amqp\AmqpExtension;
+
+use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
+use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
+use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
+use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
+use HumusTest\Amqp\AbstractExchangeTest;
 
 /**
- * Interface AmqpException
- * @package Humus\Amqp\Exception
+ * Class ExchangeTest
+ * @package HumusTest\Amqp\AmqpExtension
  */
-class AmqpException extends \Exception
+final class ExchangeTest extends AbstractExchangeTest
 {
-    /**
-     * @param \AMQPException $e
-     * @return AmqpException
-     */
-    public static function fromAmqpExtension(\AMQPException $e)
+    protected function setUp()
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
+
+        $this->exchange = $this->getNewAmqpExchange();
     }
 
-    /**
-     * @param \Exception $e
-     * @return AmqpException
-     */
-    public static function fromPhpAmqpLib(\Exception $e)
+    protected function getNewAmqpExchange() : AmqpExchangeInterface
     {
-        return new static($e->getMessage(), $e->getCode(), $e);
+        $connection = new AmqpConnection($this->validCredentials());
+        $connection->connect();
+
+        return new AmqpExchange(new AmqpChannel($connection));
     }
 }
