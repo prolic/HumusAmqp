@@ -210,8 +210,7 @@ class AmqpEnvelope implements AmqpEnvelopeInterface
     public function getHeader(string $headerKey)
     {
         $headers = $this->getHeaders();
-
-        return isset($headers[$headerKey]) ?? false;
+        return $headers[$headerKey] ?? false;
     }
 
     /**

@@ -189,7 +189,7 @@ class AmqpEnvelope implements AmqpEnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getHeader(string $headerKey) : bool
+    public function getHeader(string $headerKey)
     {
         return $this->envelope->getHeader($headerKey);
     }

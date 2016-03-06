@@ -138,6 +138,7 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
             'content_encoding' => 'UTF-8',
             'message_id' => 'some message id',
             'app_id' => 'app id',
+            'user_id' => 'guest', // must be same as login data
             'delivery_mode' => 1,
             'priority' => 5,
             'timestamp' => 25,
@@ -151,11 +152,13 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
 
         $msg = $this->queue->get(Constants::AMQP_AUTOACK);
 
+        $this->assertFalse($msg->isRedelivery());
         $this->assertEquals('test-exchange', $msg->getExchangeName());
         $this->assertEquals('text/plain', $msg->getContentType());
         $this->assertEquals('UTF-8', $msg->getContentEncoding());
         $this->assertEquals('some message id', $msg->getMessageId());
         $this->assertEquals('app id', $msg->getAppId());
+        $this->assertEquals('guest', $msg->getUserId());
         $this->assertEquals(1, $msg->getDeliveryMode());
         $this->assertEquals(1, $msg->getDeliveryTag());
         $this->assertEquals(5, $msg->getPriority());
@@ -170,6 +173,32 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
             ],
             $msg->getHeaders()
         );
+        $this->assertTrue($msg->hasHeader('header1'));
+        $this->assertFalse($msg->hasHeader('invalid header'));
+        $this->assertEquals('value1', $msg->getHeader('header1'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_nacks_and_rejects_message()
+    {
+        $this->exchange->publish('foo');
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->queue->reject($msg->getDeliveryTag(), Constants::AMQP_REQUEUE);
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->assertEquals('foo', $msg->getBody());
+        $this->assertTrue($msg->isRedelivery());
+
+        $this->queue->nack($msg->getDeliveryTag(), Constants::AMQP_NOPARAM);
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->assertFalse($msg);
     }
 
     protected function tearDown()
