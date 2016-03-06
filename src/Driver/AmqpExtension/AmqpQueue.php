@@ -79,9 +79,9 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function setName(string $queueName) : bool
+    public function setName(string $queueName)
     {
-        return $this->queue->setName($queueName);
+        $this->queue->setName($queueName);
     }
 
     /**
@@ -95,9 +95,9 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function setFlags(int $flags) : bool
+    public function setFlags(int $flags)
     {
-        return $this->queue->setFlags($flags);
+        $this->queue->setFlags($flags);
     }
 
     /**
@@ -119,17 +119,17 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function setArgument(string $key, $value) : bool
+    public function setArgument(string $key, $value)
     {
-        return $this->queue->setArgument($key, $value);
+        $this->queue->setArgument($key, $value);
     }
 
     /**
      * @inheritdoc
      */
-    public function setArguments(array $arguments) : bool
+    public function setArguments(array $arguments)
     {
-        return $this->queue->setArguments($arguments);
+        $this->queue->setArguments($arguments);
     }
 
     /**

@@ -59,9 +59,9 @@ interface AmqpChannel
      *
      * @param integer $size The window size, in octets, to prefetch.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function setPrefetchSize(int $size) : bool;
+    public function setPrefetchSize(int $size);
 
     /**
      * Get the window size to prefetch from the broker.
@@ -80,9 +80,9 @@ interface AmqpChannel
      *
      * @param integer $count The number of messages to prefetch.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function setPrefetchCount(int $count) : bool;
+    public function setPrefetchCount(int $count);
 
     /**
      * Get the number of messages to prefetch from the broker.
@@ -109,9 +109,9 @@ interface AmqpChannel
      * @param integer $size  The window size, in octets, to prefetch.
      * @param integer $count The number of messages to prefetch.
      * @throws AmqpConnectionException If the connection to the broker was lost.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function qos(int $size, int $count) : bool;
+    public function qos(int $size, int $count);
 
     /**
      * Start a transaction.

@@ -90,10 +90,10 @@ class AmqpChannel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function setPrefetchSize(int $size) : bool
+    public function setPrefetchSize(int $size)
     {
         try {
-            return $this->channel->setPrefetchSize($size);
+            $this->channel->setPrefetchSize($size);
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }
@@ -110,10 +110,10 @@ class AmqpChannel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function setPrefetchCount(int $count) : bool
+    public function setPrefetchCount(int $count)
     {
         try {
-            return $this->channel->setPrefetchCount($count);
+            $this->channel->setPrefetchCount($count);
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }
@@ -130,10 +130,10 @@ class AmqpChannel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function qos(int $size, int $count) : bool
+    public function qos(int $size, int $count)
     {
         try {
-            return $this->channel->qos($size, $count);
+            $this->channel->qos($size, $count);
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
         }

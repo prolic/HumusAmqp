@@ -76,10 +76,9 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function setName(string $exchangeName) : bool
+    public function setName(string $exchangeName)
     {
         $this->name = $exchangeName;
-        return true;
     }
 
     /**
@@ -93,10 +92,9 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function setFlags(int $flags) : bool
+    public function setFlags(int $flags)
     {
         $this->flags = (int) $flags;
-        return true;
     }
 
     /**
@@ -118,18 +116,17 @@ class AmqpQueue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function setArgument(string $key, $value) : bool
+    public function setArgument(string $key, $value)
     {
         $this->arguments[$key] = $value;
-        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function setArguments(array $arguments) : bool
+    public function setArguments(array $arguments)
     {
-        return $this->arguments = $arguments;
+        $this->arguments = $arguments;
     }
 
     /**

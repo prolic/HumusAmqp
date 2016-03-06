@@ -46,9 +46,9 @@ interface AmqpExchange
      *
      * @param string $exchangeName The name of the exchange to set as string.
      *
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function setName(string $exchangeName) : bool;
+    public function setName(string $exchangeName);
 
     /**
      * Get the configured type.
@@ -61,9 +61,9 @@ interface AmqpExchange
      * Set the type of the exchange.
      *
      * @param string $exchangeType The type of exchange as a string.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function setType(string $exchangeType) : bool;
+    public function setType(string $exchangeType);
 
     /**
      * Get all the flags currently set on the given exchange.
@@ -80,9 +80,9 @@ interface AmqpExchange
      *                       considers the following flags:
      *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE
      *                       and Constants::AMQP_DURABLE (needs librabbitmq version >= 0.5.3 when using with ext-amqp)
-     * @return bool True on success or false on failure.
+     * @return void
      */
-    public function setFlags(int $flags) : bool;
+    public function setFlags(int $flags);
 
     /**
      * Get the argument associated with the given key.
@@ -106,17 +106,17 @@ interface AmqpExchange
      *
      * @param string         $key   Name of the argument to set.
      * @param string|integer $value Value of the argument to set.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function setArgument(string $key, $value) : bool;
+    public function setArgument(string $key, $value);
 
     /**
      * Set all arguments on the exchange.
      *
      * @param array $arguments An array of key/value pairs of arguments.
-     * @return bool TRUE on success or FALSE on failure.
+     * @return void
      */
-    public function setArguments(array $arguments) : bool;
+    public function setArguments(array $arguments);
 
     /**
      * Declare a new exchange on the broker.

@@ -45,9 +45,9 @@ interface AmqpQueue
      *
      * @param string $queueName The name of the queue.
      *
-     * @return bool
+     * @return void
      */
-    public function setName(string $queueName) : bool;
+    public function setName(string $queueName);
 
     /**
      * Get all the flags currently set on the given queue.
@@ -63,9 +63,9 @@ interface AmqpQueue
      * @param integer $flags A bitmask of flags:
      *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE,
      *                       Constants::AMQP_EXCLUSIVE, Constants::AMQP_AUTODELETE.
-     * @return bool
+     * @return void
      */
-    public function setFlags(int $flags) : bool;
+    public function setFlags(int $flags);
 
     /**
      * Get the argument associated with the given key.
@@ -89,9 +89,9 @@ interface AmqpQueue
      *
      * @param string $key   The key to set.
      * @param mixed  $value The value to set.
-     * @return bool
+     * @return void
      */
-    public function setArgument(string $key, $value) : bool;
+    public function setArgument(string $key, $value);
 
     /**
      * Set all arguments on the given queue.
@@ -99,9 +99,9 @@ interface AmqpQueue
      * All other argument settings will be wiped.
      *
      * @param array $arguments An array of key/value pairs of arguments.
-     * @return bool
+     * @return void
      */
-    public function setArguments(array $arguments) : bool;
+    public function setArguments(array $arguments);
 
     /**
      * Declare a new queue on the broker.

@@ -85,10 +85,9 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function setName(string $exchangeName) : bool
+    public function setName(string $exchangeName)
     {
         $this->name = $exchangeName;
-        return true;
     }
 
     /**
@@ -102,10 +101,9 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function setType(string $exchangeType) : bool
+    public function setType(string $exchangeType)
     {
         $this->type = $exchangeType;
-        return true;
     }
 
     /**
@@ -119,10 +117,9 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function setFlags(int $flags) : bool
+    public function setFlags(int $flags)
     {
         $this->flags = (int) $flags;
-        return true;
     }
 
     /**
@@ -144,19 +141,17 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function setArgument(string $key, $value) : bool
+    public function setArgument(string $key, $value)
     {
         $this->arguments[$key] = $value;
-        return true;
     }
 
     /**
      * @inheritdoc
      */
-    public function setArguments(array $arguments) : bool
+    public function setArguments(array $arguments)
     {
         $this->arguments = $arguments;
-        return true;
     }
 
     /**
