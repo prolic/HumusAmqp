@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Assert\Assertion;
-use Humus\Amqp\Exception\AmqpConnectionException;
 use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 
 /**
@@ -47,21 +46,17 @@ class AmqpSslConnection extends AbstractAmqpConnection
         $vhost = $credentials['vhost'] ?? '/';
         $sslOptions = $credentials['ssl_options'] ?? [];
 
-        try {
-            $this->connection = new BaseAMQPSSLConnection(
-                $credentials['host'],
-                $credentials['port'],
-                $credentials['login'],
-                $credentials['password'],
-                $vhost,
-                $sslOptions,
-                [
-                    'connection_timeout' => $connectTimeout,
-                    'read_write_timeout' => $readWriteTimeout,
-                ]
-            );
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
+        $this->connection = new BaseAMQPSSLConnection(
+            $credentials['host'],
+            $credentials['port'],
+            $credentials['login'],
+            $credentials['password'],
+            $vhost,
+            $sslOptions,
+            [
+                'connection_timeout' => $connectTimeout,
+                'read_write_timeout' => $readWriteTimeout,
+            ]
+        );
     }
 }

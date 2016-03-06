@@ -26,7 +26,6 @@ use Humus\Amqp\Constants;
 use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
 use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
-use Humus\Amqp\Exception\AmqpExchangeException;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 
@@ -160,23 +159,17 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function declareExchange()
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->exchange_declare(
-                $this->name,
-                $this->type,
-                (bool) ($this->flags & Constants::AMQP_PASSIVE),
-                (bool) ($this->flags & Constants::AMQP_DURABLE),
-                (bool) ($this->flags & Constants::AMQP_AUTODELETE),
-                (bool) ($this->flags & Constants::AMQP_INTERNAL),
-                (bool) ($this->flags & Constants::AMQP_NOWAIT),
-                $this->arguments,
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpExchangeException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->exchange_declare(
+            $this->name,
+            $this->type,
+            (bool) ($this->flags & Constants::AMQP_PASSIVE),
+            (bool) ($this->flags & Constants::AMQP_DURABLE),
+            (bool) ($this->flags & Constants::AMQP_AUTODELETE),
+            (bool) ($this->flags & Constants::AMQP_INTERNAL),
+            (bool) ($this->flags & Constants::AMQP_NOWAIT),
+            $this->arguments,
+            null
+        );
     }
 
     /**
@@ -188,13 +181,7 @@ class AmqpExchange implements AmqpExchangeInterface
             $exchangeName = $this->name;
         }
 
-        try {
-            $this->channel->getPhpAmqpLibChannel()->exchange_delete($exchangeName, $flags);
-        } catch (\Exception $e) {
-            throw AmqpExchangeException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->exchange_delete($exchangeName, $flags);
     }
 
     /**
@@ -202,20 +189,14 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->exchange_bind(
-                $exchangeName,
-                $this->name,
-                $routingKey,
-                false,
-                $arguments,
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpExchangeException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->exchange_bind(
+            $exchangeName,
+            $this->name,
+            $routingKey,
+            false,
+            $arguments,
+            null
+        );
     }
 
     /**
@@ -223,19 +204,13 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->exchange_unbind(
-                $exchangeName,
-                $this->name,
-                $routingKey,
-                $arguments,
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpExchangeException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->exchange_unbind(
+            $exchangeName,
+            $this->name,
+            $routingKey,
+            $arguments,
+            null
+        );
     }
 
     /**
@@ -256,20 +231,14 @@ class AmqpExchange implements AmqpExchangeInterface
             $routingKey = '';
         }
 
-        try {
-            $this->channel->getPhpAmqpLibChannel()->basic_publish(
-                $message,
-                $this->name,
-                $routingKey,
-                (bool) ($this->flags & Constants::AMQP_MANDATORY),
-                (bool) ($this->flags & Constants::AMQP_IMMEDIATE),
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpExchangeException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->basic_publish(
+            $message,
+            $this->name,
+            $routingKey,
+            (bool) ($this->flags & Constants::AMQP_MANDATORY),
+            (bool) ($this->flags & Constants::AMQP_IMMEDIATE),
+            null
+        );
     }
 
     /**

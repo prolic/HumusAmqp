@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\PhpAmqpLib;
 
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
-use Humus\Amqp\Exception\AmqpConnectionException;
 use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
@@ -37,7 +36,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_throws_exception_with_invalid_credentials()
     {
-        $this->expectException(AmqpConnectionException::class);
+        $this->expectException(\Exception::class);
 
         new AmqpStreamConnection($this->invalidCredentials());
     }

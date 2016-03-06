@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
-use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Connection\AbstractConnection;
 
@@ -91,11 +90,7 @@ abstract class AbstractAmqpConnection implements AmqpConnectionInterface
      */
     public function reconnect() : bool
     {
-        try {
-            $this->connection->reconnect();
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
+        $this->connection->reconnect();
 
         return true;
     }

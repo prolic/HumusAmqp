@@ -24,9 +24,7 @@ use Humus\Amqp\AmqpChannel;
 use Humus\Amqp\AmqpEnvelope;
 use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
-use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Constants;
-use Humus\Amqp\PlainProducer;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -93,6 +91,20 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
 
         $this->assertSame('foo', $msg1->getBody());
         $this->assertSame('bar', $msg2->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function it_rolls_back_transation()
+    {
+        $this->channel->startTransaction();
+        $this->exchange->publish('foo');
+        $this->channel->rollbackTransaction();
+
+        $msg = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertFalse($msg);
     }
 
     /**

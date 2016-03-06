@@ -24,8 +24,6 @@ namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
 use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
-use Humus\Amqp\Exception\AmqpChannelException;
-use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Class AmqpChannel
@@ -45,22 +43,11 @@ class AmqpChannel implements AmqpChannelInterface
 
     /**
      * Create an instance of an AMQPChannel object.
-     *
-     * @param AmqpConnection $amqpConnection An instance of AmqpConnection
-     *                                        with an active connection to a
-     *                                        broker.
-     * @throws AmqpConnectionException        If the connection to the broker
-     *                                        was lost.
      */
     public function __construct(AmqpConnection $amqpConnection)
     {
         $this->connection = $amqpConnection;
-
-        try {
-            $this->channel = new \AMQPChannel($amqpConnection->getAmqpExtensionConnection());
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        $this->channel = new \AMQPChannel($amqpConnection->getAmqpExtensionConnection());
     }
 
     /**
@@ -92,11 +79,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setPrefetchSize(int $size)
     {
-        try {
-            $this->channel->setPrefetchSize($size);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        $this->channel->setPrefetchSize($size);
     }
 
     /**
@@ -112,11 +95,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setPrefetchCount(int $count)
     {
-        try {
-            $this->channel->setPrefetchCount($count);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        $this->channel->setPrefetchCount($count);
     }
 
     /**
@@ -132,51 +111,31 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function qos(int $size, int $count)
     {
-        try {
-            $this->channel->qos($size, $count);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        $this->channel->qos($size, $count);
     }
 
     /**
      * @inheritdoc
      */
-    public function startTransaction() : bool
+    public function startTransaction()
     {
-        try {
-            return $this->channel->startTransaction();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        $this->channel->startTransaction();
     }
 
     /**
      * @inheritdoc
      */
-    public function commitTransaction() : bool
+    public function commitTransaction()
     {
-        try {
-            return $this->channel->commitTransaction();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->channel->commitTransaction();
     }
 
     /**
      * @inheritdoc
      */
-    public function rollbackTransaction() : bool
+    public function rollbackTransaction()
     {
-        try {
-            return $this->channel->rollbackTransaction();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->channel->rollbackTransaction();
     }
 
     /**

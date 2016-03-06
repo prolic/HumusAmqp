@@ -22,10 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\AmqpChannelException;
-use Humus\Amqp\Exception\AmqpConnectionException;
-use Humus\Amqp\Exception\AmqpExchangeException;
-
 /**
  * Represents a AMQP exchange
  *
@@ -121,9 +117,6 @@ interface AmqpExchange
     /**
      * Declare a new exchange on the broker.
      *
-     * @throws AmqpExchangeException   On failure.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function declareExchange();
@@ -136,9 +129,6 @@ interface AmqpExchange
      *                              to indicate the exchange should not be
      *                              deleted until no clients are connected to
      *                              it.
-     * @throws AmqpExchangeException   On failure.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM);
@@ -151,9 +141,6 @@ interface AmqpExchange
      * @param string $exchangeName Name of the exchange to bind.
      * @param string $routingKey   The routing key to use for binding.
      * @param array  $arguments     Additional binding arguments.
-     * @throws AmqpExchangeException   On failure.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = []);
@@ -166,9 +153,6 @@ interface AmqpExchange
      * @param string $exchangeName Name of the exchange to bind.
      * @param string $routingKey   The routing key to use for binding.
      * @param array  $arguments     Additional binding arguments.
-     * @throws AmqpExchangeException   On failure.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []);
@@ -187,9 +171,6 @@ interface AmqpExchange
      *                             message_id, user_id, app_id, delivery_mode,
      *                             priority, timestamp, expiration, type
      *                             or reply_to, headers.
-     * @throws AmqpExchangeException   On failure.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function publish(

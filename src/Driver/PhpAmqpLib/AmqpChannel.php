@@ -24,7 +24,6 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\Exception\AmqpConnectionException;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Channel\AMQPChannel as BaseAMQPChannel;
 
@@ -48,21 +47,12 @@ class AmqpChannel implements AmqpChannelInterface
      * Create an instance of an AMQPChannel object.
      *
      * @param AbstractAmqpConnection $amqpConnection  An instance of AbstractAmqpConnection
-     *                                        with an active connection to a
-     *                                        broker.
-     *
-     * @throws AmqpConnectionException        If the connection to the broker
-     *                                        was lost.
+     *                                                with an active connection to a broker.
      */
     public function __construct(AbstractAmqpConnection $amqpConnection)
     {
         $this->connection = $amqpConnection;
-
-        try {
-            $this->channel = new BaseAMQPChannel($amqpConnection->getPhpAmqpLibConnection());
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
+        $this->channel = new BaseAMQPChannel($amqpConnection->getPhpAmqpLibConnection());
     }
 
     /**
@@ -94,11 +84,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setPrefetchSize(int $size)
     {
-        try {
-            $this->channel->basic_qos($size, 0, false);
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
+        $this->channel->basic_qos($size, 0, false);
     }
 
     /**
@@ -114,11 +100,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setPrefetchCount(int $count)
     {
-        try {
-            $this->channel->basic_qos(0, $count, false);
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
+        $this->channel->basic_qos(0, $count, false);
     }
 
     /**
@@ -134,53 +116,31 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function qos(int $size, int $count)
     {
-        try {
-            $this->channel->basic_qos($size, $count, false);
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
+        $this->channel->basic_qos($size, $count, false);
     }
 
     /**
      * @inheritdoc
      */
-    public function startTransaction() : bool
+    public function startTransaction()
     {
-        try {
-            $this->channel->tx_select();
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->tx_select();
     }
 
     /**
      * @inheritdoc
      */
-    public function commitTransaction() : bool
+    public function commitTransaction()
     {
-        try {
-            $this->channel->tx_commit();
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->tx_commit();
     }
 
     /**
      * @inheritdoc
      */
-    public function rollbackTransaction() : bool
+    public function rollbackTransaction()
     {
-        try {
-            $this->channel->tx_rollback();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->tx_rollback();
     }
 
     /**

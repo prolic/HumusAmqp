@@ -22,9 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\AmqpChannelException;
-use Humus\Amqp\Exception\AmqpConnectionException;
-
 /**
  * Represents a AMQP queue
  *
@@ -106,8 +103,6 @@ interface AmqpQueue
     /**
      * Declare a new queue on the broker.
      *
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return integer the message count.
      */
     public function declareQueue() : int;
@@ -119,8 +114,6 @@ interface AmqpQueue
      * @param string $routingKey   Pattern or routing key to bind with.
      * @param array  $arguments     Additional binding arguments.
      *
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function bind(string $exchangeName, string $routingKey = null, array $arguments = []);
@@ -142,8 +135,6 @@ interface AmqpQueue
      *                       value is not provided, it will use the
      *                       value of ini-setting amqp.auto_ack.
      *
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return AmqpEnvelope|false
      */
     public function get(int $flags = Constants::AMQP_NOPARAM);
@@ -172,8 +163,6 @@ interface AmqpQueue
      * @param integer  $flags       A bitmask of any of the flags: Constants::AMQP_AUTOACK.
      * @param string   $consumerTag A string describing this consumer. Used
      *                              for canceling subscriptions with cancel().
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = null);
@@ -189,8 +178,6 @@ interface AmqpQueue
      *                              acknowledge receipt.
      * @param integer $flags        The only valid flag that can be passed is
      *                              Constants::AMQP_MULTIPLE.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
@@ -212,8 +199,6 @@ interface AmqpQueue
      * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s),
      *                              Constants::AMQP_MULTIPLE to nack all previous
      *                              unacked messages as well.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
@@ -229,8 +214,6 @@ interface AmqpQueue
      *
      * @param string  $deliveryTag Delivery tag of the message to reject.
      * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s).
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
@@ -238,8 +221,6 @@ interface AmqpQueue
     /**
      * Purge the contents of a queue.
      *
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function purge();
@@ -250,8 +231,6 @@ interface AmqpQueue
      * @param string $consumerTag The queue name to cancel, if the queue
      *                             object is not already representative of
      *                             a queue.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void;
      */
     public function cancel(string $consumerTag = '');
@@ -264,8 +243,6 @@ interface AmqpQueue
      * @param string $routingKey   The binding routing key used by the
      *                              queue.
      * @param array  $arguments     Additional binding arguments.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function unbind(string $exchangeName, string $routingKey = null, array $arguments = []);
@@ -279,8 +256,6 @@ interface AmqpQueue
      *                              to indicate the queue should not be
      *                              deleted until no clients are connected to
      *                              it.
-     * @throws AmqpChannelException    If the channel is not open.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM);

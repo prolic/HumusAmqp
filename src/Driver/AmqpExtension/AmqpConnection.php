@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\AmqpConnection as ConnectionInterface;
-use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Class AmqpConnection
@@ -41,11 +40,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function __construct(array $credentials = [])
     {
-        try {
-            $this->connection = new \AMQPConnection($credentials);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        $this->connection = new \AMQPConnection($credentials);
     }
 
     /**
@@ -69,11 +64,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function connect() : bool
     {
-        try {
-            return $this->connection->connect();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        return $this->connection->connect();
     }
 
     /**
@@ -81,11 +72,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function pconnect() : bool
     {
-        try {
-            return $this->connection->pconnect();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        return $this->connection->pconnect();
     }
 
     /**
@@ -109,11 +96,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function reconnect() : bool
     {
-        try {
-            return $this->connection->reconnect();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        return $this->connection->reconnect();
     }
 
     /**
@@ -121,10 +104,6 @@ class AmqpConnection implements ConnectionInterface
      */
     public function preconnect() : bool
     {
-        try {
-            return $this->connection->preconnect();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        }
+        return $this->connection->preconnect();
     }
 }

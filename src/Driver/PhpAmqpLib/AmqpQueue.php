@@ -26,7 +26,7 @@ use Humus\Amqp\Constants;
 use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
 use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
-use Humus\Amqp\Exception\AmqpQueueException;
+use Humus\Amqp\Exception\AmqpConnectionException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -134,20 +134,16 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function declareQueue() : int
     {
-        try {
-            return $this->channel->getPhpAmqpLibChannel()->queue_declare(
-                $this->name,
-                (bool) ($this->flags & Constants::AMQP_PASSIVE),
-                (bool) ($this->flags & Constants::AMQP_DURABLE),
-                (bool) ($this->flags & Constants::AMQP_EXCLUSIVE),
-                (bool) ($this->flags & Constants::AMQP_AUTODELETE),
-                (bool) ($this->flags & Constants::AMQP_NOWAIT),
-                $this->arguments,
-                null
-            )[1];
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
+        return $this->channel->getPhpAmqpLibChannel()->queue_declare(
+            $this->name,
+            (bool) ($this->flags & Constants::AMQP_PASSIVE),
+            (bool) ($this->flags & Constants::AMQP_DURABLE),
+            (bool) ($this->flags & Constants::AMQP_EXCLUSIVE),
+            (bool) ($this->flags & Constants::AMQP_AUTODELETE),
+            (bool) ($this->flags & Constants::AMQP_NOWAIT),
+            $this->arguments,
+            null
+        )[1];
     }
 
     /**
@@ -159,18 +155,14 @@ class AmqpQueue implements AmqpQueueInterface
             $routingKey = '';
         }
 
-        try {
-            $this->channel->getPhpAmqpLibChannel()->queue_bind(
-                $this->name,
-                $exchangeName,
-                $routingKey,
-                (bool) ($this->flags & Constants::AMQP_NOWAIT),
-                $arguments,
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
+        $this->channel->getPhpAmqpLibChannel()->queue_bind(
+            $this->name,
+            $exchangeName,
+            $routingKey,
+            (bool) ($this->flags & Constants::AMQP_NOWAIT),
+            $arguments,
+            null
+        );
     }
 
     /**
@@ -178,23 +170,17 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function get(int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            $envelope = $this->channel->getPhpAmqpLibChannel()->basic_get(
-                $this->name,
-                (bool) ($flags & Constants::AMQP_AUTOACK),
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
+        $envelope = $this->channel->getPhpAmqpLibChannel()->basic_get(
+            $this->name,
+            (bool) ($flags & Constants::AMQP_AUTOACK),
+            null
+        );
 
         if ($envelope instanceof AMQPMessage) {
-            $envelope = new AmqpEnvelope($envelope);
-        } else {
-            $envelope = false;
+            return new AmqpEnvelope($envelope);
         }
-
-        return $envelope;
+        
+        return false;
     }
 
     /**
@@ -235,7 +221,7 @@ class AmqpQueue implements AmqpQueueInterface
                 $this->channel->getPhpAmqpLibChannel()->wait();
             }
         } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
     }
 
@@ -244,16 +230,10 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->basic_ack(
-                $deliveryTag,
-                (bool) ($flags & Constants::AMQP_MULTIPLE)
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->basic_ack(
+            $deliveryTag,
+            (bool) ($flags & Constants::AMQP_MULTIPLE)
+        );
     }
 
     /**
@@ -261,17 +241,11 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->basic_nack(
-                $deliveryTag,
-                (bool) ($flags & Constants::AMQP_MULTIPLE),
-                (bool) ($flags & Constants::AMQP_REQUEUE)
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->basic_nack(
+            $deliveryTag,
+            (bool) ($flags & Constants::AMQP_MULTIPLE),
+            (bool) ($flags & Constants::AMQP_REQUEUE)
+        );
     }
 
     /**
@@ -279,16 +253,10 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->basic_reject(
-                $deliveryTag,
-                (bool) ($flags & Constants::AMQP_REQUEUE)
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->basic_reject(
+            $deliveryTag,
+            (bool) ($flags & Constants::AMQP_REQUEUE)
+        );
     }
 
     /**
@@ -296,17 +264,11 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function purge()
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->queue_purge(
-                $this->name,
-                (bool) ($this->flags & Constants::AMQP_NOWAIT),
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->queue_purge(
+            $this->name,
+            (bool) ($this->flags & Constants::AMQP_NOWAIT),
+            null
+        );
     }
 
     /**
@@ -314,17 +276,11 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function cancel(string $consumerTag = '')
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->basic_cancel(
-                $consumerTag,
-                (bool) ($this->flags & Constants::AMQP_NOWAIT),
-                false
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->basic_cancel(
+            $consumerTag,
+            (bool) ($this->flags & Constants::AMQP_NOWAIT),
+            false
+        );
     }
 
     /**
@@ -336,19 +292,13 @@ class AmqpQueue implements AmqpQueueInterface
             $routingKey = '';
         }
 
-        try {
-            $this->channel->getPhpAmqpLibChannel()->queue_unbind(
-                $this->name,
-                $exchangeName,
-                $routingKey,
-                $arguments,
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
-
-        return true;
+        $this->channel->getPhpAmqpLibChannel()->queue_unbind(
+            $this->name,
+            $exchangeName,
+            $routingKey,
+            $arguments,
+            null
+        );
     }
 
     /**
@@ -356,17 +306,13 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            $this->channel->getPhpAmqpLibChannel()->queue_delete(
-                $this->name,
-                (bool) ($flags & Constants::AMQP_IFUNUSED),
-                (bool) ($flags & Constants::AMQP_IFEMPTY),
-                (bool) ($flags & Constants::AMQP_NOWAIT),
-                null
-            );
-        } catch (\Exception $e) {
-            throw AmqpQueueException::fromPhpAmqpLib($e);
-        }
+        $this->channel->getPhpAmqpLibChannel()->queue_delete(
+            $this->name,
+            (bool) ($flags & Constants::AMQP_IFUNUSED),
+            (bool) ($flags & Constants::AMQP_IFEMPTY),
+            (bool) ($flags & Constants::AMQP_NOWAIT),
+            null
+        );
     }
 
     /**

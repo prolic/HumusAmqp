@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Assert\Assertion;
-use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
  * Class AmqpLazyConnection
@@ -46,25 +45,21 @@ class AmqpLazyConnection extends AbstractAmqpConnection
         $connectTimeout = isset($credentials['connect_timeout']) ? : 3;
         $vhost = isset($credentials['vhost']) ? : '/';
 
-        try {
-            $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
-                $credentials['host'],
-                $credentials['port'],
-                $credentials['login'],
-                $credentials['password'],
-                $vhost,
-                false,
-                'AMQPLAIN',
-                null,
-                'en_US',
-                $connectTimeout,
-                $readWriteTimeout,
-                null,
-                false,
-                0
-            );
-        } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
-        }
+        $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
+            $credentials['host'],
+            $credentials['port'],
+            $credentials['login'],
+            $credentials['password'],
+            $vhost,
+            false,
+            'AMQPLAIN',
+            null,
+            'en_US',
+            $connectTimeout,
+            $readWriteTimeout,
+            null,
+            false,
+            0
+        );
     }
 }

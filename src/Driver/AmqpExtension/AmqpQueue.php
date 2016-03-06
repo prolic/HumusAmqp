@@ -24,9 +24,7 @@ use Humus\Amqp\Constants;
 use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
 use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
-use Humus\Amqp\Exception\AmqpChannelException;
 use Humus\Amqp\Exception\AmqpConnectionException;
-use Humus\Amqp\Exception\AmqpQueueException;
 
 /**
  * Class AmqpQueue
@@ -48,24 +46,11 @@ class AmqpQueue implements AmqpQueueInterface
      * Create an instance of an AmqpQueue object.
      *
      * @param AmqpChannel $amqpChannel The amqp channel to use.
-     *
-     * @throws AmqpQueueException      When amqp channel is not connected to a
-     *                                 broker.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      */
     public function __construct(AmqpChannel $amqpChannel)
     {
         $this->channel = $amqpChannel;
-
-        try {
-            $this->queue = new \AMQPQueue($amqpChannel->getAmqpExtensionChannel());
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        } catch (\AMQPQueueException $e) {
-            throw AmqpQueueException::fromAmqpExtension($e);
-        }
+        $this->queue = new \AMQPQueue($amqpChannel->getAmqpExtensionChannel());
     }
 
     /**
@@ -137,13 +122,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function declareQueue() : int
     {
-        try {
-            return $this->queue->declareQueue();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        return $this->queue->declareQueue();
     }
 
     /**
@@ -151,13 +130,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function bind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
-        try {
-            return $this->queue->bind($exchangeName, $routingKey, $arguments);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->queue->bind($exchangeName, $routingKey, $arguments);
     }
 
     /**
@@ -165,13 +138,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function get(int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            $envelope = $this->queue->get($flags);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $envelope = $this->queue->get($flags);
 
         if ($envelope instanceof \AMQPEnvelope) {
             $envelope = new AmqpEnvelope($envelope);
@@ -198,8 +165,6 @@ class AmqpQueue implements AmqpQueueInterface
             $this->queue->consume($innerCallback, $flags, $consumerTag);
         } catch (\AMQPConnectionException $e) {
             throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
         }
     }
 
@@ -208,13 +173,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            return $this->queue->ack($deliveryTag, $flags);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->queue->ack($deliveryTag, $flags);
     }
 
     /**
@@ -222,13 +181,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            return $this->queue->nack($deliveryTag, $flags);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->queue->nack($deliveryTag, $flags);
     }
 
     /**
@@ -236,13 +189,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            return $this->queue->reject($deliveryTag, $flags);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->queue->reject($deliveryTag, $flags);
     }
 
     /**
@@ -250,13 +197,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function purge()
     {
-        try {
-            return $this->queue->purge();
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->queue->purge();
     }
 
     /**
@@ -264,13 +205,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function cancel(string $consumerTag = '')
     {
-        try {
-            return $this->queue->cancel($consumerTag);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
+        $this->queue->cancel($consumerTag);
     }
 
     /**
@@ -278,15 +213,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function unbind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
-        try {
-            $this->queue->unbind($exchangeName, $routingKey, $arguments);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
-
-        return true;
+        $this->queue->unbind($exchangeName, $routingKey, $arguments);
     }
 
     /**
@@ -294,15 +221,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
-        try {
-            $this->queue->delete($flags);
-        } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
-        } catch (\AMQPChannelException $e) {
-            throw AmqpChannelException::fromAmqpExtension($e);
-        }
-
-        return true;
+        $this->queue->delete($flags);
     }
 
     /**

@@ -22,9 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\AmqpChannelException;
-use Humus\Amqp\Exception\AmqpConnectionException;
-
 /**
  * Represents a AMQP channel between PHP and a AMQP server.
  *
@@ -58,7 +55,6 @@ interface AmqpChannel
      * flag set, this setting will be ignored.
      *
      * @param integer $size The window size, in octets, to prefetch.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function setPrefetchSize(int $size);
@@ -79,7 +75,6 @@ interface AmqpChannel
      * prefetch window size setting will be ignored.
      *
      * @param integer $count The number of messages to prefetch.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function setPrefetchCount(int $count);
@@ -108,7 +103,6 @@ interface AmqpChannel
      *
      * @param integer $size  The window size, in octets, to prefetch.
      * @param integer $count The number of messages to prefetch.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function qos(int $size, int $count);
@@ -119,7 +113,6 @@ interface AmqpChannel
      * This method must be called on the given channel prior to calling
      * AmqpChannel::commitTransaction() or AmqpChannel::rollbackTransaction().
      *
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function startTransaction();
@@ -127,9 +120,6 @@ interface AmqpChannel
     /**
      * Commit a pending transaction.
      *
-     * @throws AmqpChannelException    If no transaction was started prior to
-     *                                 calling this method.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function commitTransaction();
@@ -140,9 +130,6 @@ interface AmqpChannel
      * Rollback an existing transaction. AmqpChannel::startTransaction() must
      * be called prior to this.
      *
-     * @throws AmqpChannelException    If no transaction was started prior to
-     *                                 calling this method.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      * @return void
      */
     public function rollbackTransaction();

@@ -22,9 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\AmqpChannelException;
-use Humus\Amqp\Exception\AmqpConnectionException;
-
 /**
  * Interface Producer
  * @package Humus\Amqp
@@ -50,18 +47,12 @@ interface Producer
      * This method must be called on the given channel prior to calling
      * Producer::commitTransaction() or Producer::rollbackTransaction().
      *
-     * @throws AmqpConnectionException If the connection to the broker was lost.
-     *
      * @return bool TRUE on success or FALSE on failure.
      */
     public function startTransaction();
 
     /**
      * Commit a pending transaction.
-     *
-     * @throws AmqpChannelException    If no transaction was started prior to
-     *                                 calling this method.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      *
      * @return bool TRUE on success or FALSE on failure.
      */
@@ -72,10 +63,6 @@ interface Producer
      *
      * Rollback an existing transaction. Producer::startTransaction() must
      * be called prior to this.
-     *
-     * @throws AmqpChannelException    If no transaction was started prior to
-     *                                 calling this method.
-     * @throws AmqpConnectionException If the connection to the broker was lost.
      *
      * @return bool TRUE on success or FALSE on failure.
      */

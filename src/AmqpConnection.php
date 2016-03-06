@@ -22,8 +22,6 @@ declare (strict_types=1);
 
 namespace  Humus\Amqp;
 
-use Humus\Amqp\Exception\AmqpConnectionException;
-
 /**
  * Represents a AMQP connection between PHP and a AMQP server.
  *
@@ -52,7 +50,6 @@ interface AmqpConnection
      *
      * @param array $credentials Optional array of credential information for
      *                           connecting to the AMQP broker.
-     * @throws AmqpConnectionException
      */
     public function __construct(array $credentials = []);
 
@@ -70,7 +67,6 @@ interface AmqpConnection
      *
      * This method will initiate a connection with the AMQP broker.
      *
-     * @throws AmqpConnectionException
      * @return bool TRUE on success or throw an exception on failure.
      */
     public function connect() : bool;
@@ -81,7 +77,6 @@ interface AmqpConnection
      * This method will initiate a connection with the AMQP broker
      * or reuse an existing one if present.
      *
-     * @throws AmqpConnectionException
      * @return bool TRUE on success or throws an exception on failure.
      */
     public function pconnect() : bool;
@@ -110,7 +105,6 @@ interface AmqpConnection
     /**
      * Close any open transient connections and initiate a new one with the AMQP broker.
      *
-     * @throws AMQPConnectionException
      * @return bool TRUE on success or FALSE on failure.
      */
     public function reconnect() : bool;
@@ -118,7 +112,6 @@ interface AmqpConnection
     /**
      * Close any open persistent connections and initiate a new one with the AMQP broker.
      *
-     * @throws AMQPConnectionException
      * @return bool TRUE on success or FALSE on failure.
      */
     public function preconnect() : bool;
