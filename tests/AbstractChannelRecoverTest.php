@@ -36,6 +36,22 @@ use PHPUnit_Framework_TestCase as TestCase;
 abstract class AbstractChannelRecoverTest extends TestCase
 {
     /**
+     * @var AmqpExchange
+     */
+    private $exchange;
+
+    /**
+     * @var AmqpQueue
+     */
+    private $queue;
+
+    protected function tearDown()
+    {
+        $this->queue->delete();
+        $this->exchange->delete();
+    }
+
+    /**
      * @test
      */
     public function it_recovers()
@@ -55,6 +71,9 @@ abstract class AbstractChannelRecoverTest extends TestCase
         $queue1->setName('test');
         $queue1->setFlags(Constants::AMQP_DURABLE);
         $queue1->declareQueue();
+
+        $this->exchange = $exchange1;
+        $this->queue = $queue1;
 
         $queue1->bind($exchange1->getName(), 'test');
 

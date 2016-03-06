@@ -40,6 +40,18 @@ final class ChannelTest extends AbstractChannelTest
         $this->channel = $this->getNewChannel($this->connection);
     }
 
+    /**
+     * @test
+     */
+    public function it_changes_qos()
+    {
+        $channel = $this->getNewChannel($this->connection);
+
+        $channel->qos(0, 5);
+        $channel->setPrefetchSize(0);
+        $channel->setPrefetchCount(20);
+    }
+
     protected function getNewConnection() : AmqpConnectionInterface
     {
         return new AmqpStreamConnection($this->validCredentials());

@@ -61,7 +61,7 @@ class AmqpChannel implements AmqpChannelInterface
         try {
             $this->channel = new BaseAMQPChannel($amqpConnection->getPhpAmqpLibConnection());
         } catch (\Exception $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
     }
 
@@ -97,7 +97,7 @@ class AmqpChannel implements AmqpChannelInterface
         try {
             $this->channel->basic_qos($size, 0, false);
         } catch (\Exception $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
     }
 
@@ -117,7 +117,7 @@ class AmqpChannel implements AmqpChannelInterface
         try {
             $this->channel->basic_qos(0, $count, false);
         } catch (\Exception $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
     }
 
@@ -137,7 +137,7 @@ class AmqpChannel implements AmqpChannelInterface
         try {
             $this->channel->basic_qos($size, $count, false);
         } catch (\Exception $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
     }
 
@@ -149,7 +149,7 @@ class AmqpChannel implements AmqpChannelInterface
         try {
             return $this->channel->tx_select();
         } catch (\Exception $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
     }
 
@@ -161,7 +161,7 @@ class AmqpChannel implements AmqpChannelInterface
         try {
             return $this->channel->tx_commit();
         } catch (\Exception $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
     }
 
@@ -173,7 +173,7 @@ class AmqpChannel implements AmqpChannelInterface
         try {
             $this->channel->tx_rollback();
         } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw AmqpConnectionException::fromPhpAmqpLib($e);
         }
 
         return true;
