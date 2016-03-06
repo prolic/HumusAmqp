@@ -244,6 +244,38 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
+    public function publishBatch(
+        array $messages,
+        string $routingKey = null,
+        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
+    ) {
+        foreach ($messages as $message) {
+            $message = new AMQPMessage($message, $attributes);
+
+            if (isset($attributes['headers'])) {
+                $message->set('application_headers', new AMQPTable($attributes['headers']));
+            }
+
+            if (null === $routingKey) {
+                $routingKey = '';
+            }
+
+            $this->channel->getPhpAmqpLibChannel()->batch_basic_publish(
+                $message,
+                $this->name,
+                $routingKey,
+                (bool) ($this->flags & Constants::AMQP_MANDATORY),
+                (bool) ($this->flags & Constants::AMQP_IMMEDIATE),
+                null
+            );
+        }
+        
+        $this->channel->getPhpAmqpLibChannel()->publish_batch();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getChannel() : AmqpChannelInterface
     {
         return $this->channel;

@@ -160,8 +160,6 @@ interface AmqpExchange
     /**
      * Publish a message to an exchange.
      *
-     * Publish a message to the exchange represented by the AMQPExchange object.
-     *
      * @param string  $message     The message to publish.
      * @param string  $routingKey The optional routing key to which to
      *                             publish to.
@@ -175,6 +173,26 @@ interface AmqpExchange
      */
     public function publish(
         string $message,
+        string $routingKey = null,
+        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
+    );
+
+    /**
+     * Publish a batch of messages to an exchange.
+     *
+     * @param string[] $messages    The message to publish.
+     * @param string   $routingKey  The optional routing key to which to
+     *                              publish to.
+     * @param integer  $flags       One or more of Constants::AMQP_MANDATORY and
+     *                              Constants::AMQP_IMMEDIATE.
+     * @param array    $attributes  One of content_type, content_encoding,
+     *                              message_id, user_id, app_id, delivery_mode,
+     *                              priority, timestamp, expiration, type
+     *                              or reply_to, headers.
+     * @return void
+     */
+    public function publishBatch(
+        array $messages,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     );

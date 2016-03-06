@@ -24,13 +24,13 @@ use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
 use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
 use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
 use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
+use HumusTest\Amqp\AbstractPlainConsumerTest;
 
 /**
- * Class BasicPublishConsumeTest
+ * Class PlainConsumerTest
  * @package HumusTest\Amqp\AmqpExtension
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+final class PlainConsumerTest extends AbstractPlainConsumerTest
 {
     protected function setUp()
     {

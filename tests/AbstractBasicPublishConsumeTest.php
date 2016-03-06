@@ -33,6 +33,8 @@ use PHPUnit_Framework_TestCase as TestCase;
  */
 abstract class AbstractBasicPublishConsumeTest extends TestCase
 {
+    use ValidCredentialsTrait;
+    
     /**
      * @var AmqpChannel
      */
@@ -57,6 +59,13 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      * @var array
      */
     protected $results = [];
+
+    protected function setUp()
+    {
+        $this->callback = function (AmqpEnvelope $envelope) {
+            $this->results[] = $envelope->getBody();
+        };
+    }
 
     /**
      * @test
@@ -199,6 +208,36 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
 
         $this->assertFalse($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_produces_a_batch()
+    {
+        $this->exchange->publishBatch(['foo', 'bar']);
+
+        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function it_produces_a_batch_in_transaction()
+    {
+        $this->channel->startTransaction();
+        $this->exchange->publishBatch(['foo', 'bar']);
+        $this->channel->commitTransaction();
+
+        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
     }
 
     protected function tearDown()

@@ -18,26 +18,26 @@
  *  and is licensed under the MIT license.
  */
 
-namespace HumusTest\Amqp\AmqpExtension;
+namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
-use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpQueue;
+use HumusTest\Amqp\AbstractPlainConsumerTest;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\AmqpExtension
+ * Class PlainConsumerTest
+ * @package HumusTest\Amqp\PhpAmqpLib
+ * @group  my
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+final class PlainConsumerTest extends AbstractPlainConsumerTest
 {
     protected function setUp()
     {
         parent::setUp();
-
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
+        
+        $connection = new AMQPStreamConnection($this->validCredentials());
 
         $channel = new AmqpChannel($connection);
 

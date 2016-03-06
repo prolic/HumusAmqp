@@ -20,7 +20,6 @@
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\AmqpEnvelope;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
@@ -36,13 +35,9 @@ final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
 {
     protected function setUp()
     {
-        $connection = new AMQPStreamConnection([
-            'vhost' => '/humus-amqp-test',
-            'host' => 'localhost',
-            'port' => 5672,
-            'login' => 'guest',
-            'password' => 'guest',
-        ]);
+        parent::setUp();
+        
+        $connection = new AMQPStreamConnection($this->validCredentials());
 
         $channel = new AmqpChannel($connection);
 
@@ -59,9 +54,5 @@ final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
         $this->channel = $channel;
         $this->exchange = $exchange;
         $this->queue = $queue;
-
-        $this->callback = function (AmqpEnvelope $envelope) {
-              $this->results[] = $envelope->getBody();
-        };
     }
 }

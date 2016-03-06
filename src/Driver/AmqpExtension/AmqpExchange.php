@@ -183,6 +183,20 @@ class AmqpExchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
+    public function publishBatch(
+        array $messages,
+        string $routingKey = null,
+        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
+    )
+    {
+        foreach ($messages as $message) {
+            $this->exchange->publish($message, $routingKey, $flags, $attributes);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getChannel() : AmqpChannelInterface
     {
         return $this->channel;

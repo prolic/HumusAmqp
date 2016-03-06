@@ -22,6 +22,8 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange as PhpAmqpLibExchange;
+
 /**
  * Class PlainProducer
  * @package Humus\Amqp
@@ -62,6 +64,34 @@ final class PlainProducer extends AbstractProducer
         }
 
         $this->exchange->publish($message, $routingKey, $flags, $attributes);
+
+        if ($this->transactional) {
+            $this->commitTransaction();
+        }
+    }
+
+    /**
+     * Publish a batch of messages
+     *
+     * @param string[] $messages    The messages to publish.
+     * @param string   $routingKey  The optional routing key to which to
+     *                              publish to.
+     * @param integer  $flags       One or more of Constants::AMQP_MANDATORY and
+     *                              Constants::AMQP_IMMEDIATE.
+     * @param array    $attributes  One of content_type, content_encoding,
+     *                              correlation_id, reply_to, headers,
+     *                              message_id, user_id, app_id, delivery_mode,
+     *                              priority, timestamp, expiration or type.
+     */
+    public function publishBatch(array $messages, $routingKey = null, $flags = Constants::AMQP_NOPARAM, array $attributes = [])
+    {
+        $attributes = array_merge($this->defaultAttributes, $attributes);
+
+        if ($this->transactional) {
+            $this->startTransaction();
+        }
+
+        $this->exchange->publishBatch($messages, $routingKey, $flags, $attributes);
 
         if ($this->transactional) {
             $this->commitTransaction();
