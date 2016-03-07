@@ -18,6 +18,8 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\AmqpChannel;
@@ -78,7 +80,7 @@ abstract class AbstractPlainConsumerTest extends TestCase
      */
     public function it_produces_and_get_messages_from_queue()
     {
-        $producer = new PlainProducer($this->exchange, false, false);
+        $producer = new PlainProducer($this->exchange);
         $producer->publish('foo');
         $producer->publish('bar');
 
@@ -94,7 +96,7 @@ abstract class AbstractPlainConsumerTest extends TestCase
      */
     public function it_produces_transactional_and_get_messages_from_queue()
     {
-        $producer = new PlainProducer($this->exchange, false, true);
+        $producer = new PlainProducer($this->exchange);
         $producer->publish('foo');
         $producer->publish('bar');
 
@@ -110,8 +112,10 @@ abstract class AbstractPlainConsumerTest extends TestCase
      */
     public function it_produces_a_batch()
     {
-        $producer = new PlainProducer($this->exchange, false, false);
-        $producer->publishBatch(['foo', 'bar']);
+        $producer = new PlainProducer($this->exchange);
+        $producer->publishBatch('foo');
+        $producer->publishBatch('bar');
+        $producer->publishBatchSubmit();
 
         $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
@@ -125,8 +129,10 @@ abstract class AbstractPlainConsumerTest extends TestCase
      */
     public function it_produces_a_batch_in_transaction()
     {
-        $producer = new PlainProducer($this->exchange, false, true);
-        $producer->publishBatch(['foo', 'bar']);
+        $producer = new PlainProducer($this->exchange);
+        $producer->publishBatch('foo');
+        $producer->publishBatch('bar');
+        $producer->publishBatchSubmit();
 
         $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);

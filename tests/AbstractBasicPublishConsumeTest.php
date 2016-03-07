@@ -18,6 +18,8 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\AmqpChannel;
@@ -215,13 +217,25 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      */
     public function it_produces_a_batch()
     {
-        $this->exchange->publishBatch(['foo', 'bar']);
+        $this->exchange->publishBatch('foo');
+        $this->exchange->publishBatch('bar');
+        $this->exchange->publishBatchSubmit();
 
         $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
 
         $this->assertSame('foo', $msg1->getBody());
         $this->assertSame('bar', $msg2->getBody());
+
+        $this->exchange->publishBatch('baz');
+        $this->exchange->publishBatch('bam');
+        $this->exchange->publishBatchSubmit();
+
+        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertSame('baz', $msg1->getBody());
+        $this->assertSame('bam', $msg2->getBody());
     }
 
     /**
@@ -230,7 +244,9 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
     public function it_produces_a_batch_in_transaction()
     {
         $this->channel->startTransaction();
-        $this->exchange->publishBatch(['foo', 'bar']);
+        $this->exchange->publishBatch('foo');
+        $this->exchange->publishBatch('bar');
+        $this->exchange->publishBatchSubmit();
         $this->channel->commitTransaction();
 
         $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);

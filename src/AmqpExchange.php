@@ -180,22 +180,29 @@ interface AmqpExchange
     /**
      * Publish a batch of messages to an exchange.
      *
-     * @param string[] $messages    The message to publish.
-     * @param string   $routingKey  The optional routing key to which to
-     *                              publish to.
-     * @param integer  $flags       One or more of Constants::AMQP_MANDATORY and
-     *                              Constants::AMQP_IMMEDIATE.
-     * @param array    $attributes  One of content_type, content_encoding,
-     *                              message_id, user_id, app_id, delivery_mode,
-     *                              priority, timestamp, expiration, type
-     *                              or reply_to, headers.
+     * @param string  $message     The message to publish.
+     * @param string   $routingKey The optional routing key to which to
+     *                             publish to.
+     * @param integer  $flags      One or more of Constants::AMQP_MANDATORY and
+     *                             Constants::AMQP_IMMEDIATE.
+     * @param array    $attributes One of content_type, content_encoding,
+     *                             message_id, user_id, app_id, delivery_mode,
+     *                             priority, timestamp, expiration, type
+     *                             or reply_to, headers.
      * @return void
      */
     public function publishBatch(
-        array $messages,
+        string $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     );
+
+    /**
+     * Submit a batch of published messages
+     * 
+     * @return void
+     */
+    public function publishBatchSubmit();
 
     /**
      * Get the AmqpChannel object in use

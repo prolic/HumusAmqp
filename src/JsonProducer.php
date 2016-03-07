@@ -41,30 +41,38 @@ final class JsonProducer extends AbstractProducer
     }
 
     /**
-     * Publish a message
-     *
-     * @param string  $message     The message to publish.
-     * @param string  $routingKey  The optional routing key to which to
-     *                             publish to.
-     * @param integer $flags       One or more of Constants::AMQP_MANDATORY and
-     *                             Constants::AMQP_IMMEDIATE.
-     * @param array   $attributes  One of content_type, content_encoding,
-     *                             correlation_id, reply_to, headers,
-     *                             message_id, user_id, app_id, delivery_mode,
-     *                             priority, timestamp, expiration or type.
+     * @inheritdoc
      */
-    public function publish($message, $routingKey = null, $flags = Constants::AMQP_NOPARAM, array $attributes = [])
-    {
+    public function publish(
+        string $message,
+        string $routingKey = null,
+        int $flags = Constants::AMQP_NOPARAM,
+        array $attributes = []
+    ) {
         $attributes = array_merge($this->defaultAttributes, $attributes);
 
-        if ($this->transactional) {
-            $this->startTransaction();
-        }
-
         $this->exchange->publish(json_encode($message), $routingKey, $flags, $attributes);
+    }
 
-        if ($this->transactional) {
-            $this->commitTransaction();
-        }
+    /**
+     * @inheritdoc
+     */
+    public function publishBatch(
+        string $message,
+        string $routingKey = null,
+        int $flags = Constants::AMQP_NOPARAM,
+        array $attributes = []
+    ) {
+        $attributes = array_merge($this->defaultAttributes, $attributes);
+
+        $this->exchange->publishBatch(json_encode($message), $routingKey, $flags, $attributes);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function publishBatchSubmit()
+    {
+        $this->exchange->publishBatchSubmit();
     }
 }

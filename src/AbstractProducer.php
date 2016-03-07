@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Assert\Assertion;
 use Humus\Amqp\Exception\AmqpChannelException;
 
 /**
@@ -42,46 +41,29 @@ abstract class AbstractProducer implements Producer
     protected $defaultAttributes;
 
     /**
-     * @var bool
-     */
-    protected $confirm;
-
-    /**
-     * @var bool
-     */
-    protected $transactional;
-
-    /**
      * Constructor
      *
      * @param AmqpExchange $exchange
-     * @param bool $confirm
-     * @param bool $transactional
      * @param array|null $defaultAttributes
      * @throws AmqpChannelException
      */
-    public function __construct(AmqpExchange $exchange, bool $confirm, bool $transactional, array $defaultAttributes = null)
+    public function __construct(AmqpExchange $exchange, array $defaultAttributes = null)
     {
-        Assertion::boolean($confirm);
-        Assertion::boolean($transactional);
-
-        if ($confirm && $transactional) {
-            throw new AmqpChannelException('Only non-transactional channels can be put in confirm mode');
-        }
-
         $this->exchange = $exchange;
-        $this->confirm = $confirm;
-        $this->transactional = $transactional;
 
         if (null !== $defaultAttributes) {
             $this->defaultAttributes = $defaultAttributes;
         } else {
             $this->defaultAttributes = static::defaultAttributes();
         }
+    }
 
-        if ($confirm) {
-            $this->exchange->getChannel()->confirmSelect();
-        }
+    /**
+     * @inheritdoc
+     */
+    public function confirmSelect()
+    {
+        $this->exchange->getChannel()->confirmSelect();
     }
 
     /**
@@ -89,11 +71,7 @@ abstract class AbstractProducer implements Producer
      */
     public function startTransaction()
     {
-        if ($this->confirm) {
-            throw new AmqpChannelException('Channel is in confirm mode and transaction cannot be started');
-        }
-
-        return $this->exchange->getChannel()->startTransaction();
+        $this->exchange->getChannel()->startTransaction();
     }
 
     /**
@@ -101,7 +79,7 @@ abstract class AbstractProducer implements Producer
      */
     public function commitTransaction()
     {
-        return $this->exchange->getChannel()->commitTransaction();
+        $this->exchange->getChannel()->commitTransaction();
     }
 
     /**
@@ -109,6 +87,6 @@ abstract class AbstractProducer implements Producer
      */
     public function rollbackTransaction()
     {
-        return $this->exchange->getChannel()->rollbackTransaction();
+        $this->exchange->getChannel()->rollbackTransaction();
     }
 }

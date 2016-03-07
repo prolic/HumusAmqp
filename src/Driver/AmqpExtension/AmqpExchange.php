@@ -42,6 +42,11 @@ class AmqpExchange implements AmqpExchangeInterface
     private $exchange;
 
     /**
+     * @var array
+     */
+    private $batchMessages = [];
+
+    /**
      * Create an instance of AMQPExchange.
      *
      * Returns a new instance of an AMQPExchange object, associated with the
@@ -184,13 +189,28 @@ class AmqpExchange implements AmqpExchangeInterface
      * @inheritdoc
      */
     public function publishBatch(
-        array $messages,
+        string $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) {
-        foreach ($messages as $message) {
-            $this->exchange->publish($message, $routingKey, $flags, $attributes);
+        $this->batchMessages[] = [
+            $message,
+            $routingKey,
+            $flags,
+            $attributes
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function publishBatchSubmit()
+    {
+        foreach ($this->batchMessages as $batchMessage) {
+            $this->exchange->publish($batchMessage[0], $batchMessage[1], $batchMessage[2], $batchMessage[3]);
         }
+        
+        $this->batchMessages = [];
     }
 
     /**

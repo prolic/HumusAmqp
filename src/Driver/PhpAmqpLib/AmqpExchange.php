@@ -245,31 +245,35 @@ class AmqpExchange implements AmqpExchangeInterface
      * @inheritdoc
      */
     public function publishBatch(
-        array $messages,
+        string $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) {
-        foreach ($messages as $message) {
-            $message = new AMQPMessage($message, $attributes);
+        $message = new AMQPMessage($message, $attributes);
 
-            if (isset($attributes['headers'])) {
-                $message->set('application_headers', new AMQPTable($attributes['headers']));
-            }
-
-            if (null === $routingKey) {
-                $routingKey = '';
-            }
-
-            $this->channel->getPhpAmqpLibChannel()->batch_basic_publish(
-                $message,
-                $this->name,
-                $routingKey,
-                (bool) ($this->flags & Constants::AMQP_MANDATORY),
-                (bool) ($this->flags & Constants::AMQP_IMMEDIATE),
-                null
-            );
+        if (isset($attributes['headers'])) {
+            $message->set('application_headers', new AMQPTable($attributes['headers']));
         }
 
+        if (null === $routingKey) {
+            $routingKey = '';
+        }
+
+        $this->channel->getPhpAmqpLibChannel()->batch_basic_publish(
+            $message,
+            $this->name,
+            $routingKey,
+            (bool) ($this->flags & Constants::AMQP_MANDATORY),
+            (bool) ($this->flags & Constants::AMQP_IMMEDIATE),
+            null
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function publishBatchSubmit()
+    {
         $this->channel->getPhpAmqpLibChannel()->publish_batch();
     }
 
