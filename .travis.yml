@@ -19,6 +19,7 @@ before_script:
   - ./configure
   - make
   - sudo make install
+  - cd ..
   - phpenv config-rm xdebug.ini
   - composer self-update
   - composer update
