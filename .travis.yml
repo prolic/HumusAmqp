@@ -13,7 +13,7 @@ before_script:
   - git clone https://github.com/pdezwart/php-amqp.git
   - cd php-amqp
   - git remote add pinepain https://github.com/pinepain/php-amqp.git
-  - git fetch pinepane
+  - git fetch pinepain
   - git checkout -b handling_server_methods pinepain/handling_server_methods
   - phpize
   - ./configure
