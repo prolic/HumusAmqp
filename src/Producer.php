@@ -42,7 +42,7 @@ interface Producer
      *                             priority, timestamp, expiration or type.
      */
     public function publish(
-        string $message,
+        $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
@@ -62,7 +62,7 @@ interface Producer
      *                             priority, timestamp, expiration or type.
      */
     public function publishBatch(
-        string $message,
+        $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []

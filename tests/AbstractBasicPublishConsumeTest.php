@@ -274,7 +274,6 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
 
     /**
      * @test
-     * @group my
      */
     public function it_produces_in_confirm_mode()
     {

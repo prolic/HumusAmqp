@@ -44,7 +44,7 @@ final class PlainProducer extends AbstractProducer
      * @inheritdoc
      */
     public function publish(
-        string $message,
+        $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) {
@@ -57,7 +57,7 @@ final class PlainProducer extends AbstractProducer
      * @inheritdoc
      */
     public function publishBatch(
-        string $message,
+        $message,
         string $routingKey = null,
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) {

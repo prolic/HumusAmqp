@@ -31,10 +31,10 @@ use Humus\Amqp\PlainProducer;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * Class AbstractPlainConsumerTest
+ * Class AbstractPlainProducerTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractPlainConsumerTest extends TestCase
+abstract class AbstractPlainProducerTest extends TestCase
 {
     use ValidCredentialsTrait;
 

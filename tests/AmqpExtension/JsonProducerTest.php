@@ -26,13 +26,13 @@ use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
 use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
 use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
 use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
-use HumusTest\Amqp\AbstractPlainConsumerTest;
+use HumusTest\Amqp\AbstractJsonProducerTest;
 
 /**
- * Class PlainConsumerTest
+ * Class JsonProducerTest
  * @package HumusTest\Amqp\AmqpExtension
  */
-final class PlainConsumerTest extends AbstractPlainConsumerTest
+final class JsonProducerTest extends AbstractJsonProducerTest
 {
     protected function setUp()
     {
