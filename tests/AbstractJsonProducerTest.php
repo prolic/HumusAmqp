@@ -105,15 +105,22 @@ abstract class AbstractJsonProducerTest extends TestCase
      */
     public function it_produces_transactional_and_get_messages_from_queue()
     {
-        $producer = new PlainProducer($this->exchange);
-        $producer->publish('foo');
-        $producer->publish('bar');
+        $producer = new JsonProducer($this->exchange);
+        $producer->startTransaction();
+        $producer->publish(['foo' => 'bar']);
+        $producer->publish(['baz' => 'bam']);
+        $producer->commitTransaction();
 
         $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
 
-        $this->assertSame('foo', $msg1->getBody());
-        $this->assertSame('bar', $msg2->getBody());
+        $body = json_decode($msg1->getBody(), true);
+
+        $this->assertEquals(['foo' => 'bar'], $body);
+
+        $body = json_decode($msg2->getBody(), true);
+
+        $this->assertEquals(['baz' => 'bam'], $body);
     }
 
     /**
@@ -121,16 +128,21 @@ abstract class AbstractJsonProducerTest extends TestCase
      */
     public function it_produces_a_batch()
     {
-        $producer = new PlainProducer($this->exchange);
-        $producer->publishBatch('foo');
-        $producer->publishBatch('bar');
+        $producer = new JsonProducer($this->exchange);
+        $producer->publishBatch(['foo' => 'bar']);
+        $producer->publishBatch(['baz' => 'bam']);
         $producer->publishBatchSubmit();
 
         $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
 
-        $this->assertSame('foo', $msg1->getBody());
-        $this->assertSame('bar', $msg2->getBody());
+        $body = json_decode($msg1->getBody(), true);
+
+        $this->assertEquals(['foo' => 'bar'], $body);
+
+        $body = json_decode($msg2->getBody(), true);
+
+        $this->assertEquals(['baz' => 'bam'], $body);
     }
 
     /**
@@ -138,17 +150,53 @@ abstract class AbstractJsonProducerTest extends TestCase
      */
     public function it_produces_a_batch_in_transaction()
     {
-        $producer = new PlainProducer($this->exchange);
-        $producer->publishBatch('foo');
-        $producer->publishBatch('bar');
+        $producer = new JsonProducer($this->exchange);
+        $producer->startTransaction();
+        $producer->publishBatch(['foo' => 'bar']);
+        $producer->publishBatch(['baz' => 'bam']);
         $producer->publishBatchSubmit();
+        $producer->commitTransaction();
 
         $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
 
-        $this->assertSame('foo', $msg1->getBody());
-        $this->assertSame('bar', $msg2->getBody());
+        $body = json_decode($msg1->getBody(), true);
+
+        $this->assertEquals(['foo' => 'bar'], $body);
+
+        $body = json_decode($msg2->getBody(), true);
+
+        $this->assertEquals(['baz' => 'bam'], $body);
     }
+
+    /**
+     * @test
+     */
+    public function it_produces_in_confirm_mode()
+    {
+        $producer = new JsonProducer($this->exchange);
+        $producer->confirmSelect();
+
+        $queue = $this->getNewQueueWithNewChannelAndConnection();
+        $queue->setName('text-queue2');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $producer->publish(['foo' => 'bar']);
+        $producer->publish(['baz' => 'bam']);
+
+        usleep(4000); // wait for message
+
+        $msg1 = $queue->get(Constants::AMQP_NOPARAM);
+        $msg2 = $queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertEquals(['foo' => 'bar'], json_decode($msg1->getBody(), true));
+        $this->assertEquals(['baz' => 'bam'], json_decode($msg2->getBody(), true));
+
+        $queue->delete();
+    }
+
+    abstract protected function getNewQueueWithNewChannelAndConnection() : AmqpQueue;
 
     protected function tearDown()
     {

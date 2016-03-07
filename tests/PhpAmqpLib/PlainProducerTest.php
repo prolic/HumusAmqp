@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
+use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
@@ -55,5 +56,12 @@ final class PlainProducerTest extends AbstractPlainProducerTest
         $this->channel = $channel;
         $this->exchange = $exchange;
         $this->queue = $queue;
+    }
+
+    protected function getNewQueueWithNewChannelAndConnection() : AmqpQueueInterface
+    {
+        $connection = new AMQPStreamConnection($this->validCredentials());
+
+        return new AmqpQueue(new AmqpChannel($connection));
     }
 }

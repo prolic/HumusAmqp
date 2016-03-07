@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
+use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
 use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
 use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
 use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
@@ -56,5 +57,13 @@ final class JsonProducerTest extends AbstractJsonProducerTest
         $this->channel = $channel;
         $this->exchange = $exchange;
         $this->queue = $queue;
+    }
+
+    protected function getNewQueueWithNewChannelAndConnection() : AmqpQueueInterface
+    {
+        $connection = new AmqpConnection($this->validCredentials());
+        $connection->connect();
+
+        return new AmqpQueue(new AmqpChannel($connection));
     }
 }

@@ -97,8 +97,10 @@ abstract class AbstractPlainProducerTest extends TestCase
     public function it_produces_transactional_and_get_messages_from_queue()
     {
         $producer = new PlainProducer($this->exchange);
+        $producer->startTransaction();
         $producer->publish('foo');
         $producer->publish('bar');
+        $producer->commitTransaction();
 
         $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
@@ -130,9 +132,11 @@ abstract class AbstractPlainProducerTest extends TestCase
     public function it_produces_a_batch_in_transaction()
     {
         $producer = new PlainProducer($this->exchange);
+        $producer->startTransaction();
         $producer->publishBatch('foo');
         $producer->publishBatch('bar');
         $producer->publishBatchSubmit();
+        $producer->commitTransaction();
 
         $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
@@ -140,6 +144,51 @@ abstract class AbstractPlainProducerTest extends TestCase
         $this->assertSame('foo', $msg1->getBody());
         $this->assertSame('bar', $msg2->getBody());
     }
+
+    /**
+     * @test
+     */
+    public function it_rolls_back_transaction()
+    {
+        $producer = new PlainProducer($this->exchange);
+        $producer->startTransaction();
+        $producer->publishBatch('foo');
+        $producer->publishBatch('bar');
+        $producer->publishBatchSubmit();
+        $producer->rollbackTransaction();
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+        $this->assertFalse($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_produces_in_confirm_mode()
+    {
+        $producer = new PlainProducer($this->exchange);
+        $producer->confirmSelect();
+
+        $queue = $this->getNewQueueWithNewChannelAndConnection();
+        $queue->setName('text-queue2');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $producer->publish('foo');
+        $producer->publish('bar');
+
+        usleep(4000); // wait for message
+
+        $msg1 = $queue->get(Constants::AMQP_NOPARAM);
+        $msg2 = $queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
+
+        $queue->delete();
+    }
+
+    abstract protected function getNewQueueWithNewChannelAndConnection() : AmqpQueue;
 
     protected function tearDown()
     {
