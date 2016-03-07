@@ -26,6 +26,7 @@ use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
 use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
+use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractChannelTest;
 
 /**
@@ -50,6 +51,39 @@ final class ChannelTest extends AbstractChannelTest
         $channel->qos(0, 5);
         $channel->setPrefetchSize(0);
         $channel->setPrefetchCount(20);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_isConnected()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $channel = $this->getNewChannel($this->connection);
+        $channel->isConnected();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_getPrefetchSize()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $channel = $this->getNewChannel($this->connection);
+        $channel->getPrefetchSize();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_getPrefetchCount()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $channel = $this->getNewChannel($this->connection);
+        $channel->getPrefetchCount();
     }
 
     protected function getNewConnection() : AmqpConnectionInterface

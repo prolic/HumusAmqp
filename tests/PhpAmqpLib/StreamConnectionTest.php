@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\PhpAmqpLib;
 
 use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
+use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
@@ -59,5 +60,69 @@ final class StreamConnectionTest extends AbstractConnectionTest
         $connection = new AmqpStreamConnection($this->validCredentials());
 
         $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPStreamConnection::class, $connection->getPhpAmqpLibConnection());
+    }
+
+    /**
+     * @test
+     */
+    public function it_reconnects()
+    {
+        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection->reconnect();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_connect()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection->connect();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_pconnect()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection->pconnect();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_pdisconnect()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection->pdisconnect();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_disconnect()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection->disconnect();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_preconnect()
+    {
+        $this->expectException(BadMethodCallException::class);
+
+        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection->preconnect();
     }
 }
