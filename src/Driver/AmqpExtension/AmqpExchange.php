@@ -209,7 +209,7 @@ class AmqpExchange implements AmqpExchangeInterface
         foreach ($this->batchMessages as $batchMessage) {
             $this->exchange->publish($batchMessage[0], $batchMessage[1], $batchMessage[2], $batchMessage[3]);
         }
-        
+
         $this->batchMessages = [];
     }
 

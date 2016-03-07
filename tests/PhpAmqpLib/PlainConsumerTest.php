@@ -31,7 +31,6 @@ use HumusTest\Amqp\AbstractPlainConsumerTest;
 /**
  * Class PlainConsumerTest
  * @package HumusTest\Amqp\PhpAmqpLib
- * @group  my
  */
 final class PlainConsumerTest extends AbstractPlainConsumerTest
 {

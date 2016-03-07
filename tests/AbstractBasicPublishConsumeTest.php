@@ -62,11 +62,27 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      */
     protected $results = [];
 
+    /**
+     * @var array
+     */
+    protected $cleanUps = [];
+
     protected function setUp()
     {
         $this->callback = function (AmqpEnvelope $envelope) {
             $this->results[] = $envelope->getBody();
         };
+    }
+
+    protected function tearDown()
+    {
+        foreach ($this->cleanUps as $cleanUp) {
+            try {
+                $cleanUp->delete();
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
     }
 
     /**
@@ -256,9 +272,35 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $this->assertSame('bar', $msg2->getBody());
     }
 
-    protected function tearDown()
+    /**
+     * @test
+     * @group my
+     */
+    public function it_produces_in_confirm_mode()
     {
-        $this->exchange->delete();
-        $this->queue->delete();
+        $this->exchange->getChannel()->confirmSelect();
+
+        $queue = $this->getNewQueueWithNewChannelAndConnection();
+
+        $this->cleanUps[] = $queue;
+
+        $queue->setName('test-queue23');
+        $queue->declareQueue();
+        $queue->bind('test-exchange', '#');
+
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+
+        usleep(4000); // wait for message
+
+        $msg1 = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotFalse($msg1);
+        $msg2 = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotFalse($msg2);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
     }
+
+    abstract protected function getNewQueueWithNewChannelAndConnection() : AmqpQueue;
 }

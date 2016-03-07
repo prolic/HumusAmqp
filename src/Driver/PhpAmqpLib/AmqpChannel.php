@@ -162,7 +162,7 @@ class AmqpChannel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function confirmSelect() : bool
+    public function confirmSelect()
     {
         $this->channel->confirm_select();
     }
