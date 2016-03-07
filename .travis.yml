@@ -10,6 +10,15 @@ services:
 
 before_script:
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - git clone git@github.com:pdezwart/php-amqp.git
+  - cd php-amqp
+  - git remote add pinepain git@github.com:pinepain/php-amqp.git
+  - git fetch pinepane
+  - git checkout -b handling_server_methods pinepain/handling_server_methods
+  - phpize
+  - ./configure
+  - make
+  - sudo make install
   - phpenv config-rm xdebug.ini
   - composer self-update
   - composer update
