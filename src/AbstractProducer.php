@@ -61,14 +61,6 @@ abstract class AbstractProducer implements Producer
     /**
      * @inheritdoc
      */
-    public function confirmSelect()
-    {
-        $this->exchange->getChannel()->confirmSelect();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function startTransaction()
     {
         $this->exchange->getChannel()->startTransaction();
@@ -88,5 +80,45 @@ abstract class AbstractProducer implements Producer
     public function rollbackTransaction()
     {
         $this->exchange->getChannel()->rollbackTransaction();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function confirmSelect()
+    {
+        $this->exchange->getChannel()->confirmSelect();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
+    {
+        $this->exchange->getChannel()->setConfirmCallback($ackCallback, $nackCallback);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function waitForConfirm($timeout = 0.0)
+    {
+        $this->exchange->getChannel()->waitForConfirm($timeout);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setReturnCallback(callable $returnCallback = null)
+    {
+        $this->exchange->getChannel()->setReturnCallback($returnCallback);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function waitForBasicReturn($timeout = 0.0)
+    {
+        $this->exchange->getChannel()->waitForBasicReturn($timeout);
     }
 }

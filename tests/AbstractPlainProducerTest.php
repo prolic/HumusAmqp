@@ -112,49 +112,12 @@ abstract class AbstractPlainProducerTest extends TestCase
     /**
      * @test
      */
-    public function it_produces_a_batch()
-    {
-        $producer = new PlainProducer($this->exchange);
-        $producer->publishBatch('foo');
-        $producer->publishBatch('bar');
-        $producer->publishBatchSubmit();
-
-        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $this->assertSame('foo', $msg1->getBody());
-        $this->assertSame('bar', $msg2->getBody());
-    }
-
-    /**
-     * @test
-     */
-    public function it_produces_a_batch_in_transaction()
-    {
-        $producer = new PlainProducer($this->exchange);
-        $producer->startTransaction();
-        $producer->publishBatch('foo');
-        $producer->publishBatch('bar');
-        $producer->publishBatchSubmit();
-        $producer->commitTransaction();
-
-        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $this->assertSame('foo', $msg1->getBody());
-        $this->assertSame('bar', $msg2->getBody());
-    }
-
-    /**
-     * @test
-     */
     public function it_rolls_back_transaction()
     {
         $producer = new PlainProducer($this->exchange);
         $producer->startTransaction();
-        $producer->publishBatch('foo');
-        $producer->publishBatch('bar');
-        $producer->publishBatchSubmit();
+        $producer->publish('foo');
+        $producer->publish('bar');
         $producer->rollbackTransaction();
 
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
@@ -166,18 +129,27 @@ abstract class AbstractPlainProducerTest extends TestCase
      */
     public function it_produces_in_confirm_mode()
     {
-        $producer = new PlainProducer($this->exchange);
-        $producer->confirmSelect();
-
+        $this->exchange->getChannel()->setConfirmCallback(
+            function() {
+                return false;
+            },
+            function(int $delivery_tag, bool $multiple, bool $requeue) {
+                throw new \Exception('Could not confirm message publishing');
+            }
+        );
+        
         $queue = $this->getNewQueueWithNewChannelAndConnection();
         $queue->setName('text-queue2');
         $queue->declareQueue();
         $queue->bind('test-exchange');
 
+        $producer = new PlainProducer($this->exchange);
+        $producer->confirmSelect();
+
         $producer->publish('foo');
         $producer->publish('bar');
 
-        usleep(4000); // wait for message
+        $producer->waitForConfirm();
 
         $msg1 = $queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $queue->get(Constants::AMQP_AUTOACK);

@@ -231,52 +231,16 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
     /**
      * @test
      */
-    public function it_produces_a_batch()
-    {
-        $this->exchange->publishBatch('foo');
-        $this->exchange->publishBatch('bar');
-        $this->exchange->publishBatchSubmit();
-
-        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $this->assertSame('foo', $msg1->getBody());
-        $this->assertSame('bar', $msg2->getBody());
-
-        $this->exchange->publishBatch('baz');
-        $this->exchange->publishBatch('bam');
-        $this->exchange->publishBatchSubmit();
-
-        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $this->assertSame('baz', $msg1->getBody());
-        $this->assertSame('bam', $msg2->getBody());
-    }
-
-    /**
-     * @test
-     */
-    public function it_produces_a_batch_in_transaction()
-    {
-        $this->channel->startTransaction();
-        $this->exchange->publishBatch('foo');
-        $this->exchange->publishBatch('bar');
-        $this->exchange->publishBatchSubmit();
-        $this->channel->commitTransaction();
-
-        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $this->assertSame('foo', $msg1->getBody());
-        $this->assertSame('bar', $msg2->getBody());
-    }
-
-    /**
-     * @test
-     */
     public function it_produces_in_confirm_mode()
     {
+        $this->exchange->getChannel()->setConfirmCallback(
+            function() {
+                return false;
+            },
+            function(int $delivery_tag, bool $multiple, bool $requeue) {
+                throw new \Exception('Could not confirm message publishing');
+            }
+        );
         $this->exchange->getChannel()->confirmSelect();
 
         $queue = $this->getNewQueueWithNewChannelAndConnection();
@@ -290,7 +254,7 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $this->exchange->publish('foo');
         $this->exchange->publish('bar');
 
-        usleep(4000); // wait for message
+        $this->exchange->getChannel()->waitForConfirm();
 
         $msg1 = $queue->get(Constants::AMQP_AUTOACK);
         $this->assertNotFalse($msg1);

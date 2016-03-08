@@ -150,10 +150,64 @@ interface AmqpChannel
     public function basicRecover(bool $requeue = true);
 
     /**
-     * Puts the channel into confirm mode
-     * Beware that only non-transactional channels may be put into confirm mode and vice versa
+     * Set the channel to use publisher acknowledgements. This can only used on a non-transactional channel.
      *
      * @return void
      */
     public function confirmSelect();
+
+    /**
+     * Set callback to process basic.ack and basic.nac AMQP server methods (applicable when channel in confirm mode).
+     *
+     * @param callable|null $ackCallback
+     * @param callable|null $nackCallback
+     *
+     * Callback functions with all arguments have the following signature:
+     *
+     *      function ack_callback(int $delivery_tag, bool $multiple) : bool;
+     *      function nack_callback(int $delivery_tag, bool $multiple, bool $requeue) : bool;
+     *
+     * and should return boolean false when wait loop should be canceled.
+     *
+     * Note, basic.nack server method will only be delivered if an internal error occurs in the Erlang process
+     * responsible for a queue (see https://www.rabbitmq.com/confirms.html for details).
+     *
+     * @return void
+     */
+    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null);
+
+    /**
+     * Wait until all messages published since the last call have been either ack'd or nack'd by the broker.
+     *
+     * Note, this method also catch all basic.return message from server.
+     *
+     * @param float $timeout Timeout in seconds. May be fractional.
+     */
+    public function waitForConfirm($timeout = 0.0);
+
+    /**
+     * Set callback to process basic.return AMQP server method
+     *
+     * @param callable|null $returnCallback
+     *
+     * Callback function with all arguments has the following signature:
+     *
+     *      function callback(int $reply_code,
+     *                        string $reply_text,
+     *                        string $exchange,
+     *                        string $routing_key,
+     *                        AMQPBasicProperties $properties,
+     *                        string $body) : bool;
+     *
+     * and should return boolean false when wait loop should be canceled.
+     *
+     */
+    public function setReturnCallback(callable $returnCallback = null);
+
+    /**
+     * Start wait loop for basic.return AMQP server methods
+     *
+     * @param float $timeout Timeout in seconds. May be fractional.
+     */
+    public function waitForBasicReturn($timeout = 0.0);
 }

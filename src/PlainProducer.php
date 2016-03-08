@@ -52,25 +52,4 @@ final class PlainProducer extends AbstractProducer
 
         $this->exchange->publish($message, $routingKey, $flags, $attributes);
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function publishBatch(
-        $message,
-        string $routingKey = null,
-        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
-    ) {
-        $attributes = array_merge($this->defaultAttributes, $attributes);
-
-        $this->exchange->publishBatch($message, $routingKey, $flags, $attributes);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function publishBatchSubmit()
-    {
-        $this->exchange->publishBatchSubmit();
-    }
 }

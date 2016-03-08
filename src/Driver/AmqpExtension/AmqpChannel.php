@@ -161,4 +161,36 @@ class AmqpChannel implements AmqpChannelInterface
     {
         $this->channel->confirmSelect();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
+    {
+        $this->channel->setConfirmCallback($ackCallback, $nackCallback);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function waitForConfirm($timeout = 0.0)
+    {
+        $this->channel->waitForConfirm($timeout);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setReturnCallback(callable $returnCallback = null)
+    {
+        $this->channel->setReturnCallback($returnCallback);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function waitForBasicReturn($timeout = 0.0)
+    {
+        $this->channel->waitForBasicReturn($timeout);
+    }
 }

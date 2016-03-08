@@ -126,54 +126,17 @@ abstract class AbstractJsonProducerTest extends TestCase
     /**
      * @test
      */
-    public function it_produces_a_batch()
-    {
-        $producer = new JsonProducer($this->exchange);
-        $producer->publishBatch(['foo' => 'bar']);
-        $producer->publishBatch(['baz' => 'bam']);
-        $producer->publishBatchSubmit();
-
-        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $body = json_decode($msg1->getBody(), true);
-
-        $this->assertEquals(['foo' => 'bar'], $body);
-
-        $body = json_decode($msg2->getBody(), true);
-
-        $this->assertEquals(['baz' => 'bam'], $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_produces_a_batch_in_transaction()
-    {
-        $producer = new JsonProducer($this->exchange);
-        $producer->startTransaction();
-        $producer->publishBatch(['foo' => 'bar']);
-        $producer->publishBatch(['baz' => 'bam']);
-        $producer->publishBatchSubmit();
-        $producer->commitTransaction();
-
-        $msg1 = $this->queue->get(Constants::AMQP_NOPARAM);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
-
-        $body = json_decode($msg1->getBody(), true);
-
-        $this->assertEquals(['foo' => 'bar'], $body);
-
-        $body = json_decode($msg2->getBody(), true);
-
-        $this->assertEquals(['baz' => 'bam'], $body);
-    }
-
-    /**
-     * @test
-     */
     public function it_produces_in_confirm_mode()
     {
+        $this->exchange->getChannel()->setConfirmCallback(
+            function() {
+                return false;
+            },
+            function(int $delivery_tag, bool $multiple, bool $requeue) {
+                throw new \Exception('Could not confirm message publishing');
+            }
+        );
+        
         $producer = new JsonProducer($this->exchange);
         $producer->confirmSelect();
 
@@ -185,7 +148,7 @@ abstract class AbstractJsonProducerTest extends TestCase
         $producer->publish(['foo' => 'bar']);
         $producer->publish(['baz' => 'bam']);
 
-        usleep(4000); // wait for message
+        $this->channel->waitForConfirm();
 
         $msg1 = $queue->get(Constants::AMQP_NOPARAM);
         $msg2 = $queue->get(Constants::AMQP_AUTOACK);
