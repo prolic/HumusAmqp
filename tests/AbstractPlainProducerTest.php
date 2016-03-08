@@ -130,14 +130,14 @@ abstract class AbstractPlainProducerTest extends TestCase
     public function it_produces_in_confirm_mode()
     {
         $this->exchange->getChannel()->setConfirmCallback(
-            function() {
+            function () {
                 return false;
             },
-            function(int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue) {
                 throw new \Exception('Could not confirm message publishing');
             }
         );
-        
+
         $queue = $this->getNewQueueWithNewChannelAndConnection();
         $queue->setName('text-queue2');
         $queue->declareQueue();
