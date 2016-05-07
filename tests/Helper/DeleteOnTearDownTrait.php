@@ -37,7 +37,11 @@ trait DeleteOnTearDownTrait
     protected function tearDown()
     {
         foreach ($this->toCleanUp as $resource) {
-            $resource->delete();
+            try {
+                $resource->delete();
+            } catch (\Exception $e) {
+                // ignore
+            }
         }
 
         $this->toCleanUp = [];

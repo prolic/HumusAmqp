@@ -28,12 +28,9 @@ use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\Constants;
 use Humus\Amqp\PlainProducer;
-use HumusTest\Amqp\Helper\CanCreateChannel;
-use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
-use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -41,8 +38,6 @@ use PHPUnit_Framework_TestCase as TestCase;
  * @package HumusTest\Amqp
  */
 abstract class AbstractPlainProducerTest extends TestCase implements 
-    CanCreateConnection,
-    CanCreateChannel,
     CanCreateExchange,
     CanCreateQueue
 {

@@ -23,19 +23,25 @@ declare (strict_types=1);
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\AmqpChannel;
-use Humus\Amqp\AmqpConnection;
 use Humus\Amqp\AmqpEnvelope;
 use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\Constants;
+use HumusTest\Amqp\Helper\CanCreateExchange;
+use HumusTest\Amqp\Helper\CanCreateQueue;
+use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractBasicPublishConsumeTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractBasicPublishConsumeTest extends TestCase
+abstract class AbstractBasicPublishConsumeTest extends TestCase implements
+    CanCreateExchange,
+    CanCreateQueue
 {
+    use DeleteOnTearDownTrait;
+
     /**
      * @var AmqpChannel
      */
@@ -61,11 +67,6 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
      */
     protected $results = [];
 
-    /**
-     * @var array
-     */
-    protected $cleanUps = [];
-
     protected function setUp()
     {
         $this->callback = function (AmqpEnvelope $envelope) {
@@ -89,19 +90,8 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $this->exchange = $exchange;
         $this->queue = $queue;
 
-        $this->cleanUps[] = $exchange;
-        $this->cleanUps[] = $queue;
-    }
-
-    protected function tearDown()
-    {
-        foreach ($this->cleanUps as $cleanUp) {
-            try {
-                $cleanUp->delete();
-            } catch (\Exception $e) {
-                // ignore
-            }
-        }
+        $this->addToCleanUp($exchange);
+        $this->addToCleanUp($queue);
     }
 
     /**
@@ -265,7 +255,7 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $connection = $this->createConnection();
         $queue = $this->createQueue($this->createChannel($connection));
 
-        $this->cleanUps[] = $queue;
+        $this->addToCleanUp($queue);
 
         $queue->setName('test-queue23');
         $queue->declareQueue();
@@ -284,12 +274,4 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $this->assertSame('foo', $msg1->getBody());
         $this->assertSame('bar', $msg2->getBody());
     }
-
-    abstract protected function createConnection() : AmqpConnection;
-
-    abstract protected function createChannel(AmqpConnection $connection) : AmqpChannel;
-
-    abstract protected function createQueue(AmqpChannel $channel) : AmqpQueue;
-
-    abstract protected function createExchange(AmqpChannel $channel) : AmqpExchange;
 }

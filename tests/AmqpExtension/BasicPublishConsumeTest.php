@@ -31,7 +31,6 @@ use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 /**
  * Class BasicPublishConsumeTest
  * @package HumusTest\Amqp\AmqpExtension
- * @group test2
  */
 final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
 {
