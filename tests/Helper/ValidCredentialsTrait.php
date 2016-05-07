@@ -20,23 +20,22 @@
 
 declare (strict_types=1);
 
-namespace HumusTest\Amqp\PhpAmqpLib;
-
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+namespace HumusTest\Amqp\Helper;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\PhpAmqpLib
- * @group test3
+ * Class ValidCredentialsTrait
+ * @package HumusTest\Amqp\Helper
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+trait ValidCredentialsTrait
 {
-    use CreateConnectionTrait;
-    use CreateChannelTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    protected function validCredentials() : array
+    {
+        return [
+            'vhost' => '/humus-amqp-test',
+            'host' => 'localhost',
+            'port' => 5672,
+            'login' => 'guest',
+            'password' => 'guest',
+        ];
+    }
 }

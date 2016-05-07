@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**

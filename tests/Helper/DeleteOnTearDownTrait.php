@@ -13,30 +13,41 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace HumusTest\Amqp\Helper;
 
-namespace HumusTest\Amqp\PhpAmqpLib;
-
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+use Humus\Amqp\AmqpExchange;
+use Humus\Amqp\AmqpQueue;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\PhpAmqpLib
- * @group test3
+ * Class DeleteOnTearDownTrait
+ * @package HumusTest\Amqp\Helper
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+trait DeleteOnTearDownTrait
 {
-    use CreateConnectionTrait;
-    use CreateChannelTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    /**
+     * @var AmqpExchange[]|AmqpQueue[]
+     */
+    protected $toCleanUp = [];
+
+    protected function tearDown()
+    {
+        foreach ($this->toCleanUp as $resource) {
+            $resource->delete();
+        }
+
+        $this->toCleanUp = [];
+    }
+
+    /**
+     * @param AmqpExchange|AmqpQueue $resource
+     */
+    protected function addToCleanUp($resource)
+    {
+        $this->toCleanUp[] = $resource;
+    }
 }

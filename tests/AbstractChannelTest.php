@@ -24,6 +24,7 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\AmqpChannel;
 use Humus\Amqp\AmqpConnection;
+use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**

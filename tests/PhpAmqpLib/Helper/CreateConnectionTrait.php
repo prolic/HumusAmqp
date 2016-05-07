@@ -18,25 +18,21 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
-namespace HumusTest\Amqp\PhpAmqpLib;
-
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
+use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\PhpAmqpLib
- * @group test3
+ * Class CreateConnectionTrait
+ * @package HumusTest\Amqp\PhpAmqpLib\Helper
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+trait CreateConnectionTrait
 {
-    use CreateConnectionTrait;
-    use CreateChannelTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    use ValidCredentialsTrait;
+
+    public function createConnection() : \Humus\Amqp\AmqpConnection
+    {
+        return new AmqpStreamConnection($this->validCredentials());
+    }
 }

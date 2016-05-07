@@ -28,6 +28,7 @@ use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\Constants;
 use Humus\Amqp\PlainProducer;
+use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**

@@ -13,30 +13,28 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
-namespace HumusTest\Amqp\PhpAmqpLib;
-
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+use Humus\Amqp\Driver\PhpAmqpLib\AbstractAmqpConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\PhpAmqpLib
- * @group test3
+ * Class CreateChannelTrait
+ * @package HumusTest\Amqp\PhpAmqpLib\Helper
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+trait CreateChannelTrait
 {
-    use CreateConnectionTrait;
-    use CreateChannelTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    public function createChannel(\Humus\Amqp\AmqpConnection $connection) : \Humus\Amqp\AmqpChannel
+    {
+        if (! $connection instanceof AbstractAmqpConnection) {
+            throw new \InvalidArgumentException();
+        }
+
+        return new AmqpChannel($connection);
+    }
 }

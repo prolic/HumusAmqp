@@ -18,24 +18,23 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace HumusTest\Amqp\AmqpExtension\Helper;
 
-namespace HumusTest\Amqp;
+use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
+use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
 
 /**
- * Class ValidCredentialsTrait
- * @package HumusTest\Amqp
+ * Class CreateExchangeTrait
+ * @package HumusTest\Amqp\AmqpExtension\Helper
  */
-trait ValidCredentialsTrait
+trait CreateExchangeTrait
 {
-    protected function validCredentials() : array
+    public function createExchange(\Humus\Amqp\AmqpChannel $channel) : \Humus\Amqp\AmqpExchange
     {
-        return [
-            'vhost' => '/humus-amqp-test',
-            'host' => 'localhost',
-            'port' => 5672,
-            'login' => 'guest',
-            'password' => 'guest',
-        ];
+        if (! $channel instanceof AmqpChannel) {
+            throw new \InvalidArgumentException();
+        }
+
+        return new AmqpExchange($channel);
     }
 }

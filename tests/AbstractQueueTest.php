@@ -27,15 +27,20 @@ use Humus\Amqp\AmqpConnection;
 use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\Constants;
+use HumusTest\Amqp\Helper\CanCreateExchange;
+use HumusTest\Amqp\Helper\CanCreateQueue;
+use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractQueueTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractQueueTest extends TestCase
+abstract class AbstractQueueTest extends TestCase implements
+    CanCreateExchange,
+    CanCreateQueue
 {
-    use ValidCredentialsTrait;
+    use DeleteOnTearDownTrait;
 
     /**
      * @var AmqpExchange
@@ -46,15 +51,14 @@ abstract class AbstractQueueTest extends TestCase
      * @var AmqpQueue
      */
     protected $queue;
-
-    protected $wasDeclared = false;
-
-    protected function tearDown()
+    
+    protected function setUp()
     {
-        if ($this->wasDeclared) {
-            $this->exchange->delete();
-            $this->queue->delete();
-        }
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $this->exchange = $this->createExchange($channel);
+        $this->queue = $this->createQueue($channel);
     }
 
     /**
@@ -101,7 +105,8 @@ abstract class AbstractQueueTest extends TestCase
      */
     public function it_declares_and_binds_queue()
     {
-        $this->wasDeclared = true;
+        $this->addToCleanUp($this->exchange);
+        $this->addToCleanUp($this->queue);
 
         $this->exchange->setType('direct');
         $this->exchange->setName('test');
@@ -122,6 +127,4 @@ abstract class AbstractQueueTest extends TestCase
         $this->assertInstanceOf(AmqpChannel::class, $this->queue->getChannel());
         $this->assertInstanceOf(AmqpConnection::class, $this->queue->getConnection());
     }
-
-    abstract protected function getNewAmqpExchange() : AmqpExchange;
 }

@@ -22,13 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
-use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpQueue;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
 use HumusTest\Amqp\AbstractQueueTest;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 
 /**
  * Class QueueTest
@@ -36,19 +34,8 @@ use HumusTest\Amqp\AbstractQueueTest;
  */
 final class QueueTest extends AbstractQueueTest
 {
-    protected function setUp()
-    {
-        $this->exchange = $this->getNewAmqpExchange();
-        $this->queue = $this->getNewAmqpQueue();
-    }
-
-    protected function getNewAmqpExchange() : AmqpExchangeInterface
-    {
-        return new AmqpExchange(new AmqpChannel(new AmqpStreamConnection($this->validCredentials())));
-    }
-
-    protected function getNewAmqpQueue() : AmqpQueueInterface
-    {
-        return new AmqpQueue(new AmqpChannel(new AmqpStreamConnection($this->validCredentials())));
-    }
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
 }

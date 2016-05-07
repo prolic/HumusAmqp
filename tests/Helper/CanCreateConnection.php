@@ -18,25 +18,13 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
-
-namespace HumusTest\Amqp\PhpAmqpLib;
-
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+namespace HumusTest\Amqp\Helper;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\PhpAmqpLib
- * @group test3
+ * Class CanCreateConnection
+ * @package HumusTest\Amqp\Helper
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+interface CanCreateConnection
 {
-    use CreateConnectionTrait;
-    use CreateChannelTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    public function createConnection() : \Humus\Amqp\AmqpConnection;
 }

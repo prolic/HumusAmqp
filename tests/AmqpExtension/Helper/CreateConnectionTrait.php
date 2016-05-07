@@ -13,30 +13,29 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace HumusTest\Amqp\AmqpExtension\Helper;
 
-namespace HumusTest\Amqp\PhpAmqpLib;
-
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
+use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\PhpAmqpLib
- * @group test3
+ * Class CreateConnectionTrait
+ * @package HumusTest\Amqp\AmqpExtension\Helper
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+trait CreateConnectionTrait
 {
-    use CreateConnectionTrait;
-    use CreateChannelTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    use ValidCredentialsTrait;
+
+    public function createConnection() : \Humus\Amqp\AmqpConnection
+    {
+        $connection = new AmqpConnection($this->validCredentials());
+        $connection->connect();
+
+        return $connection;
+    }
 }

@@ -22,51 +22,21 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
-use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
 use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
  * Class BasicPublishConsumeTest
  * @package HumusTest\Amqp\AmqpExtension
+ * @group test2
  */
 final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
 {
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
-
-        $channel = new AmqpChannel($connection);
-
-        $exchange = new AmqpExchange($channel);
-        $exchange->setType('topic');
-        $exchange->setName('test-exchange');
-        $exchange->declareExchange();
-
-        $queue = new AmqpQueue($channel);
-        $queue->setName('test-queue');
-        $queue->declareQueue();
-        $queue->bind('test-exchange', '#');
-
-        $this->channel = $channel;
-        $this->exchange = $exchange;
-        $this->queue = $queue;
-
-        $this->cleanUps[] = $exchange;
-        $this->cleanUps[] = $queue;
-    }
-
-    protected function getNewQueueWithNewChannelAndConnection() : AmqpQueueInterface
-    {
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
-
-        return new AmqpQueue(new AmqpChannel($connection));
-    }
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
 }

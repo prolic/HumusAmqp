@@ -22,13 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
-use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
-use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
 use HumusTest\Amqp\AbstractQueueTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
  * Class QueueTest
@@ -36,25 +34,8 @@ use HumusTest\Amqp\AbstractQueueTest;
  */
 final class QueueTest extends AbstractQueueTest
 {
-    protected function setUp()
-    {
-        $this->exchange = $this->getNewAmqpExchange();
-        $this->queue = $this->getNewAmqpQueue();
-    }
-
-    protected function getNewAmqpExchange() : AmqpExchangeInterface
-    {
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
-
-        return new AmqpExchange(new AmqpChannel($connection));
-    }
-
-    protected function getNewAmqpQueue() : AmqpQueueInterface
-    {
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
-
-        return new AmqpQueue(new AmqpChannel($connection));
-    }
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
 }

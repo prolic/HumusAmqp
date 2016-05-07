@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\AmqpChannel;
+use Humus\Amqp\AmqpConnection;
 use Humus\Amqp\AmqpEnvelope;
 use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
@@ -35,8 +36,6 @@ use PHPUnit_Framework_TestCase as TestCase;
  */
 abstract class AbstractBasicPublishConsumeTest extends TestCase
 {
-    use ValidCredentialsTrait;
-
     /**
      * @var AmqpChannel
      */
@@ -72,6 +71,26 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $this->callback = function (AmqpEnvelope $envelope) {
             $this->results[] = $envelope->getBody();
         };
+
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setType('topic');
+        $exchange->setName('test-exchange');
+        $exchange->declareExchange();
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange', '#');
+
+        $this->channel = $channel;
+        $this->exchange = $exchange;
+        $this->queue = $queue;
+
+        $this->cleanUps[] = $exchange;
+        $this->cleanUps[] = $queue;
     }
 
     protected function tearDown()
@@ -243,7 +262,8 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         );
         $this->exchange->getChannel()->confirmSelect();
 
-        $queue = $this->getNewQueueWithNewChannelAndConnection();
+        $connection = $this->createConnection();
+        $queue = $this->createQueue($this->createChannel($connection));
 
         $this->cleanUps[] = $queue;
 
@@ -265,5 +285,11 @@ abstract class AbstractBasicPublishConsumeTest extends TestCase
         $this->assertSame('bar', $msg2->getBody());
     }
 
-    abstract protected function getNewQueueWithNewChannelAndConnection() : AmqpQueue;
+    abstract protected function createConnection() : AmqpConnection;
+
+    abstract protected function createChannel(AmqpConnection $connection) : AmqpChannel;
+
+    abstract protected function createQueue(AmqpChannel $channel) : AmqpQueue;
+
+    abstract protected function createExchange(AmqpChannel $channel) : AmqpExchange;
 }

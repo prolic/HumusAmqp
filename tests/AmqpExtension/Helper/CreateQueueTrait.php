@@ -18,25 +18,23 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace HumusTest\Amqp\AmqpExtension\Helper;
 
-namespace HumusTest\Amqp\PhpAmqpLib;
-
-use HumusTest\Amqp\AbstractBasicPublishConsumeTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
+use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
 
 /**
- * Class BasicPublishConsumeTest
- * @package HumusTest\Amqp\PhpAmqpLib
- * @group test3
+ * Class CreateQueueTrait
+ * @package HumusTest\Amqp\AmqpExtension\Helper
  */
-final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
+trait CreateQueueTrait
 {
-    use CreateConnectionTrait;
-    use CreateChannelTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    public function createQueue(\Humus\Amqp\AmqpChannel $channel) : \Humus\Amqp\AmqpQueue
+    {
+        if (! $channel instanceof AmqpChannel) {
+            throw new \InvalidArgumentException();
+        }
+
+        return new AmqpQueue($channel);
+    }
 }
