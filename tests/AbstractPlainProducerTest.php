@@ -37,7 +37,7 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Class AbstractPlainProducerTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractPlainProducerTest extends TestCase implements 
+abstract class AbstractPlainProducerTest extends TestCase implements
     CanCreateExchange,
     CanCreateQueue
 {
@@ -95,7 +95,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements
         $this->channel = $channel;
         $this->exchange = $exchange;
         $this->queue = $queue;
-        
+
         $this->addToCleanUp($queue);
         $this->addToCleanUp($exchange);
     }
@@ -169,7 +169,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements
         $queue->setName('text-queue2');
         $queue->declareQueue();
         $queue->bind('test-exchange');
-        
+
         $this->addToCleanUp($queue);
 
         $producer = new PlainProducer($this->exchange);

@@ -51,7 +51,7 @@ abstract class AbstractQueueTest extends TestCase implements
      * @var AmqpQueue
      */
     protected $queue;
-    
+
     protected function setUp()
     {
         $connection = $this->createConnection();
