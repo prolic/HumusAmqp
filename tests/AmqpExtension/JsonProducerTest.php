@@ -22,12 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
-use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
 use HumusTest\Amqp\AbstractJsonProducerTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
  * Class JsonProducerTest
@@ -35,35 +34,17 @@ use HumusTest\Amqp\AbstractJsonProducerTest;
  */
 final class JsonProducerTest extends AbstractJsonProducerTest
 {
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
+
     protected function setUp()
     {
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
+
         parent::setUp();
-
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
-
-        $channel = new AmqpChannel($connection);
-
-        $exchange = new AmqpExchange($channel);
-        $exchange->setType('topic');
-        $exchange->setName('test-exchange');
-        $exchange->declareExchange();
-
-        $queue = new AmqpQueue($channel);
-        $queue->setName('test-queue');
-        $queue->declareQueue();
-        $queue->bind('test-exchange', '#');
-
-        $this->channel = $channel;
-        $this->exchange = $exchange;
-        $this->queue = $queue;
-    }
-
-    protected function getNewQueueWithNewChannelAndConnection() : AmqpQueueInterface
-    {
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
-
-        return new AmqpQueue(new AmqpChannel($connection));
     }
 }
