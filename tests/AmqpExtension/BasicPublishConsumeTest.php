@@ -38,4 +38,13 @@ final class BasicPublishConsumeTest extends AbstractBasicPublishConsumeTest
     use CreateChannelTrait;
     use CreateExchangeTrait;
     use CreateQueueTrait;
+
+    protected function setUp()
+    {
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
+
+        parent::setUp();
+    }
 }

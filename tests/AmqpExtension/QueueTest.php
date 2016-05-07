@@ -38,4 +38,13 @@ final class QueueTest extends AbstractQueueTest
     use CreateChannelTrait;
     use CreateExchangeTrait;
     use CreateQueueTrait;
+
+    protected function setUp()
+    {
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
+
+        parent::setUp();
+    }
 }
