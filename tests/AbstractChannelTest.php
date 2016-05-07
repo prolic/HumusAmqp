@@ -24,17 +24,15 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\AmqpChannel;
 use Humus\Amqp\AmqpConnection;
-use HumusTest\Amqp\Helper\ValidCredentialsTrait;
+use HumusTest\Amqp\Helper\CanCreateChannel;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractChannelTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractChannelTest extends TestCase
+abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
 {
-    use ValidCredentialsTrait;
-
     /**
      * @var AmqpConnection
      */
@@ -44,6 +42,12 @@ abstract class AbstractChannelTest extends TestCase
      * @var AmqpChannel
      */
     protected $channel;
+
+    protected function setUp()
+    {
+        $this->connection = $this->createConnection();
+        $this->channel = $this->createChannel($this->connection);
+    }
 
     /**
      * @test
@@ -61,7 +65,7 @@ abstract class AbstractChannelTest extends TestCase
         $connection = $this->channel->getConnection();
 
         $this->assertSame($this->connection, $connection);
-        $this->assertNotSame($this->getNewConnection(), $connection);
+        $this->assertNotSame($this->createConnection(), $connection);
     }
 
     /**
@@ -69,10 +73,6 @@ abstract class AbstractChannelTest extends TestCase
      */
     public function it_creates_multiple_channels()
     {
-        $this->getNewChannel($this->connection);
+        $this->createChannel($this->connection);
     }
-
-    abstract protected function getNewConnection() : AmqpConnection;
-
-    abstract protected function getNewChannel(AmqpConnection $connection) : AmqpChannel;
 }

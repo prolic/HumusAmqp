@@ -22,11 +22,10 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
 use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
 use HumusTest\Amqp\AbstractChannelTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
 /**
  * Class ChannelTest
@@ -34,15 +33,16 @@ use HumusTest\Amqp\AbstractChannelTest;
  */
 final class ChannelTest extends AbstractChannelTest
 {
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
+
     protected function setUp()
     {
         if (!extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
         }
 
-        $this->connection = $this->getNewConnection();
-        $this->connection->connect();
-        $this->channel = $this->getNewChannel($this->connection);
+        parent::setUp();
     }
 
     /**
@@ -61,7 +61,7 @@ final class ChannelTest extends AbstractChannelTest
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Could not create channel. No connection available.');
 
-        $this->getNewChannel($this->getNewConnection($this->getNewConnection()));
+        $this->createChannel(new AmqpConnection($this->validCredentials()));
     }
 
     /**
@@ -69,7 +69,7 @@ final class ChannelTest extends AbstractChannelTest
      */
     public function it_changes_qos()
     {
-        $channel = $this->getNewChannel($this->connection);
+        $channel = $this->createChannel($this->connection);
         $channel->qos(0, 5);
 
         $this->assertEquals(0, $channel->getPrefetchSize());
@@ -82,15 +82,5 @@ final class ChannelTest extends AbstractChannelTest
         $channel->setPrefetchCount(20);
 
         $this->assertEquals(20, $channel->getPrefetchCount());
-    }
-
-    protected function getNewConnection() : AmqpConnectionInterface
-    {
-        return new AmqpConnection($this->validCredentials());
-    }
-
-    protected function getNewChannel(AmqpConnectionInterface $connection) : AmqpChannelInterface
-    {
-        return new AmqpChannel($connection);
     }
 }

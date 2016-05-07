@@ -22,12 +22,10 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
 use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractChannelTest;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
 /**
  * Class ChannelTest
@@ -35,18 +33,15 @@ use HumusTest\Amqp\AbstractChannelTest;
  */
 final class ChannelTest extends AbstractChannelTest
 {
-    protected function setUp()
-    {
-        $this->connection = $this->getNewConnection();
-        $this->channel = $this->getNewChannel($this->connection);
-    }
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
 
     /**
      * @test
      */
     public function it_changes_qos()
     {
-        $channel = $this->getNewChannel($this->connection);
+        $channel = $this->createChannel($this->connection);
 
         $channel->qos(0, 5);
         $channel->setPrefetchSize(0);
@@ -60,7 +55,7 @@ final class ChannelTest extends AbstractChannelTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $channel = $this->getNewChannel($this->connection);
+        $channel = $this->createChannel($this->connection);
         $channel->isConnected();
     }
 
@@ -71,7 +66,7 @@ final class ChannelTest extends AbstractChannelTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $channel = $this->getNewChannel($this->connection);
+        $channel = $this->createChannel($this->connection);
         $channel->getPrefetchSize();
     }
 
@@ -82,20 +77,7 @@ final class ChannelTest extends AbstractChannelTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $channel = $this->getNewChannel($this->connection);
+        $channel = $this->createChannel($this->connection);
         $channel->getPrefetchCount();
-    }
-
-    protected function getNewConnection() : AmqpConnectionInterface
-    {
-        return new AmqpStreamConnection($this->validCredentials());
-    }
-
-    /**
-     * @return AmqpChannelInterface
-     */
-    protected function getNewChannel(AmqpConnectionInterface $connection) : AmqpChannelInterface
-    {
-        return new AmqpChannel($connection);
     }
 }
