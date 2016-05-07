@@ -26,29 +26,28 @@ use Humus\Amqp\AmqpChannel;
 use Humus\Amqp\AmqpConnection;
 use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\Constants;
-use HumusTest\Amqp\Helper\ValidCredentialsTrait;
+use HumusTest\Amqp\Helper\CanCreateExchange;
+use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractExchangeTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractExchangeTest extends TestCase
+abstract class AbstractExchangeTest extends TestCase implements CanCreateExchange
 {
-    use ValidCredentialsTrait;
+    use DeleteOnTearDownTrait;
 
     /**
      * @var AmqpExchange
      */
     protected $exchange;
 
-    protected $wasDeclared = false;
-
-    protected function tearDown()
+    protected function setUp()
     {
-        if ($this->wasDeclared) {
-            $this->exchange->delete();
-        }
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+        $this->exchange = $this->createExchange($channel);
     }
 
     /**
@@ -56,8 +55,6 @@ abstract class AbstractExchangeTest extends TestCase
      */
     public function it_sets_name_flags_type_and_arguments()
     {
-        $this->wasDeclared = true;
-
         $this->assertEquals('', $this->exchange->getName());
         $this->assertEquals('', $this->exchange->getType());
         $this->assertEquals(0, $this->exchange->getFlags());
@@ -101,10 +98,10 @@ abstract class AbstractExchangeTest extends TestCase
      */
     public function it_declares_and_deletes_exchange()
     {
+        $this->addToCleanUp($this->exchange);
         $this->exchange->setType('direct');
         $this->exchange->setName('test');
         $this->exchange->declareExchange();
-        $this->wasDeclared = true;
     }
 
     /**
@@ -121,23 +118,22 @@ abstract class AbstractExchangeTest extends TestCase
      */
     public function it_binds_and_unbinds_to_exchange()
     {
+        $this->addToCleanUp($this->exchange);
         $this->exchange->setType('direct');
         $this->exchange->setName('test');
 
-        $exchange2 = $this->getNewAmqpExchange();
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+        $exchange2 = $this->createExchange($channel);
         $exchange2->setType('direct');
         $exchange2->setName('foo');
+        $this->addToCleanUp($exchange2);
 
         $this->exchange->declareExchange();
         $exchange2->declareExchange();
 
         $this->exchange->bind($exchange2->getName());
 
-        $this->wasDeclared = true;
-
         $this->exchange->unbind($exchange2->getName());
-        $exchange2->delete();
     }
-
-    abstract protected function getNewAmqpExchange() : AmqpExchange;
 }

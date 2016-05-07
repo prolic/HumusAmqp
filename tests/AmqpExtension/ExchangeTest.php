@@ -22,11 +22,10 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
 use HumusTest\Amqp\AbstractExchangeTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
 
 /**
  * Class ExchangeTest
@@ -34,20 +33,16 @@ use HumusTest\Amqp\AbstractExchangeTest;
  */
 final class ExchangeTest extends AbstractExchangeTest
 {
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
+    use CreateExchangeTrait;
+
     protected function setUp()
     {
         if (!extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
         }
 
-        $this->exchange = $this->getNewAmqpExchange();
-    }
-
-    protected function getNewAmqpExchange() : AmqpExchangeInterface
-    {
-        $connection = new AmqpConnection($this->validCredentials());
-        $connection->connect();
-
-        return new AmqpExchange(new AmqpChannel($connection));
+        parent::setUp();
     }
 }
