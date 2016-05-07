@@ -101,6 +101,8 @@ abstract class AbstractQueueTest extends TestCase
      */
     public function it_declares_and_binds_queue()
     {
+        $this->wasDeclared = true;
+
         $this->exchange->setType('direct');
         $this->exchange->setName('test');
         $this->exchange->declareExchange();
@@ -110,8 +112,6 @@ abstract class AbstractQueueTest extends TestCase
         $this->queue->bind('test');
 
         $this->queue->unbind('test');
-
-        $this->wasDeclared = true;
     }
 
     /**
