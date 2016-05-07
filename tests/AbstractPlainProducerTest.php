@@ -28,6 +28,11 @@ use Humus\Amqp\AmqpExchange;
 use Humus\Amqp\AmqpQueue;
 use Humus\Amqp\Constants;
 use Humus\Amqp\PlainProducer;
+use HumusTest\Amqp\Helper\CanCreateChannel;
+use HumusTest\Amqp\Helper\CanCreateConnection;
+use HumusTest\Amqp\Helper\CanCreateExchange;
+use HumusTest\Amqp\Helper\CanCreateQueue;
+use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -35,9 +40,13 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Class AbstractPlainProducerTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractPlainProducerTest extends TestCase
+abstract class AbstractPlainProducerTest extends TestCase implements 
+    CanCreateConnection,
+    CanCreateChannel,
+    CanCreateExchange,
+    CanCreateQueue
 {
-    use ValidCredentialsTrait;
+    use DeleteOnTearDownTrait;
 
     /**
      * @var AmqpChannel
@@ -74,6 +83,26 @@ abstract class AbstractPlainProducerTest extends TestCase
         $this->callback = function (AmqpEnvelope $envelope) {
             $this->results[] = $envelope->getBody();
         };
+
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setType('topic');
+        $exchange->setName('test-exchange');
+        $exchange->declareExchange();
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange', '#');
+
+        $this->channel = $channel;
+        $this->exchange = $exchange;
+        $this->queue = $queue;
+        
+        $this->addToCleanUp($queue);
+        $this->addToCleanUp($exchange);
     }
 
     /**
@@ -139,10 +168,14 @@ abstract class AbstractPlainProducerTest extends TestCase
             }
         );
 
-        $queue = $this->getNewQueueWithNewChannelAndConnection();
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+        $queue = $this->createQueue($channel);
         $queue->setName('text-queue2');
         $queue->declareQueue();
         $queue->bind('test-exchange');
+        
+        $this->addToCleanUp($queue);
 
         $producer = new PlainProducer($this->exchange);
         $producer->confirmSelect();
@@ -159,13 +192,5 @@ abstract class AbstractPlainProducerTest extends TestCase
         $this->assertSame('bar', $msg2->getBody());
 
         $queue->delete();
-    }
-
-    abstract protected function getNewQueueWithNewChannelAndConnection() : AmqpQueue;
-
-    protected function tearDown()
-    {
-        $this->exchange->delete();
-        $this->queue->delete();
     }
 }
