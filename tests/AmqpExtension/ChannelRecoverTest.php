@@ -22,13 +22,13 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
-use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
-use Humus\Amqp\Driver\AmqpExtension\AmqpChannel;
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
-use Humus\Amqp\Driver\AmqpExtension\AmqpExchange;
-use Humus\Amqp\Driver\AmqpExtension\AmqpQueue;
+use Humus\Amqp\Channel as AmqpChannelInterface;
+use Humus\Amqp\Exchange as AmqpExchangeInterface;
+use Humus\Amqp\Queue as AmqpQueueInterface;
+use Humus\Amqp\Driver\AmqpExtension\Channel;
+use Humus\Amqp\Driver\AmqpExtension\Connection;
+use Humus\Amqp\Driver\AmqpExtension\Exchange;
+use Humus\Amqp\Driver\AmqpExtension\Queue;
 use HumusTest\Amqp\AbstractChannelRecoverTest;
 
 /**
@@ -46,18 +46,18 @@ final class ChannelRecoverTest extends AbstractChannelRecoverTest
 
     protected function getNewChannelWithNewConnection() : AmqpChannelInterface
     {
-        $connection = new AmqpConnection($this->credentials());
+        $connection = new Connection($this->credentials());
         $connection->connect();
-        return new AmqpChannel($connection);
+        return new Channel($connection);
     }
 
     protected function getNewExchange(AmqpChannelInterface $channel) : AmqpExchangeInterface
     {
-        return new AmqpExchange($channel);
+        return new Exchange($channel);
     }
 
     protected function getNewQueue(AmqpChannelInterface $channel) : AmqpQueueInterface
     {
-        return new AmqpQueue($channel);
+        return new Queue($channel);
     }
 }

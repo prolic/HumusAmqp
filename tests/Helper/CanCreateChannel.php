@@ -26,5 +26,5 @@ namespace HumusTest\Amqp\Helper;
  */
 interface CanCreateChannel extends CanCreateConnection
 {
-    public function createChannel(\Humus\Amqp\AmqpConnection $connection) : \Humus\Amqp\AmqpChannel;
+    public function createChannel(\Humus\Amqp\Connection $connection) : \Humus\Amqp\Channel;
 }

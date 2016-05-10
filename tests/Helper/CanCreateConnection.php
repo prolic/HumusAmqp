@@ -26,5 +26,5 @@ namespace HumusTest\Amqp\Helper;
  */
 interface CanCreateConnection
 {
-    public function createConnection() : \Humus\Amqp\AmqpConnection;
+    public function createConnection() : \Humus\Amqp\Connection;
 }

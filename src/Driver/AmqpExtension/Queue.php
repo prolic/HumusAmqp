@@ -21,19 +21,19 @@
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
-use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
+use Humus\Amqp\Channel as AmqpChannelInterface;
+use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Queue as AmqpQueueInterface;
 use Humus\Amqp\Exception\AmqpConnectionException;
 
 /**
- * Class AmqpQueue
+ * Class Queue
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpQueue implements AmqpQueueInterface
+class Queue implements AmqpQueueInterface
 {
     /**
-     * @var AmqpChannel
+     * @var Channel
      */
     private $channel;
 
@@ -43,11 +43,11 @@ class AmqpQueue implements AmqpQueueInterface
     private $queue;
 
     /**
-     * Create an instance of an AmqpQueue object.
+     * Create an instance of an Queue object.
      *
-     * @param AmqpChannel $amqpChannel The amqp channel to use.
+     * @param Channel $amqpChannel The amqp channel to use.
      */
-    public function __construct(AmqpChannel $amqpChannel)
+    public function __construct(Channel $amqpChannel)
     {
         $this->channel = $amqpChannel;
         $this->queue = new \AMQPQueue($amqpChannel->getAmqpExtensionChannel());
@@ -141,7 +141,7 @@ class AmqpQueue implements AmqpQueueInterface
         $envelope = $this->queue->get($flags);
 
         if ($envelope instanceof \AMQPEnvelope) {
-            $envelope = new AmqpEnvelope($envelope);
+            $envelope = new Envelope($envelope);
         }
 
         return $envelope;
@@ -154,7 +154,7 @@ class AmqpQueue implements AmqpQueueInterface
     {
         if (null !== $callback) {
             $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
-                $envelope = new AmqpEnvelope($envelope);
+                $envelope = new Envelope($envelope);
                 return $callback($envelope, $this);
             };
         } else {

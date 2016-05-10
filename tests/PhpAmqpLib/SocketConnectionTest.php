@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpSocketConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
@@ -38,7 +38,7 @@ final class SocketConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(\Exception::class);
 
-        new AmqpSocketConnection($this->invalidCredentials());
+        new SocketConnection($this->invalidCredentials());
     }
 
     /**
@@ -46,7 +46,7 @@ final class SocketConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_valid_credentials()
     {
-        $connection = new AmqpSocketConnection($this->validCredentials());
+        $connection = new SocketConnection($this->validCredentials());
 
         $this->assertTrue($connection->isConnected());
     }
@@ -56,8 +56,8 @@ final class SocketConnectionTest extends AbstractConnectionTest
      */
     public function it_returns_internal_connection()
     {
-        $connection = new AmqpSocketConnection($this->validCredentials());
+        $connection = new SocketConnection($this->validCredentials());
 
-        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPSocketConnection::class, $connection->getPhpAmqpLibConnection());
+        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPSocketConnection::class, $connection->getResource());
     }
 }

@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
+use Humus\Amqp\Driver\AmqpExtension\Connection;
 use HumusTest\Amqp\AbstractChannelTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
@@ -61,7 +61,7 @@ final class ChannelTest extends AbstractChannelTest
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Could not create channel. No connection available.');
 
-        $this->createChannel(new AmqpConnection($this->validCredentials()));
+        $this->createChannel(new Connection($this->validCredentials()));
     }
 
     /**

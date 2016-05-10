@@ -22,15 +22,15 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Humus\Amqp\AmqpEnvelope as AmqpEnvelopeInterface;
+use Humus\Amqp\Envelope as AmqpEnvelopeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 
 /**
- * Class AmqpEnvelope
+ * Class Envelope
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpEnvelope implements AmqpEnvelopeInterface
+class Envelope implements AmqpEnvelopeInterface
 {
     /**
      * @var AMQPMessage
@@ -38,7 +38,7 @@ class AmqpEnvelope implements AmqpEnvelopeInterface
     private $envelope;
 
     /**
-     * AmqpEnvelope constructor.
+     * Envelope constructor.
      * @param AMQPMessage $message
      */
     public function __construct(AMQPMessage $message)

@@ -22,9 +22,9 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
-use Humus\Amqp\AmqpChannel;
-use Humus\Amqp\AmqpConnection;
-use Humus\Amqp\AmqpExchange;
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Constants;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
@@ -39,7 +39,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
     use DeleteOnTearDownTrait;
 
     /**
-     * @var AmqpExchange
+     * @var Exchange
      */
     protected $exchange;
 
@@ -109,8 +109,8 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
      */
     public function it_returns_channel_and_connection()
     {
-        $this->assertInstanceOf(AmqpChannel::class, $this->exchange->getChannel());
-        $this->assertInstanceOf(AmqpConnection::class, $this->exchange->getConnection());
+        $this->assertInstanceOf(Channel::class, $this->exchange->getChannel());
+        $this->assertInstanceOf(Connection::class, $this->exchange->getConnection());
     }
 
     /**

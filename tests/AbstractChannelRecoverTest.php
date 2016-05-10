@@ -22,10 +22,10 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
-use Humus\Amqp\AmqpChannel;
-use Humus\Amqp\AmqpEnvelope;
-use Humus\Amqp\AmqpExchange;
-use Humus\Amqp\AmqpQueue;
+use Humus\Amqp\Channel;
+use Humus\Amqp\Envelope;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -36,12 +36,12 @@ use PHPUnit_Framework_TestCase as TestCase;
 abstract class AbstractChannelRecoverTest extends TestCase
 {
     /**
-     * @var AmqpExchange
+     * @var Exchange
      */
     private $exchange;
 
     /**
-     * @var AmqpQueue
+     * @var Queue
      */
     private $queue;
 
@@ -86,7 +86,7 @@ abstract class AbstractChannelRecoverTest extends TestCase
         $consume = 2;   // NOTE: by default prefetch-count=3, so in consumer below we will ignore prefetched messages 3-5,
                         //       and they will not seen by other consumers until we redeliver it.
 
-        $queue1->consume(function (AmqpEnvelope $envelope, AmqpQueue $queue) use (&$consume, &$result) {
+        $queue1->consume(function (Envelope $envelope, Queue $queue) use (&$consume, &$result) {
             $result[] = 'consumed ' . $envelope->getBody() . ' '
                 . ($envelope->isRedelivery() ? '(redeliverd)' : '(original)');
             $queue->ack($envelope->getDeliveryTag());
@@ -105,7 +105,7 @@ abstract class AbstractChannelRecoverTest extends TestCase
         $consume = 10;
 
         try {
-            $queue2->consume(function (AmqpEnvelope $envelope, AmqpQueue $queue) use (&$consume, &$result) {
+            $queue2->consume(function (Envelope $envelope, Queue $queue) use (&$consume, &$result) {
                 $result[] =  'consumed ' . $envelope->getBody() . ' '
                     . ($envelope->isRedelivery() ? '(redeliverd)' : '(original)');
                 $queue->ack($envelope->getDeliveryTag());
@@ -126,7 +126,7 @@ abstract class AbstractChannelRecoverTest extends TestCase
 
         $consume = 10;
         try {
-            $queue2->consume(function (AmqpEnvelope $e, AmqpQueue $q) use (&$consume, &$result) {
+            $queue2->consume(function (Envelope $e, Queue $q) use (&$consume, &$result) {
                 $result[] = 'consumed ' . $e->getBody() . ' ' . ($e->isRedelivery() ? '(redelivered)' : '(original)');
                 $q->ack($e->getDeliveryTag());
 
@@ -167,9 +167,9 @@ abstract class AbstractChannelRecoverTest extends TestCase
         ];
     }
 
-    abstract protected function getNewChannelWithNewConnection() : AmqpChannel;
+    abstract protected function getNewChannelWithNewConnection() : Channel;
 
-    abstract protected function getNewExchange(AmqpChannel $channel) : AmqpExchange;
+    abstract protected function getNewExchange(Channel $channel) : Exchange;
 
-    abstract protected function getNewQueue(AmqpChannel $channel) : AmqpQueue;
+    abstract protected function getNewQueue(Channel $channel) : Queue;
 }

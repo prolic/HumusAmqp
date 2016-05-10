@@ -20,33 +20,27 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Driver\AmqpExtension;
+namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Humus\Amqp\AmqpConnection as ConnectionInterface;
+use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Exception\BadMethodCallException;
+use PhpAmqpLib\Connection\AbstractConnection as PhpAmqplibAbstractConnection;
 
 /**
- * Class AmqpConnection
+ * Class AbstractConnection
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpConnection implements ConnectionInterface
+abstract class AbstractConnection implements AmqpConnectionInterface
 {
     /**
-     * @var \AMQPConnection
+     * @var PhpAmqplibAbstractConnection
      */
-    private $connection;
+    protected $connection;
 
     /**
-     * @inheritdoc
+     * @return PhpAmqplibAbstractConnection
      */
-    public function __construct(array $credentials = [])
-    {
-        $this->connection = new \AMQPConnection($credentials);
-    }
-
-    /**
-     * @return \AMQPConnection
-     */
-    public function getAmqpExtensionConnection() : \AMQPConnection
+    public function getResource() : PhpAmqplibAbstractConnection
     {
         return $this->connection;
     }
@@ -64,7 +58,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function connect() : bool
     {
-        return $this->connection->connect();
+        throw new BadMethodCallException();
     }
 
     /**
@@ -72,7 +66,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function pconnect() : bool
     {
-        return $this->connection->pconnect();
+        throw new BadMethodCallException();
     }
 
     /**
@@ -80,7 +74,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function pdisconnect() : bool
     {
-        return $this->connection->pdisconnect();
+        throw new BadMethodCallException();
     }
 
     /**
@@ -88,7 +82,7 @@ class AmqpConnection implements ConnectionInterface
      */
     public function disconnect() : bool
     {
-        return $this->connection->disconnect();
+        throw new BadMethodCallException();
     }
 
     /**
@@ -96,7 +90,9 @@ class AmqpConnection implements ConnectionInterface
      */
     public function reconnect() : bool
     {
-        return $this->connection->reconnect();
+        $this->connection->reconnect();
+
+        return true;
     }
 
     /**
@@ -104,6 +100,6 @@ class AmqpConnection implements ConnectionInterface
      */
     public function preconnect() : bool
     {
-        return $this->connection->preconnect();
+        throw new BadMethodCallException();
     }
 }

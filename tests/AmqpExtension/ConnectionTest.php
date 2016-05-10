@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
-use Humus\Amqp\Driver\AmqpExtension\AmqpConnection;
+use Humus\Amqp\Driver\AmqpExtension\Connection;
 use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
@@ -45,7 +45,7 @@ final class ConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(\Exception::class);
 
-        $connection = new AmqpConnection($this->invalidCredentials());
+        $connection = new Connection($this->invalidCredentials());
 
         $this->assertFalse($connection->isConnected());
 
@@ -57,7 +57,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_valid_credentials()
     {
-        $connection = new AmqpConnection($this->validCredentials());
+        $connection = new Connection($this->validCredentials());
 
         $this->assertFalse($connection->isConnected());
 
@@ -75,7 +75,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_uses_persistent_connection()
     {
-        $connection = new AmqpConnection($this->validCredentials());
+        $connection = new Connection($this->validCredentials());
 
         $this->assertFalse($connection->isConnected());
 
@@ -93,7 +93,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects()
     {
-        $connection = new AmqpConnection($this->validCredentials());
+        $connection = new Connection($this->validCredentials());
 
         $this->assertFalse($connection->isConnected());
 
@@ -111,7 +111,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects_a_persistent_connection()
     {
-        $connection = new AmqpConnection($this->validCredentials());
+        $connection = new Connection($this->validCredentials());
 
         $this->assertFalse($connection->isConnected());
 
@@ -129,8 +129,8 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_returns_internal_connection()
     {
-        $connection = new AmqpConnection($this->validCredentials());
+        $connection = new Connection($this->validCredentials());
 
-        $this->assertInstanceOf(\AMQPConnection::class, $connection->getAmqpExtensionConnection());
+        $this->assertInstanceOf(\AMQPConnection::class, $connection->getResource());
     }
 }

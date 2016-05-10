@@ -25,10 +25,10 @@ namespace Humus\Amqp;
 /**
  * Represents a AMQP exchange
  *
- * Interface AmqpExchange
+ * Interface Exchange
  * @package Humus\Amqp
  */
-interface AmqpExchange
+interface Exchange
 {
     /**
      * Get the configured name.
@@ -178,16 +178,16 @@ interface AmqpExchange
     );
 
     /**
-     * Get the AmqpChannel object in use
+     * Get the Channel object in use
      *
-     * @return AmqpChannel
+     * @return Channel
      */
-    public function getChannel() : AmqpChannel;
+    public function getChannel() : Channel;
 
     /**
-     * Get the AmqpConnection object in use
+     * Get the Connection object in use
      *
-     * @return AmqpConnection
+     * @return Connection
      */
-    public function getConnection() : AmqpConnection;
+    public function getConnection() : Connection;
 }

@@ -23,13 +23,13 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Assert\Assertion;
-use PhpAmqpLib\Connection\AMQPStreamConnection as BaseAMQPStreamConnection;
+use PhpAmqpLib\Connection\AMQPSocketConnection as BaseAMQPSocketConnection;
 
 /**
- * Class AmqpStreamConnection
+ * Class SocketConnection
  * @package Humus\Amqp\Driver\PhpAmqpLib
  */
-class AmqpStreamConnection extends AbstractAmqpConnection
+class SocketConnection extends AbstractConnection
 {
     /**
      * @inheritdoc
@@ -41,11 +41,10 @@ class AmqpStreamConnection extends AbstractAmqpConnection
         Assertion::keyExists($credentials, 'login');
         Assertion::keyExists($credentials, 'password');
 
-        $readWriteTimeout = $credentials['read_timeout'] ?? $credentials['write_timeout'] ?? 3;
         $connectTimeout = $credentials['connect_timeout'] ?? 3;
         $vhost = $credentials['vhost'] ?? '/';
 
-        $this->connection = new BaseAMQPStreamConnection(
+        $this->connection = new BaseAMQPSocketConnection(
             $credentials['host'],
             $credentials['port'],
             $credentials['login'],
@@ -56,10 +55,7 @@ class AmqpStreamConnection extends AbstractAmqpConnection
             null,
             'en_US',
             $connectTimeout,
-            $readWriteTimeout,
-            null,
-            false,
-            0
+            false
         );
     }
 }

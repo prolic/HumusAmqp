@@ -20,40 +20,45 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Driver\AmqpExtension;
+namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
+use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Channel as AmqpChannelInterface;
+use Humus\Amqp\Exception\BadMethodCallException;
+use PhpAmqpLib\Channel\AMQPChannel;
 
 /**
- * Class AmqpChannel
+ * Class Channel
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpChannel implements AmqpChannelInterface
+class Channel implements AmqpChannelInterface
 {
     /**
-     * @var AmqpConnection
+     * @var AbstractConnection
      */
     private $connection;
 
     /**
-     * @var \AMQPChannel
+     * @var AMQPChannel
      */
     private $channel;
 
     /**
      * Create an instance of an AMQPChannel object.
+     *
+     * @param AbstractConnection $amqpConnection  An instance of AbstractConnection
+     *                                                with an active connection to a broker.
      */
-    public function __construct(AmqpConnection $amqpConnection)
+    public function __construct(AbstractConnection $amqpConnection)
     {
         $this->connection = $amqpConnection;
-        $this->channel = new \AMQPChannel($amqpConnection->getAmqpExtensionConnection());
+        $this->channel = new AMQPChannel($amqpConnection->getResource());
     }
 
     /**
-     * @return \AMQPChannel
+     * @return AMQPChannel
      */
-    public function getAmqpExtensionChannel() : \AMQPChannel
+    public function getResource() : AMQPChannel
     {
         return $this->channel;
     }
@@ -63,7 +68,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function isConnected() : bool
     {
-        return $this->channel->isConnected();
+        throw new BadMethodCallException();
     }
 
     /**
@@ -79,7 +84,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setPrefetchSize(int $size)
     {
-        $this->channel->setPrefetchSize($size);
+        $this->channel->basic_qos($size, 0, false);
     }
 
     /**
@@ -87,7 +92,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function getPrefetchSize() : int
     {
-        return $this->channel->getPrefetchSize();
+        throw new BadMethodCallException();
     }
 
     /**
@@ -95,7 +100,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setPrefetchCount(int $count)
     {
-        $this->channel->setPrefetchCount($count);
+        $this->channel->basic_qos(0, $count, false);
     }
 
     /**
@@ -103,7 +108,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function getPrefetchCount() : int
     {
-        return $this->channel->getPrefetchCount();
+        throw new BadMethodCallException();
     }
 
     /**
@@ -111,7 +116,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function qos(int $size, int $count)
     {
-        $this->channel->qos($size, $count);
+        $this->channel->basic_qos($size, $count, false);
     }
 
     /**
@@ -119,7 +124,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function startTransaction()
     {
-        $this->channel->startTransaction();
+        $this->channel->tx_select();
     }
 
     /**
@@ -127,7 +132,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function commitTransaction()
     {
-        $this->channel->commitTransaction();
+        $this->channel->tx_commit();
     }
 
     /**
@@ -135,7 +140,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function rollbackTransaction()
     {
-        $this->channel->rollbackTransaction();
+        $this->channel->tx_rollback();
     }
 
     /**
@@ -151,7 +156,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function basicRecover(bool $requeue = true)
     {
-        $this->channel->basicRecover($requeue);
+        $this->channel->basic_recover($requeue);
     }
 
     /**
@@ -159,7 +164,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function confirmSelect()
     {
-        $this->channel->confirmSelect();
+        $this->channel->confirm_select();
     }
 
     /**
@@ -167,7 +172,13 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
     {
-        $this->channel->setConfirmCallback($ackCallback, $nackCallback);
+        if (is_callable($ackCallback)) {
+            $this->channel->set_ack_handler($ackCallback);
+        }
+
+        if (is_callable($nackCallback)) {
+            $this->channel->set_nack_handler($nackCallback);
+        }
     }
 
     /**
@@ -175,7 +186,7 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function waitForConfirm($timeout = 0.0)
     {
-        $this->channel->waitForConfirm($timeout);
+        $this->channel->wait_for_pending_acks($timeout);
     }
 
     /**
@@ -183,7 +194,9 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function setReturnCallback(callable $returnCallback = null)
     {
-        $this->channel->setReturnCallback($returnCallback);
+        if (is_callable($returnCallback)) {
+            $this->channel->set_return_listener($returnCallback);
+        }
     }
 
     /**
@@ -191,6 +204,6 @@ class AmqpChannel implements AmqpChannelInterface
      */
     public function waitForBasicReturn($timeout = 0.0)
     {
-        $this->channel->waitForBasicReturn($timeout);
+        $this->channel->wait_for_pending_acks_returns($timeout);
     }
 }

@@ -25,10 +25,10 @@ namespace Humus\Amqp;
 /**
  * Represents a AMQP envelope
  *
- * Interface AmqpEnvelope
+ * Interface Envelope
  * @package Humus\Amqp
  */
-interface AmqpEnvelope
+interface Envelope
 {
     /**
      * Get the body of the message.
@@ -69,7 +69,7 @@ interface AmqpEnvelope
      * Whether this is a redelivery of the message.
      *
      * Whether this is a redelivery of a message. If this message has been
-     * delivered and AmqpEnvelope::nack() was called, the message will be put
+     * delivered and Envelope::nack() was called, the message will be put
      * back on the queue to be redelivered, at which point the message will
      * always return TRUE when this method is called.
      *

@@ -26,5 +26,5 @@ namespace HumusTest\Amqp\Helper;
  */
 interface CanCreateExchange extends CanCreateChannel
 {
-    public function createExchange(\Humus\Amqp\AmqpChannel $channel) : \Humus\Amqp\AmqpExchange;
+    public function createExchange(\Humus\Amqp\Channel $channel) : \Humus\Amqp\Exchange;
 }

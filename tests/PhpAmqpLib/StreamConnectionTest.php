@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpStreamConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractConnectionTest;
 
@@ -39,7 +39,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(\Exception::class);
 
-        new AmqpStreamConnection($this->invalidCredentials());
+        new StreamConnection($this->invalidCredentials());
     }
 
     /**
@@ -47,7 +47,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_valid_credentials()
     {
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
 
         $this->assertTrue($connection->isConnected());
     }
@@ -57,9 +57,9 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_returns_internal_connection()
     {
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
 
-        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPStreamConnection::class, $connection->getPhpAmqpLibConnection());
+        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPStreamConnection::class, $connection->getResource());
     }
 
     /**
@@ -67,7 +67,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects()
     {
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
         $connection->reconnect();
     }
 
@@ -78,7 +78,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
         $connection->connect();
     }
 
@@ -89,7 +89,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
         $connection->pconnect();
     }
 
@@ -100,7 +100,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
         $connection->pdisconnect();
     }
 
@@ -111,7 +111,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
         $connection->disconnect();
     }
 
@@ -122,7 +122,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $connection = new AmqpStreamConnection($this->validCredentials());
+        $connection = new StreamConnection($this->validCredentials());
         $connection->preconnect();
     }
 }

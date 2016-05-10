@@ -37,7 +37,7 @@ final class CallbackConsumer extends AbstractConsumer
     /**
      * Constructor
      *
-     * @param AmqpQueue $queue
+     * @param Queue $queue
      * @param float $idleTimeout in seconds
      * @param callable $deliveryCallback,
      * @param callable|null $flushCallback,
@@ -47,7 +47,7 @@ final class CallbackConsumer extends AbstractConsumer
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(
-        AmqpQueue $queue,
+        Queue $queue,
         $idleTimeout,
         callable $deliveryCallback,
         callable $flushCallback = null,

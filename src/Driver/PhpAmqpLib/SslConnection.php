@@ -23,12 +23,13 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Assert\Assertion;
+use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 
 /**
- * Class AmqpLazyConnection
+ * Class SslConnection
  * @package Humus\Amqp\Driver\PhpAmqpLib
  */
-class AmqpLazyConnection extends AbstractAmqpConnection
+class SslConnection extends AbstractConnection
 {
     /**
      * @inheritdoc
@@ -39,27 +40,23 @@ class AmqpLazyConnection extends AbstractAmqpConnection
         Assertion::keyExists($credentials, 'port');
         Assertion::keyExists($credentials, 'login');
         Assertion::keyExists($credentials, 'password');
-        Assertion::keyExists($credentials, 'login');
 
-        $readWriteTimeout = isset($credentials['read_timeout']) ? : isset($credentials['write_timeout']) ? : 3;
-        $connectTimeout = isset($credentials['connect_timeout']) ? : 3;
-        $vhost = isset($credentials['vhost']) ? : '/';
+        $readWriteTimeout = $credentials['read_timeout'] ?? $credentials['write_timeout'] ?? 3;
+        $connectTimeout = $credentials['connect_timeout'] ?? 3;
+        $vhost = $credentials['vhost'] ?? '/';
+        $sslOptions = $credentials['ssl_options'] ?? [];
 
-        $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
+        $this->connection = new BaseAMQPSSLConnection(
             $credentials['host'],
             $credentials['port'],
             $credentials['login'],
             $credentials['password'],
             $vhost,
-            false,
-            'AMQPLAIN',
-            null,
-            'en_US',
-            $connectTimeout,
-            $readWriteTimeout,
-            null,
-            false,
-            0
+            $sslOptions,
+            [
+                'connection_timeout' => $connectTimeout,
+                'read_write_timeout' => $readWriteTimeout,
+            ]
         );
     }
 }

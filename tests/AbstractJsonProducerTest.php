@@ -22,10 +22,10 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
-use Humus\Amqp\AmqpChannel;
-use Humus\Amqp\AmqpEnvelope;
-use Humus\Amqp\AmqpExchange;
-use Humus\Amqp\AmqpQueue;
+use Humus\Amqp\Channel;
+use Humus\Amqp\Envelope;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
 use Humus\Amqp\JsonProducer;
 use HumusTest\Amqp\Helper\CanCreateExchange;
@@ -44,17 +44,17 @@ abstract class AbstractJsonProducerTest extends TestCase implements
     use DeleteOnTearDownTrait;
 
     /**
-     * @var AmqpChannel
+     * @var Channel
      */
     protected $channel;
 
     /**
-     * @var AmqpExchange
+     * @var Exchange
      */
     protected $exchange;
 
     /**
-     * @var AmqpQueue
+     * @var Queue
      */
     protected $queue;
 
@@ -75,7 +75,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements
 
     protected function setUp()
     {
-        $this->callback = function (AmqpEnvelope $envelope) {
+        $this->callback = function (Envelope $envelope) {
             $this->results[] = $envelope->getBody();
         };
 

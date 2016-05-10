@@ -20,8 +20,8 @@
 
 namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpQueue;
+use Humus\Amqp\Driver\PhpAmqpLib\Channel;
+use Humus\Amqp\Driver\PhpAmqpLib\Queue;
 
 /**
  * Class CreateQueueTrait
@@ -29,12 +29,12 @@ use Humus\Amqp\Driver\PhpAmqpLib\AmqpQueue;
  */
 trait CreateQueueTrait
 {
-    public function createQueue(\Humus\Amqp\AmqpChannel $channel) : \Humus\Amqp\AmqpQueue
+    public function createQueue(\Humus\Amqp\Channel $channel) : \Humus\Amqp\Queue
     {
-        if (! $channel instanceof AmqpChannel) {
+        if (! $channel instanceof Channel) {
             throw new \InvalidArgumentException();
         }
 
-        return new AmqpQueue($channel);
+        return new Queue($channel);
     }
 }

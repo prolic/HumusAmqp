@@ -25,17 +25,17 @@ namespace  Humus\Amqp;
 /**
  * Represents a AMQP connection between PHP and a AMQP server.
  *
- * Interface AmqpConnection
+ * Interface Connection
  * @package Humus\Amqp
  */
-interface AmqpConnection
+interface Connection
 {
     /**
-     * Create an instance of AmqpConnection.
+     * Create an instance of Connection.
      *
-     * Creates an AmqpConnection instance representing a connection to an AMQP
+     * Creates an Connection instance representing a connection to an AMQP
      * broker. A connection will not be established until
-     * AmqpConnection::connect() is called.
+     * Connection::connect() is called.
      *
      * $credentials = array(
      *      'host'  => amqp.host The host to connect too. Note: Max 1024 characters.

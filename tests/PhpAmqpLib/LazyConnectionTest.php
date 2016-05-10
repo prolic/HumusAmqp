@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpLazyConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
 use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
@@ -36,8 +36,8 @@ final class LazyConnectionTest extends AbstractConnectionTest
      */
     public function it_returns_internal_connection()
     {
-        $connection = new AmqpLazyConnection($this->validCredentials());
+        $connection = new LazyConnection($this->validCredentials());
 
-        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPLazyConnection::class, $connection->getPhpAmqpLibConnection());
+        $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPLazyConnection::class, $connection->getResource());
     }
 }

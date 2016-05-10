@@ -23,20 +23,20 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
-use Humus\Amqp\AmqpQueue as AmqpQueueInterface;
+use Humus\Amqp\Channel as AmqpChannelInterface;
+use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Queue as AmqpQueueInterface;
 use Humus\Amqp\Exception\AmqpConnectionException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
- * Class AmqpQueue
+ * Class Queue
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpQueue implements AmqpQueueInterface
+class Queue implements AmqpQueueInterface
 {
     /**
-     * @var AmqpChannel
+     * @var Channel
      */
     private $channel;
 
@@ -56,11 +56,11 @@ class AmqpQueue implements AmqpQueueInterface
     private $arguments = [];
 
     /**
-     * Create an instance of an AmqpQueue object.
+     * Create an instance of an Queue object.
      *
-     * @param AmqpChannel $amqpChannel The amqp channel to use.
+     * @param Channel $amqpChannel The amqp channel to use.
      */
-    public function __construct(AmqpChannel $amqpChannel)
+    public function __construct(Channel $amqpChannel)
     {
         $this->channel = $amqpChannel;
     }
@@ -134,7 +134,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function declareQueue() : int
     {
-        return $this->channel->getPhpAmqpLibChannel()->queue_declare(
+        return $this->channel->getResource()->queue_declare(
             $this->name,
             (bool) ($this->flags & Constants::AMQP_PASSIVE),
             (bool) ($this->flags & Constants::AMQP_DURABLE),
@@ -155,7 +155,7 @@ class AmqpQueue implements AmqpQueueInterface
             $routingKey = '';
         }
 
-        $this->channel->getPhpAmqpLibChannel()->queue_bind(
+        $this->channel->getResource()->queue_bind(
             $this->name,
             $exchangeName,
             $routingKey,
@@ -170,14 +170,14 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function get(int $flags = Constants::AMQP_NOPARAM)
     {
-        $envelope = $this->channel->getPhpAmqpLibChannel()->basic_get(
+        $envelope = $this->channel->getResource()->basic_get(
             $this->name,
             (bool) ($flags & Constants::AMQP_AUTOACK),
             null
         );
 
         if ($envelope instanceof AMQPMessage) {
-            return new AmqpEnvelope($envelope);
+            return new Envelope($envelope);
         }
 
         return false;
@@ -193,7 +193,7 @@ class AmqpQueue implements AmqpQueueInterface
     ) {
         if (null !== $callback) {
             $innerCallback = function (AMQPMessage $envelope) use ($callback) {
-                $envelope = new AmqpEnvelope($envelope);
+                $envelope = new Envelope($envelope);
                 return $callback($envelope, $this);
             };
         } else {
@@ -205,7 +205,7 @@ class AmqpQueue implements AmqpQueueInterface
         }
 
         try {
-            $this->channel->getPhpAmqpLibChannel()->basic_consume(
+            $this->channel->getResource()->basic_consume(
                 $this->name,
                 $consumerTag,
                 (bool) ($flags & Constants::AMQP_NOLOCAL),
@@ -217,8 +217,8 @@ class AmqpQueue implements AmqpQueueInterface
                 $this->arguments
             );
 
-            while (count($this->channel->getPhpAmqpLibChannel()->callbacks)) {
-                $this->channel->getPhpAmqpLibChannel()->wait();
+            while (count($this->channel->getResource()->callbacks)) {
+                $this->channel->getResource()->wait();
             }
         } catch (\Exception $e) {
             throw AmqpConnectionException::fromPhpAmqpLib($e);
@@ -230,7 +230,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        $this->channel->getPhpAmqpLibChannel()->basic_ack(
+        $this->channel->getResource()->basic_ack(
             $deliveryTag,
             (bool) ($flags & Constants::AMQP_MULTIPLE)
         );
@@ -241,7 +241,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        $this->channel->getPhpAmqpLibChannel()->basic_nack(
+        $this->channel->getResource()->basic_nack(
             $deliveryTag,
             (bool) ($flags & Constants::AMQP_MULTIPLE),
             (bool) ($flags & Constants::AMQP_REQUEUE)
@@ -253,7 +253,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
-        $this->channel->getPhpAmqpLibChannel()->basic_reject(
+        $this->channel->getResource()->basic_reject(
             $deliveryTag,
             (bool) ($flags & Constants::AMQP_REQUEUE)
         );
@@ -264,7 +264,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function purge()
     {
-        $this->channel->getPhpAmqpLibChannel()->queue_purge(
+        $this->channel->getResource()->queue_purge(
             $this->name,
             (bool) ($this->flags & Constants::AMQP_NOWAIT),
             null
@@ -276,7 +276,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function cancel(string $consumerTag = '')
     {
-        $this->channel->getPhpAmqpLibChannel()->basic_cancel(
+        $this->channel->getResource()->basic_cancel(
             $consumerTag,
             (bool) ($this->flags & Constants::AMQP_NOWAIT),
             false
@@ -292,7 +292,7 @@ class AmqpQueue implements AmqpQueueInterface
             $routingKey = '';
         }
 
-        $this->channel->getPhpAmqpLibChannel()->queue_unbind(
+        $this->channel->getResource()->queue_unbind(
             $this->name,
             $exchangeName,
             $routingKey,
@@ -306,7 +306,7 @@ class AmqpQueue implements AmqpQueueInterface
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
-        $this->channel->getPhpAmqpLibChannel()->queue_delete(
+        $this->channel->getResource()->queue_delete(
             $this->name,
             (bool) ($flags & Constants::AMQP_IFUNUSED),
             (bool) ($flags & Constants::AMQP_IFEMPTY),

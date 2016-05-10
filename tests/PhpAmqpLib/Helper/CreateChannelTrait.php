@@ -20,8 +20,8 @@
 
 namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AbstractAmqpConnection;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
+use Humus\Amqp\Driver\PhpAmqpLib\AbstractConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\Channel;
 
 /**
  * Class CreateChannelTrait
@@ -29,12 +29,12 @@ use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
  */
 trait CreateChannelTrait
 {
-    public function createChannel(\Humus\Amqp\AmqpConnection $connection) : \Humus\Amqp\AmqpChannel
+    public function createChannel(\Humus\Amqp\Connection $connection) : \Humus\Amqp\Channel
     {
-        if (! $connection instanceof AbstractAmqpConnection) {
+        if (! $connection instanceof AbstractConnection) {
             throw new \InvalidArgumentException();
         }
 
-        return new AmqpChannel($connection);
+        return new Channel($connection);
     }
 }

@@ -18,42 +18,60 @@
  *  and is licensed under the MIT license.
  */
 
-namespace Humus\Amqp\Driver\AmqpExtension;
+declare (strict_types=1);
+
+namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\AmqpChannel as AmqpChannelInterface;
-use Humus\Amqp\AmqpConnection as AmqpConnectionInterface;
-use Humus\Amqp\AmqpExchange as AmqpExchangeInterface;
+use Humus\Amqp\Channel as AmqpChannelInterface;
+use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Exchange as AmqpExchangeInterface;
+use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 /**
- * Class AmqpExchange
+ * Class Exchange
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpExchange implements AmqpExchangeInterface
+class Exchange implements AmqpExchangeInterface
 {
     /**
-     * @var AmqpChannel
+     * @var Channel
      */
     private $channel;
 
     /**
-     * @var \AMQPExchange
+     * @var string
      */
-    private $exchange;
+    private $name = '';
+
+    /**
+     * @var string
+     */
+    private $type = '';
+
+    /**
+     * @var int
+     */
+    private $flags = Constants::AMQP_NOPARAM;
+
+    /**
+     * @var array
+     */
+    private $arguments = [];
 
     /**
      * Create an instance of AMQPExchange.
      *
      * Returns a new instance of an AMQPExchange object, associated with the
-     * given AmqpChannel object.
+     * given Channel object.
      *
-     * @param AmqpChannel $amqpChannel A valid AmqpChannel object, connected
+     * @param Channel $amqpChannel A valid Channel object, connected
      *                                 to a broker.
      */
-    public function __construct(AmqpChannel $amqpChannel)
+    public function __construct(Channel $amqpChannel)
     {
         $this->channel = $amqpChannel;
-        $this->exchange = new \AMQPExchange($amqpChannel->getAmqpExtensionChannel());
     }
 
     /**
@@ -61,7 +79,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function getName() : string
     {
-        return $this->exchange->getName();
+        return $this->name;
     }
 
     /**
@@ -69,7 +87,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setName(string $exchangeName)
     {
-        $this->exchange->setName($exchangeName);
+        $this->name = $exchangeName;
     }
 
     /**
@@ -77,7 +95,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function getType() : string
     {
-        return $this->exchange->getType();
+        return $this->type;
     }
 
     /**
@@ -85,7 +103,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setType(string $exchangeType)
     {
-        $this->exchange->setType($exchangeType);
+        $this->type = $exchangeType;
     }
 
     /**
@@ -93,7 +111,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function getFlags() : int
     {
-        return $this->exchange->getFlags();
+        return $this->flags;
     }
 
     /**
@@ -101,7 +119,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setFlags(int $flags)
     {
-        $this->exchange->setFlags($flags);
+        $this->flags = (int) $flags;
     }
 
     /**
@@ -109,7 +127,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function getArgument(string $key)
     {
-        return $this->exchange->getArgument($key);
+        return $this->arguments[$key] ?? false;
     }
 
     /**
@@ -117,7 +135,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function getArguments() : array
     {
-        return $this->exchange->getArguments();
+        return $this->arguments;
     }
 
     /**
@@ -125,7 +143,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setArgument(string $key, $value)
     {
-        $this->exchange->setArgument($key, $value);
+        $this->arguments[$key] = $value;
     }
 
     /**
@@ -133,7 +151,7 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function setArguments(array $arguments)
     {
-        $this->exchange->setArguments($arguments);
+        $this->arguments = $arguments;
     }
 
     /**
@@ -141,7 +159,17 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function declareExchange()
     {
-        $this->exchange->declareExchange();
+        $this->channel->getResource()->exchange_declare(
+            $this->name,
+            $this->type,
+            (bool) ($this->flags & Constants::AMQP_PASSIVE),
+            (bool) ($this->flags & Constants::AMQP_DURABLE),
+            (bool) ($this->flags & Constants::AMQP_AUTODELETE),
+            (bool) ($this->flags & Constants::AMQP_INTERNAL),
+            (bool) ($this->flags & Constants::AMQP_NOWAIT),
+            $this->arguments,
+            null
+        );
     }
 
     /**
@@ -149,7 +177,11 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM)
     {
-        $this->exchange->delete($exchangeName, $flags);
+        if (null === $exchangeName) {
+            $exchangeName = $this->name;
+        }
+
+        $this->channel->getResource()->exchange_delete($exchangeName, $flags);
     }
 
     /**
@@ -157,7 +189,14 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
-        $this->exchange->bind($exchangeName, $routingKey, $arguments);
+        $this->channel->getResource()->exchange_bind(
+            $exchangeName,
+            $this->name,
+            $routingKey,
+            false,
+            $arguments,
+            null
+        );
     }
 
     /**
@@ -165,7 +204,13 @@ class AmqpExchange implements AmqpExchangeInterface
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
-        $this->exchange->unbind($exchangeName, $routingKey, $arguments);
+        $this->channel->getResource()->exchange_unbind(
+            $exchangeName,
+            $this->name,
+            $routingKey,
+            $arguments,
+            null
+        );
     }
 
     /**
@@ -174,10 +219,26 @@ class AmqpExchange implements AmqpExchangeInterface
     public function publish(
         string $message,
         string $routingKey = null,
-        int $flags = Constants::AMQP_NOPARAM,
-        array $attributes = []
+        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) {
-        $this->exchange->publish($message, $routingKey, $flags, $attributes);
+        $message = new AMQPMessage($message, $attributes);
+
+        if (isset($attributes['headers'])) {
+            $message->set('application_headers', new AMQPTable($attributes['headers']));
+        }
+
+        if (null === $routingKey) {
+            $routingKey = '';
+        }
+
+        $this->channel->getResource()->basic_publish(
+            $message,
+            $this->name,
+            $routingKey,
+            (bool) ($flags & Constants::AMQP_MANDATORY),
+            (bool) ($flags & Constants::AMQP_IMMEDIATE),
+            null
+        );
     }
 
     /**

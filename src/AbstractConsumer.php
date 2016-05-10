@@ -32,7 +32,7 @@ use Humus\Amqp\Exception\AmqpConnectionException;
 abstract class AbstractConsumer implements Consumer
 {
     /**
-     * @var AmqpQueue
+     * @var Queue
      */
     protected $queue;
 
@@ -131,7 +131,7 @@ abstract class AbstractConsumer implements Consumer
         if (!$this->timestampLastAck) {
             $this->timestampLastAck = microtime(true);
         }
-        $callback = function (AmqpEnvelope $envelope) {
+        $callback = function (Envelope $envelope) {
             if (__NAMESPACE__ === $envelope->getAppId()
                 && 'shutdown' === $envelope->getType()
             ) {
@@ -204,11 +204,11 @@ abstract class AbstractConsumer implements Consumer
     }
 
     /**
-     * @param AmqpEnvelope $envelope
-     * @param AmqpQueue $queue
+     * @param Envelope $envelope
+     * @param Queue $queue
      * @return bool|null
      */
-    protected function handleDelivery(AmqpEnvelope $envelope, AmqpQueue $queue)
+    protected function handleDelivery(Envelope $envelope, Queue $queue)
     {
         $callback = $this->deliveryCallback;
 
@@ -267,11 +267,11 @@ abstract class AbstractConsumer implements Consumer
     /**
      * Handle process flag
      *
-     * @param AmqpEnvelope $envelope
+     * @param Envelope $envelope
      * @param $flag
      * @return void
      */
-    protected function handleProcessFlag(AmqpEnvelope $envelope, $flag)
+    protected function handleProcessFlag(Envelope $envelope, $flag)
     {
         if ($flag === self::MSG_REJECT || false === $flag) {
             $this->ackOrNackBlock();

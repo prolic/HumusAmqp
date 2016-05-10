@@ -31,7 +31,7 @@ use Assert\Assertion;
 final class JsonRpcServer extends AbstractConsumer
 {
     /**
-     * @var AmqpExchange
+     * @var Exchange
      */
     private $exchange;
 
@@ -48,16 +48,16 @@ final class JsonRpcServer extends AbstractConsumer
     /**
      * Constructor
      *
-     * @param AmqpQueue $queue
-     * @param AmqpExchange $exchange
+     * @param Queue $queue
+     * @param Exchange $exchange
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
      * @param string|null $appId
      * @param bool $returnTrace
      */
     public function __construct(
-        AmqpQueue $queue,
-        AmqpExchange $exchange,
+        Queue $queue,
+        Exchange $exchange,
         $idleTimeout,
         $consumerTag = null,
         $appId = null,
@@ -91,11 +91,11 @@ final class JsonRpcServer extends AbstractConsumer
     }
 
     /**
-     * @param AmqpEnvelope $envelope
-     * @param AmqpQueue $queue
+     * @param Envelope $envelope
+     * @param Queue $queue
      * @return bool|null
      */
-    public function handleDelivery(AmqpEnvelope $envelope, AmqpQueue $queue)
+    public function handleDelivery(Envelope $envelope, Queue $queue)
     {
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
@@ -142,11 +142,11 @@ final class JsonRpcServer extends AbstractConsumer
     /**
      * Handle process flag
      *
-     * @param AmqpEnvelope $envelope
+     * @param Envelope $envelope
      * @param $flag
      * @return void
      */
-    protected function handleProcessFlag(AmqpEnvelope $envelope, $flag)
+    protected function handleProcessFlag(Envelope $envelope, $flag)
     {
         // do nothing, message was already acknowledged
     }

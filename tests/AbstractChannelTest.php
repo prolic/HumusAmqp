@@ -22,8 +22,8 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
-use Humus\Amqp\AmqpChannel;
-use Humus\Amqp\AmqpConnection;
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use HumusTest\Amqp\Helper\CanCreateChannel;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -34,12 +34,12 @@ use PHPUnit_Framework_TestCase as TestCase;
 abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
 {
     /**
-     * @var AmqpConnection
+     * @var Connection
      */
     protected $connection;
 
     /**
-     * @var AmqpChannel
+     * @var Channel
      */
     protected $channel;
 

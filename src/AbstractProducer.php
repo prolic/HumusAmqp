@@ -31,7 +31,7 @@ use Humus\Amqp\Exception\AmqpChannelException;
 abstract class AbstractProducer implements Producer
 {
     /**
-     * @var AmqpExchange
+     * @var Exchange
      */
     protected $exchange;
 
@@ -43,11 +43,11 @@ abstract class AbstractProducer implements Producer
     /**
      * Constructor
      *
-     * @param AmqpExchange $exchange
+     * @param Exchange $exchange
      * @param array|null $defaultAttributes
      * @throws AmqpChannelException
      */
-    public function __construct(AmqpExchange $exchange, array $defaultAttributes = null)
+    public function __construct(Exchange $exchange, array $defaultAttributes = null)
     {
         $this->exchange = $exchange;
 

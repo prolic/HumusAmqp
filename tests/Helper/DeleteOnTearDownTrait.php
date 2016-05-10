@@ -20,8 +20,8 @@
 
 namespace HumusTest\Amqp\Helper;
 
-use Humus\Amqp\AmqpExchange;
-use Humus\Amqp\AmqpQueue;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 
 /**
  * Class DeleteOnTearDownTrait
@@ -30,7 +30,7 @@ use Humus\Amqp\AmqpQueue;
 trait DeleteOnTearDownTrait
 {
     /**
-     * @var AmqpExchange[]|AmqpQueue[]
+     * @var Exchange[]|Queue[]
      */
     protected $toCleanUp = [];
 
@@ -48,7 +48,7 @@ trait DeleteOnTearDownTrait
     }
 
     /**
-     * @param AmqpExchange|AmqpQueue $resource
+     * @param Exchange|Queue $resource
      */
     protected function addToCleanUp($resource)
     {

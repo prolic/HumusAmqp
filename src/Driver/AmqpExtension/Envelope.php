@@ -20,13 +20,13 @@
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
-use Humus\Amqp\AmqpEnvelope as AmqpEnvelopeInterface;
+use Humus\Amqp\Envelope as AmqpEnvelopeInterface;
 
 /**
- * Class AmqpEnvelope
+ * Class Envelope
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class AmqpEnvelope implements AmqpEnvelopeInterface
+class Envelope implements AmqpEnvelopeInterface
 {
     /**
      * @var \AMQPEnvelope
@@ -34,7 +34,7 @@ class AmqpEnvelope implements AmqpEnvelopeInterface
     private $envelope;
 
     /**
-     * AmqpEnvelope constructor.
+     * Envelope constructor.
      * @param \AMQPEnvelope $envelope
      */
     public function __construct(\AMQPEnvelope $envelope)

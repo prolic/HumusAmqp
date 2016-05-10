@@ -25,10 +25,10 @@ namespace Humus\Amqp;
 /**
  * Represents a AMQP queue
  *
- * Interface AmqpQueue
+ * Interface Queue
  * @package Humus\Amqp
  */
-interface AmqpQueue
+interface Queue
 {
     /**
      * Get the configured name.
@@ -123,7 +123,7 @@ interface AmqpQueue
      *
      * Retrieve the next available message from the queue. If no messages are
      * present in the queue, this function will return FALSE immediately. This
-     * is a non blocking alternative to the AmqpQueue::consume() method.
+     * is a non blocking alternative to the Queue::consume() method.
      * Currently, the only supported flag for the flags parameter is
      * Constants::AMQP_AUTOACK. If this flag is passed in, then the message returned will
      * automatically be marked as acknowledged by the broker as soon as the
@@ -135,7 +135,7 @@ interface AmqpQueue
      *                       value is not provided, it will use the
      *                       value of ini-setting amqp.auto_ack.
      *
-     * @return AmqpEnvelope|false
+     * @return Envelope|false
      */
     public function get(int $flags = Constants::AMQP_NOPARAM);
 
@@ -148,10 +148,10 @@ interface AmqpQueue
      * @param callable | null $callback    A callback function to which the
      *                              consumed message will be passed. The
      *                              function must accept at a minimum
-     *                              one parameter, an AmqpEnvelope object,
+     *                              one parameter, an Envelope object,
      *                              and an optional second parameter
-     *                              the AmqpQueue object from which callback
-     *                              was invoked. The AmqpQueue::consume() will
+     *                              the Queue object from which callback
+     *                              was invoked. The Queue::consume() will
      *                              not return the processing thread back to
      *                              the PHP script until the callback
      *                              function returns FALSE.
@@ -171,8 +171,8 @@ interface AmqpQueue
      * Acknowledge the receipt of a message.
      *
      * This method allows the acknowledgement of a message that is retrieved
-     * without the Constants::AMQP_AUTOACK flag through AmqpQueue::get() or
-     * AmqpQueue::consume()
+     * without the Constants::AMQP_AUTOACK flag through Queue::get() or
+     * Queue::consume()
      *
      * @param string  $deliveryTag The message delivery tag of which to
      *                              acknowledge receipt.
@@ -188,7 +188,7 @@ interface AmqpQueue
      * Mark the message identified by delivery_tag as explicitly not
      * acknowledged. This method can only be called on messages that have not
      * yet been acknowledged, meaning that messages retrieved with by
-     * AmqpQueue::consume() and AmqpQueue::get() and using the Constants::AMQP_AUTOACK
+     * Queue::consume() and Queue::get() and using the Constants::AMQP_AUTOACK
      * flag are not eligible. When called, the broker will immediately put the
      * message back onto the queue, instead of waiting until the connection is
      * closed. This method is only supported by the RabbitMQ broker. The
@@ -209,7 +209,7 @@ interface AmqpQueue
      * Mark the message identified by delivery_tag as explicitly not
      * acknowledged. This method can only be called on messages that have not
      * yet been acknowledged, meaning that messages retrieved with by
-     * AmqpQueue::consume() and AmqpQueue::get() and using the Constants::AMQP_AUTOACK
+     * Queue::consume() and Queue::get() and using the Constants::AMQP_AUTOACK
      * flag are not eligible.
      *
      * @param string  $deliveryTag Delivery tag of the message to reject.
@@ -261,16 +261,16 @@ interface AmqpQueue
     public function delete(int $flags = Constants::AMQP_NOPARAM);
 
     /**
-     * Get the AmqpChannel object in use
+     * Get the Channel object in use
      *
-     * @return AmqpChannel
+     * @return Channel
      */
-    public function getChannel() : AmqpChannel;
+    public function getChannel() : Channel;
 
     /**
-     * Get the AmqpConnection object in use
+     * Get the Connection object in use
      *
-     * @return AmqpConnection
+     * @return Connection
      */
-    public function getConnection() : AmqpConnection;
+    public function getConnection() : Connection;
 }

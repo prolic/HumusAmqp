@@ -20,8 +20,8 @@
 
 namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpChannel;
-use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
+use Humus\Amqp\Driver\PhpAmqpLib\Channel;
+use Humus\Amqp\Driver\PhpAmqpLib\Exchange;
 
 /**
  * Class CreateExchangeTrait
@@ -29,12 +29,12 @@ use Humus\Amqp\Driver\PhpAmqpLib\AmqpExchange;
  */
 trait CreateExchangeTrait
 {
-    public function createExchange(\Humus\Amqp\AmqpChannel $channel) : \Humus\Amqp\AmqpExchange
+    public function createExchange(\Humus\Amqp\Channel $channel) : \Humus\Amqp\Exchange
     {
-        if (! $channel instanceof AmqpChannel) {
+        if (! $channel instanceof Channel) {
             throw new \InvalidArgumentException();
         }
 
-        return new AmqpExchange($channel);
+        return new Exchange($channel);
     }
 }
