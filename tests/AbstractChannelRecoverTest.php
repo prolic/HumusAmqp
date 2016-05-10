@@ -22,18 +22,25 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
-use Humus\Amqp\Channel;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
+use HumusTest\Amqp\Helper\CanCreateChannel;
+use HumusTest\Amqp\Helper\CanCreateConnection;
+use HumusTest\Amqp\Helper\CanCreateExchange;
+use HumusTest\Amqp\Helper\CanCreateQueue;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractChannelRecoverTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractChannelRecoverTest extends TestCase
+abstract class AbstractChannelRecoverTest extends TestCase implements
+    CanCreateConnection,
+    CanCreateChannel,
+    CanCreateExchange,
+    CanCreateQueue
 {
     /**
      * @var Exchange
@@ -58,16 +65,16 @@ abstract class AbstractChannelRecoverTest extends TestCase
     {
         $result = [];
 
-        $channel1 = $this->getNewChannelWithNewConnection();
+        $channel1 = $this->createChannel($this->createConnection());
         $channel1->setPrefetchCount(5);
 
-        $exchange1 = $this->getNewExchange($channel1);
+        $exchange1 = $this->createExchange($channel1);
         $exchange1->setType('topic');
         $exchange1->setName('test');
         $exchange1->setFlags(Constants::AMQP_AUTODELETE);
         $exchange1->declareExchange();
 
-        $queue1 = $this->getNewQueue($channel1);
+        $queue1 = $this->createQueue($channel1);
         $queue1->setName('test');
         $queue1->setFlags(Constants::AMQP_DURABLE);
         $queue1->declareQueue();
@@ -96,10 +103,11 @@ abstract class AbstractChannelRecoverTest extends TestCase
 
         $queue1->cancel(); // we have to do that to prevent redelivering to the same consumer
 
-        $channel2 = $this->getNewChannelWithNewConnection();
+        $newConnection = $this->createConnection(['read_timeout' => 1]);
+        $channel2 = $this->createChannel($newConnection);
         $channel2->setPrefetchCount(8);
 
-        $queue2 = $this->getNewQueue($channel2);
+        $queue2 = $this->createQueue($channel2);
         $queue2->setName('test');
 
         $consume = 10;
@@ -154,22 +162,4 @@ abstract class AbstractChannelRecoverTest extends TestCase
 
         $this->assertEquals($expected, $result);
     }
-
-    protected function credentials() : array
-    {
-        return [
-            'vhost' => '/humus-amqp-test',
-            'host' => 'localhost',
-            'port' => 5672,
-            'login' => 'guest',
-            'password' => 'guest',
-            'read_timeout' => 1,
-        ];
-    }
-
-    abstract protected function getNewChannelWithNewConnection() : Channel;
-
-    abstract protected function getNewExchange(Channel $channel) : Exchange;
-
-    abstract protected function getNewQueue(Channel $channel) : Queue;
 }

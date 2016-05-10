@@ -22,14 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
-use Humus\Amqp\Channel as AmqpChannelInterface;
-use Humus\Amqp\Exchange as AmqpExchangeInterface;
-use Humus\Amqp\Queue as AmqpQueueInterface;
-use Humus\Amqp\Driver\PhpAmqpLib\Channel;
-use Humus\Amqp\Driver\PhpAmqpLib\Exchange;
-use Humus\Amqp\Driver\PhpAmqpLib\Queue;
-use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use HumusTest\Amqp\AbstractChannelRecoverTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
  * Class ChannelRecoverTest
@@ -37,26 +34,8 @@ use HumusTest\Amqp\AbstractChannelRecoverTest;
  */
 final class ChannelRecoverTest extends AbstractChannelRecoverTest
 {
-    protected function setUp()
-    {
-        $this->markTestSkipped('channel recover test not yet working for php amqp lib');
-    }
-
-    /**
-     * @return AmqpChannelInterface
-     */
-    protected function getNewChannelWithNewConnection() : AmqpChannelInterface
-    {
-        return new Channel(new StreamConnection($this->credentials()));
-    }
-
-    protected function getNewExchange(AmqpChannelInterface $channel) : AmqpExchangeInterface
-    {
-        return new Exchange($channel);
-    }
-
-    protected function getNewQueue(AmqpChannelInterface $channel) : AmqpQueueInterface
-    {
-        return new Queue($channel);
-    }
+    use CreateConnectionTrait;
+    use CreateChannelTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
 }

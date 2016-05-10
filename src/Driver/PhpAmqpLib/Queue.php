@@ -193,8 +193,11 @@ class Queue implements AmqpQueueInterface
     ) {
         if (null !== $callback) {
             $innerCallback = function (AMQPMessage $envelope) use ($callback) {
-                $envelope = new Envelope($envelope);
-                return $callback($envelope, $this);
+                $result = $callback(new Envelope($envelope), $this);
+                if (false === $result) {
+                    $this->cancel($envelope->delivery_info['consumer_tag']);
+                }
+                return $result;
             };
         } else {
             $innerCallback = null;

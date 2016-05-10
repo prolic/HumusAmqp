@@ -31,9 +31,10 @@ trait CreateConnectionTrait
 {
     use ValidCredentialsTrait;
 
-    public function createConnection() : \Humus\Amqp\Connection
+    public function createConnection(array $params = []) : \Humus\Amqp\Connection
     {
-        $connection = new Connection($this->validCredentials());
+        $params = array_merge($this->validCredentials(), $params);
+        $connection = new Connection($params);
         $connection->connect();
 
         return $connection;
