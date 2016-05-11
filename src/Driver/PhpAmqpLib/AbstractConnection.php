@@ -56,7 +56,7 @@ abstract class AbstractConnection implements AmqpConnectionInterface
     /**
      * @inheritdoc
      */
-    public function connect() : bool
+    public function connect()
     {
         throw new BadMethodCallException();
     }
@@ -64,7 +64,7 @@ abstract class AbstractConnection implements AmqpConnectionInterface
     /**
      * @inheritdoc
      */
-    public function pconnect() : bool
+    public function pconnect()
     {
         throw new BadMethodCallException();
     }
@@ -72,7 +72,7 @@ abstract class AbstractConnection implements AmqpConnectionInterface
     /**
      * @inheritdoc
      */
-    public function pdisconnect() : bool
+    public function pdisconnect()
     {
         throw new BadMethodCallException();
     }
@@ -80,7 +80,7 @@ abstract class AbstractConnection implements AmqpConnectionInterface
     /**
      * @inheritdoc
      */
-    public function disconnect() : bool
+    public function disconnect()
     {
         throw new BadMethodCallException();
     }

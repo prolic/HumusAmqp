@@ -53,7 +53,7 @@ class Exchange implements AmqpExchangeInterface
     public function __construct(Channel $amqpChannel)
     {
         $this->channel = $amqpChannel;
-        $this->exchange = new \AMQPExchange($amqpChannel->getAmqpExtensionChannel());
+        $this->exchange = new \AMQPExchange($amqpChannel->getResource());
     }
 
     /**

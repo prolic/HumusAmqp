@@ -207,19 +207,19 @@ class Envelope implements AmqpEnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getHeader(string $headerKey)
+    public function getHeader(string $header)
     {
         $headers = $this->getHeaders();
-        return $headers[$headerKey] ?? false;
+        return $headers[$header] ?? false;
     }
 
     /**
      * @inheritdoc
      */
-    public function hasHeader(string $key) : bool
+    public function hasHeader(string $header) : bool
     {
         $headers = $this->getHeaders();
 
-        return isset($headers[$key]);
+        return isset($headers[$header]);
     }
 }

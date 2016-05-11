@@ -53,7 +53,7 @@ class Channel implements AmqpChannelInterface
     /**
      * @return \AMQPChannel
      */
-    public function getAmqpExtensionChannel() : \AMQPChannel
+    public function getResource() : \AMQPChannel
     {
         return $this->channel;
     }

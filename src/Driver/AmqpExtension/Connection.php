@@ -38,9 +38,9 @@ class Connection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function __construct(array $credentials = [])
+    public function __construct(array $params = [])
     {
-        $this->connection = new \AMQPConnection($credentials);
+        $this->connection = new \AMQPConnection($params);
     }
 
     /**
@@ -62,33 +62,33 @@ class Connection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function connect() : bool
+    public function connect()
     {
-        return $this->connection->connect();
+        $this->connection->connect();
     }
 
     /**
      * @inheritdoc
      */
-    public function pconnect() : bool
+    public function pconnect()
     {
-        return $this->connection->pconnect();
+        $this->connection->pconnect();
     }
 
     /**
      * @inheritdoc
      */
-    public function pdisconnect() : bool
+    public function pdisconnect()
     {
-        return $this->connection->pdisconnect();
+        $this->connection->pdisconnect();
     }
 
     /**
      * @inheritdoc
      */
-    public function disconnect() : bool
+    public function disconnect()
     {
-        return $this->connection->disconnect();
+        $this->connection->disconnect();
     }
 
     /**

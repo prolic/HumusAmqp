@@ -50,7 +50,7 @@ class Queue implements AmqpQueueInterface
     public function __construct(Channel $amqpChannel)
     {
         $this->channel = $amqpChannel;
-        $this->queue = new \AMQPQueue($amqpChannel->getAmqpExtensionChannel());
+        $this->queue = new \AMQPQueue($amqpChannel->getResource());
     }
 
     /**

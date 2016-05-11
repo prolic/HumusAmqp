@@ -37,21 +37,20 @@ interface Connection
      * broker. A connection will not be established until
      * Connection::connect() is called.
      *
-     * $credentials = array(
-     *      'host'  => amqp.host The host to connect too. Note: Max 1024 characters.
-     *      'port'  => amqp.port Port on the host.
-     *      'vhost' => amqp.vhost The virtual host on the host. Note: Max 128 characters.
-     *      'login' => amqp.login The login name to use. Note: Max 128 characters.
-     *      'password' => amqp.password Password. Note: Max 128 characters.
-     *      'read_timeout'  => Timeout in for income activity. Note: 0 or greater seconds. May be fractional.
-     *      'write_timeout' => Timeout in for outcome activity. Note: 0 or greater seconds. May be fractional.
-     *      'connect_timeout' => Connection timeout. Note: 0 or greater seconds. May be fractional.
-     * )
+     * $params = [
+     *     'host'  => amqp.host The host to connect too. Note: Max 1024 characters.
+     *     'port'  => amqp.port Port on the host.
+     *     'vhost' => amqp.vhost The virtual host on the host. Note: Max 128 characters.
+     *     'login' => amqp.login The login name to use. Note: Max 128 characters.
+     *     'password' => amqp.password Password. Note: Max 128 characters.
+     *     'read_timeout'  => Timeout in for income activity. Note: 0 or greater seconds. May be fractional.
+     *     'write_timeout' => Timeout in for outcome activity. Note: 0 or greater seconds. May be fractional.
+     *     'connect_timeout' => Connection timeout. Note: 0 or greater seconds. May be fractional.
+     * ]
      *
-     * @param array $credentials Optional array of credential information for
-     *                           connecting to the AMQP broker.
+     * @param array $params Optional array of params for connecting to the AMQP broker.
      */
-    public function __construct(array $credentials = []);
+    public function __construct(array $params = []);
 
     /**
      * Check whether the connection to the AMQP broker is still valid.
@@ -69,7 +68,7 @@ interface Connection
      *
      * @return bool TRUE on success or throw an exception on failure.
      */
-    public function connect() : bool;
+    public function connect();
 
     /**
      * Establish a persistent connection with the AMQP broker.
@@ -79,7 +78,7 @@ interface Connection
      *
      * @return bool TRUE on success or throws an exception on failure.
      */
-    public function pconnect() : bool;
+    public function pconnect();
 
     /**
      * Closes a persistent connection with the AMQP broker.
@@ -91,7 +90,7 @@ interface Connection
      *                 false if no persistent connection with this host,
      *                 port, vhost and login could be found,
      */
-    public function pdisconnect() : bool;
+    public function pdisconnect();
 
     /**
      * Closes the transient connection with the AMQP broker.
@@ -100,7 +99,7 @@ interface Connection
      *
      * @return bool true if connection was successfully closed, false otherwise.
      */
-    public function disconnect() : bool;
+    public function disconnect();
 
     /**
      * Close any open transient connections and initiate a new one with the AMQP broker.

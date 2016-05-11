@@ -34,22 +34,22 @@ class StreamConnection extends AbstractConnection
     /**
      * @inheritdoc
      */
-    public function __construct(array $credentials = [])
+    public function __construct(array $params = [])
     {
-        Assertion::keyExists($credentials, 'host');
-        Assertion::keyExists($credentials, 'port');
-        Assertion::keyExists($credentials, 'login');
-        Assertion::keyExists($credentials, 'password');
+        Assertion::keyExists($params, 'host');
+        Assertion::keyExists($params, 'port');
+        Assertion::keyExists($params, 'login');
+        Assertion::keyExists($params, 'password');
 
-        $readWriteTimeout = $credentials['read_timeout'] ?? $credentials['write_timeout'] ?? 3;
-        $connectTimeout = $credentials['connect_timeout'] ?? 3;
-        $vhost = $credentials['vhost'] ?? '/';
+        $readWriteTimeout = $params['read_timeout'] ?? $params['write_timeout'] ?? 3;
+        $connectTimeout = $params['connect_timeout'] ?? 3;
+        $vhost = $params['vhost'] ?? '/';
 
         $this->connection = new BaseAMQPStreamConnection(
-            $credentials['host'],
-            $credentials['port'],
-            $credentials['login'],
-            $credentials['password'],
+            $params['host'],
+            $params['port'],
+            $params['login'],
+            $params['password'],
             $vhost,
             false,
             'AMQPLAIN',

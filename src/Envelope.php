@@ -164,10 +164,10 @@ interface Envelope
     /**
      * Get a specific message header.
      *
-     * @param string $headerKey Name of the header to get the value from.
+     * @param string $header Name of the header to get the value from.
      * @return string|false The contents of the specified header, false if header not set
      */
-    public function getHeader(string $headerKey);
+    public function getHeader(string $header);
 
 
     /**
@@ -176,5 +176,5 @@ interface Envelope
      * @param string $key
      * @return bool
      */
-    public function hasHeader(string $key) : bool;
+    public function hasHeader(string $header) : bool;
 }
