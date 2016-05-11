@@ -173,7 +173,7 @@ class Channel implements AmqpChannelInterface
     /**
      * @inheritdoc
      */
-    public function waitForConfirm($timeout = 0.0)
+    public function waitForConfirm(float $timeout = 0.0)
     {
         $this->channel->waitForConfirm($timeout);
     }
@@ -183,13 +183,27 @@ class Channel implements AmqpChannelInterface
      */
     public function setReturnCallback(callable $returnCallback = null)
     {
-        $this->channel->setReturnCallback($returnCallback);
+        $innerCallback = null;
+        if ($returnCallback) {
+            $innerCallback = function (
+                int $replyCode,
+                string $replyText,
+                string $exchange,
+                string $routingKey,
+                \AMQPBasicProperties $properties,
+                string $body
+            ) use ($returnCallback) {
+                return $returnCallback($replyCode, $replyText, $exchange, $routingKey, new Envelope($properties), $body);
+            };
+        }
+
+        $this->channel->setReturnCallback($innerCallback);
     }
 
     /**
      * @inheritdoc
      */
-    public function waitForBasicReturn($timeout = 0.0)
+    public function waitForBasicReturn(float $timeout = 0.0)
     {
         $this->channel->waitForBasicReturn($timeout);
     }

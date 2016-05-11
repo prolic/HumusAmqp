@@ -135,7 +135,7 @@ interface Producer
      *
      * @param float $timeout Timeout in seconds. May be fractional.
      */
-    public function waitForBasicReturn($timeout = 0.0);
+    public function waitForBasicReturn(float $timeout = 0.0);
 
     /**
      * @return array

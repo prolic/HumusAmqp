@@ -26,6 +26,7 @@ use Humus\Amqp\Connection as AmqpConnectionInterface;
 use Humus\Amqp\Channel as AmqpChannelInterface;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Class Channel
@@ -173,18 +174,24 @@ class Channel implements AmqpChannelInterface
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
     {
         if (is_callable($ackCallback)) {
-            $this->channel->set_ack_handler($ackCallback);
+            $innerAckCallback = function (AMQPMessage $message) use ($ackCallback) {
+                return $ackCallback($message->get('delivery_tag'));
+            };
+            $this->channel->set_ack_handler($innerAckCallback);
         }
 
         if (is_callable($nackCallback)) {
-            $this->channel->set_nack_handler($nackCallback);
+            $innerNackCallback = function (AMQPMessage $message) use ($ackCallback) {
+                return $ackCallback($message->get('delivery_tag'), false, false);
+            };
+            $this->channel->set_nack_handler($innerNackCallback);
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function waitForConfirm($timeout = 0.0)
+    public function waitForConfirm(float $timeout = 0.0)
     {
         $this->channel->wait_for_pending_acks($timeout);
     }
@@ -194,15 +201,26 @@ class Channel implements AmqpChannelInterface
      */
     public function setReturnCallback(callable $returnCallback = null)
     {
-        if (is_callable($returnCallback)) {
-            $this->channel->set_return_listener($returnCallback);
+        if ($returnCallback) {
+            $innerCallback = function (
+                int $replyCode,
+                string $replyText,
+                string $exchange,
+                string $routingKey,
+                AMQPMessage $message
+            ) use ($returnCallback) {
+                $envelope = new Envelope($message);
+                return $returnCallback($replyCode, $replyText, $exchange, $routingKey, $envelope, $envelope->getBody());
+            };
+
+            $this->channel->set_return_listener($innerCallback);
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function waitForBasicReturn($timeout = 0.0)
+    public function waitForBasicReturn(float $timeout = 0.0)
     {
         $this->channel->wait_for_pending_acks_returns($timeout);
     }

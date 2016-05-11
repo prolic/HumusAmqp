@@ -183,7 +183,7 @@ interface Channel
      *
      * @param float $timeout Timeout in seconds. May be fractional.
      */
-    public function waitForConfirm($timeout = 0.0);
+    public function waitForConfirm(float $timeout = 0.0);
 
     /**
      * Set callback to process basic.return AMQP server method
@@ -196,7 +196,7 @@ interface Channel
      *                        string $reply_text,
      *                        string $exchange,
      *                        string $routing_key,
-     *                        AMQPBasicProperties $properties,
+     *                        Envelope $envelope,
      *                        string $body) : bool;
      *
      * and should return boolean false when wait loop should be canceled.
@@ -209,5 +209,5 @@ interface Channel
      *
      * @param float $timeout Timeout in seconds. May be fractional.
      */
-    public function waitForBasicReturn($timeout = 0.0);
+    public function waitForBasicReturn(float $timeout = 0.0);
 }

@@ -29,15 +29,15 @@ use Humus\Amqp\Envelope as AmqpEnvelopeInterface;
 class Envelope implements AmqpEnvelopeInterface
 {
     /**
-     * @var \AMQPEnvelope
+     * @var \AMQPBasicProperties
      */
     private $envelope;
 
     /**
      * Envelope constructor.
-     * @param \AMQPEnvelope $envelope
+     * @param \AMQPBasicProperties $envelope
      */
-    public function __construct(\AMQPEnvelope $envelope)
+    public function __construct(\AMQPBasicProperties $envelope)
     {
         $this->envelope = $envelope;
     }
@@ -200,5 +200,13 @@ class Envelope implements AmqpEnvelopeInterface
     public function hasHeader(string $header) : bool
     {
         return $this->envelope->hasHeader($header);
+    }
+
+    /**
+     * @return \AMQPEnvelope
+     */
+    public function getResource()
+    {
+        return $this->envelope;
     }
 }

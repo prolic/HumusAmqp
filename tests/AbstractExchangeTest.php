@@ -24,6 +24,7 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Constants;
 use HumusTest\Amqp\Helper\CanCreateExchange;
@@ -135,5 +136,112 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->bind($exchange2->getName());
 
         $this->exchange->unbind($exchange2->getName());
+    }
+
+    /**
+     * @test
+     * @group my
+     */
+    public function it_publishes_with_confirms()
+    {
+        $result = [];
+
+        $connection = $this->createConnection(['read_timeout' => 2]);
+        $channel = $this->createChannel($connection);
+        $channel->confirmSelect();
+
+        try {
+            $channel->waitForConfirm(1);
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        $this->exchange = $this->createExchange($channel);
+        $this->exchange->setName('test');
+        $this->exchange->setType('fanout');
+        $this->exchange->setFlags(Constants::AMQP_AUTODELETE);
+        $this->exchange->declareExchange();
+
+        $this->exchange->publish('message 1', 'routing.key');
+        $this->exchange->publish('message 1', 'routing.key', Constants::AMQP_MANDATORY);
+
+        try {
+            $channel->waitForConfirm();
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        try {
+            $channel->waitForConfirm();
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        try {
+            $channel->waitForConfirm(1);
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        $this->exchange->publish('message 1', 'routing.key');
+        $this->exchange->publish('message 1', 'routing.key', Constants::AMQP_MANDATORY);
+
+        $channel->setReturnCallback(function (
+            int $replyCode,
+            string $replyText,
+            string $exchange,
+            string $routingKey,
+            Envelope $envelope,
+            string $body
+        ) {
+            $result[] = 'Message returned: ' . $replyText . ', message body:' . $body;
+        });
+
+        $cnt = 2;
+
+        $channel->setConfirmCallback(
+            function (
+                string $delivery_tag,
+                bool $multiple = false
+            ) use (&$cnt, &$result) {
+                $result[] = 'Message acked';
+                $result[] = func_get_args();
+                return --$cnt > 0;
+            },
+            function (
+                string $delivery_tag,
+                bool $multiple,
+                bool $requeue
+            ) use (&$result) {
+                $result[] = 'Message nacked';
+                $result[] = func_get_args();
+                return false;
+            }
+        );
+
+        try {
+            $channel->waitForConfirm();
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        $this->exchange->delete();
+
+        $exchange2 = $this->createExchange($channel);
+        $exchange2->setName('non-existent');
+        $exchange2->publish('message 2', 'routing.key');
+
+        try {
+            $channel->waitForConfirm(1);
+        } catch (\Exception $e) {
+            $result[] = $e->getMessage();
+        }
+
+        $this->assertCount(5, $result);
+        $this->assertEquals('Message acked', $result[0]);
+        $this->assertEquals('3', $result[1][0]);
+        $this->assertEquals('Message acked', $result[2]);
+        $this->assertEquals('4', $result[3][0]);
+        $this->assertRegExp("/.+no exchange 'non-existent' in vhost '.+'/", $result[4]);
     }
 }

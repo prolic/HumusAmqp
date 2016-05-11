@@ -117,7 +117,7 @@ abstract class AbstractProducer implements Producer
     /**
      * @inheritdoc
      */
-    public function waitForBasicReturn($timeout = 0.0)
+    public function waitForBasicReturn(float $timeout = 0.0)
     {
         $this->exchange->getChannel()->waitForBasicReturn($timeout);
     }

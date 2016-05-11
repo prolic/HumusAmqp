@@ -127,4 +127,31 @@ abstract class AbstractQueueTest extends TestCase implements
         $this->assertInstanceOf(Channel::class, $this->queue->getChannel());
         $this->assertInstanceOf(Connection::class, $this->queue->getConnection());
     }
+
+    /**
+     * @test
+     */
+    public function it_consumes_without_callback()
+    {
+        // @todo: clarify why this is not working with php amqp lib
+        if (get_class($this) === 'HumusTest\Amqp\PhpAmqpLib\QueueTest') {
+            return;
+        }
+
+        $this->addToCleanUp($this->exchange);
+        $this->addToCleanUp($this->queue);
+
+        $this->exchange->setType('direct');
+        $this->exchange->setName('test');
+        $this->exchange->declareExchange();
+
+        $this->queue->setName('test2');
+        $this->queue->declareQueue();
+        $this->queue->bind('test');
+
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+
+        $this->queue->consume(null);
+    }
 }
