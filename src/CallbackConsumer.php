@@ -48,33 +48,28 @@ final class CallbackConsumer extends AbstractConsumer
      */
     public function __construct(
         Queue $queue,
-        $idleTimeout,
+        float $idleTimeout,
         callable $deliveryCallback,
         callable $flushCallback = null,
         callable $errorCallback = null,
-        $consumerTag = null,
-        $blockSize = 50
+        string $consumerTag = null,
+        int $blockSize = 50
     ) {
-        Assertion::float($idleTimeout);
-        Assertion::nullOrString($consumerTag);
         Assertion::min($blockSize, 1);
 
         if (null === $consumerTag) {
-            $consumerTag = uniqid('', true);
+            $consumerTag = bin2hex(random_bytes(24));
         }
 
-        if (function_exists('pcntl_signal_dispatch')) {
+        if (extension_loaded('pcntl')) {
             $this->usePcntlSignalDispatch = true;
-        }
-
-        if (function_exists('pcntl_signal')) {
             pcntl_signal(SIGTERM, [$this, 'shutdown']);
             pcntl_signal(SIGINT, [$this, 'shutdown']);
             pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
         $this->queue = $queue;
-        $this->idleTimeout = (float) $idleTimeout;
+        $this->idleTimeout = $idleTimeout;
         $this->deliveryCallback = $deliveryCallback;
         $this->flushCallback = $flushCallback;
         $this->errorCallback = $errorCallback;

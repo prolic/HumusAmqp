@@ -53,5 +53,5 @@ interface Consumer
      *
      * @param int $msgAmount
      */
-    public function consume($msgAmount = 0);
+    public function consume(int $msgAmount = 0);
 }

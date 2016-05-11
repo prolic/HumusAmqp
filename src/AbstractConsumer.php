@@ -63,7 +63,7 @@ abstract class AbstractConsumer implements Consumer
     protected $lastDeliveryTag;
 
     /**
-     * @var
+     * @var bool
      */
     protected $keepAlive = true;
 
@@ -124,43 +124,41 @@ abstract class AbstractConsumer implements Consumer
      * @param int $msgAmount
      * @throws AmqpConnectionException
      */
-    public function consume($msgAmount = 0)
+    public function consume(int $msgAmount = 0)
     {
         Assertion::min($msgAmount, 0);
+
         $this->target = $msgAmount;
         if (!$this->timestampLastAck) {
             $this->timestampLastAck = microtime(true);
         }
         $callback = function (Envelope $envelope) {
-            if (__NAMESPACE__ === $envelope->getAppId()
-                && 'shutdown' === $envelope->getType()
-            ) {
-                $this->shutdown();
+            if ($envelope->getAppId() === __NAMESPACE__) {
+                if ('shutdown' === $envelope->getType()) {
+                    $this->shutdown();
 
-                return self::MSG_ACK;
-            }
-
-            if (__NAMESPACE__ === $envelope->getAppId()
-                && 'reconfigure' === $envelope->getType()
-            ) {
-                try {
-                    list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
-
-                    Assertion::float($idleTimeout);
-                    Assertion::min($blockSize, 1);
-                    Assertion::min($target, 0);
-                    Assertion::min($prefetchSize, 0);
-                    Assertion::min($prefetchCount, 0);
-                } catch (\Exception $e) {
-                    return self::MSG_REJECT;
+                    return self::MSG_ACK;
                 }
+                if ('reconfigure' === $envelope->getType()) {
+                    try {
+                        list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
 
-                $this->idleTimeout = $idleTimeout;
-                $this->blockSize = $blockSize;
-                $this->target = $target;
-                $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
+                        Assertion::float($idleTimeout);
+                        Assertion::min($blockSize, 1);
+                        Assertion::min($target, 0);
+                        Assertion::min($prefetchSize, 0);
+                        Assertion::min($prefetchCount, 0);
+                    } catch (\Exception $e) {
+                        return self::MSG_REJECT;
+                    }
 
-                return self::MSG_ACK;
+                    $this->idleTimeout = $idleTimeout;
+                    $this->blockSize = $blockSize;
+                    $this->target = $target;
+                    $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
+
+                    return self::MSG_ACK;
+                }
             }
 
             try {
