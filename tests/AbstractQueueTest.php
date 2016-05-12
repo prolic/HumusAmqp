@@ -319,7 +319,7 @@ abstract class AbstractQueueTest extends TestCase implements
     public function it_nacks_and_rejects_message()
     {
         $this->exchange->publish('foo');
-
+        
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
 
         $this->queue->reject($msg->getDeliveryTag(), Constants::AMQP_REQUEUE);
@@ -372,5 +372,69 @@ abstract class AbstractQueueTest extends TestCase implements
 
         $this->assertSame('foo', $msg1->getBody());
         $this->assertSame('bar', $msg2->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function it_publishes_mandatory()
+    {
+        // @todo: clarify why this is not working with php amqp lib
+        if (get_class($this) === 'HumusTest\Amqp\PhpAmqpLib\QueueTest') {
+            $this->markTestSkipped('currently a problem with PhpAmqpLib');
+        }
+
+        $result = [];
+
+        $this->queue->delete();
+
+        try {
+            $this->channel->waitForConfirm(1);
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        $this->exchange->publish('message #1', 'routing.key', Constants::AMQP_MANDATORY);
+        $this->exchange->publish('message #2', 'routing.key', Constants::AMQP_MANDATORY);
+
+        $queue = $this->createQueue($this->channel);
+        $queue->setName('test-queue-2');
+        $queue->setFlags(Constants::AMQP_AUTODELETE);
+        $queue->declareQueue();
+
+        $msg = $queue->get();
+
+        $this->assertFalse($msg);
+
+        $this->channel->setReturnCallback(
+            function (
+                int $replyCode,
+                string $replyText,
+                string $exchange,
+                string $routingKey,
+                Envelope $envelope,
+                string $body
+            ) use (&$result) {
+                $result[] = 'Message returned';
+                $result[] = func_get_args();
+                return false;
+            }
+        );
+
+        try {
+            $this->channel->waitForConfirm(1);
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+        
+        $this->assertCount(2, $result);
+        $this->assertEquals('Message returned', $result[0]);
+        $this->assertCount(6, $result[1]);
+        $this->assertEquals(312, $result[1][0]);
+        $this->assertEquals('NO_ROUTE', $result[1][1]);
+        $this->assertEquals('test-exchange', $result[1][2]);
+        $this->assertEquals('routing.key', $result[1][3]);
+        $this->assertInstanceOf(Envelope::class, $result[1][4]);
+        $this->assertEquals('message #1', $result[1][5]);
     }
 }

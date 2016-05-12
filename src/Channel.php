@@ -192,10 +192,10 @@ interface Channel
      *
      * Callback function with all arguments has the following signature:
      *
-     *      function callback(int $reply_code,
-     *                        string $reply_text,
+     *      function callback(int $replyCode,
+     *                        string $replyText,
      *                        string $exchange,
-     *                        string $routing_key,
+     *                        string $routingKey,
      *                        Envelope $envelope,
      *                        string $body) : bool;
      *
