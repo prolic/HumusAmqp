@@ -44,6 +44,11 @@ abstract class AbstractQueueTest extends TestCase implements
     use DeleteOnTearDownTrait;
 
     /**
+     * @var Channel
+     */
+    protected $channel;
+
+    /**
      * @var Exchange
      */
     protected $exchange;
@@ -56,10 +61,20 @@ abstract class AbstractQueueTest extends TestCase implements
     protected function setUp()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $this->channel = $this->createChannel($connection);
 
-        $this->exchange = $this->createExchange($channel);
-        $this->queue = $this->createQueue($channel);
+        $this->exchange = $this->createExchange($this->channel);
+        $this->exchange->setType('topic');
+        $this->exchange->setName('test-exchange');
+        $this->exchange->declareExchange();
+
+        $this->queue = $this->createQueue($this->channel);
+        $this->queue->setName('test-queue');
+        $this->queue->declareQueue();
+        $this->queue->bind('test-exchange', '#');
+
+        $this->addToCleanUp($this->exchange);
+        $this->addToCleanUp($this->queue);
     }
 
     /**
@@ -67,7 +82,7 @@ abstract class AbstractQueueTest extends TestCase implements
      */
     public function it_sets_name_flags_type_and_arguments()
     {
-        $this->assertEquals('', $this->queue->getName());
+        $this->assertEquals('test-queue', $this->queue->getName());
         $this->assertEmpty($this->queue->getArguments());
 
         $this->queue->setName('test');
@@ -104,20 +119,9 @@ abstract class AbstractQueueTest extends TestCase implements
     /**
      * @test
      */
-    public function it_declares_and_binds_queue()
+    public function it_unbinds_queue()
     {
-        $this->addToCleanUp($this->exchange);
-        $this->addToCleanUp($this->queue);
-
-        $this->exchange->setType('direct');
-        $this->exchange->setName('test');
-        $this->exchange->declareExchange();
-
-        $this->queue->setName('test2');
-        $this->queue->declareQueue();
-        $this->queue->bind('test');
-
-        $this->queue->unbind('test');
+        $this->queue->unbind('test-exchange');
     }
 
     /**
@@ -134,17 +138,6 @@ abstract class AbstractQueueTest extends TestCase implements
      */
     public function it_consumes_with_callback()
     {
-        $this->addToCleanUp($this->exchange);
-        $this->addToCleanUp($this->queue);
-
-        $this->exchange->setType('direct');
-        $this->exchange->setName('test');
-        $this->exchange->declareExchange();
-
-        $this->queue->setName('test2');
-        $this->queue->declareQueue();
-        $this->queue->bind('test');
-
         $this->exchange->publish('foo');
         $this->exchange->publish('bar');
 
@@ -160,9 +153,9 @@ abstract class AbstractQueueTest extends TestCase implements
         $this->assertEquals(
             [
                 'foo',
-                'test2',
+                'test-queue',
                 'bar',
-                'test2',
+                'test-queue',
             ],
             $result
         );
@@ -173,25 +166,211 @@ abstract class AbstractQueueTest extends TestCase implements
      */
     public function it_consumes_without_callback()
     {
-        $this->addToCleanUp($this->exchange);
-        $this->addToCleanUp($this->queue);
-
         // @todo: clarify why this is not working with php amqp lib
         if (get_class($this) === 'HumusTest\Amqp\PhpAmqpLib\QueueTest') {
             $this->markTestSkipped('currently a problem with PhpAmqpLib');
         }
 
-        $this->exchange->setType('direct');
-        $this->exchange->setName('test');
-        $this->exchange->declareExchange();
-
-        $this->queue->setName('test2');
-        $this->queue->declareQueue();
-        $this->queue->bind('test');
-
         $this->exchange->publish('foo');
         $this->exchange->publish('bar');
 
         $this->queue->consume(null);
+    }
+
+    /**
+     * @test
+     */
+    public function it_produces_and_get_messages_from_queue()
+    {
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+
+        $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function it_produces_transactional_and_get_messages_from_queue()
+    {
+        $this->channel->startTransaction();
+        $this->exchange->publish('foo');
+        $this->channel->commitTransaction();
+
+        $this->channel->startTransaction();
+        $this->exchange->publish('bar');
+        $this->channel->commitTransaction();
+
+        $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function it_rolls_back_transation()
+    {
+        $this->channel->startTransaction();
+        $this->exchange->publish('foo');
+        $this->channel->rollbackTransaction();
+
+        $msg = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertFalse($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_purges_messages_from_queue()
+    {
+        $this->channel->startTransaction();
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+        $this->channel->commitTransaction();
+
+        $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertInstanceOf(Envelope::class, $msg1);
+
+        $this->queue->purge();
+
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertFalse($msg2);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_envelope_information()
+    {
+        $this->exchange->publish('foo', 'routingKey', Constants::AMQP_NOPARAM, [
+            'content_type' => 'text/plain',
+            'content_encoding' => 'UTF-8',
+            'message_id' => 'some message id',
+            'app_id' => 'app id',
+            'user_id' => 'guest', // must be same as login data
+            'delivery_mode' => 1,
+            'priority' => 5,
+            'timestamp' => 25,
+            'expiration' => 1000,
+            'type' => 'message type',
+            'headers' => [
+                'header1' => 'value1',
+                'header2' => 'value2'
+            ]
+        ]);
+
+        $msg = $this->queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertFalse($msg->isRedelivery());
+        $this->assertEquals('test-exchange', $msg->getExchangeName());
+        $this->assertEquals('text/plain', $msg->getContentType());
+        $this->assertEquals('UTF-8', $msg->getContentEncoding());
+        $this->assertEquals('some message id', $msg->getMessageId());
+        $this->assertEquals('app id', $msg->getAppId());
+        $this->assertEquals('guest', $msg->getUserId());
+        $this->assertEquals(1, $msg->getDeliveryMode());
+        $this->assertEquals(1, $msg->getDeliveryTag());
+        $this->assertEquals(5, $msg->getPriority());
+        $this->assertEquals(25, $msg->getTimestamp());
+        $this->assertEquals(1000, $msg->getExpiration());
+        $this->assertEquals('message type', $msg->getType());
+        $this->assertEquals('routingKey', $msg->getRoutingKey());
+        $this->assertEquals(
+            [
+                'header1' => 'value1',
+                'header2' => 'value2'
+            ],
+            $msg->getHeaders()
+        );
+        $this->assertTrue($msg->hasHeader('header1'));
+        $this->assertFalse($msg->hasHeader('invalid header'));
+        $this->assertEquals('value1', $msg->getHeader('header1'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_acks()
+    {
+        $this->exchange->publish('foo');
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->queue->ack($msg->getDeliveryTag());
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->assertFalse($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_nacks_and_rejects_message()
+    {
+        $this->exchange->publish('foo');
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->queue->reject($msg->getDeliveryTag(), Constants::AMQP_REQUEUE);
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->assertEquals('foo', $msg->getBody());
+        $this->assertTrue($msg->isRedelivery());
+
+        $this->queue->nack($msg->getDeliveryTag(), Constants::AMQP_NOPARAM);
+
+        $msg = $this->queue->get(Constants::AMQP_NOPARAM);
+
+        $this->assertFalse($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_produces_in_confirm_mode()
+    {
+        $this->exchange->getChannel()->setConfirmCallback(
+            function () {
+                return false;
+            },
+            function (int $delivery_tag, bool $multiple, bool $requeue) {
+                throw new \Exception('Could not confirm message publishing');
+            }
+        );
+        $this->exchange->getChannel()->confirmSelect();
+
+        $connection = $this->createConnection();
+        $queue = $this->createQueue($this->createChannel($connection));
+
+        $this->addToCleanUp($queue);
+
+        $queue->setName('test-queue23');
+        $queue->declareQueue();
+        $queue->bind('test-exchange', '#');
+
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+
+        $this->exchange->getChannel()->waitForConfirm();
+
+        $msg1 = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotFalse($msg1);
+        $msg2 = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotFalse($msg2);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
     }
 }
