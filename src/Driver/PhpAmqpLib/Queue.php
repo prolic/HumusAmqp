@@ -204,7 +204,7 @@ class Queue implements AmqpQueueInterface
         }
 
         if (null === $consumerTag) {
-            $consumerTag = '';
+            $consumerTag = bin2hex(random_bytes(24));
         }
 
         try {
@@ -220,8 +220,10 @@ class Queue implements AmqpQueueInterface
                 $this->arguments
             );
 
-            while (count($this->channel->getResource()->callbacks)) {
-                $this->channel->getResource()->wait();
+            if (isset($this->channel->getResource()->callbacks[$consumerTag])) {
+                while (count($this->channel->getResource()->callbacks)) {
+                    $this->channel->getResource()->wait();
+                }
             }
         } catch (\Exception $e) {
             throw AmqpConnectionException::fromPhpAmqpLib($e);

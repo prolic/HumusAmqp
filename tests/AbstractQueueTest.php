@@ -163,14 +163,10 @@ abstract class AbstractQueueTest extends TestCase implements
 
     /**
      * @test
+     * @group my
      */
     public function it_consumes_without_callback()
     {
-        // @todo: clarify why this is not working with php amqp lib
-        if (get_class($this) === 'HumusTest\Amqp\PhpAmqpLib\QueueTest') {
-            $this->markTestSkipped('currently a problem with PhpAmqpLib');
-        }
-
         $this->exchange->publish('foo');
         $this->exchange->publish('bar');
 
@@ -397,15 +393,6 @@ abstract class AbstractQueueTest extends TestCase implements
         $this->exchange->publish('message #1', 'routing.key', Constants::AMQP_MANDATORY);
         $this->exchange->publish('message #2', 'routing.key', Constants::AMQP_MANDATORY);
 
-        $queue = $this->createQueue($this->channel);
-        $queue->setName('test-queue-2');
-        $queue->setFlags(Constants::AMQP_AUTODELETE);
-        $queue->declareQueue();
-
-        $msg = $queue->get();
-
-        $this->assertFalse($msg);
-
         $this->channel->setReturnCallback(
             function (
                 int $replyCode,
@@ -422,7 +409,7 @@ abstract class AbstractQueueTest extends TestCase implements
         );
 
         try {
-            $this->channel->waitForConfirm(1);
+            $this->channel->waitForConfirm();
         } catch (\Exception $e) {
             //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
         }
