@@ -24,6 +24,7 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
@@ -131,15 +132,54 @@ abstract class AbstractQueueTest extends TestCase implements
     /**
      * @test
      */
-    public function it_consumes_without_callback()
+    public function it_consumes_with_callback()
     {
-        // @todo: clarify why this is not working with php amqp lib
-        if (get_class($this) === 'HumusTest\Amqp\PhpAmqpLib\QueueTest') {
-            return;
-        }
-
         $this->addToCleanUp($this->exchange);
         $this->addToCleanUp($this->queue);
+
+        $this->exchange->setType('direct');
+        $this->exchange->setName('test');
+        $this->exchange->declareExchange();
+
+        $this->queue->setName('test2');
+        $this->queue->declareQueue();
+        $this->queue->bind('test');
+
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+
+        $result = [];
+        $cnt = 2;
+        $this->queue->consume(function (Envelope $envelope, Queue $queue) use (&$result, &$cnt) {
+            $result[] = $envelope->getBody();
+            $result[] = $queue->getName();
+            $cnt--;
+            return ($cnt > 0);
+        });
+
+        $this->assertEquals(
+            [
+                'foo',
+                'test2',
+                'bar',
+                'test2',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_consumes_without_callback()
+    {
+        $this->addToCleanUp($this->exchange);
+        $this->addToCleanUp($this->queue);
+
+        // @todo: clarify why this is not working with php amqp lib
+        if (get_class($this) === 'HumusTest\Amqp\PhpAmqpLib\QueueTest') {
+            $this->markTestSkipped('currently a problem with PhpAmqpLib');
+        }
 
         $this->exchange->setType('direct');
         $this->exchange->setName('test');

@@ -222,12 +222,4 @@ class Envelope implements AmqpEnvelopeInterface
 
         return isset($headers[$header]);
     }
-
-    /**
-     * @return AMQPMessage
-     */
-    public function getResource()
-    {
-        return $this->envelope;
-    }
 }
