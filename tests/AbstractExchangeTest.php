@@ -27,7 +27,9 @@ use Humus\Amqp\Connection;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Constants;
+use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateExchange;
+use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -35,7 +37,7 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Class AbstractExchangeTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractExchangeTest extends TestCase implements CanCreateExchange
+abstract class AbstractExchangeTest extends TestCase implements CanCreateExchange, CanCreateQueue
 {
     use DeleteOnTearDownTrait;
 
@@ -44,11 +46,22 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
      */
     protected $exchange;
 
+    /**
+     * @var Queue
+     */
+    protected $queue;
+
+    /**
+     * @var Channel
+     */
+    protected $channel;
+
     protected function setUp()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
-        $this->exchange = $this->createExchange($channel);
+        $this->channel = $this->createChannel($connection);
+        $this->exchange = $this->createExchange($this->channel);
+        $this->queue = $this->createQueue($this->channel);
     }
 
     /**
@@ -140,7 +153,6 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
     /**
      * @test
-     * @group my
      */
     public function it_publishes_with_confirms()
     {
@@ -237,11 +249,118 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
             $result[] = $e->getMessage();
         }
 
+        var_dump(get_class($this));
+        var_dump($result);
+        var_dump(count($result));
+
         $this->assertCount(5, $result);
         $this->assertEquals('Message acked', $result[0]);
         $this->assertEquals('3', $result[1][0]);
         $this->assertEquals('Message acked', $result[2]);
         $this->assertEquals('4', $result[3][0]);
         $this->assertRegExp("/.+no exchange 'non-existent' in vhost '.+'/", $result[4]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_produces_in_confirm_mode()
+    {
+        $this->exchange->setType('topic');
+        $this->exchange->setName('test-exchange');
+        $this->exchange->declareExchange();
+
+        $this->exchange->getChannel()->setConfirmCallback(
+            function () {
+                return false;
+            },
+            function (int $deliveryTag, bool $multiple, bool $requeue) {
+                throw new \Exception('Could not confirm message publishing');
+            }
+        );
+        $this->exchange->getChannel()->confirmSelect();
+
+        $connection = $this->createConnection();
+        $queue = $this->createQueue($this->createChannel($connection));
+
+        $this->addToCleanUp($queue);
+
+        $queue->setName('test-queue23');
+        $queue->declareQueue();
+        $queue->bind('test-exchange', '#');
+
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+
+        $this->exchange->getChannel()->waitForConfirm();
+
+        $msg1 = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotFalse($msg1);
+        $msg2 = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotFalse($msg2);
+
+        $this->assertSame('foo', $msg1->getBody());
+        $this->assertSame('bar', $msg2->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function it_publishes_mandatory()
+    {
+        $result = [];
+
+        $this->exchange->setType('topic');
+        $this->exchange->setName('test-exchange');
+        $this->exchange->declareExchange();
+
+        $queue = $this->createQueue($this->channel);
+        $queue->setName('test-mandatory');
+        $queue->setFlags(Constants::AMQP_AUTODELETE);
+        $queue->declareQueue();
+
+        $this->addToCleanUp($queue);
+
+        $this->assertFalse($queue->get());
+
+        try {
+            $this->channel->waitForConfirm(1);
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        $this->exchange->publish('message #1', 'routing.key', Constants::AMQP_MANDATORY);
+        $this->exchange->publish('message #2', 'routing.key', Constants::AMQP_MANDATORY);
+
+        $this->channel->setReturnCallback(
+            function (
+                int $replyCode,
+                string $replyText,
+                string $exchange,
+                string $routingKey,
+                Envelope $envelope,
+                string $body
+            ) use (&$result) {
+                $result[] = 'Message returned';
+                $result[] = func_get_args();
+                return false;
+            }
+        );
+
+        try {
+            $this->channel->waitForConfirm();
+        } catch (\Exception $e) {
+            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+        }
+
+        $this->assertCount(2, $result);
+        $this->assertEquals('Message returned', $result[0]);
+        $this->assertCount(6, $result[1]);
+        $this->assertEquals(312, $result[1][0]);
+        $this->assertEquals('NO_ROUTE', $result[1][1]);
+        $this->assertEquals('test-exchange', $result[1][2]);
+        $this->assertEquals('routing.key', $result[1][3]);
+        $this->assertInstanceOf(Envelope::class, $result[1][4]);
+        $this->assertEquals('message #1', $result[1][5]);
     }
 }

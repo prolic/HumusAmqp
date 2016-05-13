@@ -193,7 +193,7 @@ class Channel implements AmqpChannelInterface
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
-        $this->channel->wait_for_pending_acks($timeout);
+        $this->channel->wait(null, false, $timeout);
     }
 
     /**
@@ -201,20 +201,22 @@ class Channel implements AmqpChannelInterface
      */
     public function setReturnCallback(callable $returnCallback = null)
     {
-        if ($returnCallback) {
-            $innerCallback = function (
-                int $replyCode,
-                string $replyText,
-                string $exchange,
-                string $routingKey,
-                AMQPMessage $message
-            ) use ($returnCallback) {
-                $envelope = new Envelope($message);
-                return $returnCallback($replyCode, $replyText, $exchange, $routingKey, $envelope, $envelope->getBody());
-            };
-
-            $this->channel->set_return_listener($innerCallback);
+        if (! $returnCallback) {
+            return;
         }
+
+        $innerCallback = function (
+            $replyCode,
+            $replyText,
+            $exchange,
+            $routingKey,
+            $message
+        ) use ($returnCallback) {
+            $envelope = new Envelope($message);
+            return $returnCallback($replyCode, $replyText, $exchange, $routingKey, $envelope, $envelope->getBody());
+        };
+
+        $this->channel->set_return_listener($innerCallback);
     }
 
     /**
