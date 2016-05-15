@@ -193,7 +193,7 @@ class Channel implements AmqpChannelInterface
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
-        $this->channel->wait(null, false, $timeout);
+        $this->channel->wait_for_pending_acks_returns($timeout);
     }
 
     /**
@@ -224,6 +224,6 @@ class Channel implements AmqpChannelInterface
      */
     public function waitForBasicReturn(float $timeout = 0.0)
     {
-        $this->channel->wait_for_pending_acks_returns($timeout);
+        $this->channel->wait(null, false, $timeout);
     }
 }

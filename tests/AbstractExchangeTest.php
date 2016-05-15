@@ -249,10 +249,6 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
             $result[] = $e->getMessage();
         }
 
-        var_dump(get_class($this));
-        var_dump($result);
-        var_dump(count($result));
-
         $this->assertCount(5, $result);
         $this->assertEquals('Message acked', $result[0]);
         $this->assertEquals('3', $result[1][0]);
@@ -324,7 +320,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->assertFalse($queue->get());
 
         try {
-            $this->channel->waitForConfirm(1);
+            $this->channel->waitForBasicReturn(1);
         } catch (\Exception $e) {
             //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
         }
@@ -348,7 +344,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         );
 
         try {
-            $this->channel->waitForConfirm();
+            $this->channel->waitForBasicReturn();
         } catch (\Exception $e) {
             //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
         }
