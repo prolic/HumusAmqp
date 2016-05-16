@@ -22,8 +22,10 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\AmqpExtension\Connection;
 use HumusTest\Amqp\AbstractConnectionTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
 /**
  * Class ConnectionTest
@@ -31,6 +33,8 @@ use HumusTest\Amqp\AbstractConnectionTest;
  */
 final class ConnectionTest extends AbstractConnectionTest
 {
+    use CreateConnectionTrait;
+
     protected function setUp()
     {
         if (!extension_loaded('amqp')) {
@@ -57,11 +61,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_valid_credentials()
     {
-        $connection = new Connection($this->validCredentials());
-
-        $this->assertFalse($connection->isConnected());
-
-        $connection->connect();
+        $connection = $this->createConnection();
 
         $this->assertTrue($connection->isConnected());
 
@@ -75,13 +75,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_uses_persistent_connection()
     {
-        $options = $this->validCredentials();
-        $options->setPersistent(true);
-        $connection = new Connection($options);
-
-        $this->assertFalse($connection->isConnected());
-
-        $connection->connect();
+        $connection = $this->createConnection(new ConnectionOptions(['persistent' => true]));
 
         $this->assertTrue($connection->isConnected());
 
@@ -95,11 +89,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects()
     {
-        $connection = new Connection($this->validCredentials());
-
-        $this->assertFalse($connection->isConnected());
-
-        $connection->connect();
+        $connection = $this->createConnection();
 
         $this->assertTrue($connection->isConnected());
 
@@ -113,13 +103,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects_a_persistent_connection()
     {
-        $options = $this->validCredentials();
-        $options->setPersistent(true);
-        $connection = new Connection($options);
-
-        $this->assertFalse($connection->isConnected());
-
-        $connection->connect();
+        $connection = $this->createConnection(new ConnectionOptions(['persistent' => true]));
 
         $this->assertTrue($connection->isConnected());
 
@@ -133,8 +117,36 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_returns_internal_connection()
     {
-        $connection = new Connection($this->validCredentials());
+        $connection = $this->createConnection();
 
         $this->assertInstanceOf(\AMQPConnection::class, $connection->getResource());
+    }
+
+    /**
+     * @test
+     */
+    public function it_connects_with_ssl()
+    {
+        if (true) {
+            $this->markTestSkipped('SSL Connection tests have to be run manually');
+        }
+
+        $options = new ConnectionOptions();
+        $options->setVhost('/humus-amqp-test');
+        $options->setPort(5671);
+        $options->setCaCert(__DIR__ . '/test_certs/cacert.pem');
+        $options->setCert(__DIR__ . '/test_certs/public.pem');
+        $options->setKey(__DIR__ . '/test_certs/private.pem');
+        $options->setVerify(false);
+
+        $connection = new Connection($options);
+
+        $connection->connect();
+
+        $this->assertTrue($connection->isConnected());
+
+        $connection->disconnect();
+
+        $this->assertFalse($connection->isConnected());
     }
 }

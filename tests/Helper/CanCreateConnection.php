@@ -19,6 +19,7 @@
  */
 
 namespace HumusTest\Amqp\Helper;
+use Humus\Amqp\ConnectionOptions;
 
 /**
  * Class CanCreateConnection
@@ -26,5 +27,9 @@ namespace HumusTest\Amqp\Helper;
  */
 interface CanCreateConnection
 {
-    public function createConnection(array $params = []) : \Humus\Amqp\Connection;
+    /**
+     * @param ConnectionOptions|null $options
+     * @return \Humus\Amqp\Connection
+     */
+    public function createConnection(ConnectionOptions $options = null) : \Humus\Amqp\Connection;
 }

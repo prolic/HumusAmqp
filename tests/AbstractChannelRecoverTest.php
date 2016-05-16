@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
@@ -103,7 +104,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
 
         $queue1->cancel(); // we have to do that to prevent redelivering to the same consumer
 
-        $newConnection = $this->createConnection(['read_timeout' => 1]);
+        $newConnection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
         $channel2 = $this->createChannel($newConnection);
         $channel2->setPrefetchCount(8);
 

@@ -23,17 +23,18 @@ declare (strict_types=1);
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\ConnectionOptions;
-use HumusTest\Amqp\Helper\ValidCredentialsTrait;
+use HumusTest\Amqp\Helper\CanCreateConnection;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractConnectionTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractConnectionTest extends TestCase
+abstract class AbstractConnectionTest extends TestCase implements CanCreateConnection
 {
-    use ValidCredentialsTrait;
-
+    /**
+     * @return ConnectionOptions
+     */
     protected function invalidCredentials() : ConnectionOptions
     {
         return new ConnectionOptions([

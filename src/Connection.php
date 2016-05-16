@@ -73,4 +73,9 @@ interface Connection
      * @return bool TRUE on success or FALSE on failure.
      */
     public function reconnect() : bool;
+
+    /**
+     * @return mixed
+     */
+    public function getResource();
 }

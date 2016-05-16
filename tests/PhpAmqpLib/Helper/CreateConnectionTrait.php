@@ -22,7 +22,6 @@ namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
-use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 
 /**
  * Class CreateConnectionTrait
@@ -30,15 +29,18 @@ use HumusTest\Amqp\Helper\ValidCredentialsTrait;
  */
 trait CreateConnectionTrait
 {
-    use ValidCredentialsTrait;
-
     /**
-     * @param array $params
+     * @param ConnectionOptions|null $options
      * @return \Humus\Amqp\Connection
      */
-    public function createConnection(array $params = []) : \Humus\Amqp\Connection
+    public function createConnection(ConnectionOptions $options = null) : \Humus\Amqp\Connection
     {
-        $params = array_merge($this->validCredentials()->toArray(), $params);
-        return new StreamConnection(new ConnectionOptions($params));
+        if (null === $options) {
+            $options = new ConnectionOptions();
+        }
+
+        $options->setVhost('/humus-amqp-test');
+
+        return new StreamConnection($options);
     }
 }

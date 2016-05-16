@@ -24,6 +24,7 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Constants;
@@ -158,7 +159,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
     {
         $result = [];
 
-        $connection = $this->createConnection(['read_timeout' => 2]);
+        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 2]));
         $channel = $this->createChannel($connection);
         $channel->confirmSelect();
 

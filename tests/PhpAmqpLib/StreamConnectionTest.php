@@ -25,6 +25,7 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractConnectionTest;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
 /**
  * Class StreamConnectionTest
@@ -32,6 +33,8 @@ use HumusTest\Amqp\AbstractConnectionTest;
  */
 final class StreamConnectionTest extends AbstractConnectionTest
 {
+    use CreateConnectionTrait;
+
     /**
      * @test
      */
@@ -47,7 +50,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_valid_credentials()
     {
-        $connection = new StreamConnection($this->validCredentials());
+        $connection = $this->createConnection();
 
         $this->assertTrue($connection->isConnected());
     }
@@ -57,7 +60,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_returns_internal_connection()
     {
-        $connection = new StreamConnection($this->validCredentials());
+        $connection = $this->createConnection();
 
         $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPStreamConnection::class, $connection->getResource());
     }
@@ -67,7 +70,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects()
     {
-        $connection = new StreamConnection($this->validCredentials());
+        $connection = $this->createConnection();
         $connection->reconnect();
     }
 
@@ -78,7 +81,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $connection = new StreamConnection($this->validCredentials());
+        $connection = $this->createConnection();
         $connection->connect();
     }
 
@@ -89,7 +92,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $connection = new StreamConnection($this->validCredentials());
+        $connection = $this->createConnection();
         $connection->disconnect();
     }
 }
