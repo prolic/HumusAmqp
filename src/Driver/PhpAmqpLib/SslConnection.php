@@ -48,6 +48,7 @@ class SslConnection extends AbstractConnection
             [
                 'connection_timeout' => $options->getReadTimeout(),
                 'read_write_timeout' => $options->getWriteTimeout(),
+                'heartbeat'          => $options->getHeartbeat(),
             ]
         );
     }

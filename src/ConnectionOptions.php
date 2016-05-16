@@ -69,6 +69,11 @@ class ConnectionOptions extends AbstractOptions
     protected $writeTimeout = 1.00; // secs
 
     /**
+     * @var int
+     */
+    protected $heartbeat = 0;
+
+    /**
      * @param string $host
      */
     public function setHost(string $host)
@@ -194,6 +199,22 @@ class ConnectionOptions extends AbstractOptions
     public function getWriteTimeout() : float
     {
         return $this->writeTimeout;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHeartbeat() : int
+    {
+        return $this->heartbeat;
+    }
+
+    /**
+     * @param int $heartbeat
+     */
+    public function setHeartbeat(int $heartbeat)
+    {
+        $this->heartbeat = $heartbeat;
     }
 }
 

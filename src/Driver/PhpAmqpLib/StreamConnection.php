@@ -50,7 +50,7 @@ class StreamConnection extends AbstractConnection
             $options->getWriteTimeout(),
             null,
             false,
-            0
+            $options->getHeartbeat()
         );
     }
 }
