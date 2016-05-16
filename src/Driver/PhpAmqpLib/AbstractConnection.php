@@ -64,22 +64,6 @@ abstract class AbstractConnection implements AmqpConnectionInterface
     /**
      * @inheritdoc
      */
-    public function pconnect()
-    {
-        throw new BadMethodCallException();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function pdisconnect()
-    {
-        throw new BadMethodCallException();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function disconnect()
     {
         throw new BadMethodCallException();
@@ -93,13 +77,5 @@ abstract class AbstractConnection implements AmqpConnectionInterface
         $this->connection->reconnect();
 
         return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function preconnect() : bool
-    {
-        throw new BadMethodCallException();
     }
 }

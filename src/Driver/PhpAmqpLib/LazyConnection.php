@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Assert\Assertion;
+use Humus\Amqp\ConnectionOptions;
 
 /**
  * Class LazyConnection
@@ -33,30 +33,20 @@ class LazyConnection extends AbstractConnection
     /**
      * @inheritdoc
      */
-    public function __construct(array $params = [])
+    public function __construct(ConnectionOptions $options)
     {
-        Assertion::keyExists($params, 'host');
-        Assertion::keyExists($params, 'port');
-        Assertion::keyExists($params, 'login');
-        Assertion::keyExists($params, 'password');
-        Assertion::keyExists($params, 'login');
-
-        $readWriteTimeout = isset($params['read_timeout']) ? : isset($params['write_timeout']) ? : 3;
-        $connectTimeout = isset($params['connect_timeout']) ? : 3;
-        $vhost = isset($params['vhost']) ? : '/';
-
         $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
-            $params['host'],
-            $params['port'],
-            $params['login'],
-            $params['password'],
-            $vhost,
+            $options->getHost(),
+            $options->getPort(),
+            $options->getLogin(),
+            $options->getPassword(),
+            $options->getVhost(),
             false,
             'AMQPLAIN',
             null,
             'en_US',
-            $connectTimeout,
-            $readWriteTimeout,
+            $options->getReadTimeout(),
+            $options->getWriteTimeout(),
             null,
             false,
             0

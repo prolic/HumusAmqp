@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Assert\Assertion;
+use Humus\Amqp\ConnectionOptions;
 use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 
 /**
@@ -34,28 +34,20 @@ class SslConnection extends AbstractConnection
     /**
      * @inheritdoc
      */
-    public function __construct(array $params = [])
+    public function __construct(ConnectionOptions $options)
     {
-        Assertion::keyExists($params, 'host');
-        Assertion::keyExists($params, 'port');
-        Assertion::keyExists($params, 'login');
-        Assertion::keyExists($params, 'password');
-
-        $readWriteTimeout = $params['read_timeout'] ?? $params['write_timeout'] ?? 3;
-        $connectTimeout = $params['connect_timeout'] ?? 3;
-        $vhost = $params['vhost'] ?? '/';
-        $sslOptions = $params['ssl_options'] ?? [];
+        $sslOptions = $options->getSslOptions(); // @todo: implement ssl support
 
         $this->connection = new BaseAMQPSSLConnection(
-            $params['host'],
-            $params['port'],
-            $params['login'],
-            $params['password'],
-            $vhost,
+            $options->getHost(),
+            $options->getPort(),
+            $options->getLogin(),
+            $options->getPassword(),
+            $options->getVhost(),
             $sslOptions,
             [
-                'connection_timeout' => $connectTimeout,
-                'read_write_timeout' => $readWriteTimeout,
+                'connection_timeout' => $options->getReadTimeout(),
+                'read_write_timeout' => $options->getWriteTimeout(),
             ]
         );
     }

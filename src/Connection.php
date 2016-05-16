@@ -34,23 +34,11 @@ interface Connection
      * Create an instance of Connection.
      *
      * Creates an Connection instance representing a connection to an AMQP
-     * broker. A connection will not be established until
-     * Connection::connect() is called.
+     * broker.
      *
-     * $params = [
-     *     'host'  => amqp.host The host to connect too. Note: Max 1024 characters.
-     *     'port'  => amqp.port Port on the host.
-     *     'vhost' => amqp.vhost The virtual host on the host. Note: Max 128 characters.
-     *     'login' => amqp.login The login name to use. Note: Max 128 characters.
-     *     'password' => amqp.password Password. Note: Max 128 characters.
-     *     'read_timeout'  => Timeout in for income activity. Note: 0 or greater seconds. May be fractional.
-     *     'write_timeout' => Timeout in for outcome activity. Note: 0 or greater seconds. May be fractional.
-     *     'connect_timeout' => Connection timeout. Note: 0 or greater seconds. May be fractional.
-     * ]
-     *
-     * @param array $params Optional array of params for connecting to the AMQP broker.
+     * @param ConnectionOptions $options
      */
-    public function __construct(array $params = []);
+    public function __construct(ConnectionOptions $options);
 
     /**
      * Check whether the connection to the AMQP broker is still valid.
@@ -71,28 +59,6 @@ interface Connection
     public function connect();
 
     /**
-     * Establish a persistent connection with the AMQP broker.
-     *
-     * This method will initiate a connection with the AMQP broker
-     * or reuse an existing one if present.
-     *
-     * @return bool TRUE on success or throws an exception on failure.
-     */
-    public function pconnect();
-
-    /**
-     * Closes a persistent connection with the AMQP broker.
-     *
-     * This method will close an open persistent connection with the AMQP
-     * broker.
-     *
-     * @return bool true if connection was found and closed,
-     *                 false if no persistent connection with this host,
-     *                 port, vhost and login could be found,
-     */
-    public function pdisconnect();
-
-    /**
      * Closes the transient connection with the AMQP broker.
      *
      * This method will close an open connection with the AMQP broker.
@@ -107,11 +73,4 @@ interface Connection
      * @return bool TRUE on success or FALSE on failure.
      */
     public function reconnect() : bool;
-
-    /**
-     * Close any open persistent connections and initiate a new one with the AMQP broker.
-     *
-     * @return bool TRUE on success or FALSE on failure.
-     */
-    public function preconnect() : bool;
 }

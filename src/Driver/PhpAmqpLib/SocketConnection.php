@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Assert\Assertion;
+use Humus\Amqp\ConnectionOptions;
 use PhpAmqpLib\Connection\AMQPSocketConnection as BaseAMQPSocketConnection;
 
 /**
@@ -34,27 +34,19 @@ class SocketConnection extends AbstractConnection
     /**
      * @inheritdoc
      */
-    public function __construct(array $params = [])
+    public function __construct(ConnectionOptions $options)
     {
-        Assertion::keyExists($params, 'host');
-        Assertion::keyExists($params, 'port');
-        Assertion::keyExists($params, 'login');
-        Assertion::keyExists($params, 'password');
-
-        $connectTimeout = $params['connect_timeout'] ?? 3;
-        $vhost = $params['vhost'] ?? '/';
-
         $this->connection = new BaseAMQPSocketConnection(
-            $params['host'],
-            $params['port'],
-            $params['login'],
-            $params['password'],
-            $vhost,
+            $options->getHost(),
+            $options->getPort(),
+            $options->getLogin(),
+            $options->getPassword(),
+            $options->getVhost(),
             false,
             'AMQPLAIN',
             null,
             'en_US',
-            $connectTimeout,
+            $options->getReadTimeout(),
             false
         );
     }

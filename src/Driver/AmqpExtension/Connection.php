@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\ConnectionOptions;
 
 /**
  * Class Connection
@@ -36,11 +37,17 @@ class Connection implements ConnectionInterface
     private $connection;
 
     /**
+     * @var ConnectionOptions
+     */
+    private $options;
+
+    /**
      * @inheritdoc
      */
-    public function __construct(array $params = [])
+    public function __construct(ConnectionOptions $options)
     {
-        $this->connection = new \AMQPConnection($params);
+        $this->options = $options;
+        $this->connection = new \AMQPConnection($options->toArray());
     }
 
     /**
@@ -64,23 +71,11 @@ class Connection implements ConnectionInterface
      */
     public function connect()
     {
-        $this->connection->connect();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function pconnect()
-    {
-        $this->connection->pconnect();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function pdisconnect()
-    {
-        $this->connection->pdisconnect();
+        if ($this->options->getPersistent()) {
+            $this->connection->pconnect();
+        } else {
+            $this->connection->connect();
+        }
     }
 
     /**
@@ -88,7 +83,11 @@ class Connection implements ConnectionInterface
      */
     public function disconnect()
     {
-        $this->connection->disconnect();
+        if ($this->options->getPersistent()) {
+            $this->connection->pdisconnect();
+        } else {
+            $this->connection->disconnect();
+        }
     }
 
     /**
@@ -96,14 +95,10 @@ class Connection implements ConnectionInterface
      */
     public function reconnect() : bool
     {
-        return $this->connection->reconnect();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function preconnect() : bool
-    {
-        return $this->connection->preconnect();
+        if ($this->options->getPersistent()) {
+            $this->connection->preconnect();
+        } else {
+            return $this->connection->reconnect();
+        }
     }
 }
