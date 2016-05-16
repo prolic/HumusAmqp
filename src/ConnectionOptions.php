@@ -74,6 +74,26 @@ class ConnectionOptions extends AbstractOptions
     protected $heartbeat = 0;
 
     /**
+     * @var string
+     */
+    protected $caCert = null;
+
+    /**
+     * @var string
+     */
+    protected $cert = null;
+
+    /**
+     * @var string
+     */
+    protected $key = null;
+
+    /**
+     * @var bool
+     */
+    protected $verify = null;
+
+    /**
      * @param string $host
      */
     public function setHost(string $host)
@@ -216,5 +236,90 @@ class ConnectionOptions extends AbstractOptions
     {
         $this->heartbeat = $heartbeat;
     }
-}
 
+    /**
+     * @return string
+     */
+    public function getCaCert() : string
+    {
+        return $this->caCert;
+    }
+
+    /**
+     * @param string $caCert
+     */
+    public function setCaCert(string $caCert)
+    {
+        $this->caCert = $caCert;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCert() : string
+    {
+        return $this->cert;
+    }
+
+    /**
+     * @param string $cert
+     */
+    public function setCert(string $cert)
+    {
+        $this->cert = $cert;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey() : string
+    {
+        return $this->key;
+    }
+
+    /**
+     * @param string $key
+     */
+    public function setKey(string $key)
+    {
+        $this->key = $key;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getVerify() : bool
+    {
+        return $this->verify;
+    }
+
+    /**
+     * @param bool $verify
+     */
+    public function setVerify(bool $verify)
+    {
+        $this->verify = $verify;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $array = [];
+        $transform = function ($letters) {
+            $letter = array_shift($letters);
+            return '_' . strtolower($letter);
+        };
+        foreach ($this as $key => $value) {
+            if ($key === '__strictMode__'
+                || null === $value
+            ) {
+                continue;
+            }
+            $normalizedKey = preg_replace_callback('/([A-Z])/', $transform, $key);
+            $array[$normalizedKey] = $value;
+        }
+        return $array;
+    }
+}

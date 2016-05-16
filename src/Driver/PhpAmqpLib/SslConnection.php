@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\ConnectionOptions;
+use Humus\Amqp\Exception;
 use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 
 /**
@@ -36,7 +37,27 @@ class SslConnection extends AbstractConnection
      */
     public function __construct(ConnectionOptions $options)
     {
-        $sslOptions = $options->getSslOptions(); // @todo: implement ssl support
+        if (! $options->getCaCert()) {
+            throw new Exception\InvalidArgumentException('Ca cert file missing in connection options');
+        }
+
+        if (! $options->getCert()) {
+            throw new Exception\InvalidArgumentException('Cert file missing in connection options');
+        }
+
+        if (! $options->getVerify()) {
+            throw new Exception\InvalidArgumentException('SSL verification option is missing connection options');
+        }
+
+        $sslOptions = [
+            'cafile' => $options->getCaCert(),
+            'verify_peer' => $options->getVerify(),
+            'local_cert' => $options->getCert(),
+        ];
+
+        if ($key = $options->getKey()) {
+            $sslOptions['local_pk'] = $key;
+        }
 
         $this->connection = new BaseAMQPSSLConnection(
             $options->getHost(),
