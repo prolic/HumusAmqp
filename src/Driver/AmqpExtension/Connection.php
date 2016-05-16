@@ -96,7 +96,7 @@ class Connection implements ConnectionInterface
     public function reconnect() : bool
     {
         if ($this->options->getPersistent()) {
-            $this->connection->preconnect();
+            return $this->connection->preconnect();
         } else {
             return $this->connection->reconnect();
         }

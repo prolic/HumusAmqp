@@ -21,6 +21,7 @@
 declare (strict_types=1);
 
 namespace HumusTest\Amqp\Helper;
+use Humus\Amqp\ConnectionOptions;
 
 /**
  * Class ValidCredentialsTrait
@@ -28,14 +29,17 @@ namespace HumusTest\Amqp\Helper;
  */
 trait ValidCredentialsTrait
 {
-    protected function validCredentials() : array
+    /**
+     * @return ConnectionOptions
+     */
+    protected function validCredentials() : ConnectionOptions
     {
-        return [
+        return new ConnectionOptions([
             'vhost' => '/humus-amqp-test',
             'host' => 'localhost',
             'port' => 5672,
             'login' => 'guest',
             'password' => 'guest',
-        ];
+        ]);
     }
 }

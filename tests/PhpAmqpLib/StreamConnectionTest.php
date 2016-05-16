@@ -85,44 +85,11 @@ final class StreamConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_throws_exception_on_pconnect()
-    {
-        $this->expectException(BadMethodCallException::class);
-
-        $connection = new StreamConnection($this->validCredentials());
-        $connection->pconnect();
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_on_pdisconnect()
-    {
-        $this->expectException(BadMethodCallException::class);
-
-        $connection = new StreamConnection($this->validCredentials());
-        $connection->pdisconnect();
-    }
-
-    /**
-     * @test
-     */
     public function it_throws_exception_on_disconnect()
     {
         $this->expectException(BadMethodCallException::class);
 
         $connection = new StreamConnection($this->validCredentials());
         $connection->disconnect();
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_on_preconnect()
-    {
-        $this->expectException(BadMethodCallException::class);
-
-        $connection = new StreamConnection($this->validCredentials());
-        $connection->preconnect();
     }
 }

@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\ConnectionOptions;
 use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -33,14 +34,14 @@ abstract class AbstractConnectionTest extends TestCase
 {
     use ValidCredentialsTrait;
 
-    protected function invalidCredentials() : array
+    protected function invalidCredentials() : ConnectionOptions
     {
-        return [
+        return new ConnectionOptions([
             'vhost' => '/humus-amqp-test',
             'host' => 'localhost',
             'port' => 5672,
             'login' => 'invalid',
             'password' => 'invalid',
-        ];
+        ]);
     }
 }

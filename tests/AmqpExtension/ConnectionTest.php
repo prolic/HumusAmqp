@@ -75,15 +75,17 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_uses_persistent_connection()
     {
-        $connection = new Connection($this->validCredentials());
+        $options = $this->validCredentials();
+        $options->setPersistent(true);
+        $connection = new Connection($options);
 
         $this->assertFalse($connection->isConnected());
 
-        $connection->pconnect();
+        $connection->connect();
 
         $this->assertTrue($connection->isConnected());
 
-        $connection->pdisconnect();
+        $connection->disconnect();
 
         $this->assertFalse($connection->isConnected());
     }
@@ -111,15 +113,17 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects_a_persistent_connection()
     {
-        $connection = new Connection($this->validCredentials());
+        $options = $this->validCredentials();
+        $options->setPersistent(true);
+        $connection = new Connection($options);
 
         $this->assertFalse($connection->isConnected());
 
-        $connection->pconnect();
+        $connection->connect();
 
         $this->assertTrue($connection->isConnected());
 
-        $connection->preconnect();
+        $connection->reconnect();
 
         $this->assertTrue($connection->isConnected());
     }

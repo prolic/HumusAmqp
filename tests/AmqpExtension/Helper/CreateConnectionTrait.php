@@ -20,6 +20,7 @@
 
 namespace HumusTest\Amqp\AmqpExtension\Helper;
 
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\AmqpExtension\Connection;
 use HumusTest\Amqp\Helper\ValidCredentialsTrait;
 
@@ -31,10 +32,14 @@ trait CreateConnectionTrait
 {
     use ValidCredentialsTrait;
 
+    /**
+     * @param array $params
+     * @return \Humus\Amqp\Connection
+     */
     public function createConnection(array $params = []) : \Humus\Amqp\Connection
     {
-        $params = array_merge($this->validCredentials(), $params);
-        $connection = new Connection($params);
+        $params = array_merge($this->validCredentials()->toArray(), $params);
+        $connection = new Connection(new ConnectionOptions($params));
         $connection->connect();
 
         return $connection;
