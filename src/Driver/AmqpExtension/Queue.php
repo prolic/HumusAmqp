@@ -23,8 +23,9 @@ namespace Humus\Amqp\Driver\AmqpExtension;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Channel as AmqpChannelInterface;
 use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Queue as AmqpQueueInterface;
-use Humus\Amqp\Exception\AmqpConnectionException;
+use Humus\Amqp\Exception\ConnectionException;
 
 /**
  * Class Queue
@@ -152,10 +153,6 @@ class Queue implements AmqpQueueInterface
      */
     public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = null)
     {
-        if (null === $consumerTag) {
-            $consumerTag = bin2hex(random_bytes(24));
-        }
-
         if (null !== $callback) {
             $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
                 $envelope = new Envelope($envelope);
@@ -168,7 +165,9 @@ class Queue implements AmqpQueueInterface
         try {
             $this->queue->consume($innerCallback, $flags, $consumerTag);
         } catch (\AMQPConnectionException $e) {
-            throw AmqpConnectionException::fromAmqpExtension($e);
+            throw ConnectionException::fromAmqpExtension($e);
+        } catch (\AMQPQueueException $e) {
+            throw QueueException::fromAmqpExtension($e);
         }
     }
 

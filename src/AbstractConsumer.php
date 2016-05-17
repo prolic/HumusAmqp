@@ -23,7 +23,8 @@ declare (strict_types=1);
 namespace Humus\Amqp;
 
 use Assert\Assertion;
-use Humus\Amqp\Exception\AmqpConnectionException;
+use Humus\Amqp\Exception\ConnectionException;
+use Humus\Amqp\Exception\QueueException;
 
 /**
  * Class AbstractConsumer
@@ -122,7 +123,7 @@ abstract class AbstractConsumer implements Consumer
      * Start consumer
      *
      * @param int $msgAmount
-     * @throws AmqpConnectionException
+     * @throws ConnectionException
      */
     public function consume(int $msgAmount = 0)
     {
@@ -183,21 +184,24 @@ abstract class AbstractConsumer implements Consumer
                 pcntl_signal_dispatch();
             }
 
-            if (!$this->keepAlive || (0 != $this->target && $this->countMessagesConsumed >= $this->target)) {
+            if (!$this->keepAlive || (0 !== $this->target && $this->countMessagesConsumed >= $this->target)) {
                 $this->queue->cancel($this->consumerTag);
+                $this->shutdown();
+                return false;
             }
         };
 
         do {
             try {
                 $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
-            } catch (AmqpConnectionException $e) {
+            } catch (ConnectionException $e) {
                 if (!$this->queue->getConnection()->reconnect()) {
                     throw $e;
                 }
                 $this->ackOrNackBlock();
                 gc_collect_cycles();
             }
+
         } while ($this->keepAlive);
     }
 
@@ -271,6 +275,8 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function handleProcessFlag(Envelope $envelope, $flag)
     {
+        $this->countMessagesConsumed++;
+
         if ($flag === self::MSG_REJECT || false === $flag) {
             $this->ackOrNackBlock();
             $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
@@ -278,13 +284,11 @@ abstract class AbstractConsumer implements Consumer
             $this->ackOrNackBlock();
             $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
         } elseif ($flag === self::MSG_ACK || true === $flag) {
-            $this->countMessagesConsumed++;
             $this->countMessagesUnacked++;
             $this->lastDeliveryTag = $envelope->getDeliveryTag();
             $this->timestampLastMessage = microtime(true);
             $this->ack();
         } else { // $flag === self::MSG_DEFER || null === $flag
-            $this->countMessagesConsumed++;
             $this->countMessagesUnacked++;
             $this->lastDeliveryTag = $envelope->getDeliveryTag();
             $this->timestampLastMessage = microtime(true);

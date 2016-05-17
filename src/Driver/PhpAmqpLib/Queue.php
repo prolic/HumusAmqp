@@ -26,7 +26,7 @@ use Humus\Amqp\Constants;
 use Humus\Amqp\Channel as AmqpChannelInterface;
 use Humus\Amqp\Connection as AmqpConnectionInterface;
 use Humus\Amqp\Queue as AmqpQueueInterface;
-use Humus\Amqp\Exception\AmqpConnectionException;
+use Humus\Amqp\Exception\ConnectionException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -204,7 +204,7 @@ class Queue implements AmqpQueueInterface
         }
 
         if (null === $consumerTag) {
-            $consumerTag = bin2hex(random_bytes(24));
+            $consumerTag = '';
         }
 
         try {
@@ -226,7 +226,7 @@ class Queue implements AmqpQueueInterface
                 }
             }
         } catch (\Exception $e) {
-            throw AmqpConnectionException::fromPhpAmqpLib($e);
+            throw ConnectionException::fromPhpAmqpLib($e);
         }
     }
 

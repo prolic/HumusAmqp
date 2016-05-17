@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\AmqpChannelException;
+use Humus\Amqp\Exception\ChannelException;
 
 /**
  * Class AbstractProducer
@@ -45,7 +45,7 @@ abstract class AbstractProducer implements Producer
      *
      * @param Exchange $exchange
      * @param array|null $defaultAttributes
-     * @throws AmqpChannelException
+     * @throws ChannelException
      */
     public function __construct(Exchange $exchange, array $defaultAttributes = null)
     {
