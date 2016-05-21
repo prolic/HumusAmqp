@@ -26,6 +26,7 @@ use Humus\Amqp\Consumer;
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Queue;
+use HumusTest\Amqp\AmqpExtension\CallbackConsumerTest;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;

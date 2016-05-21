@@ -212,7 +212,7 @@ class Queue implements AmqpQueueInterface
                 $this->name,
                 $consumerTag,
                 (bool) ($flags & Constants::AMQP_NOLOCAL),
-                (bool) !($flags & Constants::AMQP_AUTOACK),
+                (bool) ($flags & Constants::AMQP_AUTOACK),
                 (bool) ($flags & Constants::AMQP_EXCLUSIVE),
                 (bool) ($flags & Constants::AMQP_NOWAIT),
                 $innerCallback,

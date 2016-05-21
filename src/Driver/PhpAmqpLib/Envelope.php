@@ -155,7 +155,11 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getAppId() : string
     {
-        return $this->envelope->get('app_id');
+        if ($this->envelope->has('app_id')) {
+            return $this->envelope->get('app_id');
+        }
+
+        return '';
     }
 
     /**
