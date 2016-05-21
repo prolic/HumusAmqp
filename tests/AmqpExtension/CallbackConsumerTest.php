@@ -31,7 +31,6 @@ use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 /**
  * Class CallbackConsumerTest
  * @package HumusTest\Amqp\AmqpExtension
- * @group my
  */
 class CallbackConsumerTest extends AbstractCallbackConsumerTest
 {

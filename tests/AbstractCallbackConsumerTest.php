@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Consumer;
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Envelope;
@@ -139,7 +140,6 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
     /**
      * @test
-     * @group by
      */
     public function it_processes_messages_defers_and_acks_block()
     {
@@ -176,12 +176,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             null,
             null,
             null,
-            4
+            3
         );
 
         $consumer->consume(5);
 
-        /*
         $this->assertEquals(
             [
                 'message #1',
@@ -189,12 +188,9 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 'message #3',
                 'message #4',
                 'message #5',
-                'message #6',
-                'message #7',
             ],
             $result
         );
-        */
     }
 /*
     public function testFlushDeferred()

@@ -130,9 +130,11 @@ abstract class AbstractConsumer implements Consumer
         Assertion::min($msgAmount, 0);
 
         $this->target = $msgAmount;
+
         if (!$this->timestampLastAck) {
             $this->timestampLastAck = microtime(true);
         }
+
         $callback = function (Envelope $envelope) {
             if ($envelope->getAppId() === __NAMESPACE__) {
                 if ('shutdown' === $envelope->getType()) {
@@ -185,6 +187,7 @@ abstract class AbstractConsumer implements Consumer
             }
 
             if (!$this->keepAlive || (0 !== $this->target && $this->countMessagesConsumed >= $this->target)) {
+                $this->ackOrNackBlock();
                 $this->queue->cancel($this->consumerTag);
                 $this->shutdown();
                 return false;
@@ -323,6 +326,8 @@ abstract class AbstractConsumer implements Consumer
             $flags |= Constants::AMQP_REQUEUE;
         }
         $this->queue->nack($this->lastDeliveryTag, $flags);
+        $this->lastDeliveryTag = null;
+        $this->countMessagesUnacked = 0;
     }
 
     /**
@@ -346,8 +351,6 @@ abstract class AbstractConsumer implements Consumer
             $this->ack();
         } else {
             $this->nackAll();
-            $this->lastDeliveryTag = null;
         }
-        $this->countMessagesUnacked = 0;
     }
 }
