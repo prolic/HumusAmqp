@@ -37,7 +37,7 @@ class SslConnection extends AbstractConnection
      */
     public function __construct(ConnectionOptions $options)
     {
-        if (! $options->getCaCert()) {
+        if (! $options->getCACert()) {
             throw new Exception\InvalidArgumentException('Ca cert file missing in connection options');
         }
 
@@ -45,14 +45,15 @@ class SslConnection extends AbstractConnection
             throw new Exception\InvalidArgumentException('Cert file missing in connection options');
         }
 
-        if (! $options->getVerify()) {
+        if (null === $options->getVerify()) {
             throw new Exception\InvalidArgumentException('SSL verification option is missing connection options');
         }
 
         $sslOptions = [
-            'cafile' => $options->getCaCert(),
-            'verify_peer' => $options->getVerify(),
+            'cafile' => $options->getCACert(),
             'local_cert' => $options->getCert(),
+            'verify_peer' => $options->getVerify(),
+            'verify_peer_name' => $options->getVerify()
         ];
 
         if ($key = $options->getKey()) {
