@@ -136,6 +136,66 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
     }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_processes_messages_defers_and_acks_block()
+    {
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 8; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return Consumer::MSG_DEFER;
+            },
+            null,
+            null,
+            null,
+            4
+        );
+
+        $consumer->consume(5);
+
+        /*
+        $this->assertEquals(
+            [
+                'message #1',
+                'message #2',
+                'message #3',
+                'message #4',
+                'message #5',
+                'message #6',
+                'message #7',
+            ],
+            $result
+        );
+        */
+    }
 /*
     public function testFlushDeferred()
     {

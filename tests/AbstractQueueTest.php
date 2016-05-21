@@ -28,6 +28,7 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
+use HumusTest\Amqp\AmqpExtension\QueueTest;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;

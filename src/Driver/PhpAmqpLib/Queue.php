@@ -204,7 +204,7 @@ class Queue implements AmqpQueueInterface
         }
 
         if (null === $consumerTag) {
-            $consumerTag = '';
+            $consumerTag = bin2hex(random_bytes(24));
         }
 
         try {
