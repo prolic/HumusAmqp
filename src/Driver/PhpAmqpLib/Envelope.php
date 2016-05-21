@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
+use bar\baz\source_with_namespace;
 use Humus\Amqp\Envelope as AmqpEnvelopeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
@@ -59,7 +60,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getRoutingKey() : string
     {
-        return $this->envelope->get('routing_key');
+        return $this->getFromEnvelope('routing_key');
     }
 
     /**
@@ -67,7 +68,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getDeliveryTag() : string
     {
-        return $this->envelope->get('delivery_tag');
+        return $this->getFromEnvelope('delivery_tag');
     }
 
     /**
@@ -75,7 +76,11 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getDeliveryMode() : int
     {
-        return $this->envelope->get('delivery_mode');
+        if ($this->envelope->has('delivery_mode')) {
+            return $this->envelope->get('delivery_mode');
+        }
+
+        return 1;
     }
 
     /**
@@ -83,7 +88,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getExchangeName() : string
     {
-        return $this->envelope->get('exchange');
+        return $this->getFromEnvelope('exchange');
     }
 
     /**
@@ -91,7 +96,11 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function isRedelivery() : bool
     {
-        return $this->envelope->get('redelivered');
+        if ($this->envelope->has('redelivered')) {
+            return $this->envelope->get('redelivered');
+        }
+
+        return false;
     }
 
     /**
@@ -99,7 +108,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getContentType() : string
     {
-        return $this->envelope->get('content_type');
+        return $this->getFromEnvelope('content_type');
     }
 
     /**
@@ -107,7 +116,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getContentEncoding() : string
     {
-        return $this->envelope->get('content_encoding');
+        return $this->getFromEnvelope('content_encoding');
     }
 
     /**
@@ -115,7 +124,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getType() : string
     {
-        return $this->envelope->get('type');
+        return $this->getFromEnvelope('type');
     }
 
     /**
@@ -123,7 +132,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getTimestamp() : string
     {
-        return $this->envelope->get('timestamp');
+        return $this->getFromEnvelope('timestamp');
     }
 
     /**
@@ -131,7 +140,11 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getPriority() : int
     {
-        return $this->envelope->get('priority');
+        if ($this->envelope->has('priority')) {
+            return $this->envelope->get('priority');
+        }
+
+        return 0;
     }
 
     /**
@@ -139,7 +152,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getExpiration() : string
     {
-        return $this->envelope->get('expiration');
+        return $this->getFromEnvelope('expiration');
     }
 
     /**
@@ -147,7 +160,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getUserId() : string
     {
-        return $this->envelope->get('user_id');
+        return $this->getFromEnvelope('user_id');
     }
 
     /**
@@ -155,11 +168,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getAppId() : string
     {
-        if ($this->envelope->has('app_id')) {
-            return $this->envelope->get('app_id');
-        }
-
-        return '';
+        return $this->getFromEnvelope('app_id');
     }
 
     /**
@@ -167,7 +176,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getMessageId() : string
     {
-        return $this->envelope->get('message_id');
+        return $this->getFromEnvelope('message_id');
     }
 
     /**
@@ -175,7 +184,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getReplyTo() : string
     {
-        return $this->envelope->get('reply_to');
+        return $this->getFromEnvelope('reply_to');
     }
 
     /**
@@ -183,7 +192,7 @@ class Envelope implements AmqpEnvelopeInterface
      */
     public function getCorrelationId() : string
     {
-        return $this->envelope->get('correlation_id');
+        return $this->getFromEnvelope('correlation_id');
     }
 
     /**
@@ -225,5 +234,18 @@ class Envelope implements AmqpEnvelopeInterface
         $headers = $this->getHeaders();
 
         return isset($headers[$header]);
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function getFromEnvelope(string $name) : string
+    {
+        if ($this->envelope->has($name)) {
+            return $this->envelope->get($name);
+        }
+
+        return '';
     }
 }
