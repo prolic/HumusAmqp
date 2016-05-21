@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use bar\baz\source_with_namespace;
 use Humus\Amqp\Envelope as AmqpEnvelopeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
