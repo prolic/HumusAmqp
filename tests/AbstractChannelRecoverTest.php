@@ -24,6 +24,7 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Envelope;
+use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
@@ -151,14 +152,14 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
             'consumed test message #8 (original)',
             'consumed test message #9 (original)',
             'consumed test message #10 (original)',
-            'AMQPQueueException',
+            QueueException::class,
             'redelivered',
             'consumed test message #3 (redelivered)',
             'consumed test message #4 (redelivered)',
             'consumed test message #5 (redelivered)',
             'consumed test message #6 (redelivered)',
             'consumed test message #7 (redelivered)',
-            'AMQPQueueException',
+            QueueException::class,
         ];
 
         $this->assertEquals($expected, $result);

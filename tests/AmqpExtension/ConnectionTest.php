@@ -124,6 +124,7 @@ final class ConnectionTest extends AbstractConnectionTest
 
     /**
      * @test
+     * @group ssl
      */
     public function it_connects_with_ssl()
     {
@@ -134,9 +135,9 @@ final class ConnectionTest extends AbstractConnectionTest
         $options = new ConnectionOptions();
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCaCert(__DIR__ . '../../../php-amqp/provision/test_certs/client/cacert.pem');
-        $options->setCert(__DIR__ . '../../../php-amqp/provision/test_certs/client/cert.pem');
-        $options->setKey(__DIR__ . '../../../php-amqp/provision/test_certs/client/key.pem');
+        $options->setCACert(__DIR__ . '/../test_certs/cacert.pem');
+        $options->setCert(__DIR__ . '/../test_certs/cert.pem');
+        $options->setKey(__DIR__ . '/../test_certs/key.pem');
         $options->setVerify(false);
 
         $connection = new Connection($options);

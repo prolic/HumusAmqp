@@ -76,7 +76,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @var string
      */
-    protected $caCert = null;
+    protected $cacert = null;
 
     /**
      * @var string
@@ -240,17 +240,17 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getCaCert() : string
+    public function getCACert() : string
     {
-        return $this->caCert;
+        return $this->cacert;
     }
 
     /**
-     * @param string $caCert
+     * @param string $cacert
      */
-    public function setCaCert(string $caCert)
+    public function setCACert(string $cacert)
     {
-        $this->caCert = $caCert;
+        $this->cacert = $cacert;
     }
 
     /**
