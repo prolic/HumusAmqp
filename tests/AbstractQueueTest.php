@@ -28,7 +28,6 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
-use HumusTest\Amqp\AmqpExtension\QueueTest;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
@@ -315,7 +314,7 @@ abstract class AbstractQueueTest extends TestCase implements
     public function it_nacks_and_rejects_message()
     {
         $this->exchange->publish('foo');
-        
+
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
 
         $this->queue->reject($msg->getDeliveryTag(), Constants::AMQP_REQUEUE);

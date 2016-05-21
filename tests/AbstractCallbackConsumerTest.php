@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
-use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Consumer;
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Envelope;

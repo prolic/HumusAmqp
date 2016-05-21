@@ -25,7 +25,6 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use HumusTest\Amqp\AbstractConnectionTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
 /**
  * Class SocketConnectionTest

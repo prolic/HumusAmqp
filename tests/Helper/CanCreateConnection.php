@@ -19,6 +19,7 @@
  */
 
 namespace HumusTest\Amqp\Helper;
+
 use Humus\Amqp\ConnectionOptions;
 
 /**

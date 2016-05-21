@@ -24,7 +24,6 @@ namespace Humus\Amqp;
 
 use Assert\Assertion;
 use Humus\Amqp\Exception\ConnectionException;
-use Humus\Amqp\Exception\QueueException;
 
 /**
  * Class AbstractConsumer
@@ -204,7 +203,6 @@ abstract class AbstractConsumer implements Consumer
                 $this->ackOrNackBlock();
                 gc_collect_cycles();
             }
-
         } while ($this->keepAlive);
     }
 
