@@ -13,7 +13,8 @@
     ],
     "require": {
         "php": "~7.0",
-        "beberlei/assert": "^2.4"
+        "beberlei/assert": "^2.4",
+        "psr/log": "^1.0"
     },
     "require-dev": {
         "container-interop/container-interop": "^1.1",
