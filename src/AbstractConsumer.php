@@ -135,40 +135,13 @@ abstract class AbstractConsumer implements Consumer
         }
 
         $callback = function (Envelope $envelope) {
-            if ($envelope->getAppId() === __NAMESPACE__) {
-                if ('shutdown' === $envelope->getType()) {
-                    $this->shutdown();
-
-                    return self::MSG_ACK;
-                }
-                if ('reconfigure' === $envelope->getType()) {
-                    try {
-                        list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
-
-                        Assertion::float($idleTimeout);
-                        Assertion::min($blockSize, 1);
-                        Assertion::min($target, 0);
-                        Assertion::min($prefetchSize, 0);
-                        Assertion::min($prefetchCount, 0);
-                    } catch (\Exception $e) {
-                        return self::MSG_REJECT;
-                    }
-
-                    $this->idleTimeout = $idleTimeout;
-                    $this->blockSize = $blockSize;
-                    $this->target = $target;
-                    $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
-
-                    return self::MSG_ACK;
-                }
-            }
-
             try {
                 $processFlag = $this->handleDelivery($envelope, $this->queue);
             } catch (\Exception $e) {
                 $this->handleException($e);
                 $processFlag = false;
             }
+
             $this->handleProcessFlag($envelope, $processFlag);
 
             $now = microtime(true);
@@ -213,8 +186,11 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function handleDelivery(Envelope $envelope, Queue $queue)
     {
-        $callback = $this->deliveryCallback;
+        if ($envelope->getAppId() === __NAMESPACE__) {
+            return $this->handleInternalMessage($envelope);
+        }
 
+        $callback = $this->deliveryCallback;
         return $callback($envelope, $queue);
     }
 
@@ -339,16 +315,43 @@ abstract class AbstractConsumer implements Consumer
             return;
         }
 
-        try {
-            $deferredFlushResult = $this->flushDeferred();
-        } catch (\Exception $e) {
-            $deferredFlushResult = false;
-        }
-
-        if (true === $deferredFlushResult) {
+        if (true === $this->flushDeferred()) {
             $this->ack();
         } else {
             $this->nackAll();
+        }
+    }
+
+    /**
+     * @param Envelope $envelope
+     * @return int
+     */
+    protected function handleInternalMessage(Envelope $envelope)
+    {
+        if ('shutdown' === $envelope->getType()) {
+            $this->shutdown();
+
+            return self::MSG_ACK;
+        }
+        if ('reconfigure' === $envelope->getType()) {
+            try {
+                list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
+
+                Assertion::float((float) $idleTimeout);
+                Assertion::min($blockSize, 1);
+                Assertion::min($target, 0);
+                Assertion::min($prefetchSize, 0);
+                Assertion::min($prefetchCount, 0);
+            } catch (\Exception $e) {
+                return self::MSG_REJECT;
+            }
+
+            $this->idleTimeout = $idleTimeout;
+            $this->blockSize = $blockSize;
+            $this->target = $target;
+            $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
+
+            return self::MSG_ACK;
         }
     }
 }

@@ -174,7 +174,8 @@ interface Exchange
     public function publish(
         string $message,
         string $routingKey = null,
-        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
+        int $flags = Constants::AMQP_NOPARAM,
+        array $attributes = []
     );
 
     /**

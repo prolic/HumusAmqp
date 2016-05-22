@@ -22,11 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\Constants;
 use Humus\Amqp\Consumer;
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Queue;
-use HumusTest\Amqp\AmqpExtension\CallbackConsumerTest;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
@@ -117,10 +117,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $result = [];
 
-        $consumer = new CallbackConsumer($queue, 3, function (Envelope $envelope, Queue $queue) use (&$result) {
-            $result[] = $envelope->getBody();
-            return Consumer::MSG_REJECT;
-        });
+        $consumer = new CallbackConsumer(
+            $queue,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return Consumer::MSG_REJECT;
+            }
+        );
 
         $consumer->consume(7);
 
@@ -136,6 +140,55 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_processes_messages_rejects_and_requeues()
+    {
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 8; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+
+        $i = 0;
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            7,
+            function (Envelope $envelope, Queue $queue) use (&$result, &$i) {
+                $i++;
+                $result[] = $envelope->getBody();
+                if ($i % 2 === 0 && ! $envelope->isRedelivery()) {
+                    return Consumer::MSG_REJECT_REQUEUE;
+                } else {
+                    return Consumer::MSG_ACK;
+                }
+            }
+        );
+
+        $consumer->consume(10);
+
+        $this->assertCount(10, $result);
     }
 
     /**
@@ -192,105 +245,300 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
     }
-/*
-    public function testFlushDeferred()
+
+    /**
+     * @test
+     */
+    public function it_uses_custom_flush_deferred_callback()
     {
-        $amqpChannel = $this->getMockBuilder('AMQPChannel')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
 
-        $amqpChannel->expects($this->once())->method('getPrefetchCount')->willReturn(3);
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
 
-        $message = $this->getMockBuilder('AMQPEnvelope')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->addToCleanUp($exchange);
 
-        $message->expects($this->any())->method('getDeliveryTag')->willReturnCallback(function () {
-            return uniqid();
-        });
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
 
-        $amqpQueue = $this->getMockBuilder('AMQPQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->addToCleanUp($queue);
 
-        $amqpQueue->expects($this->once())->method('getChannel')->willReturn($amqpChannel);
-        $amqpQueue->expects($this->any())->method('get')->willReturn($message);
+        for ($i = 1; $i < 8; $i++) {
+            $exchange->publish('message #' . $i);
+        }
 
-        $consumer = new Consumer([$amqpQueue], 1, 1 * 1000 * 500);
+        $result = [];
 
+        $consumer = new CallbackConsumer(
+            $queue,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return Consumer::MSG_DEFER;
+            },
+            function () use (&$result) {
+                $result[] = 'flushed';
+            },
+            null,
+            null,
+            3
+        );
 
-        $logger = $this->prophesize('Psr\Log\LoggerInterface');
-        $logger->debug(Argument::any());
-        $logger->error(Argument::any());
-        $consumer->setLogger($logger->reveal());
+        $consumer->consume(7);
 
-        // Create a callback function with a return value set by the data provider.
-        $callbackFunction = function () {
-            static $i = 0;
-            $i++;
-            switch ($i) {
-                case 1:
-                    return;
-                case 2:
-                    return;
-                case 3:
-                    return;
-                case 4:
-                    return ConsumerInterface::MSG_ACK;
-                case 5:
-                    return false;
-                case 6:
-                    return ConsumerInterface::MSG_REJECT;
-                case 7:
-                    return ConsumerInterface::MSG_REJECT_REQUEUE;
-                case 8:
-                    return true;
-            }
-        };
-        $consumer->setDeliveryCallback($callbackFunction);
-        $consumer->setFlushCallback(function () {
-            static $i = 0;
-            $i++;
-            if ($i == 1) {
-                return true;
-            }
-            return false;
-        });
-
-        $amqpQueue->expects($this->exactly(3))->method('ack');
-        $amqpQueue->expects($this->exactly(3))->method('reject');
-
-        $consumer->consume(5);
+        $this->assertEquals(
+            [
+                'message #1',
+                'message #2',
+                'message #3',
+                'flushed',
+                'message #4',
+                'message #5',
+                'message #6',
+                'flushed',
+                'message #7',
+                'flushed'
+            ],
+            $result
+        );
     }
 
-    public function testHandleDeliveryException()
+    /**
+     * @test
+     */
+    public function it_handles_delivery_exception()
     {
-        $amqpChannel = $this->getMockBuilder('AMQPChannel')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
 
-        $amqpChannel->expects($this->once())->method('getPrefetchCount')->willReturn(3);
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
 
-        $amqpQueue = $this->getMockBuilder('AMQPQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->addToCleanUp($exchange);
 
-        $amqpQueue->expects($this->once())->method('getChannel')->willReturn($amqpChannel);
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
 
-        $consumer = new Consumer([$amqpQueue], 1, 1 * 1000 * 500);
+        $this->addToCleanUp($queue);
 
-        $exception = new \Exception('Test Exception');
-        $errorCallback = $this->getMockBuilder('stdClass')
-            ->setMethods(['__invoke'])
-            ->getMock();
+        for ($i = 1; $i < 4; $i++) {
+            $exchange->publish('message #' . $i);
+        }
 
-        $errorCallback->expects(static::once())
-            ->method('__invoke')
-            ->with($exception, $consumer);
-        $consumer->setErrorCallback($errorCallback);
-        $consumer->handleDeliveryException($exception);
+        $result = [];
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                throw new \Exception('foo');
+            },
+            null,
+            function (\Exception $e) use (&$result) {
+                $result[] = $e->getMessage();
+            }
+        );
+
+        $consumer->consume(3);
+
+        $this->assertEquals(
+            [
+                'foo',
+                'foo',
+                'foo'
+            ],
+            $result
+        );
     }
 
+    /**
+     * @test
+     */
+    public function it_handles_flush_deferred_exception()
+    {
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 4; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+            },
+            function () {
+                throw new \Exception('foo');
+            },
+            function (\Exception $e) use (&$result) {
+                $result[] = $e->getMessage();
+            }
+        );
+
+        $consumer->consume(3);
+
+        $this->assertEquals(
+            [
+                'message #1',
+                'message #2',
+                'message #3',
+                'foo',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_shutdown_message()
+    {
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 4; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $exchange->publish('stop!!!', null, Constants::AMQP_NOPARAM, [
+            'app_id' => 'Humus\Amqp',
+            'type' => 'shutdown',
+        ]);
+
+        for ($i = 4; $i < 7; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+
+        $consumer = new CallbackConsumer($queue, 3, function (Envelope $envelope, Queue $queue) use (&$result) {
+            $result[] = $envelope->getBody();
+            return Consumer::MSG_ACK;
+        });
+
+        $consumer->consume(7);
+
+        $this->assertEquals(
+            [
+                'message #1',
+                'message #2',
+                'message #3',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_reconfigure_message()
+    {
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 4; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $exchange->publish(
+            json_encode([
+                1,
+                5,
+                8,
+                0,
+                1
+            ]),
+            null,
+            Constants::AMQP_NOPARAM,
+            [
+                'app_id' => 'Humus\Amqp',
+                'type' => 'reconfigure',
+            ]
+        );
+
+        for ($i = 4; $i < 8; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+
+        $consumer = new CallbackConsumer($queue, 3, function (Envelope $envelope, Queue $queue) use (&$result) {
+            $result[] = $envelope->getBody();
+            return Consumer::MSG_ACK;
+        });
+
+        $consumer->consume(100);
+
+        $this->assertEquals(
+            [
+                'message #1',
+                'message #2',
+                'message #3',
+                'message #4',
+                'message #5',
+                'message #6',
+                'message #7',
+            ],
+            $result
+        );
+    }
+
+    /*
     public function testHandleDeliveryExceptionWithLogger()
     {
         $amqpChannel = $this->getMockBuilder('AMQPChannel')
@@ -314,35 +562,9 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $consumer->setLogger($logger->reveal());
         $consumer->handleDeliveryException($exception);
     }
+*/
 
-    public function testHandleFlushDeferredException()
-    {
-        $amqpChannel = $this->getMockBuilder('AMQPChannel')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $amqpChannel->expects($this->once())->method('getPrefetchCount')->willReturn(3);
-
-        $amqpQueue = $this->getMockBuilder('AMQPQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $amqpQueue->expects($this->once())->method('getChannel')->willReturn($amqpChannel);
-
-        $consumer = new Consumer([$amqpQueue], 1, 1 * 1000 * 500);
-
-        $exception = new \Exception('Test Exception');
-        $errorCallback = $this->getMockBuilder('stdClass')
-            ->setMethods(['__invoke'])
-            ->getMock();
-
-        $errorCallback->expects(static::once())
-            ->method('__invoke')
-            ->with($exception, $consumer);
-        $consumer->setErrorCallback($errorCallback);
-        $consumer->handleFlushDeferredException($exception);
-    }
-
+    /*
     public function testHandleFlushDeferredExceptionWithLogger()
     {
         $amqpChannel = $this->getMockBuilder('AMQPChannel')
