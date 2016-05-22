@@ -24,6 +24,7 @@ namespace Humus\Amqp;
 
 use Assert\Assertion;
 use Humus\Amqp\Exception\ConnectionException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class AbstractConsumer
@@ -31,6 +32,11 @@ use Humus\Amqp\Exception\ConnectionException;
  */
 abstract class AbstractConsumer implements Consumer
 {
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
     /**
      * @var Queue
      */
@@ -138,6 +144,7 @@ abstract class AbstractConsumer implements Consumer
             try {
                 $processFlag = $this->handleDelivery($envelope, $this->queue);
             } catch (\Exception $e) {
+                $this->logger->error('Exception during handleDelivery: ' . $e->getMessage());
                 $this->handleException($e);
                 $processFlag = false;
             }
@@ -186,6 +193,8 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function handleDelivery(Envelope $envelope, Queue $queue)
     {
+        $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
+
         if ($envelope->getAppId() === __NAMESPACE__) {
             return $this->handleInternalMessage($envelope);
         }
@@ -236,6 +245,7 @@ abstract class AbstractConsumer implements Consumer
         try {
             $result = $callback($this);
         } catch (\Exception $e) {
+            $this->logger->error('Exception during flushDeferred: ' . $e->getMessage());
             $result = false;
             $this->handleException($e);
         }
@@ -257,6 +267,7 @@ abstract class AbstractConsumer implements Consumer
         if ($flag === self::MSG_REJECT || false === $flag) {
             $this->ackOrNackBlock();
             $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
+            $this->logger->info('Rejected message', $this->extractMessageInformation($envelope));
         } elseif ($flag === self::MSG_REJECT_REQUEUE) {
             $this->ackOrNackBlock();
             $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
@@ -283,6 +294,14 @@ abstract class AbstractConsumer implements Consumer
     {
         $this->queue->ack($this->lastDeliveryTag, Constants::AMQP_MULTIPLE);
         $this->lastDeliveryTag = null;
+        $delta = $this->timestampLastMessage - $this->timestampLastAck;
+
+        $this->logger->info(sprintf(
+            'Acknowledged %d messages at %.0f msg/s',
+            $this->countMessagesUnacked,
+            $delta ? $this->countMessagesUnacked / $delta : 0
+        ));
+
         $this->timestampLastAck = microtime(true);
         $this->countMessagesUnacked = 0;
     }
@@ -295,6 +314,14 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function nackAll($requeue = false)
     {
+        $delta = $this->timestampLastMessage - $this->timestampLastAck;
+
+        $this->logger->info(sprintf(
+            'Not acknowledged %d messages at %.0f msg/s',
+            $this->countMessagesUnacked,
+            $delta ? $this->countMessagesUnacked / $delta : 0
+        ));
+
         $flags = Constants::AMQP_MULTIPLE;
         if ($requeue) {
             $flags |= Constants::AMQP_REQUEUE;
@@ -329,11 +356,13 @@ abstract class AbstractConsumer implements Consumer
     protected function handleInternalMessage(Envelope $envelope)
     {
         if ('shutdown' === $envelope->getType()) {
+            $this->logger->info('Shutdown message received');
             $this->shutdown();
 
             return self::MSG_ACK;
         }
         if ('reconfigure' === $envelope->getType()) {
+            $this->logger->info('Reconfigure message received');
             try {
                 list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
 
@@ -343,6 +372,7 @@ abstract class AbstractConsumer implements Consumer
                 Assertion::min($prefetchSize, 0);
                 Assertion::min($prefetchCount, 0);
             } catch (\Exception $e) {
+                $this->logger->error('Exception during reconfiguration: ' . $e->getMessage());
                 return self::MSG_REJECT;
             }
 
@@ -353,5 +383,18 @@ abstract class AbstractConsumer implements Consumer
 
             return self::MSG_ACK;
         }
+    }
+
+    /**
+     * @param Envelope $envelope
+     * @return array
+     */
+    protected function extractMessageInformation(Envelope $envelope) : array
+    {
+        return [
+            'body' => $envelope->getBody(),
+            'routing_key' => $envelope->getRoutingKey(),
+            'type' => $envelope->getType(),
+        ];
     }
 }

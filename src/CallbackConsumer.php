@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp;
 
 use Assert\Assertion;
+use Psr\Log\LoggerInterface;
 
 /**
  * The consumer attaches to a single queue
@@ -38,6 +39,7 @@ final class CallbackConsumer extends AbstractConsumer
      * Constructor
      *
      * @param Queue $queue
+     * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
      * @param callable $deliveryCallback,
      * @param callable|null $flushCallback,
@@ -48,6 +50,7 @@ final class CallbackConsumer extends AbstractConsumer
      */
     public function __construct(
         Queue $queue,
+        LoggerInterface $logger,
         float $idleTimeout,
         callable $deliveryCallback,
         callable $flushCallback = null,
@@ -69,6 +72,7 @@ final class CallbackConsumer extends AbstractConsumer
         }
 
         $this->queue = $queue;
+        $this->logger = $logger;
         $this->idleTimeout = $idleTimeout;
         $this->deliveryCallback = $deliveryCallback;
         $this->flushCallback = $flushCallback;

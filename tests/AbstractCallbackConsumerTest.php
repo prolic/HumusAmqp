@@ -31,6 +31,8 @@ use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use Prophecy\Argument;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class AbstractCallbackConsumer
@@ -39,6 +41,72 @@ use Prophecy\Argument;
 abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase implements CanCreateExchange, CanCreateQueue
 {
     use DeleteOnTearDownTrait;
+
+    /**
+     * @var NullLogger
+     */
+    protected $logger;
+
+    protected function setUp()
+    {
+        $this->logger = new class() implements LoggerInterface {
+            private $loggerResult = [];
+
+            public function loggerResult()
+            {
+                return $this->loggerResult;
+            }
+
+            public function emergency($message, array $context = array())
+            {
+                $this->log('emergency', $message, $context);
+            }
+
+            public function alert($message, array $context = array())
+            {
+                $this->log('alert', $message, $context);
+            }
+
+            public function critical($message, array $context = array())
+            {
+                $this->log('critical', $message, $context);
+            }
+
+            public function error($message, array $context = array())
+            {
+                $this->log('error', $message, $context);
+            }
+
+            public function warning($message, array $context = array())
+            {
+                $this->log('warning', $message, $context);
+            }
+
+            public function notice($message, array $context = array())
+            {
+                $this->log('notice', $message, $context);
+            }
+
+            public function info($message, array $context = array())
+            {
+                $this->log('info', $message, $context);
+            }
+
+            public function debug($message, array $context = array())
+            {
+                $this->log('debug', $message, $context);
+            }
+
+            public function log($level, $message, array $context = array())
+            {
+                $this->loggerResult[] = [
+                    'level' => $level,
+                    'message' => $message,
+                    'context' => $context,
+                ];
+            }
+        };
+    }
 
     /**
      * @test
@@ -68,10 +136,15 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $result = [];
 
-        $consumer = new CallbackConsumer($queue, 3, function (Envelope $envelope, Queue $queue) use (&$result) {
-            $result[] = $envelope->getBody();
-            return Consumer::MSG_ACK;
-        });
+        $consumer = new CallbackConsumer(
+            $queue,
+            $this->logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return Consumer::MSG_ACK;
+            }
+        );
 
         $consumer->consume(7);
 
@@ -87,6 +160,58 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+        $this->assertCount(14, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[1]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
+
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[5]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('message #4', $loggerResult[6]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[7]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[7]['message']);
+
+        $this->assertEquals('debug', $loggerResult[8]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[8]['message']);
+        $this->assertEquals('message #5', $loggerResult[8]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[9]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[9]['message']);
+
+        $this->assertEquals('debug', $loggerResult[10]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[10]['message']);
+        $this->assertEquals('message #6', $loggerResult[10]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[11]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[11]['message']);
+
+        $this->assertEquals('debug', $loggerResult[12]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[12]['message']);
+        $this->assertEquals('message #7', $loggerResult[12]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[13]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[13]['message']);
     }
 
     /**
@@ -119,6 +244,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
+            $this->logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -140,10 +266,63 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+        $this->assertCount(14, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[1]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[1]['message']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[3]['message']);
+
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[5]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[5]['message']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('message #4', $loggerResult[6]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[7]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[7]['message']);
+
+        $this->assertEquals('debug', $loggerResult[8]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[8]['message']);
+        $this->assertEquals('message #5', $loggerResult[8]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[9]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[9]['message']);
+
+        $this->assertEquals('debug', $loggerResult[10]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[10]['message']);
+        $this->assertEquals('message #6', $loggerResult[10]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[11]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[11]['message']);
+
+        $this->assertEquals('debug', $loggerResult[12]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[12]['message']);
+        $this->assertEquals('message #7', $loggerResult[12]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[13]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[13]['message']);
     }
 
     /**
      * @test
+     * @group test
      */
     public function it_processes_messages_rejects_and_requeues()
     {
@@ -174,6 +353,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
+            $this->logger,
             7,
             function (Envelope $envelope, Queue $queue) use (&$result, &$i) {
                 $i++;
@@ -221,6 +401,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
+            $this->logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -244,6 +425,35 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+        $this->assertCount(7, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[1]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
+        $this->assertEquals('message #2', $loggerResult[1]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #3', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertRegExp('/^Acknowledged 3 messages at.+/', $loggerResult[3]['message']);
+
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('message #4', $loggerResult[4]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[5]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[5]['message']);
+        $this->assertEquals('message #5', $loggerResult[5]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[6]['level']);
+        $this->assertRegExp('/^Acknowledged 2 messages at.+/', $loggerResult[6]['message']);
     }
 
     /**
@@ -276,6 +486,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
+            $this->logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -306,6 +517,45 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[1]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
+        $this->assertEquals('message #2', $loggerResult[1]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #3', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertRegExp('/^Not acknowledged 3 messages at.+/', $loggerResult[3]['message']);
+
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('message #4', $loggerResult[4]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[5]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[5]['message']);
+        $this->assertEquals('message #5', $loggerResult[5]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('message #6', $loggerResult[6]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[7]['level']);
+        $this->assertRegExp('/^Not acknowledged 3 messages at.+/', $loggerResult[7]['message']);
+
+        $this->assertEquals('debug', $loggerResult[8]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[8]['message']);
+        $this->assertEquals('message #7', $loggerResult[8]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[9]['level']);
+        $this->assertRegExp('/^Not acknowledged 1 messages at.+/', $loggerResult[9]['message']);
     }
 
     /**
@@ -338,6 +588,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
+            $this->logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 throw new \Exception('foo');
@@ -358,6 +609,43 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+
+        $this->assertCount(9, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[1]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[1]['message']);
+
+        $this->assertEquals('info', $loggerResult[2]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[2]['message']);
+        $this->assertEquals('message #1', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[3]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
+        $this->assertEquals('message #2', $loggerResult[3]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[4]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[4]['message']);
+
+        $this->assertEquals('info', $loggerResult[5]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[5]['message']);
+        $this->assertEquals('message #2', $loggerResult[5]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('message #3', $loggerResult[6]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[7]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[7]['message']);
+
+        $this->assertEquals('info', $loggerResult[8]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[8]['message']);
+        $this->assertEquals('message #3', $loggerResult[8]['context']['body']);
     }
 
     /**
@@ -390,6 +678,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
+            $this->logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -413,6 +702,28 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+
+        $this->assertCount(5, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[1]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
+        $this->assertEquals('message #2', $loggerResult[1]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #3', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[3]['level']);
+        $this->assertEquals('Exception during flushDeferred: foo', $loggerResult[3]['message']);
+
+        $this->assertEquals('info', $loggerResult[4]['level']);
+        $this->assertRegExp('/^Not acknowledged 3 messages at.+/', $loggerResult[4]['message']);
     }
 
     /**
@@ -452,10 +763,15 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $result = [];
 
-        $consumer = new CallbackConsumer($queue, 3, function (Envelope $envelope, Queue $queue) use (&$result) {
-            $result[] = $envelope->getBody();
-            return Consumer::MSG_ACK;
-        });
+        $consumer = new CallbackConsumer(
+            $queue,
+            $this->logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return Consumer::MSG_ACK;
+            }
+        );
 
         $consumer->consume(7);
 
@@ -467,6 +783,42 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+
+        $this->assertCount(9, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[1]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
+
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[5]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('stop!!!', $loggerResult[6]['context']['body']);
+        $this->assertEquals('shutdown', $loggerResult[6]['context']['type']);
+
+        $this->assertEquals('info', $loggerResult[7]['level']);
+        $this->assertEquals('Shutdown message received', $loggerResult[7]['message']);
+
+        $this->assertEquals('info', $loggerResult[8]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[8]['message']);
     }
 
     /**
@@ -517,10 +869,15 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $result = [];
 
-        $consumer = new CallbackConsumer($queue, 3, function (Envelope $envelope, Queue $queue) use (&$result) {
-            $result[] = $envelope->getBody();
-            return Consumer::MSG_ACK;
-        });
+        $consumer = new CallbackConsumer(
+            $queue,
+            $this->logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return Consumer::MSG_ACK;
+            }
+        );
 
         $consumer->consume(100);
 
@@ -536,57 +893,69 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             ],
             $result
         );
+
+        $loggerResult = $this->logger->loggerResult();
+
+        $this->assertCount(17, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[1]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
+
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[5]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('[1,5,8,0,1]', $loggerResult[6]['context']['body']);
+        $this->assertEquals('reconfigure', $loggerResult[6]['context']['type']);
+
+        $this->assertEquals('info', $loggerResult[7]['level']);
+        $this->assertEquals('Reconfigure message received', $loggerResult[7]['message']);
+
+        $this->assertEquals('info', $loggerResult[8]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[8]['message']);
+
+        $this->assertEquals('debug', $loggerResult[9]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[9]['message']);
+        $this->assertEquals('message #4', $loggerResult[9]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[10]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[10]['message']);
+
+        $this->assertEquals('debug', $loggerResult[11]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[11]['message']);
+        $this->assertEquals('message #5', $loggerResult[11]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[12]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[12]['message']);
+
+        $this->assertEquals('debug', $loggerResult[13]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[13]['message']);
+        $this->assertEquals('message #6', $loggerResult[13]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[14]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[14]['message']);
+
+        $this->assertEquals('debug', $loggerResult[15]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[15]['message']);
+        $this->assertEquals('message #7', $loggerResult[15]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[16]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[16]['message']);
     }
-
-    /*
-    public function testHandleDeliveryExceptionWithLogger()
-    {
-        $amqpChannel = $this->getMockBuilder('AMQPChannel')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $amqpChannel->expects($this->once())->method('getPrefetchCount')->willReturn(3);
-
-        $amqpQueue = $this->getMockBuilder('AMQPQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $amqpQueue->expects($this->once())->method('getChannel')->willReturn($amqpChannel);
-
-        $logger = $this->prophesize('Psr\Log\LoggerInterface');
-        $logger->error(Argument::any())->shouldBeCalled();
-
-        $exception = new \Exception('Test Exception');
-
-        $consumer = new Consumer([$amqpQueue], 1, 1 * 1000 * 500);
-        $consumer->setLogger($logger->reveal());
-        $consumer->handleDeliveryException($exception);
-    }
-*/
-
-    /*
-    public function testHandleFlushDeferredExceptionWithLogger()
-    {
-        $amqpChannel = $this->getMockBuilder('AMQPChannel')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $amqpChannel->expects($this->once())->method('getPrefetchCount')->willReturn(3);
-
-        $amqpQueue = $this->getMockBuilder('AMQPQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $amqpQueue->expects($this->once())->method('getChannel')->willReturn($amqpChannel);
-
-        $logger = $this->prophesize('Psr\Log\LoggerInterface');
-        $logger->error(Argument::any())->shouldBeCalled();
-
-        $exception = new \Exception('Test Exception');
-
-        $consumer = new Consumer([$amqpQueue], 1, 1 * 1000 * 500);
-        $consumer->setLogger($logger->reveal());
-        $consumer->handleDeliveryException($exception);
-    }
-*/
 }
