@@ -83,6 +83,8 @@ class JsonRpcClient
         foreach ($exchanges as $server => $exchange) {
             Assertion::string($server, 'Server name must be a string');
             Assertion::isInstanceOf($exchange, Exchange::class, 'Expected instances of exchanges');
+            Assertion::true($this->isValidExchangeName($server), 'Invalid exchange name given');
+            $exchange->setType('direct');
             $exchange->setName($server);
         }
 
@@ -199,5 +201,18 @@ class JsonRpcClient
         }
 
         return $attributes;
+    }
+
+    /**
+     * Verifies exchange name meets the 0.9.1 protocol standard.
+     *
+     * letters, digits, hyphen, underscore, period, or colon
+     *
+     * @param string $exchangeName
+     * @return bool
+     */
+    private function isValidExchangeName(string $exchangeName) : bool
+    {
+        return preg_match('/^[A-Za-z0-9_\-\.\;]*$/', $exchangeName);
     }
 }
