@@ -31,7 +31,7 @@ use Assert\Assertion;
  * Class JsonRpcClient
  * @package Humus\Amqp
  */
-final class JsonRpcClient
+class JsonRpcClient
 {
     /**
      * @var AMQPQueue

@@ -29,7 +29,7 @@ use PhpAmqpLib\Connection\AMQPSocketConnection as BaseAMQPSocketConnection;
  * Class SocketConnection
  * @package Humus\Amqp\Driver\PhpAmqpLib
  */
-class SocketConnection extends AbstractConnection
+final class SocketConnection extends AbstractConnection
 {
     /**
      * @inheritdoc

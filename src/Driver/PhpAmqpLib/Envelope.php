@@ -30,7 +30,7 @@ use PhpAmqpLib\Wire\AMQPTable;
  * Class Envelope
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class Envelope implements AmqpEnvelopeInterface
+final class Envelope implements AmqpEnvelopeInterface
 {
     /**
      * @var AMQPMessage

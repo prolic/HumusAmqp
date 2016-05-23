@@ -28,7 +28,7 @@ use Humus\Amqp\ConnectionOptions;
  * Class LazyConnection
  * @package Humus\Amqp\Driver\PhpAmqpLib
  */
-class LazyConnection extends AbstractConnection
+final class LazyConnection extends AbstractConnection
 {
     /**
      * @inheritdoc

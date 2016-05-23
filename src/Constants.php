@@ -26,7 +26,7 @@ namespace Humus\Amqp;
  * Class Constants
  * @package Humus\Amqp
  */
-final class Constants
+abstract class Constants
 {
     /**
      * Passing in this constant as a flag will forcefully disable all other flags.
@@ -117,7 +117,7 @@ final class Constants
     /**
      * Constructor disabled
      */
-    private function __construct()
+    final private function __construct()
     {
     }
 }

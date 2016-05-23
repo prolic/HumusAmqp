@@ -29,7 +29,7 @@ use Humus\Amqp\ConnectionOptions;
  * Class Connection
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class Connection implements ConnectionInterface
+final class Connection implements ConnectionInterface
 {
     /**
      * @var \AMQPConnection

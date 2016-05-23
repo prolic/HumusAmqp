@@ -26,7 +26,7 @@ use Humus\Amqp\Envelope as AmqpEnvelopeInterface;
  * Class Envelope
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class Envelope implements AmqpEnvelopeInterface
+final class Envelope implements AmqpEnvelopeInterface
 {
     /**
      * @var \AMQPBasicProperties
@@ -200,13 +200,5 @@ class Envelope implements AmqpEnvelopeInterface
     public function hasHeader(string $header) : bool
     {
         return $this->envelope->hasHeader($header);
-    }
-
-    /**
-     * @return \AMQPEnvelope
-     */
-    public function getResource()
-    {
-        return $this->envelope;
     }
 }

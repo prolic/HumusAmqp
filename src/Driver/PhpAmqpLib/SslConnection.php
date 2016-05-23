@@ -30,7 +30,7 @@ use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
  * Class SslConnection
  * @package Humus\Amqp\Driver\PhpAmqpLib
  */
-class SslConnection extends AbstractConnection
+final class SslConnection extends AbstractConnection
 {
     /**
      * @inheritdoc

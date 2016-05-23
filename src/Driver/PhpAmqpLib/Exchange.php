@@ -33,7 +33,7 @@ use PhpAmqpLib\Wire\AMQPTable;
  * Class Exchange
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class Exchange implements AmqpExchangeInterface
+final class Exchange implements AmqpExchangeInterface
 {
     /**
      * @var Channel

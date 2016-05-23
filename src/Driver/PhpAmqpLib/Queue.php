@@ -33,7 +33,7 @@ use PhpAmqpLib\Message\AMQPMessage;
  * Class Queue
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class Queue implements AmqpQueueInterface
+final class Queue implements AmqpQueueInterface
 {
     /**
      * @var Channel

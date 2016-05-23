@@ -32,7 +32,7 @@ use PhpAmqpLib\Message\AMQPMessage;
  * Class Channel
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class Channel implements AmqpChannelInterface
+final class Channel implements AmqpChannelInterface
 {
     /**
      * @var AbstractConnection

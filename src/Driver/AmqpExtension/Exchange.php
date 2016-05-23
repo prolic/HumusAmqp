@@ -29,7 +29,7 @@ use Humus\Amqp\Exchange as AmqpExchangeInterface;
  * Class Exchange
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-class Exchange implements AmqpExchangeInterface
+final class Exchange implements AmqpExchangeInterface
 {
     /**
      * @var Channel

@@ -28,7 +28,7 @@ use Assert\Assertion;
  * Class JsonRpcServer
  * @package Humus\Amqp
  */
-final class JsonRpcServer extends AbstractConsumer
+class JsonRpcServer extends AbstractConsumer
 {
     /**
      * @var Exchange

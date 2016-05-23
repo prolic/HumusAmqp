@@ -31,6 +31,13 @@ namespace Humus\Amqp;
 interface Channel
 {
     /**
+     * Return the internal channel implementation based on the used driver
+     *
+     * @return object
+     */
+    public function getResource();
+
+    /**
      * Check the channel connection.
      *
      * @return bool Indicates whether the channel is connected.

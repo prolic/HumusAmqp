@@ -29,7 +29,7 @@ use PhpAmqpLib\Connection\AMQPStreamConnection as BaseAMQPStreamConnection;
  * Class StreamConnection
  * @package Humus\Amqp\Driver\PhpAmqpLib
  */
-class StreamConnection extends AbstractConnection
+final class StreamConnection extends AbstractConnection
 {
     /**
      * @inheritdoc
