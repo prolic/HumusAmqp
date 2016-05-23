@@ -22,22 +22,35 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use AMQPChannel;
 use AMQPQueue;
+use ArrayAccess;
+use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
+use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
+use Interop\Config\ConfigurationTrait;
+use Interop\Config\ProvidesDefaultOptions;
+use Interop\Config\RequiresConfigId;
+use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
 
 /**
  * Class QueueFactory
  * @package Humus\Amqp\Container
  */
-final class QueueFactory extends AbstractFactory
+final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
+    use ConfigurationTrait;
+
     /**
-     * @var AMQPChannel
+     * @var Channel
      */
     private $channel;
+
+    /**
+     * @var Driver
+     */
+    private $driver;
 
     /**
      * @var string
@@ -56,14 +69,16 @@ final class QueueFactory extends AbstractFactory
 
     /**
      * QueueFactory constructor.
-     * @param AMQPChannel $channel
+     * @param Channel $channel
+     * @param Driver $driver
      * @param string $queueName
      * @param string $connectionName
      * @param bool $autoSetupFabric
      */
-    public function __construct(AMQPChannel $channel, $queueName, $connectionName, $autoSetupFabric)
+    public function __construct(Channel $channel, Driver $driver, $queueName, $connectionName, $autoSetupFabric)
     {
         $this->channel = $channel;
+        $this->driver = $driver;
         $this->queueName = $queueName;
         $this->connectionName = $connectionName;
         $this->autoSetupFabric = $autoSetupFabric;
@@ -77,7 +92,7 @@ final class QueueFactory extends AbstractFactory
     public function __invoke(ContainerInterface $container)
     {
         $config = $container->get('config');
-        $options = $this->options($config);
+        $options = $this->options($config, $this->queueName);
 
         if ($options['connection'] !== $this->connectionName) {
             throw new Exception\InvalidArgumentException(
@@ -88,7 +103,16 @@ final class QueueFactory extends AbstractFactory
             );
         }
 
-        $queue = new AMQPQueue($this->channel);
+        switch ($this->driver) {
+            case Driver::AMQP_EXTENSION():
+                $queue = new \Humus\Amqp\Driver\AmqpExtension\Queue($this->channel);
+                break;
+            case Driver::PHP_AMQP_LIB():
+                $queue = new \Humus\Amqp\Driver\PhpAmqpLib\Queue($this->channel);
+                break;
+            default:
+                throw new Exception\RuntimeException('Unknown driver');
+        }
 
         if (null !== $options['name']) {
             $queue->setName($options['name']);
@@ -114,19 +138,11 @@ final class QueueFactory extends AbstractFactory
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function componentName()
+    public function dimensions()
     {
-        return 'queue';
-    }
-
-    /**
-     * @return string
-     */
-    public function elementName()
-    {
-        return $this->queueName;
+        return ['humus', 'amqp', 'queue'];
     }
 
     /**

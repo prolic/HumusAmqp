@@ -58,11 +58,11 @@ final class Queue implements AmqpQueueInterface
     /**
      * Create an instance of an Queue object.
      *
-     * @param Channel $amqpChannel The amqp channel to use.
+     * @param Channel $channel The amqp channel to use.
      */
-    public function __construct(Channel $amqpChannel)
+    public function __construct(Channel $channel)
     {
-        $this->channel = $amqpChannel;
+        $this->channel = $channel;
     }
 
     /**
