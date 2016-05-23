@@ -25,6 +25,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Exception;
 use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
+use Traversable;
 
 /**
  * Class SslConnection
@@ -33,10 +34,15 @@ use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 final class SslConnection extends AbstractConnection
 {
     /**
-     * @inheritdoc
+     * SslConnection constructor.
+     * @param ConnectionOptions|array|Traversable $options
      */
-    public function __construct(ConnectionOptions $options)
+    public function __construct($options)
     {
+        if (! $options instanceof ConnectionOptions) {
+            $options = new ConnectionOptions($options);
+        }
+
         if (! $options->getCACert()) {
             throw new Exception\InvalidArgumentException('Ca cert file missing in connection options');
         }

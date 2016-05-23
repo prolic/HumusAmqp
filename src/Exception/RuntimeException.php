@@ -20,42 +20,12 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\Driver\PhpAmqpLib;
-
-use Humus\Amqp\ConnectionOptions;
-use Traversable;
+namespace Humus\Amqp\Exception;
 
 /**
- * Class LazyConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
+ * Class RuntimeException
+ * @package Humus\Amqp\Exception
  */
-final class LazyConnection extends AbstractConnection
+class RuntimeException extends \RuntimeException implements Exception
 {
-    /**
-     * LazyConnection constructor.
-     * @param ConnectionOptions|array|Traversable $options
-     */
-    public function __construct($options)
-    {
-        if (! $options instanceof ConnectionOptions) {
-            $options = new ConnectionOptions($options);
-        }
-
-        $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
-            false,
-            'AMQPLAIN',
-            null,
-            'en_US',
-            $options->getReadTimeout(),
-            $options->getWriteTimeout(),
-            null,
-            false,
-            $options->getHeartbeat()
-        );
-    }
 }

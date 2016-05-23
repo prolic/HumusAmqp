@@ -31,16 +31,6 @@ namespace  Humus\Amqp;
 interface Connection
 {
     /**
-     * Create an instance of Connection.
-     *
-     * Creates an Connection instance representing a connection to an AMQP
-     * broker.
-     *
-     * @param ConnectionOptions $options
-     */
-    public function __construct(ConnectionOptions $options);
-
-    /**
      * Check whether the connection to the AMQP broker is still valid.
      *
      * It does so by checking the return status of the last connect-command.

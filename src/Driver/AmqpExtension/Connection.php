@@ -24,6 +24,7 @@ namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\ConnectionOptions;
+use Traversable;
 
 /**
  * Class Connection
@@ -37,17 +38,26 @@ final class Connection implements ConnectionInterface
     private $connection;
 
     /**
-     * @var ConnectionOptions
+     * @var bool
      */
-    private $options;
+    private $isPersistent;
 
     /**
-     * @inheritdoc
+     * Connection constructor.
+     * @param ConnectionOptions|array|Traversable $options
      */
-    public function __construct(ConnectionOptions $options)
+    public function __construct($options)
     {
-        $this->options = $options;
-        $this->connection = new \AMQPConnection($options->toArray());
+        if ($options instanceof ConnectionOptions) {
+            $this->isPersistent = $options->getPersistent();
+            $options = $options->toArray();
+        }
+
+        if ($options instanceof \Traversable) {
+            $options = iterator_to_array($options);
+        }
+
+        $this->connection = new \AMQPConnection($options);
     }
 
     /**

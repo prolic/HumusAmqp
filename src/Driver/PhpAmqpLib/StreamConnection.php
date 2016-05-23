@@ -24,6 +24,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\ConnectionOptions;
 use PhpAmqpLib\Connection\AMQPStreamConnection as BaseAMQPStreamConnection;
+use Traversable;
 
 /**
  * Class StreamConnection
@@ -32,10 +33,15 @@ use PhpAmqpLib\Connection\AMQPStreamConnection as BaseAMQPStreamConnection;
 final class StreamConnection extends AbstractConnection
 {
     /**
-     * @inheritdoc
+     * StreamConnection constructor.
+     * @param ConnectionOptions|array|Traversable $options
      */
-    public function __construct(ConnectionOptions $options)
+    public function __construct($options)
     {
+        if (! $options instanceof ConnectionOptions) {
+            $options = new ConnectionOptions($options);
+        }
+
         $this->connection = new BaseAMQPStreamConnection(
             $options->getHost(),
             $options->getPort(),

@@ -18,44 +18,22 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace Humus\Amqp\Driver;
 
-namespace Humus\Amqp\Driver\PhpAmqpLib;
-
-use Humus\Amqp\ConnectionOptions;
-use Traversable;
+use MabeEnum\Enum;
+use MabeEnum\EnumSerializableTrait;
 
 /**
- * Class LazyConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
+ * Class Driver
+ * @package Humus\Amqp\Driver
+ * 
+ * @method static Driver AMQP_EXTENSION()
+ * @method static Driver PHP_AMQP_LIB()
  */
-final class LazyConnection extends AbstractConnection
+final class Driver extends Enum
 {
-    /**
-     * LazyConnection constructor.
-     * @param ConnectionOptions|array|Traversable $options
-     */
-    public function __construct($options)
-    {
-        if (! $options instanceof ConnectionOptions) {
-            $options = new ConnectionOptions($options);
-        }
-
-        $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
-            false,
-            'AMQPLAIN',
-            null,
-            'en_US',
-            $options->getReadTimeout(),
-            $options->getWriteTimeout(),
-            null,
-            false,
-            $options->getHeartbeat()
-        );
-    }
+    use EnumSerializableTrait;
+    
+    const AMQP_EXTENSION = 'amqp-extension';
+    const PHP_AMQP_LIB   = 'php-amqplib';
 }

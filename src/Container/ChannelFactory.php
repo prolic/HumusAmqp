@@ -18,44 +18,33 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+namespace Humus\Amqp\Container;
 
-namespace Humus\Amqp\Driver\PhpAmqpLib;
-
-use Humus\Amqp\ConnectionOptions;
-use Traversable;
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
+use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\Exception;
 
 /**
- * Class LazyConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
+ * Class ChannelFactory
+ * @package Humus\Amqp\Container
  */
-final class LazyConnection extends AbstractConnection
+final class ChannelFactory
 {
     /**
-     * LazyConnection constructor.
-     * @param ConnectionOptions|array|Traversable $options
+     * @param Connection $connection
+     * @param Driver $driver
+     * @return Channel
      */
-    public function __construct($options)
+    public function __invoke(Connection $connection, Driver $driver)
     {
-        if (! $options instanceof ConnectionOptions) {
-            $options = new ConnectionOptions($options);
+        switch ($driver) {
+            case Driver::AMQP_EXTENSION():
+                return new \Humus\Amqp\Driver\AmqpExtension\Channel($connection);
+            case Driver::PHP_AMQP_LIB():
+                return new \Humus\Amqp\Driver\PhpAmqpLib\Channel($connection);
+            default:
+                throw new Exception\RuntimeException('Unknown driver');
         }
-
-        $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
-            false,
-            'AMQPLAIN',
-            null,
-            'en_US',
-            $options->getReadTimeout(),
-            $options->getWriteTimeout(),
-            null,
-            false,
-            $options->getHeartbeat()
-        );
     }
 }

@@ -18,44 +18,26 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
-
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Humus\Amqp\ConnectionOptions;
-use Traversable;
+use MabeEnum\Enum;
+use MabeEnum\EnumSerializableTrait;
 
 /**
- * Class LazyConnection
+ * Class ConnectionType
  * @package Humus\Amqp\Driver\PhpAmqpLib
+ * 
+ * @method static ConnectionType LAZY()
+ * @method static ConnectionType SOCKET()
+ * @method static ConnectionType SSL()
+ * @method static ConnectionType STREAM()
  */
-final class LazyConnection extends AbstractConnection
+final class ConnectionType extends Enum
 {
-    /**
-     * LazyConnection constructor.
-     * @param ConnectionOptions|array|Traversable $options
-     */
-    public function __construct($options)
-    {
-        if (! $options instanceof ConnectionOptions) {
-            $options = new ConnectionOptions($options);
-        }
-
-        $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
-            false,
-            'AMQPLAIN',
-            null,
-            'en_US',
-            $options->getReadTimeout(),
-            $options->getWriteTimeout(),
-            null,
-            false,
-            $options->getHeartbeat()
-        );
-    }
+    use EnumSerializableTrait;
+    
+    const LAZY   = 'lazy';
+    const SOCKET = 'socket';
+    const SSL    = 'ssl';
+    const STREAM = 'stream';
 }

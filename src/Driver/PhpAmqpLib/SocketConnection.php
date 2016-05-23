@@ -24,6 +24,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\ConnectionOptions;
 use PhpAmqpLib\Connection\AMQPSocketConnection as BaseAMQPSocketConnection;
+use Traversable;
 
 /**
  * Class SocketConnection
@@ -32,10 +33,15 @@ use PhpAmqpLib\Connection\AMQPSocketConnection as BaseAMQPSocketConnection;
 final class SocketConnection extends AbstractConnection
 {
     /**
-     * @inheritdoc
+     * SocketConnection constructor.
+     * @param ConnectionOptions|array|Traversable $options
      */
-    public function __construct(ConnectionOptions $options)
+    public function __construct($options)
     {
+        if (! $options instanceof ConnectionOptions) {
+            $options = new ConnectionOptions($options);
+        }
+
         $this->connection = new BaseAMQPSocketConnection(
             $options->getHost(),
             $options->getPort(),
