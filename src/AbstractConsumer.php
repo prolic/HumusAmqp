@@ -379,7 +379,10 @@ abstract class AbstractConsumer implements Consumer
             try {
                 list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
 
-                Assertion::float((float) $idleTimeout);
+                if (is_numeric($idleTimeout)) {
+                    $idleTimeout = (float) $idleTimeout;
+                }
+                Assertion::float($idleTimeout);
                 Assertion::min($blockSize, 1);
                 Assertion::min($target, 0);
                 Assertion::min($prefetchSize, 0);

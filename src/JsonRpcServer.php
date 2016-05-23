@@ -22,13 +22,11 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Assert\Assertion;
-
 /**
  * Class JsonRpcServer
  * @package Humus\Amqp
  */
-class JsonRpcServer extends AbstractConsumer
+final class JsonRpcServer extends AbstractConsumer
 {
     /**
      * @var Exchange
@@ -36,7 +34,7 @@ class JsonRpcServer extends AbstractConsumer
     private $exchange;
 
     /**
-     * @var string|null
+     * @var string
      */
     private $appId;
 
@@ -58,18 +56,13 @@ class JsonRpcServer extends AbstractConsumer
     public function __construct(
         Queue $queue,
         Exchange $exchange,
-        $idleTimeout,
-        $consumerTag = null,
-        $appId = null,
-        $returnTrace = false
+        float $idleTimeout,
+        string $consumerTag = null,
+        string $appId = '',
+        bool $returnTrace = false
     ) {
-        Assertion::float($idleTimeout);
-        Assertion::nullOrString($consumerTag);
-        Assertion::nullOrString($appId);
-        Assertion::boolean($returnTrace);
-
         if (null === $consumerTag) {
-            $consumerTag = uniqid('', true);
+            $consumerTag = bin2hex(random_bytes(24));
         }
 
         if (function_exists('pcntl_signal_dispatch')) {
@@ -82,7 +75,7 @@ class JsonRpcServer extends AbstractConsumer
             pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
-        $this->idleTimeout = (float) $idleTimeout;
+        $this->idleTimeout = $idleTimeout;
         $this->queue = $queue;
         $this->exchange = $exchange;
         $this->consumerTag = $consumerTag;
@@ -93,9 +86,9 @@ class JsonRpcServer extends AbstractConsumer
     /**
      * @param Envelope $envelope
      * @param Queue $queue
-     * @return bool|null
+     * @return DeliveryResult
      */
-    public function handleDelivery(Envelope $envelope, Queue $queue)
+    protected function handleDelivery(Envelope $envelope, Queue $queue) : DeliveryResult
     {
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
@@ -104,39 +97,45 @@ class JsonRpcServer extends AbstractConsumer
         $this->ack();
 
         try {
-            $result = parent::handleDelivery($envelope, $queue);
+            $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
 
-            $response = ['success' => true, 'result' => $result];
+            if ($envelope->getAppId() === __NAMESPACE__) {
+                $this->handleInternalMessage($envelope);
+            } else {
+                $callback = $this->deliveryCallback;
+                $result = $callback($envelope, $queue);
+                $response = ['success' => true, 'result' => $result];
+                $this->sendReply($response, $envelope);
+            }
         } catch (\Exception $e) {
             $response = ['success' => false, 'error' => $e->getMessage()];
             if ($this->returnTrace) {
                 $response['trace'] = $e->getTraceAsString();
             }
+            $this->sendReply($response, $envelope);
         }
-        $this->sendReply($response, $envelope->getReplyTo(), $envelope->getCorrelationId());
+
+        return DeliveryResult::MSG_ACK();
     }
 
     /**
      * Send reply to rpc client
      *
      * @param array $response
-     * @param string $replyTo
-     * @param string $correlationId
+     * @param Envelope $envelope
+     * @param Envelope $envelope
      */
-    protected function sendReply(array $response, $replyTo, $correlationId)
+    protected function sendReply(array $response, Envelope $envelope)
     {
         $attributes = [
             'content_type' => 'application/json',
             'content_encoding' => 'UTF-8',
             'delivery_mode' => 2,
-            'correlation_id' => $correlationId,
+            'correlation_id' => $envelope->getCorrelationId(),
+            'app_id' => $this->appId,
         ];
 
-        if (null !== $this->appId) {
-            $attributes['app_id'] = $this->appId;
-        }
-
-        $this->exchange->publish(json_encode($response), $replyTo, Constants::AMQP_NOPARAM, $attributes);
+        $this->exchange->publish(json_encode($response), $envelope->getReplyTo(), Constants::AMQP_NOPARAM, $attributes);
     }
 
     /**

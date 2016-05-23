@@ -22,9 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use AMQPEnvelope;
-use AMQPExchange;
-use AMQPQueue;
 use Assert\Assertion;
 
 /**
@@ -34,14 +31,14 @@ use Assert\Assertion;
 class JsonRpcClient
 {
     /**
-     * @var AMQPQueue
+     * @var Queue
      */
     private $queue;
 
     /**
      * @var int
      */
-    private $requests;
+    private $requests = 0;
 
     /**
      * @var array
@@ -61,7 +58,7 @@ class JsonRpcClient
     private $waitMicros;
 
     /**
-     * @var AMQPExchange[]
+     * @var Exchange[]
      */
     private $exchanges = [];
 
@@ -73,21 +70,26 @@ class JsonRpcClient
     /**
      * Constructor
      *
-     * @param AMQPQueue $queue
+     * @param Queue $queue
+     * @param Exchange[] $exchanges
      * @param int $waitMicros
-     * @param string|null $appId
+     * @param string $appId
      */
-    public function __construct(AMQPQueue $queue, $waitMicros = 1000, $appId = null)
+    public function __construct(Queue $queue, array $exchanges, int $waitMicros = 1000, string $appId = '')
     {
         Assertion::min($waitMicros, 1);
+        Assertion::notEmpty($exchanges, 'No exchanges given');
+
+        foreach ($exchanges as $server => $exchange) {
+            Assertion::string($server, 'Server name must be a string');
+            Assertion::isInstanceOf($exchange, Exchange::class, 'Expected instances of exchanges');
+            $exchange->setName($server);
+        }
 
         $this->queue = $queue;
+        $this->exchanges = $exchanges;
         $this->waitMicros = $waitMicros;
-
-        if (null !== $appId) {
-            Assertion::minLength($appId, 1);
-            $this->appId = $appId;
-        }
+        $this->appId = $appId;
     }
 
     /**
@@ -122,14 +124,15 @@ class JsonRpcClient
      *
      * @return array
      */
-    public function getReplies()
+    public function getReplies() : array
     {
         $now = microtime(1);
         $this->replies = [];
+
         do {
             $message = $this->queue->get(Constants::AMQP_AUTOACK);
 
-            if ($message instanceof AMQPEnvelope) {
+            if ($message instanceof Envelope) {
                 $this->replies[$message->getCorrelationId()] = json_decode($message->getBody());
             } else {
                 usleep($this->waitMicros);
@@ -148,28 +151,23 @@ class JsonRpcClient
     }
 
     /**
-     * @param string $name
-     * @return AMQPExchange
+     * @param string $server
+     * @return Exchange
      */
-    private function getExchange($name)
+    private function getExchange(string $server)
     {
-        if (! isset($this->exchanges[$name])) {
-            $channel = $this->queue->getChannel();
-
-            $exchange = new AMQPExchange($channel);
-            $exchange->setName($name);
-
-            $this->exchanges[$name] = $exchange;
+        if (! isset($this->exchanges[$server])) {
+            throw new Exception\InvalidArgumentException('Invalid server given, no related exchange found.');
         }
 
-        return $this->exchanges[$name];
+        return $this->exchanges[$server];
     }
 
     /**
      * @param RpcClientRequest $request
      * @return array
      */
-    private function createAttributes(RpcClientRequest $request)
+    private function createAttributes(RpcClientRequest $request) : array
     {
         $attributes = [
             'content_type' => 'application/json',
@@ -177,11 +175,8 @@ class JsonRpcClient
             'delivery_mode' => 2,
             'correlation_id' => $request->requestId(),
             'reply_to' => $this->queue->getName(),
-        ];
-
-        if (null !== $this->appId) {
-            $attributes['app_id'] = $this->appId;
-        }
+            'app_id' => $this->appId,
+         ];
 
         if (0 !== $request->expiration()) {
             $attributes['expiration'] = $request->expiration();

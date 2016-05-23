@@ -90,14 +90,14 @@ class RpcClientRequest
      */
     public function __construct(
         $payload,
-        $server,
-        $requestId,
-        $routingKey = null,
-        $expiration = 0,
-        $userId = null,
-        $messageId = null,
-        $timestamp = null,
-        $type = null
+        string $server,
+        string $requestId,
+        string $routingKey = null,
+        int $expiration = 0,
+        string $userId = null,
+        string $messageId = null,
+        string $timestamp = null,
+        string $type = null
     ) {
         if (!is_array($payload) && !is_scalar($payload)) {
             throw new Exception\InvalidArgumentException('$payload must be of type array or scalar');
@@ -105,12 +105,7 @@ class RpcClientRequest
 
         Assertion::minLength($server, 1);
         Assertion::minLength($requestId, 1);
-        Assertion::nullOrString($routingKey);
         Assertion::min($expiration, 0);
-        Assertion::nullOrString($userId);
-        Assertion::nullOrString($messageId);
-        Assertion::nullOrString($timestamp);
-        Assertion::nullOrString($type);
 
         $this->payload = $payload;
         $this->server = $server;
@@ -134,7 +129,7 @@ class RpcClientRequest
     /**
      * @return string
      */
-    public function server()
+    public function server() : string
     {
         return $this->server;
     }
@@ -142,7 +137,7 @@ class RpcClientRequest
     /**
      * @return string
      */
-    public function requestId()
+    public function requestId() : string
     {
         return $this->requestId;
     }
@@ -158,7 +153,7 @@ class RpcClientRequest
     /**
      * @return int
      */
-    public function expiration()
+    public function expiration() : int
     {
         return $this->expiration;
     }
