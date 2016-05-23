@@ -146,7 +146,7 @@ abstract class AbstractConsumer implements Consumer
             } catch (\Exception $e) {
                 $this->logger->error('Exception during handleDelivery: ' . $e->getMessage());
                 $this->handleException($e);
-                $processFlag = false;
+                $processFlag = DeliveryResult::MSG_REJECT_REQUEUE();
             }
 
             $this->handleProcessFlag($envelope, $processFlag);
@@ -189,9 +189,9 @@ abstract class AbstractConsumer implements Consumer
     /**
      * @param Envelope $envelope
      * @param Queue $queue
-     * @return bool|null
+     * @return DeliveryResult
      */
-    protected function handleDelivery(Envelope $envelope, Queue $queue)
+    protected function handleDelivery(Envelope $envelope, Queue $queue) : DeliveryResult
     {
         $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
 
@@ -232,21 +232,21 @@ abstract class AbstractConsumer implements Consumer
      * Messages are deferred until the block size (see prefetch_count) or the timeout is reached
      * The unacked messages will also be flushed immediately when the handleDelivery method returns true
      *
-     * @return bool
+     * @return FlushDeferredResult
      */
-    protected function flushDeferred()
+    protected function flushDeferred() : FlushDeferredResult
     {
         $callback = $this->flushCallback;
 
         if (null === $callback) {
-            return true;
+            return FlushDeferredResult::MSG_ACK();
         }
 
         try {
             $result = $callback($this);
         } catch (\Exception $e) {
             $this->logger->error('Exception during flushDeferred: ' . $e->getMessage());
-            $result = false;
+            $result = FlushDeferredResult::MSG_REJECT();
             $this->handleException($e);
         }
 
@@ -260,26 +260,31 @@ abstract class AbstractConsumer implements Consumer
      * @param $flag
      * @return void
      */
-    protected function handleProcessFlag(Envelope $envelope, $flag)
+    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
     {
         $this->countMessagesConsumed++;
 
-        if ($flag === self::MSG_REJECT || false === $flag) {
-            $this->ackOrNackBlock();
-            $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
-            $this->logger->info('Rejected message', $this->extractMessageInformation($envelope));
-        } elseif ($flag === self::MSG_REJECT_REQUEUE) {
-            $this->ackOrNackBlock();
-            $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
-        } elseif ($flag === self::MSG_ACK || true === $flag) {
-            $this->countMessagesUnacked++;
-            $this->lastDeliveryTag = $envelope->getDeliveryTag();
-            $this->timestampLastMessage = microtime(true);
-            $this->ack();
-        } else { // $flag === self::MSG_DEFER || null === $flag
-            $this->countMessagesUnacked++;
-            $this->lastDeliveryTag = $envelope->getDeliveryTag();
-            $this->timestampLastMessage = microtime(true);
+        switch ($flag) {
+            case DeliveryResult::MSG_REJECT():
+                $this->ackOrNackBlock(); // @todo: remove this?
+                $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
+                $this->logger->info('Rejected message', $this->extractMessageInformation($envelope));
+                break;
+            case DeliveryResult::MSG_REJECT_REQUEUE():
+                $this->ackOrNackBlock();
+                $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
+                break;
+            case DeliveryResult::MSG_ACK():
+                $this->countMessagesUnacked++;
+                $this->lastDeliveryTag = $envelope->getDeliveryTag();
+                $this->timestampLastMessage = microtime(true);
+                $this->ack();
+                break;
+            case DeliveryResult::MSG_DEFER():
+                $this->countMessagesUnacked++;
+                $this->lastDeliveryTag = $envelope->getDeliveryTag();
+                $this->timestampLastMessage = microtime(true);
+                break;
         }
     }
 
@@ -342,24 +347,32 @@ abstract class AbstractConsumer implements Consumer
             return;
         }
 
-        if (true === $this->flushDeferred()) {
-            $this->ack();
-        } else {
-            $this->nackAll();
+        $result = $this->flushDeferred();
+
+        switch ($result) {
+            case FlushDeferredResult::MSG_ACK():
+                $this->ack();
+                break;
+            case FlushDeferredResult::MSG_REJECT():
+                $this->nackAll(false);
+                break;
+            case FlushDeferredResult::MSG_REJECT_REQUEUE():
+                $this->nackAll(true);
+                break;
         }
     }
 
     /**
      * @param Envelope $envelope
-     * @return int
+     * @return DeliveryResult
      */
-    protected function handleInternalMessage(Envelope $envelope)
+    protected function handleInternalMessage(Envelope $envelope) : DeliveryResult
     {
         if ('shutdown' === $envelope->getType()) {
             $this->logger->info('Shutdown message received');
             $this->shutdown();
 
-            return self::MSG_ACK;
+            return DeliveryResult::MSG_ACK();
         }
         if ('reconfigure' === $envelope->getType()) {
             $this->logger->info('Reconfigure message received');
@@ -373,7 +386,7 @@ abstract class AbstractConsumer implements Consumer
                 Assertion::min($prefetchCount, 0);
             } catch (\Exception $e) {
                 $this->logger->error('Exception during reconfiguration: ' . $e->getMessage());
-                return self::MSG_REJECT;
+                return DeliveryResult::MSG_REJECT();
             }
 
             $this->idleTimeout = $idleTimeout;
@@ -381,7 +394,7 @@ abstract class AbstractConsumer implements Consumer
             $this->target = $target;
             $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
 
-            return self::MSG_ACK;
+            return DeliveryResult::MSG_ACK();
         }
     }
 

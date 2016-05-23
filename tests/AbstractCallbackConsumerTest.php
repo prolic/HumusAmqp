@@ -23,9 +23,10 @@ declare (strict_types=1);
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\Consumer;
 use Humus\Amqp\CallbackConsumer;
+use Humus\Amqp\DeliveryResult;
 use Humus\Amqp\Envelope;
+use Humus\Amqp\FlushDeferredResult;
 use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
@@ -142,7 +143,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
-                return Consumer::MSG_ACK;
+                return DeliveryResult::MSG_ACK();
             }
         );
 
@@ -248,7 +249,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
-                return Consumer::MSG_REJECT;
+                return DeliveryResult::MSG_REJECT();
             }
         );
 
@@ -359,9 +360,9 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 $i++;
                 $result[] = $envelope->getBody();
                 if ($i % 2 === 0 && ! $envelope->isRedelivery()) {
-                    return Consumer::MSG_REJECT_REQUEUE;
+                    return DeliveryResult::MSG_REJECT_REQUEUE();
                 } else {
-                    return Consumer::MSG_ACK;
+                    return DeliveryResult::MSG_ACK();
                 }
             }
         );
@@ -405,7 +406,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
-                return Consumer::MSG_DEFER;
+                return DeliveryResult::MSG_DEFER();
             },
             null,
             null,
@@ -490,10 +491,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
-                return Consumer::MSG_DEFER;
+                return DeliveryResult::MSG_DEFER();
             },
             function () use (&$result) {
                 $result[] = 'flushed';
+                return FlushDeferredResult::MSG_REJECT();
             },
             null,
             null,
@@ -612,7 +614,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $loggerResult = $this->logger->loggerResult();
 
-        $this->assertCount(9, $loggerResult);
+        $this->assertCount(6, $loggerResult);
 
         $this->assertEquals('debug', $loggerResult[0]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
@@ -621,31 +623,19 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $this->assertEquals('error', $loggerResult[1]['level']);
         $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[1]['message']);
 
-        $this->assertEquals('info', $loggerResult[2]['level']);
-        $this->assertEquals('Rejected message', $loggerResult[2]['message']);
-        $this->assertEquals('message #1', $loggerResult[2]['context']['body']);
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
+        $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
 
-        $this->assertEquals('debug', $loggerResult[3]['level']);
-        $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
-        $this->assertEquals('message #2', $loggerResult[3]['context']['body']);
+        $this->assertEquals('error', $loggerResult[3]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[3]['message']);
 
-        $this->assertEquals('error', $loggerResult[4]['level']);
-        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[4]['message']);
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[5]['level']);
-        $this->assertEquals('Rejected message', $loggerResult[5]['message']);
-        $this->assertEquals('message #2', $loggerResult[5]['context']['body']);
-
-        $this->assertEquals('debug', $loggerResult[6]['level']);
-        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
-        $this->assertEquals('message #3', $loggerResult[6]['context']['body']);
-
-        $this->assertEquals('error', $loggerResult[7]['level']);
-        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[7]['message']);
-
-        $this->assertEquals('info', $loggerResult[8]['level']);
-        $this->assertEquals('Rejected message', $loggerResult[8]['message']);
-        $this->assertEquals('message #3', $loggerResult[8]['context']['body']);
+        $this->assertEquals('error', $loggerResult[5]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[5]['message']);
     }
 
     /**
@@ -682,6 +672,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+                return DeliveryResult::MSG_DEFER();
             },
             function () {
                 throw new \Exception('foo');
@@ -769,7 +760,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
-                return Consumer::MSG_ACK;
+                return DeliveryResult::MSG_ACK();
             }
         );
 
@@ -875,7 +866,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
-                return Consumer::MSG_ACK;
+                return DeliveryResult::MSG_ACK();
             }
         );
 

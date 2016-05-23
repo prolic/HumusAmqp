@@ -22,16 +22,33 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
+use MabeEnum\Enum;
+use MabeEnum\EnumSerializableTrait;
+
 /**
- * Interface Consumer
+ * Class FlushDeferredResult
  * @package Humus\Amqp
+ *
+ * @method static DeliveryResult MSG_ACK()
+ * @method static DeliveryResult MSG_REJECT()
+ * @method static DeliveryResult MSG_REJECT_REQUEUE()
  */
-interface Consumer
+final class FlushDeferredResult extends Enum
 {
+    use EnumSerializableTrait;
+
     /**
-     * Start consumer
-     *
-     * @param int $msgAmount
+     * Flag for message ack all deferred messages
      */
-    public function consume(int $msgAmount = 0);
+    const MSG_ACK = 0;
+
+    /**
+     * Flag for reject and drop all deferred messages
+     */
+    const MSG_REJECT = 1;
+
+    /**
+     * Flag for reject and requeue all deferred messages
+     */
+    const MSG_REJECT_REQUEUE = 2;
 }

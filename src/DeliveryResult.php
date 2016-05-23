@@ -22,16 +22,39 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
+use MabeEnum\Enum;
+use MabeEnum\EnumSerializableTrait;
+
 /**
- * Interface Consumer
+ * Class DeliveryResult
  * @package Humus\Amqp
+ *
+ * @method static DeliveryResult MSG_ACK()
+ * @method static DeliveryResult MSG_DEFER()
+ * @method static DeliveryResult MSG_REJECT()
+ * @method static DeliveryResult MSG_REJECT_REQUEUE()
  */
-interface Consumer
+final class DeliveryResult extends Enum
 {
+    use EnumSerializableTrait;
+
     /**
-     * Start consumer
-     *
-     * @param int $msgAmount
+     * Flag for message ack
      */
-    public function consume(int $msgAmount = 0);
+    const MSG_ACK = 0;
+
+    /**
+     * Flag for message defer
+     */
+    const MSG_DEFER = 1;
+
+    /**
+     * Flag for reject and drop
+     */
+    const MSG_REJECT = 2;
+
+    /**
+     * Flag for reject and requeue
+     */
+    const MSG_REJECT_REQUEUE = 3;
 }
