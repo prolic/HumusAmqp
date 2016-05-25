@@ -22,12 +22,11 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use AMQPQueue;
-use ArrayAccess;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
+use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
@@ -91,10 +90,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
     /**
      * @param ContainerInterface $container
-     * @return AMQPQueue
+     * @return Queue
      * @throws Exception\InvalidArgumentException
      */
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container) : Queue
     {
         $config = $container->get('config');
         $options = $this->options($config, $this->queueName);
@@ -191,7 +190,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @param array|ArrayAccess
      * @return int
      */
-    public function getFlags($options)
+    private function getFlags($options)
     {
         $flags = 0;
         $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;

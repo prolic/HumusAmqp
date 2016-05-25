@@ -50,56 +50,25 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
     private $connectionName;
 
     /**
-     * Creates a new instance from a specified config, specifically meant to be used as static factory.
-     *
-     * In case you want to use another config key than provided by the factories, you can add the following factory to
-     * your config:
-     *
-     * <code>
-     * <?php
-     * return [
-     *     'your_connection' => [ConnectionFactory::class, 'your_connection'],
-     * ];
-     * </code>
-     *
-     * @param string $name
-     * @param array $arguments
-     * @return mixed
-     * @throws Exception\InvalidArgumentException
-     */
-    public static function __callStatic($name, array $arguments)
-    {
-        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
-            throw new Exception\InvalidArgumentException(
-                sprintf('The first argument must be of type %s', ContainerInterface::class)
-            );
-        }
-        return (new static($name))->__invoke($arguments[0]);
-    }
-
-    /**
      * ConnectionFactory constructor.
      * @param string $connectionName
      */
-    public function __construct($connectionName)
+    public function __construct(string $connectionName)
     {
         $this->connectionName = $connectionName;
     }
 
     /**
      * @param ContainerInterface $container
+     * @param Driver $driver
      * @return Connection
      */
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container, Driver $driver) : Connection
     {
-        if (! $container->has(Driver::class)) {
-            throw new Exception\RuntimeException('No driver factory registered in the container');
-        }
-
         $config = $container->get('config');
         $options = $this->options($config, $this->connectionName);
         
-        switch ($container->get(Driver::class)) {
+        switch ($driver) {
             case Driver::AMQP_EXTENSION():
                 $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection($options);
                 $connection->connect();

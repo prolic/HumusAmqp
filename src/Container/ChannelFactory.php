@@ -36,7 +36,7 @@ final class ChannelFactory
      * @param Driver $driver
      * @return Channel
      */
-    public function __invoke(Connection $connection, Driver $driver)
+    public function __invoke(Connection $connection, Driver $driver) : Channel
     {
         switch ($driver) {
             case Driver::AMQP_EXTENSION():

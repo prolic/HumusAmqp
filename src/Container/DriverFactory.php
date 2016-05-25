@@ -22,7 +22,6 @@ namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Driver\Driver;
 use Interop\Config\ConfigurationTrait;
-use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfig;
 use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
@@ -31,7 +30,7 @@ use Interop\Container\ContainerInterface;
  * Class DriverFactory
  * @package Humus\Amqp\Container
  */
-final class DriverFactory implements ProvidesDefaultOptions, RequiresConfig, RequiresMandatoryOptions
+final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
@@ -53,16 +52,6 @@ final class DriverFactory implements ProvidesDefaultOptions, RequiresConfig, Req
     public function dimensions()
     {
         return ['humus', 'amqp'];
-    }
-
-    /**
-     * @return array
-     */
-    public function defaultOptions()
-    {
-        return [
-            'driver' => 'amqp-extension'
-        ];
     }
 
     /**
