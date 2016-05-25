@@ -33,7 +33,7 @@ use MabeEnum\EnumSerializableTrait;
 final class Driver extends Enum
 {
     use EnumSerializableTrait;
-    
+
     const AMQP_EXTENSION = 'amqp-extension';
     const PHP_AMQP_LIB   = 'php-amqplib';
 }

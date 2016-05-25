@@ -42,7 +42,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
     {
         $config = $container->get('config');
         $options = $this->options($config);
-        
+
         return Driver::get($options['driver']);
     }
 

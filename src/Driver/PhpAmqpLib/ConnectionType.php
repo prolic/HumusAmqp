@@ -35,7 +35,7 @@ use MabeEnum\EnumSerializableTrait;
 final class ConnectionType extends Enum
 {
     use EnumSerializableTrait;
-    
+
     const LAZY   = 'lazy';
     const SOCKET = 'socket';
     const SSL    = 'ssl';
