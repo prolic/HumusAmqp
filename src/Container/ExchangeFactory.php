@@ -22,22 +22,34 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use AMQPChannel;
-use AMQPExchange;
+use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
+use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
+use Interop\Config\ConfigurationTrait;
+use Interop\Config\ProvidesDefaultOptions;
+use Interop\Config\RequiresConfigId;
+use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
 
 /**
  * Class ExchangeFactory
  * @package Humus\Amqp\Container
  */
-final class ExchangeFactory extends AbstractFactory
+final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
+    use ConfigurationTrait;
+
     /**
-     * @var AMQPChannel
+     * @var Channel
      */
     private $channel;
+
+    /**
+     * @var Driver
+     */
+    private $driver;
 
     /**
      * @var string
@@ -56,14 +68,21 @@ final class ExchangeFactory extends AbstractFactory
 
     /**
      * QueueFactory constructor.
-     * @param AMQPChannel $channel
+     * @param Channel $channel
+     * @param Driver $driver
      * @param string $exchangeName
      * @param string $connectionName
      * @param bool $autoSetupFabric
      */
-    public function __construct(AMQPChannel $channel, $exchangeName, $connectionName, $autoSetupFabric)
-    {
+    public function __construct(
+        Channel $channel,
+        Driver $driver,
+        string $exchangeName,
+        string $connectionName,
+        bool $autoSetupFabric
+    ) {
         $this->channel = $channel;
+        $this->driver = $driver;
         $this->exchangeName = $exchangeName;
         $this->connectionName = $connectionName;
         $this->autoSetupFabric = $autoSetupFabric;
@@ -71,13 +90,13 @@ final class ExchangeFactory extends AbstractFactory
 
     /**
      * @param ContainerInterface $container
-     * @return AMQPExchange
+     * @return Exchange
      * @throws Exception\InvalidArgumentException
      */
     public function __invoke(ContainerInterface $container)
     {
         $config = $container->get('config');
-        $options = $this->options($config);
+        $options = $this->options($config, $this->exchangeName);
 
         if ($options['connection'] !== $this->connectionName) {
             throw new Exception\InvalidArgumentException(
@@ -88,7 +107,16 @@ final class ExchangeFactory extends AbstractFactory
             );
         }
 
-        $exchange = new AMQPExchange($this->channel);
+        switch ($this->driver) {
+            case Driver::AMQP_EXTENSION():
+                $exchange = new \Humus\Amqp\Driver\AmqpExtension\Exchange($this->channel);
+                break;
+            case Driver::PHP_AMQP_LIB():
+                $exchange = new \Humus\Amqp\Driver\PhpAmqpLib\Exchange($this->channel);
+                break;
+            default:
+                throw new Exception\RuntimeException('Unknown driver');
+        }
 
         $exchange->setArguments($options['arguments']);
         $exchange->setName($options['name']);
@@ -111,19 +139,11 @@ final class ExchangeFactory extends AbstractFactory
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function componentName()
+    public function dimensions()
     {
-        return 'exchange';
-    }
-
-    /**
-     * @return string
-     */
-    public function elementName()
-    {
-        return $this->exchangeName;
+        return ['humus', 'amqp', 'exchange'];
     }
 
     /**

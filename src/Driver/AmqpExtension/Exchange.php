@@ -47,13 +47,12 @@ final class Exchange implements AmqpExchangeInterface
      * Returns a new instance of an AMQPExchange object, associated with the
      * given Channel object.
      *
-     * @param Channel $amqpChannel A valid Channel object, connected
-     *                                 to a broker.
+     * @param Channel $channel A valid Channel object, connected to a broker.
      */
-    public function __construct(Channel $amqpChannel)
+    public function __construct(Channel $channel)
     {
-        $this->channel = $amqpChannel;
-        $this->exchange = new \AMQPExchange($amqpChannel->getResource());
+        $this->channel = $channel;
+        $this->exchange = new \AMQPExchange($channel->getResource());
     }
 
     /**

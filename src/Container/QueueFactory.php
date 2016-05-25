@@ -75,8 +75,13 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @param string $connectionName
      * @param bool $autoSetupFabric
      */
-    public function __construct(Channel $channel, Driver $driver, $queueName, $connectionName, $autoSetupFabric)
-    {
+    public function __construct(
+        Channel $channel, 
+        Driver $driver, 
+        string $queueName, 
+        string $connectionName, 
+        bool $autoSetupFabric
+    ) {
         $this->channel = $channel;
         $this->driver = $driver;
         $this->queueName = $queueName;
