@@ -68,4 +68,9 @@ interface Connection
      * @return mixed
      */
     public function getResource();
+
+    /**
+     * @return Channel
+     */
+    public function newChannel() : Channel;
 }

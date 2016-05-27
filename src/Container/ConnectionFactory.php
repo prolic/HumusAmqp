@@ -60,11 +60,15 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
 
     /**
      * @param ContainerInterface $container
-     * @param Driver $driver
      * @return Connection
      */
-    public function __invoke(ContainerInterface $container, Driver $driver) : Connection
+    public function __invoke(ContainerInterface $container) : Connection
     {
+        if (! $container->has(Driver::class)) {
+            throw new Exception\RuntimeException('No driver factory registered in container');
+        }
+
+        $driver = $container->get(Driver::class);
         $config = $container->get('config');
         $options = $this->options($config, $this->connectionName);
         

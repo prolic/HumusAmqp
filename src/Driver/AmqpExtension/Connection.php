@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
+use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\ConnectionOptions;
 use Traversable;
@@ -48,15 +49,11 @@ final class Connection implements ConnectionInterface
      */
     public function __construct($options)
     {
-        if ($options instanceof ConnectionOptions) {
-            $this->isPersistent = $options->getPersistent();
-            $options = $options->toArray();
+        if (! $options instanceof ConnectionOptions) {
+            $options = new ConnectionOptions($options);
         }
-
-        if ($options instanceof \Traversable) {
-            $options = iterator_to_array($options);
-        }
-
+        
+        $this->isPersistent = $options->getPersistent();
         $this->connection = new \AMQPConnection($options);
     }
 
@@ -110,5 +107,13 @@ final class Connection implements ConnectionInterface
         } else {
             return $this->connection->reconnect();
         }
+    }
+
+    /**
+     * @return ChannelInterface
+     */
+    public function newChannel() : ChannelInterface
+    {
+        return new Channel($this);
     }
 }
