@@ -195,7 +195,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     private function fetchCallback(ContainerInterface $container, string $callbackName = null, bool $allowNull)
     {
         if (null === $callbackName && $allowNull) {
-            return null;
+            return;
         }
 
         if (! $container->has($callbackName)) {

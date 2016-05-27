@@ -99,7 +99,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
         $driver = $container->get(Driver::class);
         $config = $container->get('config');
         $options = $this->options($config, $this->connectionName);
-        
+
         switch ($driver) {
             case Driver::AMQP_EXTENSION():
                 $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection($options);

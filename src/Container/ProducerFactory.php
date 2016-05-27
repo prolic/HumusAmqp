@@ -179,5 +179,4 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
         return $exchange;
     }
-
 }

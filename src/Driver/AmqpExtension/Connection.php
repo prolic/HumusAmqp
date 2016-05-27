@@ -52,7 +52,7 @@ final class Connection implements ConnectionInterface
         if (! $options instanceof ConnectionOptions) {
             $options = new ConnectionOptions($options);
         }
-        
+
         $this->isPersistent = $options->getPersistent();
         $this->connection = new \AMQPConnection($options);
     }
