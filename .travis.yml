@@ -9,6 +9,7 @@ services:
   - rabbitmq
 
 before_script:
+  - phpenv config-rm xdebug.ini
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - git clone https://github.com/pdezwart/php-amqp.git
   - cd php-amqp
@@ -22,7 +23,7 @@ before_script:
   - composer update
   - sudo rabbitmqctl add_vhost /humus-amqp-test
   - sudo rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
-  - echo patching php-amqplib, see: https://github.com/php-amqplib/php-amqplib/pull/399
+  # patching php-amqplib, see: https://github.com/php-amqplib/php-amqplib/pull/399
   - sed -i '/$message = $this->get_and_unset_message($delivery_tag);/a \ \ \ \ \ \ \ \ \ \ \ \ $message->delivery_info['delivery_tag'] = $delivery_tag;' vendor/php-amqplib/php-amqplib/PhpAmqpLib/Channel/AMQPChannel.php
 
 script:
