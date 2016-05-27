@@ -22,30 +22,29 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use Humus\Amqp\Driver\Driver;
-use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
-use Humus\Amqp\JsonProducer;
-use Humus\Amqp\PlainProducer;
-use Humus\Amqp\Producer;
+use Humus\Amqp\JsonRpcClient;
+use Humus\Amqp\Exception;
+use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
+use Traversable;
 
 /**
- * Class ProducerFactory
+ * Class JsonRpcClientFactory
  * @package Humus\Amqp\Container
  */
-final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
+final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
     /**
      * @var string
      */
-    private $producerName;
+    private $clientName;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -56,16 +55,16 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * <code>
      * <?php
      * return [
-     *     'your_producer' => [ProducerFactory::class, 'your_producer_name'],
+     *     'your_rpc_client' => [JsonRpcClientFactory::class, 'your_rpc_client_name'],
      * ];
      * </code>
      *
      * @param string $name
      * @param array $arguments
-     * @return Producer
+     * @return JsonRpcClient
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : Producer
+    public static function __callStatic(string $name, array $arguments) : JsonRpcClient
     {
         if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -76,55 +75,46 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     }
 
     /**
-     * @param string $producerName
+     * JsonRpcClientFactory constructor.
+     * @param string $clientName
      */
-    public function __construct(string $producerName)
+    public function __construct(string $clientName)
     {
-        $this->producerName = $producerName;
+        $this->clientName = $clientName;
     }
 
     /**
      * @param ContainerInterface $container
-     * @return Producer
+     * @return JsonRpcClient
      */
-    public function __invoke(ContainerInterface $container) : Producer
+    public function __invoke(ContainerInterface $container) : JsonRpcClient
     {
-        if (! $container->has(Driver::class)) {
-            throw new Exception\RuntimeException('No driver factory registered in container');
-        }
-
         $config = $container->get('config');
-        $options = $this->options($config, $this->producerName);
+        $options = $this->options($config, $this->clientName);
 
-        $exchange = $this->fetchExchange($container, $options['exchange']);
+        $queue = $this->fetchQueue($container, $options['queue']);
 
-        switch ($options['type']) {
-            case 'json':
-            case JsonProducer::class:
-                $producer = new JsonProducer($exchange, $options['attributes']);
-                break;
-            case 'plain':
-            case PlainProducer::class:
-                $producer = new PlainProducer($exchange, $options['attributes']);
-                break;
-            default:
-                throw new Exception\InvalidArgumentException(
-                    sprintf(
-                        'Unknown producer type %s requested',
-                        $options['type']
-                ));
+        if (! is_array($options['exchanges']) || ! $options['exchanges'] instanceof Traversable) {
+            throw new Exception\InvalidArgumentException(
+                'Option "exchange" must be an array or an instance of Traversable'
+            );
         }
 
-        return $producer;
-    }
+        $exchanges = [];
 
+        foreach ($options['exchanges'] as $exchange) {
+            $exchange[] = $this->fetchExchange($container, $exchange);
+        }
+
+        return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id']);
+    }
 
     /**
      * @return array
      */
     public function dimensions()
     {
-        return ['humus', 'amqp', 'producer'];
+        return ['humus', 'amqp', 'rpc_client'];
     }
 
     /**
@@ -133,9 +123,8 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     public function defaultOptions()
     {
         return [
-            'attributes' => null,
-            // factory configs
-            'auto_setup_fabric' => false,
+            'wait_micros' => 1000,
+            'app_id' => ''
         ];
     }
 
@@ -145,12 +134,38 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     public function mandatoryOptions()
     {
         return [
-            'exchange',
-            'type',
-            'attributes',
-            // factory configs
-            'auto_setup_fabric'
+            'queue',
+            'exchanges',
+            'wait_micros',
+            'app_id'
         ];
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param string $queueName
+     * @return Queue
+     */
+    private function fetchQueue(ContainerInterface $container, string $queueName) : Queue
+    {
+        if (! $container->has($queueName)) {
+            throw new Exception\RuntimeException(sprintf(
+                'Queue %s not registered in container',
+                $queueName
+            ));
+        }
+
+        $queue = $container->get($queueName);
+
+        if (! $queue instanceof Queue) {
+            throw new Exception\RuntimeException(sprintf(
+                'Queue %s is not an instance of %s',
+                $queueName,
+                Queue::class
+            ));
+        }
+
+        return $queue;
     }
 
     /**
@@ -179,5 +194,4 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
         return $exchange;
     }
-
 }

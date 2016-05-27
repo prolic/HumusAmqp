@@ -42,13 +42,55 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     use ConfigurationTrait;
 
     /**
+     * @var string
+     */
+    private $consumerName;
+
+    /**
+     * Creates a new instance from a specified config, specifically meant to be used as static factory.
+     *
+     * In case you want to use another config key than provided by the factories, you can add the following factory to
+     * your config:
+     *
+     * <code>
+     * <?php
+     * return [
+     *     'your_consumer' => [ConsumerFactory::class, 'your_consumer_name'],
+     * ];
+     * </code>
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return CallbackConsumer
+     * @throws Exception\InvalidArgumentException
+     */
+    public static function __callStatic(string $name, array $arguments) : CallbackConsumer
+    {
+        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
+            throw new Exception\InvalidArgumentException(
+                sprintf('The first argument must be of type %s', ContainerInterface::class)
+            );
+        }
+        return (new static($name))->__invoke($arguments[0]);
+    }
+
+    /**
+     * CallbackConsumerFactory constructor.
+     * @param string $consumerName
+     */
+    public function __construct(string $consumerName)
+    {
+        $this->consumerName = $consumerName;
+    }
+
+    /**
      * @param ContainerInterface $container
      * @return CallbackConsumer
      */
     public function __invoke(ContainerInterface $container)
     {
         $config = $container->get('config');
-        $options = $this->options($config);
+        $options = $this->options($config, $this->consumerName);
 
         $queue = $this->fetchQueue($container, $options['queue']);
 
