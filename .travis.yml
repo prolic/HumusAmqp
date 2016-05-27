@@ -18,7 +18,6 @@ before_script:
   - make
   - sudo make install
   - cd ..
-  - phpenv config-rm xdebug.ini
   - composer self-update
   - composer update
   - sudo rabbitmqctl add_vhost /humus-amqp-test
