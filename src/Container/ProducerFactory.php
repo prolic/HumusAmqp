@@ -22,7 +22,9 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
+use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\PlainProducer;
 use Humus\Amqp\Producer;
@@ -87,21 +89,14 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      */
     public function __invoke(ContainerInterface $container) : Producer
     {
+        if (! $container->has(Driver::class)) {
+            throw new Exception\RuntimeException('No driver factory registered in container');
+        }
+
         $config = $container->get('config');
         $options = $this->options($config, $this->producerName);
 
-        $driverFactory = new DriverFactory();
-        $driver = $driverFactory($container);
-        
-        $connectionName = $options['connection'];
-        $connectionFactory = new ConnectionFactory($connectionName);
-        $connection = $connectionFactory($container, $driver);
-
-        $channelFactory = new ChannelFactory();
-        $channel = $channelFactory($connection, $driver);
-
-        $exchangeFactory = new ExchangeFactory($channel, $driver, $options['exchange'], $connectionName, $options['auto_setup_fabric']);
-        $exchange = $exchangeFactory($container);
+        $exchange = $this->fetchExchange($container, $options['exchange']);
 
         switch ($options['type']) {
             case 'json':
@@ -138,9 +133,9 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     public function defaultOptions()
     {
         return [
-            'connection' => 'default',
-            'auto_setup_fabric' => false,
             'attributes' => null,
+            // factory configs
+            'auto_setup_fabric' => false,
         ];
     }
 
@@ -150,11 +145,38 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     public function mandatoryOptions()
     {
         return [
-            'connection',
             'exchange',
             'type',
-            'auto_setup_fabric',
             'attributes',
+            // factory configs
+            'auto_setup_fabric'
         ];
     }
+    /**
+     * @param ContainerInterface $container
+     * @param string $exchangeName
+     * @return Exchange
+     */
+    private function fetchExchange(ContainerInterface $container, string $exchangeName) : Exchange
+    {
+        if (! $container->has($exchangeName)) {
+            throw new Exception\RuntimeException(sprintf(
+                'Exchange %s not registered in container',
+                $exchangeName
+            ));
+        }
+
+        $exchange = $container->get($exchangeName);
+
+        if (! $exchange instanceof Exchange) {
+            throw new Exception\RuntimeException(sprintf(
+                'Exchange %s is not an instance of %s',
+                $exchangeName,
+                Exchange::class
+            ));
+        }
+
+        return $exchange;
+    }
+
 }
