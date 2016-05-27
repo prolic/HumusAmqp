@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
@@ -42,50 +42,45 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     use ConfigurationTrait;
 
     /**
-     * @var Channel
-     */
-    private $channel;
-
-    /**
-     * @var Driver
-     */
-    private $driver;
-
-    /**
      * @var string
      */
     private $queueName;
 
     /**
-     * @var string
+     * Creates a new instance from a specified config, specifically meant to be used as static factory.
+     *
+     * In case you want to use another config key than provided by the factories, you can add the following factory to
+     * your config:
+     *
+     * <code>
+     * <?php
+     * return [
+     *     'your_queue' => [QueueFactory::class, 'your_queue_name'],
+     * ];
+     * </code>
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return Queue
+     * @throws Exception\InvalidArgumentException
      */
-    private $connectionName;
-
-    /**
-     * @var bool
-     */
-    private $autoSetupFabric;
+    public static function __callStatic(string $name, array $arguments) : Queue
+    {
+        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
+            throw new Exception\InvalidArgumentException(
+                sprintf('The first argument must be of type %s', ContainerInterface::class)
+            );
+        }
+        return (new static($name))->__invoke($arguments[0]);
+    }
 
     /**
      * QueueFactory constructor.
-     * @param Channel $channel
-     * @param Driver $driver
      * @param string $queueName
-     * @param string $connectionName
-     * @param bool $autoSetupFabric
      */
-    public function __construct(
-        Channel $channel, 
-        Driver $driver, 
-        string $queueName, 
-        string $connectionName, 
-        bool $autoSetupFabric
-    ) {
-        $this->channel = $channel;
-        $this->driver = $driver;
+    public function __construct(string $queueName)
+    {
         $this->queueName = $queueName;
-        $this->connectionName = $connectionName;
-        $this->autoSetupFabric = $autoSetupFabric;
     }
 
     /**
@@ -95,24 +90,22 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      */
     public function __invoke(ContainerInterface $container) : Queue
     {
+        if (! $container->has(Driver::class)) {
+            throw new Exception\RuntimeException('No driver factory registered in container');
+        }
+
+        $driver = $container->get(Driver::class);
         $config = $container->get('config');
         $options = $this->options($config, $this->queueName);
 
-        if ($options['connection'] !== $this->connectionName) {
-            throw new Exception\InvalidArgumentException(
-                sprintf('The queue\'s connection %s does not match the provided connection %s',
-                    $options['connection'],
-                    $this->connectionName
-                )
-            );
-        }
+        $connection = $this->fetchConnection($container, $options['connection']);
 
-        switch ($this->driver) {
+        switch ($driver) {
             case Driver::AMQP_EXTENSION():
-                $queue = new \Humus\Amqp\Driver\AmqpExtension\Queue($this->channel);
+                $queue = new \Humus\Amqp\Driver\AmqpExtension\Queue($connection->newChannel());
                 break;
             case Driver::PHP_AMQP_LIB():
-                $queue = new \Humus\Amqp\Driver\PhpAmqpLib\Queue($this->channel);
+                $queue = new \Humus\Amqp\Driver\PhpAmqpLib\Queue($connection->newChannel());
                 break;
             default:
                 throw new Exception\RuntimeException('Unknown driver');
@@ -125,7 +118,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $queue->setFlags($this->getFlags($options));
         $queue->setArguments($options['arguments']);
 
-        if ($this->autoSetupFabric) {
+        if ($options['auto_setup_fabric']) {
             $queue->declareQueue();
 
             $routingKeys = $options['routing_keys'];
@@ -155,7 +148,6 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     public function defaultOptions()
     {
         return [
-            'connection' => 'default',
             'name' => null,
             'passive' => false,
             'durable' => true,
@@ -164,6 +156,8 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             'arguments' => [],
             'routing_keys' => [],
             'bind_arguments' => [],
+            // factory configs
+            'auto_setup_fabric' => false
         ];
     }
 
@@ -183,6 +177,8 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             'arguments',
             'routing_keys',
             'bind_arguments',
+            // factory configs
+            'auto_setup_fabric'
         ];
     }
 
@@ -199,5 +195,32 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0;
 
         return $flags;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param string $connectionName
+     * @return Connection
+     */
+    private function fetchConnection(ContainerInterface $container, string $connectionName) : Connection
+    {
+        if (! $container->has($connectionName)) {
+            throw new Exception\RuntimeException(sprintf(
+                'Connection %s not registered in container',
+                $connectionName
+            ));
+        }
+
+        $connection = $container->get($connectionName);
+
+        if (! $connection instanceof Connection) {
+            throw new Exception\RuntimeException(sprintf(
+                'Connection %s is not an instance of %s',
+                $connectionName,
+                Connection::class
+            ));
+        }
+
+        return $connection;
     }
 }

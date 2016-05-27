@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Driver\Driver;
@@ -56,7 +55,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * <code>
      * <?php
      * return [
-     *     'your_exchange' => [ConnectionFactory::class, 'your_exchange_name'],
+     *     'your_exchange' => [ExchangeFactory::class, 'your_exchange_name'],
      * ];
      * </code>
      *
@@ -133,33 +132,6 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     }
 
     /**
-     * @param ContainerInterface $container
-     * @param string $connectionName
-     * @return Connection
-     */
-    private function fetchConnection(ContainerInterface $container, string $connectionName) : Connection
-    {
-        if (! $container->has($connectionName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Connection %s not registered in container',
-                $connectionName
-            ));
-        }
-
-        $connection = $container->get($connectionName);
-
-        if (! $connection instanceof Connection) {
-            throw new Exception\RuntimeException(sprintf(
-                'Connection %s is not an instance of %s',
-                $connectionName,
-                Connection::class
-            ));
-        }
-
-        return $connection;
-    }
-
-    /**
      * @return array
      */
     public function dimensions()
@@ -218,5 +190,32 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0; // RabbitMQ Extension
 
         return $flags;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param string $connectionName
+     * @return Connection
+     */
+    private function fetchConnection(ContainerInterface $container, string $connectionName) : Connection
+    {
+        if (! $container->has($connectionName)) {
+            throw new Exception\RuntimeException(sprintf(
+                'Connection %s not registered in container',
+                $connectionName
+            ));
+        }
+
+        $connection = $container->get($connectionName);
+
+        if (! $connection instanceof Connection) {
+            throw new Exception\RuntimeException(sprintf(
+                'Connection %s is not an instance of %s',
+                $connectionName,
+                Connection::class
+            ));
+        }
+
+        return $connection;
     }
 }
