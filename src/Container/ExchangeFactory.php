@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
@@ -42,50 +43,45 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     use ConfigurationTrait;
 
     /**
-     * @var Channel
-     */
-    private $channel;
-
-    /**
-     * @var Driver
-     */
-    private $driver;
-
-    /**
      * @var string
      */
     private $exchangeName;
 
     /**
-     * @var string
+     * Creates a new instance from a specified config, specifically meant to be used as static factory.
+     *
+     * In case you want to use another config key than provided by the factories, you can add the following factory to
+     * your config:
+     *
+     * <code>
+     * <?php
+     * return [
+     *     'your_exchange' => [ConnectionFactory::class, 'your_exchange_name'],
+     * ];
+     * </code>
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return Exchange
+     * @throws Exception\InvalidArgumentException
      */
-    private $connectionName;
-
-    /**
-     * @var bool
-     */
-    private $autoSetupFabric;
+    public static function __callStatic(string $name, array $arguments) : Exchange
+    {
+        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
+            throw new Exception\InvalidArgumentException(
+                sprintf('The first argument must be of type %s', ContainerInterface::class)
+            );
+        }
+        return (new static($name))->__invoke($arguments[0]);
+    }
 
     /**
      * QueueFactory constructor.
-     * @param Channel $channel
-     * @param Driver $driver
      * @param string $exchangeName
-     * @param string $connectionName
-     * @param bool $autoSetupFabric
      */
-    public function __construct(
-        Channel $channel,
-        Driver $driver,
-        string $exchangeName,
-        string $connectionName,
-        bool $autoSetupFabric
-    ) {
-        $this->channel = $channel;
-        $this->driver = $driver;
+    public function __construct(string $exchangeName)
+    {
         $this->exchangeName = $exchangeName;
-        $this->connectionName = $connectionName;
-        $this->autoSetupFabric = $autoSetupFabric;
     }
 
     /**
@@ -93,26 +89,24 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @return Exchange
      * @throws Exception\InvalidArgumentException
      */
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container) : Exchange
     {
+        if (! $container->has(Driver::class)) {
+            throw new Exception\RuntimeException('No driver factory registered in container');
+        }
+
+        $driver = $container->get(Driver::class);
         $config = $container->get('config');
         $options = $this->options($config, $this->exchangeName);
 
-        if ($options['connection'] !== $this->connectionName) {
-            throw new Exception\InvalidArgumentException(
-                sprintf('The exchange\'s connection %s does not match the provided connection %s',
-                    $options['connection'],
-                    $this->connectionName
-                )
-            );
-        }
+        $connection = $this->fetchConnection($container, $options['connection']);
 
-        switch ($this->driver) {
+        switch ($driver) {
             case Driver::AMQP_EXTENSION():
-                $exchange = new \Humus\Amqp\Driver\AmqpExtension\Exchange($this->channel);
+                $exchange = new \Humus\Amqp\Driver\AmqpExtension\Exchange($connection->newChannel());
                 break;
             case Driver::PHP_AMQP_LIB():
-                $exchange = new \Humus\Amqp\Driver\PhpAmqpLib\Exchange($this->channel);
+                $exchange = new \Humus\Amqp\Driver\PhpAmqpLib\Exchange($connection->newChannel());
                 break;
             default:
                 throw new Exception\RuntimeException('Unknown driver');
@@ -123,7 +117,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $exchange->setFlags($this->getFlags($options));
         $exchange->setType($options['type']);
 
-        if ($this->autoSetupFabric) {
+        if ($options['auto_setup_fabric']) {
             $exchange->declareExchange();
 
             $flags = $this->getFlags($options);
@@ -136,6 +130,33 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         }
 
         return $exchange;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param string $connectionName
+     * @return Connection
+     */
+    private function fetchConnection(ContainerInterface $container, string $connectionName) : Connection
+    {
+        if (! $container->has($connectionName)) {
+            throw new Exception\RuntimeException(sprintf(
+                'Connection %s not registered in container',
+                $connectionName
+            ));
+        }
+
+        $connection = $container->get($connectionName);
+
+        if (! $connection instanceof Connection) {
+            throw new Exception\RuntimeException(sprintf(
+                'Connection %s is not an instance of %s',
+                $connectionName,
+                Connection::class
+            ));
+        }
+
+        return $connection;
     }
 
     /**
@@ -155,13 +176,14 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             'arguments' => [
                 'internal' => false // RabbitMQ Extension
             ],
-            'connection' => 'default',
             'auto_delete' => false, // RabbitMQ Extension
             'exchange_bindings' => [], // RabbitMQ Extension
             'passive' => false,
             'durable' => true,
             'name' => '',
             'type' => 'direct',
+            // factory configs
+            'auto_setup_fabric' => false,
         ];
     }
 
@@ -172,13 +194,15 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     {
         return [
             'arguments',
-            'connection',
             'auto_delete', // RabbitMQ Extension
             'exchange_bindings', // RabbitMQ Extension
             'passive',
             'durable',
             'name',
             'type',
+            // factory configs
+            'connection',
+            'auto_setup_fabric',
         ];
     }
 
