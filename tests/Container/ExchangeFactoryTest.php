@@ -51,6 +51,11 @@ class ExchangeFactoryTest extends TestCase
         $container->get('config')->willReturn([
             'humus' => [
                 'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                        ],
+                    ],
                     'exchange' => [
                         'my_exchange' => [
                             'connection' => 'my_connection',
@@ -60,7 +65,7 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->get('my_connection')->willReturn($connection)->shouldBeCalled();
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
         $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
@@ -86,6 +91,11 @@ class ExchangeFactoryTest extends TestCase
         $container->get('config')->willReturn([
             'humus' => [
                 'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                        ],
+                    ],
                     'exchange' => [
                         'my_exchange' => [
                             'connection' => 'my_connection',
@@ -95,7 +105,7 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->get('my_connection')->willReturn($connection)->shouldBeCalled();
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
         $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
 
         $exchangeName = 'my_exchange';
@@ -131,9 +141,6 @@ class ExchangeFactoryTest extends TestCase
                 ]
             ]
         ])->shouldBeCalled();
-
-        $container->get('my_connection')->willReturn($connection)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
 
         $exchangeName = 'my_exchange';
         $exchange = ExchangeFactory::$exchangeName($container->reveal(), $channel);

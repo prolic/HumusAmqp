@@ -24,6 +24,8 @@ namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\Exchange as ExchangeInterface;
+use Humus\Amqp\Queue as QueueInterface;
 
 /**
  * Class Channel
@@ -206,5 +208,21 @@ final class Channel implements ChannelInterface
     public function waitForBasicReturn(float $timeout = 0.0)
     {
         $this->channel->waitForBasicReturn($timeout);
+    }
+
+    /**
+     * @return ExchangeInterface
+     */
+    public function newExchange() : ExchangeInterface
+    {
+        return new Exchange($this);
+    }
+
+    /**
+     * @return QueueInterface
+     */
+    public function newQueue() : QueueInterface
+    {
+        return new Queue($this);
     }
 }

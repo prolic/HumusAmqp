@@ -108,19 +108,12 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     {
         $options = $this->options($container->get('config'), $this->queueName);
 
-        $connection = $container->get($options['connection']);
-        $channel = $this->channel ? $this->channel : $connection->newChannel();
-
-        switch ($container->get(Driver::class)) {
-            case Driver::AMQP_EXTENSION():
-                $queue = new \Humus\Amqp\Driver\AmqpExtension\Queue($channel);
-                break;
-            case Driver::PHP_AMQP_LIB():
-                $queue = new \Humus\Amqp\Driver\PhpAmqpLib\Queue($channel);
-                break;
-            default:
-                throw new Exception\RuntimeException('Unknown driver');
+        if (null === $this->channel) {
+            $connection = ConnectionFactory::$options['connection']($container);
+            $this->channel = $connection->newChannel();
         }
+        
+        $queue = $this->channel->newQueue();
 
         if (null !== $options['name']) {
             $queue->setName($options['name']);

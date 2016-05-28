@@ -89,7 +89,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     {
         $options = $this->options($container->get('config'), $this->serverName);
 
-        $queue = $container->get($options['queue']);
+        $queue = QueueFactory::$options['queue']($container);
         $channel = $queue->getChannel();
 
         $exchange = ExchangeFactory::$options['exchange']($container, $channel);

@@ -108,18 +108,14 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     {
         $options = $this->options($container->get('config'), $this->exchangeName);
 
-        $connection = $container->get($options['connection']);
-        $channel = $this->channel ? $this->channel : $connection->newChannel();
-
-        switch ($container->get(Driver::class)) {
-            case Driver::AMQP_EXTENSION():
-                $exchange = new \Humus\Amqp\Driver\AmqpExtension\Exchange($channel);
-                break;
-            case Driver::PHP_AMQP_LIB():
-                $exchange = new \Humus\Amqp\Driver\PhpAmqpLib\Exchange($channel);
-                break;
+        if (null === $this->channel) {
+            $connectionName = $options['connection'];
+            $connection = ConnectionFactory::$connectionName($container);
+            $this->channel = $connection->newChannel();
         }
 
+        $exchange = $this->channel->newExchange();
+        
         $exchange->setArguments($options['arguments']);
         $exchange->setName($options['name']);
         $exchange->setFlags($this->getFlags($options));

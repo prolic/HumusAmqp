@@ -25,6 +25,8 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Exception\BadMethodCallException;
+use Humus\Amqp\Exchange as ExchangeInterface;
+use Humus\Amqp\Queue as QueueInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -225,5 +227,21 @@ final class Channel implements ChannelInterface
     public function waitForBasicReturn(float $timeout = 0.0)
     {
         $this->channel->wait(null, false, $timeout);
+    }
+
+    /**
+     * @return ExchangeInterface
+     */
+    public function newExchange() : ExchangeInterface
+    {
+        return new Exchange($this);
+    }
+
+    /**
+     * @return QueueInterface
+     */
+    public function newQueue() : QueueInterface
+    {
+        return new Queue($this);
     }
 }

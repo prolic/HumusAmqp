@@ -217,4 +217,14 @@ interface Channel
      * @param float $timeout Timeout in seconds. May be fractional.
      */
     public function waitForBasicReturn(float $timeout = 0.0);
+
+    /**
+     * @return Exchange
+     */
+    public function newExchange() : Exchange;
+
+    /**
+     * @return Queue
+     */
+    public function newQueue() : Queue;
 }

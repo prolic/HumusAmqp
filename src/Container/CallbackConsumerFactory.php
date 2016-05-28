@@ -90,7 +90,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     {
         $options = $this->options($container->get('config'), $this->consumerName);
 
-        $queue = $container->get($options['queue']);
+        $queue = QueueFactory::$options['queue']($container);
 
         if (null === $options['loger']) {
             $logger = new NullLogger();

@@ -24,7 +24,6 @@ namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Connection;
 use Humus\Amqp\Driver\Driver;
-use Humus\Amqp\Driver\PhpAmqpLib\ConnectionType;
 use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SslConnection;
@@ -101,33 +100,34 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
             case Driver::AMQP_EXTENSION():
                 $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection($options);
                 $connection->connect();
-                break;
+                return $connection;
             case Driver::PHP_AMQP_LIB():
                 if (!isset($options['type'])) {
-                    throw new Exception\InvalidArgumentException('For php-amqplib driver a connection type is required');
+                    throw new Exception\InvalidArgumentException(
+                        'For php-amqplib driver a connection type is required'
+                    );
                 }
-                if (false === ConnectionType::has($options['type'])) {
-                    throw new Exception\InvalidArgumentException('Invalid connection type for php-amqplib driver given');
-                }
-                $type = ConnectionType::get($options['type']);
+                $type = $options['type'];
                 unset($options['type']);
                 switch ($type) {
-                    case ConnectionType::LAZY():
-                        $connection = new LazyConnection($options);
-                        break;
-                    case ConnectionType::SOCKET():
-                        $connection = new SocketConnection($options);
-                        break;
-                    case ConnectionType::SSL():
-                        $connection = new SslConnection($options);
-                        break;
-                    case ConnectionType::STREAM():
-                        $connection = new StreamConnection($options);
-                        break;
+                    case 'lazy':
+                    case LazyConnection::class:
+                        return new LazyConnection($options);
+                    case 'socket':
+                    case SocketConnection::class:
+                        return new SocketConnection($options);
+                    case 'ssl':
+                    case SslConnection::class:
+                        return new SslConnection($options);
+                    case 'stream':
+                    case StreamConnection::class:
+                        return new StreamConnection($options);
+                    default:
+                        throw new Exception\InvalidArgumentException(
+                            'Invalid connection type for php-amqplib driver given'
+                        );
                 }
         }
-
-        return $connection;
     }
 
     /**
