@@ -21,15 +21,15 @@
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\Channel as AmqpChannelInterface;
-use Humus\Amqp\Connection as AmqpConnectionInterface;
-use Humus\Amqp\Exchange as AmqpExchangeInterface;
+use Humus\Amqp\Channel as ChannelInterface;
+use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\Exchange as ExchangeInterface;
 
 /**
  * Class Exchange
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-final class Exchange implements AmqpExchangeInterface
+final class Exchange implements ExchangeInterface
 {
     /**
      * @var Channel
@@ -182,7 +182,7 @@ final class Exchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getChannel() : AmqpChannelInterface
+    public function getChannel() : ChannelInterface
     {
         return $this->channel;
     }
@@ -190,7 +190,7 @@ final class Exchange implements AmqpExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getConnection() : AmqpConnectionInterface
+    public function getConnection() : ConnectionInterface
     {
         return $this->channel->getConnection();
     }

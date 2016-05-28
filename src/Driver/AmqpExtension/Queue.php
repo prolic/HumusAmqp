@@ -21,8 +21,8 @@
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\Channel as AmqpChannelInterface;
-use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Channel as ChannelInterface;
+use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Queue as AmqpQueueInterface;
 use Humus\Amqp\Exception\ConnectionException;
@@ -230,7 +230,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function getChannel() : AmqpChannelInterface
+    public function getChannel() : ChannelInterface
     {
         return $this->channel;
     }
@@ -238,7 +238,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function getConnection() : AmqpConnectionInterface
+    public function getConnection() : ConnectionInterface
     {
         return $this->channel->getConnection();
     }

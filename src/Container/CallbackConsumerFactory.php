@@ -30,7 +30,6 @@ use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -91,15 +90,19 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     {
         $options = $this->options($container->get('config'), $this->consumerName);
 
-        $queue = $this->fetchQueue($container, $options['queue']);
+        $queue = $container->get($options['queue']);
 
-        $logger = $this->fetchLogger($container, $options['logger']);
+        if (null === $options['loger']) {
+            $logger = new NullLogger();
+        } else {
+            $logger = $container->get($options['logger']);
+        }
 
-        $deliveryCallback = $this->fetchCallback($container, $options['delivery_callback'], false);
+        $deliveryCallback = $container->get($options['delivery_callback']);
 
-        $flushCallback = $this->fetchCallback($container, $options['flush_callback'], true);
+        $flushCallback = null === $options['flush_callback'] ? null : $container->get($options['flush_callback']);
 
-        $errorCallback = $this->fetchCallback($container, $options['error_callback'], true);
+        $errorCallback = null === $options['error_callback'] ? null : $container->get($options['error_callback']);
 
         return new CallbackConsumer(
             $queue,
@@ -147,94 +150,5 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
             'queue',
             'delivery_callback',
         ];
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $queueName
-     * @return Queue
-     */
-    private function fetchQueue(ContainerInterface $container, string $queueName) : Queue
-    {
-        if (! $container->has($queueName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Queue %s not registered in container',
-                $queueName
-            ));
-        }
-
-        $queue = $container->get($queueName);
-
-        if (! $queue instanceof Queue) {
-            throw new Exception\RuntimeException(sprintf(
-                'Queue %s is not an instance of %s',
-                $queueName,
-                Queue::class
-            ));
-        }
-
-        return $queue;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string|null $callbackName
-     * @param bool $allowNull
-     * @return callable|null
-     */
-    private function fetchCallback(ContainerInterface $container, string $callbackName = null, bool $allowNull)
-    {
-        if (null === $callbackName && $allowNull) {
-            return;
-        }
-
-        if (! $container->has($callbackName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Callback %s not registered in container',
-                $callbackName
-            ));
-        }
-
-        $callback = $container->get($callbackName);
-
-        if (! is_callable($callback)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Callback %s is not a callable',
-                $callbackName
-            ));
-        }
-
-        return $callback;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string|null $loggerName
-     * @return LoggerInterface
-     */
-    private function fetchLogger(ContainerInterface $container, string $loggerName = null) : LoggerInterface
-    {
-        if (null === $loggerName) {
-            return new NullLogger();
-        }
-
-        if (! $container->has($loggerName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Logger %s not registered in container',
-                $loggerName
-            ));
-        }
-
-        $logger = $container->get($loggerName);
-
-        if (! $logger instanceof LoggerInterface) {
-            throw new Exception\RuntimeException(sprintf(
-                'Logger %s is not an instance of %s',
-                $loggerName,
-                LoggerInterface::class
-            ));
-        }
-
-        return $logger;
     }
 }

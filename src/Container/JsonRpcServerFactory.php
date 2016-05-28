@@ -23,15 +23,12 @@ declare (strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
-use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpcServer;
-use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -92,11 +89,16 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     {
         $options = $this->options($container->get('config'), $this->serverName);
 
-        $queue = $this->fetchQueue($container, $options['queue']);
+        $queue = $container->get($options['queue']);
+        $channel = $queue->getChannel();
 
-        $exchange = $this->fetchExchange($container, $options['exchange']);
+        $exchange = ExchangeFactory::$options['exchange']($container, $channel);
 
-        $logger = $this->fetchLogger($container);
+        if (null === $options['loger']) {
+            $logger = new NullLogger();
+        } else {
+            $logger = $container->get($options['logger']);
+        }
 
         return new JsonRpcServer(
             $queue,
@@ -137,91 +139,5 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
         return [
             'idle_timeout'
         ];
-    }
-
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $queueName
-     * @return Queue
-     */
-    private function fetchQueue(ContainerInterface $container, string $queueName) : Queue
-    {
-        if (! $container->has($queueName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Queue %s not registered in container',
-                $queueName
-            ));
-        }
-
-        $queue = $container->get($queueName);
-
-        if (! $queue instanceof Queue) {
-            throw new Exception\RuntimeException(sprintf(
-                'Queue %s is not an instance of %s',
-                $queueName,
-                Queue::class
-            ));
-        }
-
-        return $queue;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $exchangeName
-     * @return Exchange
-     */
-    private function fetchExchange(ContainerInterface $container, string $exchangeName) : Exchange
-    {
-        if (! $container->has($exchangeName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Exchange %s not registered in container',
-                $exchangeName
-            ));
-        }
-
-        $exchange = $container->get($exchangeName);
-
-        if (! $exchange instanceof Exchange) {
-            throw new Exception\RuntimeException(sprintf(
-                'Exchange %s is not an instance of %s',
-                $exchangeName,
-                Exchange::class
-            ));
-        }
-
-        return $exchange;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string|null $loggerName
-     * @return LoggerInterface
-     */
-    private function fetchLogger(ContainerInterface $container, string $loggerName = null) : LoggerInterface
-    {
-        if (null === $loggerName) {
-            return new NullLogger();
-        }
-
-        if (! $container->has($loggerName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Logger %s not registered in container',
-                $loggerName
-            ));
-        }
-
-        $logger = $container->get($loggerName);
-
-        if (! $logger instanceof LoggerInterface) {
-            throw new Exception\RuntimeException(sprintf(
-                'Logger %s is not an instance of %s',
-                $loggerName,
-                LoggerInterface::class
-            ));
-        }
-
-        return $logger;
     }
 }

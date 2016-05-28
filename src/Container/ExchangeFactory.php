@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Channel;
-use Humus\Amqp\Connection;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
@@ -109,7 +108,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     {
         $options = $this->options($container->get('config'), $this->exchangeName);
 
-        $connection = $this->fetchConnection($container, $options['connection']);
+        $connection = $container->get($options['connection']);
         $channel = $this->channel ? $this->channel : $connection->newChannel();
 
         switch ($container->get(Driver::class)) {
@@ -193,32 +192,5 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0; // RabbitMQ Extension
 
         return $flags;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $connectionName
-     * @return Connection
-     */
-    private function fetchConnection(ContainerInterface $container, string $connectionName) : Connection
-    {
-        if (! $container->has($connectionName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Connection %s not registered in container',
-                $connectionName
-            ));
-        }
-
-        $connection = $container->get($connectionName);
-
-        if (! $connection instanceof Connection) {
-            throw new Exception\RuntimeException(sprintf(
-                'Connection %s is not an instance of %s',
-                $connectionName,
-                Connection::class
-            ));
-        }
-
-        return $connection;
     }
 }

@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
-use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\PlainProducer;
 use Humus\Amqp\Producer;
@@ -90,7 +89,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     {
         $options = $this->options($container->get('config'), $this->producerName);
 
-        $exchange = $this->fetchExchange($container, $options['exchange']);
+        $exchange = ExchangeFactory::$options['exchange']($container);
 
         switch ($options['type']) {
             case 'json':
@@ -136,32 +135,5 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
             'exchange',
             'type',
         ];
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $exchangeName
-     * @return Exchange
-     */
-    private function fetchExchange(ContainerInterface $container, string $exchangeName) : Exchange
-    {
-        if (! $container->has($exchangeName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Exchange %s not registered in container',
-                $exchangeName
-            ));
-        }
-
-        $exchange = $container->get($exchangeName);
-
-        if (! $exchange instanceof Exchange) {
-            throw new Exception\RuntimeException(sprintf(
-                'Exchange %s is not an instance of %s',
-                $exchangeName,
-                Exchange::class
-            ));
-        }
-
-        return $exchange;
     }
 }

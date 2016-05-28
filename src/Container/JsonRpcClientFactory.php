@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpcClient;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Queue;
@@ -91,7 +90,8 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     {
         $options = $this->options($container->get('config'), $this->clientName);
 
-        $queue = $this->fetchQueue($container, $options['queue']);
+        $queue = $container->get($options['queue']);
+        $channel = $queue->getChannel();
 
         if (! is_array($options['exchanges']) || ! $options['exchanges'] instanceof Traversable) {
             throw new Exception\InvalidArgumentException(
@@ -102,7 +102,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         $exchanges = [];
 
         foreach ($options['exchanges'] as $exchange) {
-            $exchange[] = $this->fetchExchange($container, $exchange);
+            $exchange[] = ExchangeFactory::$exchange($container, $channel);
         }
 
         return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id']);
@@ -136,59 +136,5 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
             'queue',
             'exchanges',
         ];
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $queueName
-     * @return Queue
-     */
-    private function fetchQueue(ContainerInterface $container, string $queueName) : Queue
-    {
-        if (! $container->has($queueName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Queue %s not registered in container',
-                $queueName
-            ));
-        }
-
-        $queue = $container->get($queueName);
-
-        if (! $queue instanceof Queue) {
-            throw new Exception\RuntimeException(sprintf(
-                'Queue %s is not an instance of %s',
-                $queueName,
-                Queue::class
-            ));
-        }
-
-        return $queue;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $exchangeName
-     * @return Exchange
-     */
-    private function fetchExchange(ContainerInterface $container, string $exchangeName) : Exchange
-    {
-        if (! $container->has($exchangeName)) {
-            throw new Exception\RuntimeException(sprintf(
-                'Exchange %s not registered in container',
-                $exchangeName
-            ));
-        }
-
-        $exchange = $container->get($exchangeName);
-
-        if (! $exchange instanceof Exchange) {
-            throw new Exception\RuntimeException(sprintf(
-                'Exchange %s is not an instance of %s',
-                $exchangeName,
-                Exchange::class
-            ));
-        }
-
-        return $exchange;
     }
 }

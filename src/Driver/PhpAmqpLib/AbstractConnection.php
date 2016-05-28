@@ -23,7 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Channel as ChannelInterface;
-use Humus\Amqp\Connection as AmqpConnectionInterface;
+use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Connection\AbstractConnection as PhpAmqplibAbstractConnection;
 
@@ -31,7 +31,7 @@ use PhpAmqpLib\Connection\AbstractConnection as PhpAmqplibAbstractConnection;
  * Class AbstractConnection
  * @package Humus\Amqp\Driver\AmqpExtension
  */
-abstract class AbstractConnection implements AmqpConnectionInterface
+abstract class AbstractConnection implements ConnectionInterface
 {
     /**
      * @var PhpAmqplibAbstractConnection

@@ -95,10 +95,9 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
             throw new Exception\RuntimeException('No driver factory registered in container');
         }
 
-        $driver = $container->get(Driver::class);
         $options = $this->options($container->get('config'), $this->connectionName);
 
-        switch ($driver) {
+        switch ($container->get(Driver::class)) {
             case Driver::AMQP_EXTENSION():
                 $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection($options);
                 $connection->connect();
