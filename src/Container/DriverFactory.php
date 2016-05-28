@@ -40,8 +40,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
      */
     public function __invoke(ContainerInterface $container)
     {
-        $config = $container->get('config');
-        $options = $this->options($config);
+        $options = $this->options($container->get('config'));
 
         return Driver::get($options['driver']);
     }

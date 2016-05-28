@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
+use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Driver\Driver;
@@ -47,6 +48,11 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     private $exchangeName;
 
     /**
+     * @var Channel|null
+     */
+    private $channel;
+
+    /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
      *
      * In case you want to use another config key than provided by the factories, you can add the following factory to
@@ -66,21 +72,32 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      */
     public static function __callStatic(string $name, array $arguments) : Exchange
     {
-        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
+        if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
-        return (new static($name))->__invoke($arguments[0]);
+
+        if (! isset($arguments[1])) {
+            $arguments[1] = null;
+        } elseif (!$arguments[1] instanceof Channel) {
+            throw new Exception\InvalidArgumentException(
+                sprintf('The second argument must be a type of %s or null', Channel::class)
+            );
+        }
+
+        return (new static($name, $arguments[1]))->__invoke($arguments[0]);
     }
 
     /**
      * QueueFactory constructor.
      * @param string $exchangeName
+     * @param Channel|null $channel
      */
-    public function __construct(string $exchangeName)
+    public function __construct(string $exchangeName, Channel $channel = null)
     {
         $this->exchangeName = $exchangeName;
+        $this->channel = $channel;
     }
 
     /**
@@ -90,22 +107,17 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      */
     public function __invoke(ContainerInterface $container) : Exchange
     {
-        if (! $container->has(Driver::class)) {
-            throw new Exception\RuntimeException('No driver factory registered in container');
-        }
-
-        $driver = $container->get(Driver::class);
-        $config = $container->get('config');
-        $options = $this->options($config, $this->exchangeName);
+        $options = $this->options($container->get('config'), $this->exchangeName);
 
         $connection = $this->fetchConnection($container, $options['connection']);
+        $channel = $this->channel ? $this->channel : $connection->newChannel();
 
-        switch ($driver) {
+        switch ($container->get(Driver::class)) {
             case Driver::AMQP_EXTENSION():
-                $exchange = new \Humus\Amqp\Driver\AmqpExtension\Exchange($connection->newChannel());
+                $exchange = new \Humus\Amqp\Driver\AmqpExtension\Exchange($channel);
                 break;
             case Driver::PHP_AMQP_LIB():
-                $exchange = new \Humus\Amqp\Driver\PhpAmqpLib\Exchange($connection->newChannel());
+                $exchange = new \Humus\Amqp\Driver\PhpAmqpLib\Exchange($channel);
                 break;
             default:
                 throw new Exception\RuntimeException('Unknown driver');
@@ -165,16 +177,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     public function mandatoryOptions()
     {
         return [
-            'arguments',
-            'auto_delete', // RabbitMQ Extension
-            'exchange_bindings', // RabbitMQ Extension
-            'passive',
-            'durable',
-            'name',
-            'type',
-            // factory configs
             'connection',
-            'auto_setup_fabric',
         ];
     }
 

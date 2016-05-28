@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
+use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Driver\Driver;
@@ -45,6 +46,11 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @var string
      */
     private $queueName;
+
+    /**
+     * @var Channel|null
+     */
+    private $channel;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -71,16 +77,27 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
-        return (new static($name))->__invoke($arguments[0]);
+
+        if (! isset($arguments[1])) {
+            $arguments[1] = null;
+        } elseif (!$arguments[1] instanceof Channel) {
+            throw new Exception\InvalidArgumentException(
+                sprintf('The second argument must be a type of %s or null', Channel::class)
+            );
+        }
+
+        return (new static($name, $arguments[1]))->__invoke($arguments[0]);
     }
 
     /**
      * QueueFactory constructor.
      * @param string $queueName
+     * @param Channel|null $channel
      */
-    public function __construct(string $queueName)
+    public function __construct(string $queueName, Channel $channel = null)
     {
         $this->queueName = $queueName;
+        $this->channel = $channel;
     }
 
     /**
@@ -90,22 +107,17 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      */
     public function __invoke(ContainerInterface $container) : Queue
     {
-        if (! $container->has(Driver::class)) {
-            throw new Exception\RuntimeException('No driver factory registered in container');
-        }
-
-        $driver = $container->get(Driver::class);
-        $config = $container->get('config');
-        $options = $this->options($config, $this->queueName);
+        $options = $this->options($container->get('config'), $this->queueName);
 
         $connection = $this->fetchConnection($container, $options['connection']);
+        $channel = $this->channel ? $this->channel : $connection->newChannel();
 
-        switch ($driver) {
+        switch ($container->get(Driver::class)) {
             case Driver::AMQP_EXTENSION():
-                $queue = new \Humus\Amqp\Driver\AmqpExtension\Queue($connection->newChannel());
+                $queue = new \Humus\Amqp\Driver\AmqpExtension\Queue($channel);
                 break;
             case Driver::PHP_AMQP_LIB():
-                $queue = new \Humus\Amqp\Driver\PhpAmqpLib\Queue($connection->newChannel());
+                $queue = new \Humus\Amqp\Driver\PhpAmqpLib\Queue($channel);
                 break;
             default:
                 throw new Exception\RuntimeException('Unknown driver');
@@ -168,17 +180,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     {
         return [
             'connection',
-            'name',
             'exchange',
-            'passive',
-            'durable',
-            'exclusive',
-            'auto_delete',
-            'arguments',
-            'routing_keys',
-            'bind_arguments',
-            // factory configs
-            'auto_setup_fabric'
         ];
     }
 

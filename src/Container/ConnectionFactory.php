@@ -33,14 +33,13 @@ use Humus\Amqp\Exception;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
-use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
 
 /**
  * Class ConnectionFactory
  * @package Humus\Amqp\Container
  */
-final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
+final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigId
 {
     use ConfigurationTrait;
 
@@ -97,8 +96,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
         }
 
         $driver = $container->get(Driver::class);
-        $config = $container->get('config');
-        $options = $this->options($config, $this->connectionName);
+        $options = $this->options($container->get('config'), $this->connectionName);
 
         switch ($driver) {
             case Driver::AMQP_EXTENSION():
@@ -164,28 +162,6 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
             'cert' => null,
             'key' => null,
             'verify' => null,
-        ];
-    }
-
-    /**
-     * return array
-     */
-    public function mandatoryOptions()
-    {
-        return [
-            'host',
-            'port',
-            'login',
-            'password',
-            'vhost',
-            'persistent',
-            'read_timeout',
-            'write_timeout',
-            'heartbeat',
-            'cacert',
-            'cert',
-            'key',
-            'verify',
         ];
     }
 }

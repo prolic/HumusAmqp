@@ -89,8 +89,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
      */
     public function __invoke(ContainerInterface $container)
     {
-        $config = $container->get('config');
-        $options = $this->options($config, $this->consumerName);
+        $options = $this->options($container->get('config'), $this->consumerName);
 
         $queue = $this->fetchQueue($container, $options['queue']);
 
@@ -146,16 +145,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     {
         return [
             'queue',
-            'logger',
             'delivery_callback',
-            'flush_callback',
-            'error_callback',
-            'qos' => [
-                'prefetchCount',
-                'prefetchSize'
-            ],
-            'idle_timeout',
-            'consumer_tag',
         ];
     }
 

@@ -89,33 +89,22 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      */
     public function __invoke(ContainerInterface $container) : Producer
     {
-        if (! $container->has(Driver::class)) {
-            throw new Exception\RuntimeException('No driver factory registered in container');
-        }
-
-        $config = $container->get('config');
-        $options = $this->options($config, $this->producerName);
+        $options = $this->options($container->get('config'), $this->producerName);
 
         $exchange = $this->fetchExchange($container, $options['exchange']);
 
         switch ($options['type']) {
             case 'json':
             case JsonProducer::class:
-                $producer = new JsonProducer($exchange, $options['attributes']);
-                break;
+                return new JsonProducer($exchange, $options['attributes']);
             case 'plain':
             case PlainProducer::class:
-                $producer = new PlainProducer($exchange, $options['attributes']);
-                break;
+                return new PlainProducer($exchange, $options['attributes']);
             default:
                 throw new Exception\InvalidArgumentException(
-                    sprintf(
-                        'Unknown producer type %s requested',
-                        $options['type']
+                    sprintf('Unknown producer type %s requested', $options['type']
                 ));
         }
-
-        return $producer;
     }
 
 
@@ -147,9 +136,6 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
         return [
             'exchange',
             'type',
-            'attributes',
-            // factory configs
-            'auto_setup_fabric'
         ];
     }
 

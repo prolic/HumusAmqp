@@ -89,14 +89,13 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      */
     public function __invoke(ContainerInterface $container) : JsonRpcClient
     {
-        $config = $container->get('config');
-        $options = $this->options($config, $this->clientName);
+        $options = $this->options($container->get('config'), $this->clientName);
 
         $queue = $this->fetchQueue($container, $options['queue']);
 
         if (! is_array($options['exchanges']) || ! $options['exchanges'] instanceof Traversable) {
             throw new Exception\InvalidArgumentException(
-                'Option "exchange" must be an array or an instance of Traversable'
+                'Option "exchanges" must be an array or an instance of Traversable'
             );
         }
 
@@ -136,8 +135,6 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         return [
             'queue',
             'exchanges',
-            'wait_micros',
-            'app_id'
         ];
     }
 
