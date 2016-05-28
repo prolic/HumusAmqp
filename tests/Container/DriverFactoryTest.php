@@ -38,20 +38,21 @@ class DriverFactoryTest extends TestCase
      */
     public function it_returns_amqp_extension_driver()
     {
-        $driver = Driver::AMQP_EXTENSION();
         $container = $this->prophesize(ContainerInterface::class);
+
         $container->get('config')->willReturn([
             'humus' => [
                 'amqp' => [
                     'driver' => 'amqp-extension'
                 ]
             ]
-        ]);
-        $container->get('amqp-extension')->willReturn($driver);
+        ])->shouldBeCalled();
 
         $factory = new DriverFactory();
-        $result = $factory($container->reveal());
-        $this->assertTrue($driver->is($result));
+        $driver = $factory($container->reveal());
+
+        $this->assertInstanceOf(Driver::class, $driver);
+        $this->assertTrue($driver->is(Driver::AMQP_EXTENSION()));
     }
 
     /**
@@ -59,19 +60,20 @@ class DriverFactoryTest extends TestCase
      */
     public function it_returns_php_amqplib_driver()
     {
-        $driver = Driver::PHP_AMQP_LIB();
         $container = $this->prophesize(ContainerInterface::class);
+
         $container->get('config')->willReturn([
             'humus' => [
                 'amqp' => [
                     'driver' => 'php-amqplib'
                 ]
             ]
-        ]);
-        $container->get('php-amqplib')->willReturn($driver);
+        ])->shouldBeCalled();
 
         $factory = new DriverFactory();
-        $result = $factory($container->reveal());
-        $this->assertTrue($driver->is($result));
+        $driver = $factory($container->reveal());
+
+        $this->assertInstanceOf(Driver::class, $driver);
+        $this->assertTrue($driver->is(Driver::PHP_AMQP_LIB()));
     }
 }

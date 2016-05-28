@@ -106,10 +106,12 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                 if (!isset($options['type'])) {
                     throw new Exception\InvalidArgumentException('For php-amqplib driver a connection type is required');
                 }
-                if (false === defined(ConnectionType::class . '::' . $options['type'])) {
+                if (false === ConnectionType::has($options['type'])) {
                     throw new Exception\InvalidArgumentException('Invalid connection type for php-amqplib driver given');
                 }
-                switch (ConnectionType::get($options['type'])) {
+                $type = ConnectionType::get($options['type']);
+                unset($options['type']);
+                switch ($type) {
                     case ConnectionType::LAZY():
                         $connection = new LazyConnection($options);
                         break;
@@ -122,13 +124,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                     case ConnectionType::STREAM():
                         $connection = new StreamConnection($options);
                         break;
-                    default:
-                        throw new Exception\RuntimeException('Unknown connection type');
-                        break;
                 }
-                break;
-            default:
-                throw new Exception\RuntimeException('Invalid driver factory configured in the container');
         }
 
         return $connection;
@@ -157,10 +153,6 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
             'read_timeout' => 1, //sec, float allowed
             'write_timeout' => 1, //sec, float allowed,
             'heartbeat' => 0,
-            'cacert' => null,
-            'cert' => null,
-            'key' => null,
-            'verify' => null,
         ];
     }
 }
