@@ -24,7 +24,6 @@ namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
-use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
@@ -112,7 +111,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             $connection = ConnectionFactory::$options['connection']($container);
             $this->channel = $connection->newChannel();
         }
-        
+
         $queue = $this->channel->newQueue();
 
         if (null !== $options['name']) {

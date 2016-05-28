@@ -59,6 +59,7 @@ class ExchangeFactoryTest extends TestCase
                     'exchange' => [
                         'my_exchange' => [
                             'connection' => 'my_connection',
+                            'name' => 'test_exchange',
                         ]
                     ]
                 ]
@@ -99,6 +100,7 @@ class ExchangeFactoryTest extends TestCase
                     'exchange' => [
                         'my_exchange' => [
                             'connection' => 'my_connection',
+                            'name' => 'test_exchange',
                         ]
                     ]
                 ]
@@ -136,6 +138,7 @@ class ExchangeFactoryTest extends TestCase
                     'exchange' => [
                         'my_exchange' => [
                             'connection' => 'my_connection',
+                            'name' => 'test_exchange',
                         ]
                     ]
                 ]
@@ -173,5 +176,119 @@ class ExchangeFactoryTest extends TestCase
 
         $exchangeName = 'my_exchange';
         ExchangeFactory::$exchangeName($container->reveal(), 'invalid');
+    }
+
+    /**
+     * @test
+     */
+    public function it_auto_declares_exchange()
+    {
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $connection = new Connection(['vhost' => '/humus-amqp-test']);
+        $connection->connect();
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                        ],
+                    ],
+                    'exchange' => [
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
+                            'auto_setup_fabric' => true,
+                        ]
+                    ]
+                ]
+            ]
+        ])->shouldBeCalled();
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
+
+        $factory = new ExchangeFactory('my_exchange');
+        $exchange = $factory($container->reveal());
+
+        $this->assertInstanceOf(\Humus\Amqp\Driver\AmqpExtension\Exchange::class, $exchange);
+
+        $exchange->delete();
+    }
+
+    /**
+     * @test
+     */
+    public function it_auto_declares_exchange_and_binds_exchange_to_exchange()
+    {
+        if (!extension_loaded('amqp')) {
+            $this->markTestSkipped('php amqp extension not loaded');
+        }
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $connection = new Connection(['vhost' => '/humus-amqp-test']);
+        $connection->connect();
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                        ],
+                    ],
+                    'exchange' => [
+                        'base_exchange_one' => [
+                            'connection' => 'my_connection',
+                            'name' => 'base_exchange_one',
+                            'auto_setup_fabric' => false,
+                        ],
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
+                            'auto_setup_fabric' => true,
+                            'exchange_bindings' => [
+                                'base_exchange_one' => [
+                                    'routing_key_one' => [
+                                        'my first argument' => 'my first value',
+                                    ],
+                                    'routing_key_two' => [
+                                        'my second argument' => 'my second value',
+                                    ],
+                                ],
+                                'base_exchange_two' => [
+                                    null => [],
+                                    'routing_key_three' => [],
+                                ],
+                            ],
+                        ],
+                        'base_exchange_two' => [
+                            'connection' => 'my_connection',
+                            'name' => 'base_exchange_two',
+                            'auto_setup_fabric' => true,
+                        ],
+                    ]
+                ]
+            ]
+        ])->shouldBeCalled();
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
+
+        $factory = new ExchangeFactory('my_exchange');
+        $exchange = $factory($container->reveal());
+
+        $this->assertInstanceOf(\Humus\Amqp\Driver\AmqpExtension\Exchange::class, $exchange);
+
+        $exchange->delete();
+        $exchange->delete('base_exchange_one');
+        $exchange->delete('base_exchange_two');
     }
 }

@@ -100,8 +100,9 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
             case Driver::AMQP_EXTENSION():
                 $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection($options);
                 $connection->connect();
-                return $connection;
+                break;
             case Driver::PHP_AMQP_LIB():
+            default:
                 if (!isset($options['type'])) {
                     throw new Exception\InvalidArgumentException(
                         'For php-amqplib driver a connection type is required'
@@ -112,22 +113,28 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                 switch ($type) {
                     case 'lazy':
                     case LazyConnection::class:
-                        return new LazyConnection($options);
+                        $connection = new LazyConnection($options);
+                        break;
                     case 'socket':
                     case SocketConnection::class:
-                        return new SocketConnection($options);
+                        $connection = new SocketConnection($options);
+                        break;
                     case 'ssl':
                     case SslConnection::class:
                         return new SslConnection($options);
                     case 'stream':
                     case StreamConnection::class:
-                        return new StreamConnection($options);
+                        $connection = new StreamConnection($options);
+                        break;
                     default:
                         throw new Exception\InvalidArgumentException(
                             'Invalid connection type for php-amqplib driver given'
                         );
                 }
+                break;
         }
+
+        return $connection;
     }
 
     /**

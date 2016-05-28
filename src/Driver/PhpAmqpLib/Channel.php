@@ -57,7 +57,7 @@ final class Channel implements ChannelInterface
         $this->connection = $connection;
         $this->channel = null === $channel ? new AMQPChannel($connection->getResource()) : $channel;
     }
-    
+
     /**
      * @return AMQPChannel
      */

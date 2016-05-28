@@ -24,7 +24,6 @@ namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
-use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Interop\Config\ConfigurationTrait;
@@ -106,7 +105,8 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      */
     public function __invoke(ContainerInterface $container) : Exchange
     {
-        $options = $this->options($container->get('config'), $this->exchangeName);
+        $config = $container->get('config');
+        $options = $this->options($config, $this->exchangeName);
 
         if (null === $this->channel) {
             $connectionName = $options['connection'];
@@ -115,7 +115,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         }
 
         $exchange = $this->channel->newExchange();
-        
+
         $exchange->setArguments($options['arguments']);
         $exchange->setName($options['name']);
         $exchange->setFlags($this->getFlags($options));
@@ -124,12 +124,9 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         if ($options['auto_setup_fabric']) {
             $exchange->declareExchange();
 
-            $flags = $this->getFlags($options);
             // rabbitmq extension: exchange to exchange bindings
-            foreach ($options['exchange_bindings'] as $exchangeName => $routingKeys) {
-                foreach ($routingKeys as $routingKey) {
-                    $exchange->bind($exchangeName, $routingKey, $flags);
-                }
+            foreach ($options['exchange_bindings'] as $exchangeName => $config) {
+                $this->bindExchange($container, $exchange, $exchangeName, $config);
             }
         }
 
@@ -157,7 +154,6 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             'exchange_bindings' => [], // RabbitMQ Extension
             'passive' => false,
             'durable' => true,
-            'name' => '',
             'type' => 'direct',
             // factory configs
             'auto_setup_fabric' => false,
@@ -171,6 +167,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     {
         return [
             'connection',
+            'name',
         ];
     }
 
@@ -178,7 +175,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @param array|ArrayAccess
      * @return int
      */
-    public function getFlags($options)
+    private function getFlags($options)
     {
         $flags = 0;
         $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;
@@ -186,5 +183,21 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0; // RabbitMQ Extension
 
         return $flags;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param Exchange $exchange
+     * @param string $exchangeName
+     * @param array $config
+     */
+    private function bindExchange(ContainerInterface $container, Exchange $exchange, string $exchangeName, array $config)
+    {
+        $factory = new self($exchangeName, $this->channel);
+        $otherExchange = $factory($container);
+        $otherExchange->declareExchange();
+        foreach ($config as $routingKey => $bindOptions) {
+            $exchange->bind($exchangeName, $routingKey, $bindOptions);
+        }
     }
 }
