@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
-use Humus\Amqp\Connection;
 use Humus\Amqp\Container\ConnectionFactory;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
@@ -230,7 +229,7 @@ class ConnectionFactoryTest extends TestCase
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('For php-amqplib driver a connection type is required');
-        
+
         $container = $this->prophesize(ContainerInterface::class);
 
         $container->get('config')->willReturn([
@@ -283,7 +282,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_param()
+    public function it_throws_exception_with_invalid_call_static_container_param()
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');

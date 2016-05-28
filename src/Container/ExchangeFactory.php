@@ -118,8 +118,6 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             case Driver::PHP_AMQP_LIB():
                 $exchange = new \Humus\Amqp\Driver\PhpAmqpLib\Exchange($channel);
                 break;
-            default:
-                throw new Exception\RuntimeException('Unknown driver');
         }
 
         $exchange->setArguments($options['arguments']);
