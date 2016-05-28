@@ -275,49 +275,49 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
         $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[1]['level']);
+        $this->assertEquals('debug', $loggerResult[1]['level']);
         $this->assertEquals('Rejected message', $loggerResult[1]['message']);
 
         $this->assertEquals('debug', $loggerResult[2]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
         $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertEquals('debug', $loggerResult[3]['level']);
         $this->assertEquals('Rejected message', $loggerResult[3]['message']);
 
         $this->assertEquals('debug', $loggerResult[4]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
         $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[5]['level']);
+        $this->assertEquals('debug', $loggerResult[5]['level']);
         $this->assertEquals('Rejected message', $loggerResult[5]['message']);
 
         $this->assertEquals('debug', $loggerResult[6]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
         $this->assertEquals('message #4', $loggerResult[6]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[7]['level']);
+        $this->assertEquals('debug', $loggerResult[7]['level']);
         $this->assertEquals('Rejected message', $loggerResult[7]['message']);
 
         $this->assertEquals('debug', $loggerResult[8]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[8]['message']);
         $this->assertEquals('message #5', $loggerResult[8]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[9]['level']);
+        $this->assertEquals('debug', $loggerResult[9]['level']);
         $this->assertEquals('Rejected message', $loggerResult[9]['message']);
 
         $this->assertEquals('debug', $loggerResult[10]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[10]['message']);
         $this->assertEquals('message #6', $loggerResult[10]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[11]['level']);
+        $this->assertEquals('debug', $loggerResult[11]['level']);
         $this->assertEquals('Rejected message', $loggerResult[11]['message']);
 
         $this->assertEquals('debug', $loggerResult[12]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[12]['message']);
         $this->assertEquals('message #7', $loggerResult[12]['context']['body']);
 
-        $this->assertEquals('info', $loggerResult[13]['level']);
+        $this->assertEquals('debug', $loggerResult[13]['level']);
         $this->assertEquals('Rejected message', $loggerResult[13]['message']);
     }
 
@@ -614,7 +614,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $loggerResult = $this->logger->loggerResult();
 
-        $this->assertCount(6, $loggerResult);
+        $this->assertCount(9, $loggerResult);
 
         $this->assertEquals('debug', $loggerResult[0]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
@@ -624,18 +624,30 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[1]['message']);
 
         $this->assertEquals('debug', $loggerResult[2]['level']);
-        $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
-        $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
+        $this->assertEquals('Rejected and requeued message', $loggerResult[2]['message']);
+        $this->assertEquals('message #1', $loggerResult[2]['context']['body']);
 
-        $this->assertEquals('error', $loggerResult[3]['level']);
-        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[3]['message']);
+        $this->assertEquals('debug', $loggerResult[3]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
+        $this->assertEquals('message #2', $loggerResult[3]['context']['body']);
 
-        $this->assertEquals('debug', $loggerResult[4]['level']);
-        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
-        $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
+        $this->assertEquals('error', $loggerResult[4]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[4]['message']);
 
-        $this->assertEquals('error', $loggerResult[5]['level']);
-        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[5]['message']);
+        $this->assertEquals('debug', $loggerResult[5]['level']);
+        $this->assertEquals('Rejected and requeued message', $loggerResult[5]['message']);
+        $this->assertEquals('message #2', $loggerResult[5]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('message #3', $loggerResult[6]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[7]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[7]['message']);
+
+        $this->assertEquals('debug', $loggerResult[8]['level']);
+        $this->assertEquals('Rejected and requeued message', $loggerResult[8]['message']);
+        $this->assertEquals('message #3', $loggerResult[8]['context']['body']);
     }
 
     /**
