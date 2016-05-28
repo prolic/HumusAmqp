@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\Channel;
 use Humus\Amqp\ConnectionOptions;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -44,5 +45,17 @@ abstract class AbstractConnectionTest extends TestCase implements CanCreateConne
             'login' => 'invalid',
             'password' => 'invalid',
         ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_new_channel()
+    {
+        $connection = $this->createConnection();
+
+        $channel = $connection->newChannel();
+
+        $this->assertInstanceOf(Channel::class, $channel);
     }
 }

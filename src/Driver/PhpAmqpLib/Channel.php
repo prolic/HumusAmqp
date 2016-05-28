@@ -49,15 +49,15 @@ final class Channel implements ChannelInterface
     /**
      * Create an instance of an AMQPChannel object.
      *
-     * @param AbstractConnection $amqpConnection  An instance of AbstractConnection
-     *                                                with an active connection to a broker.
+     * @param AbstractConnection $connection  An instance of AbstractConnection with an active connection to a broker.
+     * @param AMQPChannel|null $channel
      */
-    public function __construct(AbstractConnection $amqpConnection)
+    public function __construct(AbstractConnection $connection, AMQPChannel $channel = null)
     {
-        $this->connection = $amqpConnection;
-        $this->channel = new AMQPChannel($amqpConnection->getResource());
+        $this->connection = $connection;
+        $this->channel = null === $channel ? new AMQPChannel($connection->getResource()) : $channel;
     }
-
+    
     /**
      * @return AMQPChannel
      */

@@ -85,6 +85,6 @@ abstract class AbstractConnection implements ConnectionInterface
      */
     public function newChannel() : ChannelInterface
     {
-        return new Channel($this);
+        return new Channel($this, $this->getResource()->channel());
     }
 }

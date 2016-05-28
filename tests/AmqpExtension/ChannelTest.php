@@ -24,6 +24,8 @@ namespace HumusTest\Amqp\AmqpExtension;
 
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\AmqpExtension\Connection;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 use HumusTest\Amqp\AbstractChannelTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;

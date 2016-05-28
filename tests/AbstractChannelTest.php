@@ -24,6 +24,8 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateChannel;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -74,5 +76,29 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
     public function it_creates_multiple_channels()
     {
         $this->createChannel($this->connection);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_new_exchange()
+    {
+        $channel = $this->createChannel($this->connection);
+
+        $exchange = $channel->newExchange();
+
+        $this->assertInstanceOf(Exchange::class, $exchange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_new_queue()
+    {
+        $channel = $this->createChannel($this->connection);
+
+        $queue = $channel->newQueue();
+
+        $this->assertInstanceOf(Queue::class, $queue);
     }
 }
