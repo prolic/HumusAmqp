@@ -22,29 +22,30 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Container;
 
-use Humus\Amqp\Exchange;
-use Humus\Amqp\JsonRpcClient;
 use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\JsonRpcServer;
 use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
-use Traversable;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
- * Class JsonRpcClientFactory
+ * Class JsonRpcServerFactory
  * @package Humus\Amqp\Container
  */
-final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
+final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
     /**
      * @var string
      */
-    private $clientName;
+    private $serverName;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -55,16 +56,16 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      * <code>
      * <?php
      * return [
-     *     'your_rpc_client' => [JsonRpcClientFactory::class, 'your_rpc_client_name'],
+     *     'your_json_rpc_server' => [JsonRpcServerFactory::class, 'your_json_rpc_server_name'],
      * ];
      * </code>
      *
      * @param string $name
      * @param array $arguments
-     * @return JsonRpcClient
+     * @return JsonRpcServer
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : JsonRpcClient
+    public static function __callStatic(string $name, array $arguments) : JsonRpcServer
     {
         if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -76,36 +77,36 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
 
     /**
      * JsonRpcClientFactory constructor.
-     * @param string $clientName
+     * @param string $serverName
      */
-    public function __construct(string $clientName)
+    public function __construct(string $serverName)
     {
-        $this->clientName = $clientName;
+        $this->serverName = $serverName;
     }
 
     /**
      * @param ContainerInterface $container
-     * @return JsonRpcClient
+     * @return JsonRpcServer
      */
-    public function __invoke(ContainerInterface $container) : JsonRpcClient
+    public function __invoke(ContainerInterface $container) : JsonRpcServer
     {
-        $options = $this->options($container->get('config'), $this->clientName);
+        $options = $this->options($container->get('config'), $this->serverName);
 
         $queue = $this->fetchQueue($container, $options['queue']);
 
-        if (! is_array($options['exchanges']) || ! $options['exchanges'] instanceof Traversable) {
-            throw new Exception\InvalidArgumentException(
-                'Option "exchanges" must be an array or an instance of Traversable'
-            );
-        }
+        $exchange = $this->fetchExchange($container, $options['exchange']);
 
-        $exchanges = [];
+        $logger = $this->fetchLogger($container);
 
-        foreach ($options['exchanges'] as $exchange) {
-            $exchange[] = $this->fetchExchange($container, $exchange);
-        }
-
-        return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id']);
+        return new JsonRpcServer(
+            $queue,
+            $exchange,
+            $logger,
+            $options['idle_timeout'],
+            $options['consumer_tag'],
+            $options['app_id'],
+            $options['return_trace']
+        );
     }
 
     /**
@@ -113,7 +114,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      */
     public function dimensions()
     {
-        return ['humus', 'amqp', 'json_rpc_client'];
+        return ['humus', 'amqp', 'json_rpc_server'];
     }
 
     /**
@@ -122,8 +123,9 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     public function defaultOptions()
     {
         return [
-            'wait_micros' => 1000,
-            'app_id' => ''
+            'consumer_tag' => null,
+            'app_id' => '',
+            'return_trace' => false,
         ];
     }
 
@@ -133,10 +135,10 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     public function mandatoryOptions()
     {
         return [
-            'queue',
-            'exchanges',
+            'idle_timeout'
         ];
     }
+
 
     /**
      * @param ContainerInterface $container
@@ -190,5 +192,36 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         }
 
         return $exchange;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param string|null $loggerName
+     * @return LoggerInterface
+     */
+    private function fetchLogger(ContainerInterface $container, string $loggerName = null) : LoggerInterface
+    {
+        if (null === $loggerName) {
+            return new NullLogger();
+        }
+
+        if (! $container->has($loggerName)) {
+            throw new Exception\RuntimeException(sprintf(
+                'Logger %s not registered in container',
+                $loggerName
+            ));
+        }
+
+        $logger = $container->get($loggerName);
+
+        if (! $logger instanceof LoggerInterface) {
+            throw new Exception\RuntimeException(sprintf(
+                'Logger %s is not an instance of %s',
+                $loggerName,
+                LoggerInterface::class
+            ));
+        }
+
+        return $logger;
     }
 }

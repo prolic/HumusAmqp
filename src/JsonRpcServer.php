@@ -21,6 +21,7 @@
 declare (strict_types=1);
 
 namespace Humus\Amqp;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class JsonRpcServer
@@ -48,6 +49,7 @@ final class JsonRpcServer extends AbstractConsumer
      *
      * @param Queue $queue
      * @param Exchange $exchange
+     * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
      * @param string|null $appId
@@ -56,6 +58,7 @@ final class JsonRpcServer extends AbstractConsumer
     public function __construct(
         Queue $queue,
         Exchange $exchange,
+        LoggerInterface $logger,
         float $idleTimeout,
         string $consumerTag = null,
         string $appId = '',
@@ -75,9 +78,10 @@ final class JsonRpcServer extends AbstractConsumer
             pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
-        $this->idleTimeout = $idleTimeout;
         $this->queue = $queue;
         $this->exchange = $exchange;
+        $this->logger = $logger;
+        $this->idleTimeout = $idleTimeout;
         $this->consumerTag = $consumerTag;
         $this->appId = $appId;
         $this->returnTrace = $returnTrace;

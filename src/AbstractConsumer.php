@@ -268,11 +268,12 @@ abstract class AbstractConsumer implements Consumer
             case DeliveryResult::MSG_REJECT():
                 $this->ackOrNackBlock(); // @todo: remove this?
                 $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
-                $this->logger->info('Rejected message', $this->extractMessageInformation($envelope));
+                $this->logger->debug('Rejected message', $this->extractMessageInformation($envelope));
                 break;
             case DeliveryResult::MSG_REJECT_REQUEUE():
                 $this->ackOrNackBlock();
                 $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
+                $this->logger->debug('Rejected and requeued message', $this->extractMessageInformation($envelope));
                 break;
             case DeliveryResult::MSG_ACK():
                 $this->countMessagesUnacked++;
