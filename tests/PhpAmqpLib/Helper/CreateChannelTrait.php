@@ -35,6 +35,6 @@ trait CreateChannelTrait
             throw new \InvalidArgumentException();
         }
 
-        return new Channel($connection);
+        return new Channel($connection, $connection->getResource()->channel());
     }
 }
