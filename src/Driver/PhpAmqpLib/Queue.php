@@ -25,6 +25,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\Exception;
 use Humus\Amqp\Queue as QueueInterface;
 use Humus\Amqp\Exception\ConnectionException;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -155,12 +156,27 @@ final class Queue implements QueueInterface
             $routingKey = '';
         }
 
+        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
+        foreach ($arguments as $k => $v) {
+            if (is_array($v)) {
+                $args[$k] = ['A', $v];
+            } elseif (is_int($v)) {
+                $args[$k] = ['I', $v];
+            } elseif (is_bool($v)) {
+                $args[$k] = ['t', $v];
+            } elseif (is_string($v)) {
+                $args[$k] = ['S', $v];
+            } else {
+                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+            }
+        }
+
         $this->channel->getResource()->queue_bind(
             $this->name,
             $exchangeName,
             $routingKey,
             (bool) ($this->flags & Constants::AMQP_NOWAIT),
-            $arguments,
+            $args,
             null
         );
     }

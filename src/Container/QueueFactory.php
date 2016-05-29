@@ -123,6 +123,9 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $queue->setArguments($options['arguments']);
 
         if ($options['auto_setup_fabric']) {
+            $exchangeName = $options['exchange'];
+            $exchange = ExchangeFactory::$exchangeName($container, $this->channel);
+            $exchange->declareExchange();
             $queue->declareQueue();
 
             $routingKeys = $options['routing_keys'];

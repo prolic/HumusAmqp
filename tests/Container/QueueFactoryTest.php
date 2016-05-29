@@ -163,4 +163,103 @@ class QueueFactoryTest extends TestCase
         $queueName = 'my_queue';
         QueueFactory::$queueName($container->reveal(), 'invalid');
     }
+
+    /**
+     * @test
+     */
+    public function it_auto_declares_exchange()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
+                        ],
+                    ],
+                    'exchange' => [
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_exchange',
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                    'queue' => [
+                        'my_queue' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_queue',
+                            'exchange' => 'my_exchange',
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+
+        $factory = new QueueFactory('my_queue');
+        $queue = $factory($container->reveal());
+
+        $this->assertInstanceOf(\Humus\Amqp\Queue::class, $queue);
+
+        $queue->delete();
+    }
+
+    /**
+     * @test
+     */
+    public function it_auto_declares_exchange_with_routing_key_and_bind_arguments()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
+                        ],
+                    ],
+                    'exchange' => [
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_exchange',
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                    'queue' => [
+                        'my_queue' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_queue',
+                            'exchange' => 'my_exchange',
+                            'auto_setup_fabric' => true,
+                            'routing_keys' => [
+                                '',
+                                'foo',
+                            ],
+                            'bind_arguments' => [
+                                'foo' => 'bar'
+                            ]
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+
+        $factory = new QueueFactory('my_queue');
+        $queue = $factory($container->reveal());
+
+        $this->assertInstanceOf(\Humus\Amqp\Queue::class, $queue);
+
+        $queue->delete();
+    }
 }
