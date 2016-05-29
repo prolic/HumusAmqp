@@ -122,6 +122,20 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
     /**
      * @test
      */
+    public function it_declares_exchange_with_arguments()
+    {
+        $this->addToCleanUp($this->exchange);
+        $this->exchange->setType('direct');
+        $this->exchange->setName('test');
+        $this->exchange->setArguments([
+            'foo' => 'bar',
+        ]);
+        $this->exchange->declareExchange();
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_channel_and_connection()
     {
         $this->assertInstanceOf(Channel::class, $this->exchange->getChannel());
@@ -148,6 +162,78 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $exchange2->declareExchange();
 
         $this->exchange->bind($exchange2->getName());
+
+        $this->exchange->unbind($exchange2->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_binds_and_unbinds_to_exchange_with_routing_key()
+    {
+        $this->addToCleanUp($this->exchange);
+        $this->exchange->setType('direct');
+        $this->exchange->setName('test');
+
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+        $exchange2 = $this->createExchange($channel);
+        $exchange2->setType('direct');
+        $exchange2->setName('foo');
+        $this->addToCleanUp($exchange2);
+
+        $this->exchange->declareExchange();
+        $exchange2->declareExchange();
+
+        $this->exchange->bind($exchange2->getName(), 'routing_key');
+
+        $this->exchange->unbind($exchange2->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_binds_and_unbinds_to_exchange_with_arguments()
+    {
+        $this->addToCleanUp($this->exchange);
+        $this->exchange->setType('direct');
+        $this->exchange->setName('test');
+
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+        $exchange2 = $this->createExchange($channel);
+        $exchange2->setType('direct');
+        $exchange2->setName('foo');
+        $this->addToCleanUp($exchange2);
+
+        $this->exchange->declareExchange();
+        $exchange2->declareExchange();
+
+        $this->exchange->bind($exchange2->getName(), '', ['foo' => 'bar']);
+
+        $this->exchange->unbind($exchange2->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_binds_and_unbinds_to_exchange_with_routing_key_and_arguments()
+    {
+        $this->addToCleanUp($this->exchange);
+        $this->exchange->setType('direct');
+        $this->exchange->setName('test');
+
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+        $exchange2 = $this->createExchange($channel);
+        $exchange2->setType('direct');
+        $exchange2->setName('foo');
+        $this->addToCleanUp($exchange2);
+
+        $this->exchange->declareExchange();
+        $exchange2->declareExchange();
+
+        $this->exchange->bind($exchange2->getName(), 'routing_key', ['foo' => 'bar']);
 
         $this->exchange->unbind($exchange2->getName());
     }

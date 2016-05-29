@@ -23,8 +23,8 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Container\ExchangeFactory;
-use Humus\Amqp\Driver\AmqpExtension\Connection;
 use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -37,16 +37,9 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_amqp_extension_exchange()
+    public function it_creates_exchange()
     {
-        if (!extension_loaded('amqp')) {
-            $this->markTestSkipped('php amqp extension not loaded');
-        }
-
         $container = $this->prophesize(ContainerInterface::class);
-
-        $connection = new Connection(['vhost' => '/humus-amqp-test']);
-        $connection->connect();
 
         $container->get('config')->willReturn([
             'humus' => [
@@ -54,6 +47,7 @@ class ExchangeFactoryTest extends TestCase
                     'connection' => [
                         'my_connection' => [
                             'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
                         ],
                     ],
                     'exchange' => [
@@ -67,27 +61,20 @@ class ExchangeFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
         $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Driver\AmqpExtension\Exchange::class, $exchange);
+        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
     }
 
     /**
      * @test
      */
-    public function it_creates_amqp_extension_exchange_with_call_static()
+    public function it_creates_exchange_with_call_static()
     {
-        if (!extension_loaded('amqp')) {
-            $this->markTestSkipped('php amqp extension not loaded');
-        }
-
         $container = $this->prophesize(ContainerInterface::class);
-
-        $connection = new Connection(['vhost' => '/humus-amqp-test']);
-        $connection->connect();
 
         $container->get('config')->willReturn([
             'humus' => [
@@ -95,6 +82,7 @@ class ExchangeFactoryTest extends TestCase
                     'connection' => [
                         'my_connection' => [
                             'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
                         ],
                     ],
                     'exchange' => [
@@ -108,27 +96,22 @@ class ExchangeFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
         $exchangeName = 'my_exchange';
         $exchange = ExchangeFactory::$exchangeName($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Driver\AmqpExtension\Exchange::class, $exchange);
+        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
     }
 
     /**
      * @test
      */
-    public function it_creates_amqp_extension_exchange_with_call_static_and_given_channel()
+    public function it_creates_exchange_with_call_static_and_given_channel()
     {
-        if (!extension_loaded('amqp')) {
-            $this->markTestSkipped('php amqp extension not loaded');
-        }
-
         $container = $this->prophesize(ContainerInterface::class);
 
-        $connection = new Connection(['vhost' => '/humus-amqp-test']);
-        $connection->connect();
+        $connection = new StreamConnection(['vhost' => '/humus-amqp-test']);
 
         $channel = $connection->newChannel();
 
@@ -148,7 +131,7 @@ class ExchangeFactoryTest extends TestCase
         $exchangeName = 'my_exchange';
         $exchange = ExchangeFactory::$exchangeName($container->reveal(), $channel);
 
-        $this->assertInstanceOf(\Humus\Amqp\Driver\AmqpExtension\Exchange::class, $exchange);
+        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
         $this->assertEquals($channel, $exchange->getChannel());
     }
 
@@ -183,14 +166,7 @@ class ExchangeFactoryTest extends TestCase
      */
     public function it_auto_declares_exchange()
     {
-        if (!extension_loaded('amqp')) {
-            $this->markTestSkipped('php amqp extension not loaded');
-        }
-
         $container = $this->prophesize(ContainerInterface::class);
-
-        $connection = new Connection(['vhost' => '/humus-amqp-test']);
-        $connection->connect();
 
         $container->get('config')->willReturn([
             'humus' => [
@@ -198,6 +174,7 @@ class ExchangeFactoryTest extends TestCase
                     'connection' => [
                         'my_connection' => [
                             'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
                         ],
                     ],
                     'exchange' => [
@@ -212,29 +189,23 @@ class ExchangeFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
         $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Driver\AmqpExtension\Exchange::class, $exchange);
+        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
 
         $exchange->delete();
     }
 
     /**
      * @test
+     * @group my
      */
     public function it_auto_declares_exchange_and_binds_exchange_to_exchange()
     {
-        if (!extension_loaded('amqp')) {
-            $this->markTestSkipped('php amqp extension not loaded');
-        }
-
         $container = $this->prophesize(ContainerInterface::class);
-
-        $connection = new Connection(['vhost' => '/humus-amqp-test']);
-        $connection->connect();
 
         $container->get('config')->willReturn([
             'humus' => [
@@ -242,6 +213,7 @@ class ExchangeFactoryTest extends TestCase
                     'connection' => [
                         'my_connection' => [
                             'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
                         ],
                     ],
                     'exchange' => [
@@ -280,12 +252,12 @@ class ExchangeFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::AMQP_EXTENSION())->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
         $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Driver\AmqpExtension\Exchange::class, $exchange);
+        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
 
         $exchange->delete();
         $exchange->delete('base_exchange_one');

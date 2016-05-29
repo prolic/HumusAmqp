@@ -196,8 +196,13 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $factory = new self($exchangeName, $this->channel);
         $otherExchange = $factory($container);
         $otherExchange->declareExchange();
-        foreach ($config as $routingKey => $bindOptions) {
-            $exchange->bind($exchangeName, $routingKey, $bindOptions);
+
+        if (empty($config)) {
+            $exchange->bind($exchangeName);
+        } else {
+            foreach ($config as $routingKey => $bindOptions) {
+                $exchange->bind($exchangeName, $routingKey, $bindOptions);
+            }
         }
     }
 }

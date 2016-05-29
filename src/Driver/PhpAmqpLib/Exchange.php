@@ -25,6 +25,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange as ExchangeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
@@ -158,6 +159,20 @@ final class Exchange implements ExchangeInterface
      */
     public function declareExchange()
     {
+        $arguments = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
+        foreach ($this->arguments as $k => $v) {
+            if (is_array($v)) {
+                $arguments[$k] = ['A', $v];
+            } elseif (is_int($v)) {
+                $arguments[$k] = ['I', $v];
+            } elseif (is_bool($v)) {
+                $arguments[$k] = ['t', $v];
+            } elseif (is_string($v)) {
+                $arguments[$k] = ['S', $v];
+            } else {
+                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+            }
+        }
         $this->channel->getResource()->exchange_declare(
             $this->name,
             $this->type,
@@ -166,7 +181,7 @@ final class Exchange implements ExchangeInterface
             (bool) ($this->flags & Constants::AMQP_AUTODELETE),
             (bool) ($this->flags & Constants::AMQP_INTERNAL),
             (bool) ($this->flags & Constants::AMQP_NOWAIT),
-            $this->arguments,
+            $arguments,
             null
         );
     }
@@ -188,12 +203,26 @@ final class Exchange implements ExchangeInterface
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
+        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
+        foreach ($arguments as $k => $v) {
+            if (is_array($v)) {
+                $args[$k] = ['A', $v];
+            } elseif (is_int($v)) {
+                $args[$k] = ['I', $v];
+            } elseif (is_bool($v)) {
+                $args[$k] = ['t', $v];
+            } elseif (is_string($v)) {
+                $args[$k] = ['S', $v];
+            } else {
+                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+            }
+        }
         $this->channel->getResource()->exchange_bind(
             $exchangeName,
             $this->name,
             $routingKey,
             false,
-            $arguments,
+            $args,
             null
         );
     }
