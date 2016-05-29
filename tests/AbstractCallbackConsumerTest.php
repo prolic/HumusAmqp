@@ -323,7 +323,6 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
     /**
      * @test
-     * @group test
      */
     public function it_processes_messages_rejects_and_requeues()
     {
