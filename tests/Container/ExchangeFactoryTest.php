@@ -201,7 +201,6 @@ class ExchangeFactoryTest extends TestCase
 
     /**
      * @test
-     * @group my
      */
     public function it_auto_declares_exchange_and_binds_exchange_to_exchange()
     {
@@ -236,15 +235,20 @@ class ExchangeFactoryTest extends TestCase
                                     ],
                                 ],
                                 'base_exchange_two' => [
-                                    null => [],
+                                    '' => [],
                                     'routing_key_three' => [],
                                 ],
+                                'base_exchange_three' => [],
                             ],
                         ],
                         'base_exchange_two' => [
                             'connection' => 'my_connection',
                             'name' => 'base_exchange_two',
                             'auto_setup_fabric' => true,
+                        ],
+                        'base_exchange_three' => [
+                            'connection' => 'my_connection',
+                            'name' => 'base_exchange_three',
                         ],
                     ]
                 ]
