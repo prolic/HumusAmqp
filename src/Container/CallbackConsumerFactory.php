@@ -90,9 +90,10 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     {
         $options = $this->options($container->get('config'), $this->consumerName);
 
-        $queue = QueueFactory::$options['queue']($container);
+        $queueName = $options['queue'];
+        $queue = QueueFactory::$queueName($container);
 
-        if (null === $options['loger']) {
+        if (null === $options['logger']) {
             $logger = new NullLogger();
         } else {
             $logger = $container->get($options['logger']);
@@ -100,9 +101,17 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
 
         $deliveryCallback = $container->get($options['delivery_callback']);
 
-        $flushCallback = null === $options['flush_callback'] ? null : $container->get($options['flush_callback']);
+        if (null === $options['flush_callback']) {
+            $flushCallback = null;
+        } else {
+            $flushCallback = $container->get($options['flush_callback']);
+        }
 
-        $errorCallback = null === $options['error_callback'] ? null : $container->get($options['error_callback']);
+        if (null === $options['error_callback']) {
+            $errorCallback = null;
+        } else {
+            $errorCallback = $container->get($options['error_callback']);
+        }
 
         return new CallbackConsumer(
             $queue,
