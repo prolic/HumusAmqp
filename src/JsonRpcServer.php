@@ -147,10 +147,10 @@ final class JsonRpcServer extends AbstractConsumer
      * Handle process flag
      *
      * @param Envelope $envelope
-     * @param $flag
+     * @param DeliveryResult $flag
      * @return void
      */
-    protected function handleProcessFlag(Envelope $envelope, $flag)
+    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
     {
         // do nothing, message was already acknowledged
     }

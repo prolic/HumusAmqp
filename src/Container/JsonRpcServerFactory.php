@@ -89,12 +89,14 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     {
         $options = $this->options($container->get('config'), $this->serverName);
 
-        $queue = QueueFactory::$options['queue']($container);
+        $queueName = $options['queue'];
+        $queue = QueueFactory::$queueName($container);
         $channel = $queue->getChannel();
 
-        $exchange = ExchangeFactory::$options['exchange']($container, $channel);
+        $exchangeName = $options['exchange'];
+        $exchange = ExchangeFactory::$exchangeName($container, $channel);
 
-        if (null === $options['loger']) {
+        if (null === $options['logger']) {
             $logger = new NullLogger();
         } else {
             $logger = $container->get($options['logger']);
@@ -128,6 +130,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
             'consumer_tag' => null,
             'app_id' => '',
             'return_trace' => false,
+            'logger' => null,
         ];
     }
 

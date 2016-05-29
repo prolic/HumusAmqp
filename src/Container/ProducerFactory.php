@@ -89,7 +89,8 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     {
         $options = $this->options($container->get('config'), $this->producerName);
 
-        $exchange = ExchangeFactory::$options['exchange']($container);
+        $exchangeName = $options['exchange'];
+        $exchange = ExchangeFactory::$exchangeName($container);
 
         switch ($options['type']) {
             case 'json':
