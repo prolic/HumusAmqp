@@ -128,16 +128,12 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_ssl()
     {
-        if (true) {
-            $this->markTestSkipped('SSL Connection tests have to be run manually');
-        }
-
         $options = new ConnectionOptions();
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../test_certs/cacert.pem');
-        $options->setCert(__DIR__ . '/../test_certs/cert.pem');
-        $options->setKey(__DIR__ . '/../test_certs/key.pem');
+        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setCert(__DIR__ . '/../../provision/test_certs/cert.pem');
+        $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
         $options->setVerify(false);
 
         $connection = new Connection($options);

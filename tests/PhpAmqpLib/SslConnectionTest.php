@@ -34,13 +34,6 @@ use HumusTest\Amqp\AbstractConnectionTest;
  */
 final class SslConnectionTest extends AbstractConnectionTest
 {
-    protected function setUp()
-    {
-        if (true) {
-            $this->markTestSkipped('SSL Connection tests have to be run manually');
-        }
-    }
-
     /**
      * @test
      */
@@ -52,9 +45,9 @@ final class SslConnectionTest extends AbstractConnectionTest
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../test_certs/cacert.pem');
-        $options->setCert(__DIR__ . '/../test_certs/cert.pem');
-        $options->setKey(__DIR__ . '/../test_certs/key.pem');
+        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setCert(__DIR__ . '/../../provision/test_certs/cert.pem');
+        $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
         $options->setVerify(false);
 
         new SslConnection($options);
@@ -123,9 +116,9 @@ final class SslConnectionTest extends AbstractConnectionTest
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../test_certs/cacert.pem');
-        $options->setCert(__DIR__ . '/../test_certs/cert.pem');
-        $options->setKey(__DIR__ . '/../test_certs/key.pem');
+        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setCert(__DIR__ . '/../../provision/test_certs/cert.pem');
+        $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
         $options->setVerify(false);
 
         return new SslConnection($options);

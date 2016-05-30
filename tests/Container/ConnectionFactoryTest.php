@@ -189,10 +189,6 @@ class ConnectionFactoryTest extends TestCase
      */
     public function it_creates_php_amqplib_ssl_connection()
     {
-        if (true) {
-            $this->markTestSkipped('SSL Connection tests have to be run manually');
-        }
-
         $container = $this->prophesize(ContainerInterface::class);
 
         $container->get('config')->willReturn([
@@ -203,9 +199,9 @@ class ConnectionFactoryTest extends TestCase
                             'type' => 'ssl',
                             'vhost' => '/humus-amqp-test',
                             'port' => 5671,
-                            'cacert' => __DIR__ . '/../test_certs/cacert.pem',
-                            'cert' => __DIR__ . '/../test_certs/cert.pem',
-                            'key' => __DIR__ . '/../test_certs/key.pem',
+                            'cacert' => __DIR__ . '/../../provision/test_certs/cacert.pem',
+                            'cert' => __DIR__ . '/../../provision/test_certs/cert.pem',
+                            'key' => __DIR__ . '/../../provision/test_certs/key.pem',
                             'verify' => false,
                         ]
                     ]
