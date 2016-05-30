@@ -218,6 +218,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements
     public function it_uses_confirm_callback()
     {
         $result = [];
+        $multipleAcks = false;
 
         $producer = new JsonProducer($this->exchange);
 
@@ -225,9 +226,14 @@ abstract class AbstractJsonProducerTest extends TestCase implements
 
         $cnt = 2;
         $producer->setConfirmCallback(
-            function (int $deliveryTag, bool $multiple) use (&$result, &$cnt) {
+            function (int $deliveryTag, bool $multiple) use (&$result, &$cnt, &$multipleAcks) {
                 $result[] = 'acked ' . (string) $deliveryTag;
-                return --$cnt > 0;
+                $multipleAcks = $multiple;
+                $cnt--;
+                if ($multipleAcks) {
+                    return false;
+                }
+                return $cnt > 0;
             },
             function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result) {
                 $result = 'nacked' . (string) $deliveryTag;
@@ -240,9 +246,13 @@ abstract class AbstractJsonProducerTest extends TestCase implements
 
         $producer->waitForConfirm(1.0);
 
-        $this->assertCount(2, $result);
-        $this->assertEquals('acked 1', $result[0]);
-        $this->assertEquals('acked 2', $result[1]);
+        if ($multipleAcks) {
+            $this->assertCount(1, $result);
+        } else {
+            $this->assertCount(2, $result);
+            $this->assertEquals('acked 1', $result[0]);
+            $this->assertEquals('acked 2', $result[1]);
+        }
     }
 
     /**
