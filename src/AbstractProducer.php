@@ -53,8 +53,6 @@ abstract class AbstractProducer implements Producer
 
         if (null !== $defaultAttributes) {
             $this->defaultAttributes = $defaultAttributes;
-        } else {
-            $this->defaultAttributes = static::defaultAttributes();
         }
     }
 

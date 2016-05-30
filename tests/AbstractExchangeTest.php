@@ -300,7 +300,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $channel->setConfirmCallback(
             function (
-                string $delivery_tag,
+                int $deliveryTag,
                 bool $multiple = false
             ) use (&$cnt, &$result) {
                 $result[] = 'Message acked';
@@ -308,7 +308,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
                 return --$cnt > 0;
             },
             function (
-                string $delivery_tag,
+                int $deliveryTag,
                 bool $multiple,
                 bool $requeue
             ) use (&$result) {

@@ -90,8 +90,8 @@ interface Producer
      *
      * Callback functions with all arguments have the following signature:
      *
-     *      function ack_callback(int $delivery_tag, bool $multiple) : bool;
-     *      function nack_callback(int $delivery_tag, bool $multiple, bool $requeue) : bool;
+     *      function ack_callback(int $deliveryTag, bool $multiple) : bool;
+     *      function nack_callback(int $deliveryTag, bool $multiple, bool $requeue) : bool;
      *
      * and should return boolean false when wait loop should be canceled.
      *
@@ -118,11 +118,11 @@ interface Producer
      *
      * Callback function with all arguments has the following signature:
      *
-     *      function callback(int $reply_code,
-     *                        string $reply_text,
+     *      function callback(int $replyCode,
+     *                        string $replyText,
      *                        string $exchange,
-     *                        string $routing_key,
-     *                        AMQPBasicProperties $properties,
+     *                        string $routingKey,
+     *                        Envelope $envelope,
      *                        string $body) : bool;
      *
      * and should return boolean false when wait loop should be canceled.
@@ -136,9 +136,4 @@ interface Producer
      * @param float $timeout Timeout in seconds. May be fractional.
      */
     public function waitForBasicReturn(float $timeout = 0.0);
-
-    /**
-     * @return array
-     */
-    public static function defaultAttributes();
 }

@@ -177,14 +177,14 @@ final class Channel implements ChannelInterface
     {
         if (is_callable($ackCallback)) {
             $innerAckCallback = function (AMQPMessage $message) use ($ackCallback) {
-                return $ackCallback($message->get('delivery_tag'));
+                return $ackCallback((int) $message->get('delivery_tag'), false);
             };
             $this->channel->set_ack_handler($innerAckCallback);
         }
 
         if (is_callable($nackCallback)) {
             $innerNackCallback = function (AMQPMessage $message) use ($ackCallback) {
-                return $ackCallback($message->get('delivery_tag'), false, false);
+                return $ackCallback((int) $message->get('delivery_tag'), false, false);
             };
             $this->channel->set_nack_handler($innerNackCallback);
         }

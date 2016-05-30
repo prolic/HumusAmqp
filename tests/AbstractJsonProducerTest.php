@@ -64,31 +64,24 @@ abstract class AbstractJsonProducerTest extends TestCase implements
     protected $producer;
 
     /**
-     * @var callable
-     */
-    protected $callback;
-
-    /**
      * @var array
      */
     protected $results = [];
 
     protected function setUp()
     {
-        $this->callback = function (Envelope $envelope) {
-            $this->results[] = $envelope->getBody();
-        };
-
         $connection = $this->createConnection();
         $channel = $this->createChannel($connection);
 
         $exchange = $this->createExchange($channel);
         $exchange->setType('topic');
         $exchange->setName('test-exchange');
+        $exchange->delete();
         $exchange->declareExchange();
 
         $queue = $this->createQueue($channel);
         $queue->setName('test-queue');
+        $queue->delete();
         $queue->declareQueue();
         $queue->bind('test-exchange', '#');
 
@@ -184,5 +177,153 @@ abstract class AbstractJsonProducerTest extends TestCase implements
         $this->assertEquals(['baz' => 'bam'], json_decode($msg2->getBody(), true));
 
         $queue->delete();
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_given_attributes()
+    {
+        $producer = new JsonProducer($this->exchange, [
+            'content_type' => 'application/json',
+            'content_encoding' => 'UTF-8',
+            'delivery_mode' => 1,
+            'type' => 'custom_type',
+        ]);
+        $producer->publish(['foo' => 'bar']);
+        $producer->publish(['baz' => 'bam']);
+
+        $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
+        $this->assertEquals('UTF-8', $msg1->getContentEncoding());
+        $this->assertEquals('application/json', $msg1->getContentType());
+        $this->assertEquals(1, $msg1->getDeliveryMode());
+        $this->assertEquals('custom_type', $msg1->getType());
+        $body = json_decode($msg1->getBody(), true);
+
+        $this->assertEquals(['foo' => 'bar'], $body);
+
+        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+        $this->assertEquals('UTF-8', $msg2->getContentEncoding());
+        $this->assertEquals('application/json', $msg2->getContentType());
+        $this->assertEquals(1, $msg2->getDeliveryMode());
+        $this->assertEquals('custom_type', $msg2->getType());
+        $body = json_decode($msg2->getBody(), true);
+
+        $this->assertEquals(['baz' => 'bam'], $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_confirm_callback()
+    {
+        $result = [];
+
+        $producer = new JsonProducer($this->exchange);
+
+        $producer->confirmSelect();
+
+        $cnt = 2;
+        $producer->setConfirmCallback(
+            function (int $deliveryTag, bool $multiple) use (&$result, &$cnt) {
+                $result[] = 'acked ' . (string) $deliveryTag;
+                return --$cnt > 0;
+            },
+            function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result) {
+                $result = 'nacked' . (string) $deliveryTag;
+                return false;
+            }
+        );
+
+        $producer->publish(['foo' => 'bar']);
+        $producer->publish(['baz' => 'bam']);
+
+        $producer->waitForConfirm(1.0);
+
+        $this->assertCount(2, $result);
+        $this->assertEquals('acked 1', $result[0]);
+        $this->assertEquals('acked 2', $result[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_confirm_callback_and_fails()
+    {
+        $result = [];
+        $message = '';
+
+        $connection = $this->createConnection();
+        $channel = $this->createChannel($connection);
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setType('topic');
+        $exchange->setName('invalid-test-exchange');
+
+        $producer = new JsonProducer($exchange);
+
+        $cnt = 2;
+        $producer->setConfirmCallback(
+            function ($deliveryTag, bool $multiple) use (&$result, &$cnt) {
+                $result[] = 'acked ' . (string) $deliveryTag;
+                return --$cnt > 0;
+            },
+            function ($deliveryTag, bool $multiple, bool $requeue) use (&$result) {
+                $result = 'nacked' . (string) $deliveryTag;
+                return false;
+            }
+        );
+
+        $producer->confirmSelect();
+
+        $producer->publish(['foo' => 'bar']);
+
+        try {
+            $producer->waitForConfirm(2.0);
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+        }
+
+        $this->assertRegExp('/NOT_FOUND - no exchange \'invalid-test-exchange\' in vhost \'\/humus-amqp-test\'$/', $message);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_return_callback()
+    {
+        $result = [];
+
+        $this->queue->unbind($this->exchange->getName());
+        $this->queue->delete();
+
+        $producer = new JsonProducer($this->exchange);
+
+        $producer->setReturnCallback(function (
+            int $replyCode,
+            string $replyText,
+            string $exchange,
+            string $routingKey,
+            Envelope $envelope,
+            string $body
+        ) use (&$result) {
+            $result[] = 'Message returned';
+            $result[] = func_get_args();
+            return false;
+        });
+
+        $producer->publish(['foo' => 'bar'], null, Constants::AMQP_MANDATORY);
+
+        $producer->waitForBasicReturn();
+
+        $this->assertCount(2, $result);
+        $this->assertEquals('Message returned', $result[0]);
+        $this->assertCount(6, $result[1]);
+        $this->assertEquals(312, $result[1][0]);
+        $this->assertEquals('NO_ROUTE', $result[1][1]);
+        $this->assertEquals('test-exchange', $result[1][2]);
+        $this->assertEquals('', $result[1][3]);
+        $this->assertInstanceOf(Envelope::class, $result[1][4]);
+        $this->assertEquals(['foo' => 'bar'], json_decode($result[1][5], true));
     }
 }

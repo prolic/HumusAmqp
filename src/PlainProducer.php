@@ -29,16 +29,13 @@ namespace Humus\Amqp;
 final class PlainProducer extends AbstractProducer
 {
     /**
-     * @return array
+     * @var array
      */
-    public static function defaultAttributes()
-    {
-        return [
-            'content_type' => 'text/plain',
-            'content_encoding' => 'UTF-8',
-            'delivery_mode' => 2, // persistent
-        ];
-    }
+    protected $defaultAttributes = [
+        'content_type' => 'text/plain',
+        'content_encoding' => 'UTF-8',
+        'delivery_mode' => 2, // persistent
+    ];
 
     /**
      * @inheritdoc
