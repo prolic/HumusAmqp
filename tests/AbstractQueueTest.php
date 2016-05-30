@@ -119,6 +119,22 @@ abstract class AbstractQueueTest extends TestCase implements
     /**
      * @test
      */
+    public function it_binds_with_arguments()
+    {
+        $this->queue->unbind('test-exchange', '#');
+        $this->queue->bind('test-exchange', null, [
+            'foo' => 'bar',
+            'baz' => 1,
+            'bam' => true,
+            'array' => [
+                's' => 'f'
+            ]
+        ]);
+    }
+
+    /**
+     * @test
+     */
     public function it_unbinds_queue()
     {
         $this->queue->unbind('test-exchange');
