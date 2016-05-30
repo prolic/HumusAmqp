@@ -41,6 +41,7 @@ final class LazyConnection extends AbstractConnection
             $options = new ConnectionOptions($options);
         }
 
+        $this->options = $options;
         $this->connection = new \PhpAmqpLib\Connection\AMQPLazyConnection(
             $options->getHost(),
             $options->getPort(),

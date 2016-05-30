@@ -24,6 +24,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Connection\AbstractConnection as PhpAmqplibAbstractConnection;
 
@@ -37,6 +38,11 @@ abstract class AbstractConnection implements ConnectionInterface
      * @var PhpAmqplibAbstractConnection
      */
     protected $connection;
+
+    /**
+     * @var ConnectionOptions
+     */
+    protected $options;
 
     /**
      * @return PhpAmqplibAbstractConnection
@@ -78,6 +84,14 @@ abstract class AbstractConnection implements ConnectionInterface
         $this->connection->reconnect();
 
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOptions() : ConnectionOptions
+    {
+        return $this->options;
     }
 
     /**

@@ -42,6 +42,7 @@ final class StreamConnection extends AbstractConnection
             $options = new ConnectionOptions($options);
         }
 
+        $this->options = $options;
         $this->connection = new BaseAMQPStreamConnection(
             $options->getHost(),
             $options->getPort(),

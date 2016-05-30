@@ -58,11 +58,6 @@ class RpcClientRequest
     /**
      * @var string|null
      */
-    private $userId = null;
-
-    /**
-     * @var string|null
-     */
     private $messageId = null;
 
     /**
@@ -83,7 +78,6 @@ class RpcClientRequest
      * @param string $requestId
      * @param string|null $routingKey
      * @param int $expiration
-     * @param string|null $userId
      * @param string|null $messageId
      * @param string|null $timestamp
      * @param string|null $type
@@ -94,7 +88,6 @@ class RpcClientRequest
         string $requestId,
         string $routingKey = null,
         int $expiration = 0,
-        string $userId = null,
         string $messageId = null,
         string $timestamp = null,
         string $type = null
@@ -112,7 +105,6 @@ class RpcClientRequest
         $this->requestId = $requestId;
         $this->routingKey = $routingKey;
         $this->expiration = $expiration;
-        $this->userId = $userId;
         $this->messageId = $messageId;
         $this->timestamp = $timestamp;
         $this->type = $type;
@@ -156,14 +148,6 @@ class RpcClientRequest
     public function expiration() : int
     {
         return $this->expiration;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function userId()
-    {
-        return $this->userId;
     }
 
     /**

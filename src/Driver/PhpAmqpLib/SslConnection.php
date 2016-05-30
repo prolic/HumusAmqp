@@ -66,6 +66,7 @@ final class SslConnection extends AbstractConnection
             $sslOptions['local_pk'] = $key;
         }
 
+        $this->options = $options;
         $this->connection = new BaseAMQPSSLConnection(
             $options->getHost(),
             $options->getPort(),

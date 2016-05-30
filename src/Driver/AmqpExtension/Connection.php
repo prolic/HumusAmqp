@@ -39,9 +39,9 @@ final class Connection implements ConnectionInterface
     private $connection;
 
     /**
-     * @var bool
+     * @var ConnectionOptions
      */
-    private $isPersistent;
+    private $options;
 
     /**
      * Connection constructor.
@@ -53,7 +53,7 @@ final class Connection implements ConnectionInterface
             $options = new ConnectionOptions($options);
         }
 
-        $this->isPersistent = $options->getPersistent();
+        $this->options = $options;
         $this->connection = new \AMQPConnection($options->toArray());
     }
 
@@ -78,7 +78,7 @@ final class Connection implements ConnectionInterface
      */
     public function connect()
     {
-        if ($this->isPersistent) {
+        if ($this->options->getPersistent()) {
             $this->connection->pconnect();
         } else {
             $this->connection->connect();
@@ -90,7 +90,7 @@ final class Connection implements ConnectionInterface
      */
     public function disconnect()
     {
-        if ($this->isPersistent) {
+        if ($this->options->getPersistent()) {
             $this->connection->pdisconnect();
         } else {
             $this->connection->disconnect();
@@ -102,11 +102,19 @@ final class Connection implements ConnectionInterface
      */
     public function reconnect() : bool
     {
-        if ($this->isPersistent) {
+        if ($this->options->getPersistent()) {
             return $this->connection->preconnect();
         } else {
             return $this->connection->reconnect();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOptions() : ConnectionOptions
+    {
+        return $this->options;
     }
 
     /**

@@ -42,6 +42,7 @@ final class SocketConnection extends AbstractConnection
             $options = new ConnectionOptions($options);
         }
 
+        $this->options = $options;
         $this->connection = new BaseAMQPSocketConnection(
             $options->getHost(),
             $options->getPort(),

@@ -65,6 +65,11 @@ interface Connection
     public function reconnect() : bool;
 
     /**
+     * @return ConnectionOptions
+     */
+    public function getOptions() : ConnectionOptions;
+
+    /**
      * @return mixed
      */
     public function getResource();

@@ -152,7 +152,10 @@ class JsonRpcClient
     private function getExchange(string $server)
     {
         if (! isset($this->exchanges[$server])) {
-            throw new Exception\InvalidArgumentException('Invalid server given, no related exchange found.');
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Invalid server given, no related exchange "%s" found.',
+                $server
+            ));
         }
 
         return $this->exchanges[$server];
@@ -171,14 +174,11 @@ class JsonRpcClient
             'correlation_id' => $request->requestId(),
             'reply_to' => $this->queue->getName(),
             'app_id' => $this->appId,
+            'user_id' => $this->queue->getConnection()->getOptions()->getLogin(),
          ];
 
         if (0 !== $request->expiration()) {
             $attributes['expiration'] = $request->expiration();
-        }
-
-        if (null !== $request->userId()) {
-            $attributes['user_id'] = $request->userId();
         }
 
         if (null !== $request->messageId()) {
