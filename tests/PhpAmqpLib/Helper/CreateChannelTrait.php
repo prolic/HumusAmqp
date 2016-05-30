@@ -21,7 +21,6 @@
 namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
 use Humus\Amqp\Driver\PhpAmqpLib\AbstractConnection;
-use Humus\Amqp\Driver\PhpAmqpLib\Channel;
 
 /**
  * Class CreateChannelTrait
@@ -35,6 +34,6 @@ trait CreateChannelTrait
             throw new \InvalidArgumentException();
         }
 
-        return new Channel($connection, $connection->getResource()->channel());
+        return $connection->newChannel();
     }
 }
