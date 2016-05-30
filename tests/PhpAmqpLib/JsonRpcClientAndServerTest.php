@@ -36,9 +36,4 @@ class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
     use CreateConnectionTrait;
     use CreateExchangeTrait;
     use CreateQueueTrait;
-
-    protected function setUp()
-    {
-        $this->markTestSkipped('PhpAmqlLib rpc client and server test not working');
-    }
 }

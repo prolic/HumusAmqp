@@ -135,7 +135,7 @@ final class Queue implements QueueInterface
      */
     public function declareQueue() : int
     {
-        return $this->channel->getResource()->queue_declare(
+        $result = $this->channel->getResource()->queue_declare(
             $this->name,
             (bool) ($this->flags & Constants::AMQP_PASSIVE),
             (bool) ($this->flags & Constants::AMQP_DURABLE),
@@ -144,7 +144,11 @@ final class Queue implements QueueInterface
             (bool) ($this->flags & Constants::AMQP_NOWAIT),
             $this->arguments,
             null
-        )[1];
+        );
+
+        $this->name = $result[0];
+
+        return $result[1];
     }
 
     /**

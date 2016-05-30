@@ -53,35 +53,35 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
-        $exchange->setType('direct');
-        $exchange->setName('rpc-client');
-        $exchange->delete();
-        $exchange->declareExchange();
+        $clientExchange = $this->createExchange($channel);
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
 
-        $exchange2 = $this->createExchange($channel);
-        $exchange2->setType('direct');
-        $exchange2->setName('rpc-server');
-        $exchange2->delete();
-        $exchange2->declareExchange();
+        $serverExchange = $this->createExchange($channel);
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
 
-        $queue = $this->createQueue($channel);
-        $queue->setFlags(Constants::AMQP_AUTODELETE);
-        $queue->declareQueue();
-        $queue->bind($exchange->getName());
+        $clientQueue = $this->createQueue($channel);
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
 
-        $queue2 = $this->createQueue($channel);
-        $queue2->setName('rpc-server-queue');
-        $queue2->delete();
-        $queue2->declareQueue();
-        $queue2->bind($exchange2->getName());
+        $serverQueue = $this->createQueue($channel);
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
 
-        $this->addToCleanUp($exchange);
-        $this->addToCleanUp($exchange2);
-        $this->addToCleanUp($queue);
-        $this->addToCleanUp($queue2);
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
 
-        $producer = new JsonRpcClient($queue, ['rpc-server' => $exchange2]);
+        $producer = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
         $producer->addRequest(new RpcClientRequest(1, 'rpc-server', 'request-1'));
         $producer->addRequest(new RpcClientRequest(2, 'rpc-server', 'request-2'));
@@ -90,7 +90,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
             return $envelope->getBody() * 2;
         };
 
-        $server = new JsonRpcServer($queue2, $callback, new NullLogger(), 1.0);
+        $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
 
         $server->consume(2);
 
