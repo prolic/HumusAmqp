@@ -80,7 +80,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements
         };
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setType('topic');
@@ -164,7 +164,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements
         );
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
         $queue = $this->createQueue($channel);
         $queue->setName('text-queue2');
         $queue->declareQueue();

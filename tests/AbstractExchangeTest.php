@@ -60,7 +60,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
     protected function setUp()
     {
         $connection = $this->createConnection();
-        $this->channel = $this->createChannel($connection);
+        $this->channel = $connection->newChannel();
         $this->exchange = $this->createExchange($this->channel);
         $this->queue = $this->createQueue($this->channel);
     }
@@ -152,7 +152,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->setName('test');
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
         $exchange2 = $this->createExchange($channel);
         $exchange2->setType('direct');
         $exchange2->setName('foo');
@@ -176,7 +176,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->setName('test');
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
         $exchange2 = $this->createExchange($channel);
         $exchange2->setType('direct');
         $exchange2->setName('foo');
@@ -200,7 +200,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->setName('test');
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
         $exchange2 = $this->createExchange($channel);
         $exchange2->setType('direct');
         $exchange2->setName('foo');
@@ -224,7 +224,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->setName('test');
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
         $exchange2 = $this->createExchange($channel);
         $exchange2->setType('direct');
         $exchange2->setName('foo');
@@ -246,7 +246,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $result = [];
 
         $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 2]));
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
         $channel->confirmSelect();
 
         try {
@@ -364,7 +364,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->getChannel()->confirmSelect();
 
         $connection = $this->createConnection();
-        $queue = $this->createQueue($this->createChannel($connection));
+        $queue = $this->createQueue($connection->newChannel());
 
         $this->addToCleanUp($queue);
 

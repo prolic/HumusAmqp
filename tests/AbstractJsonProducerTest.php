@@ -71,7 +71,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements
     protected function setUp()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setType('topic');
@@ -158,7 +158,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements
         $producer->confirmSelect();
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
         $queue = $this->createQueue($channel);
         $queue->setName('text-queue2');
         $queue->declareQueue();
@@ -224,34 +224,44 @@ abstract class AbstractJsonProducerTest extends TestCase implements
 
         $producer->confirmSelect();
 
-        $cnt = 2;
         $producer->setConfirmCallback(
-            function (int $deliveryTag, bool $multiple) use (&$result, &$cnt, &$multipleAcks) {
+            function (int $deliveryTag, bool $multiple) use (&$result, &$multipleAcks) {
                 $result[] = 'acked ' . (string) $deliveryTag;
-                $multipleAcks = $multiple;
-                $cnt--;
-                if ($multipleAcks) {
-                    return false;
+                if ($multiple) {
+                    $multipleAcks = $multiple;
                 }
-                return $cnt > 0;
+                return 3 !== $deliveryTag;
             },
             function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result) {
-                $result = 'nacked' . (string) $deliveryTag;
+                $result[] = 'nacked' . (string) $deliveryTag;
                 return false;
             }
         );
 
         $producer->publish(['foo' => 'bar']);
         $producer->publish(['baz' => 'bam']);
+        $producer->publish(['bak' => 'bap']);
 
         $producer->waitForConfirm(1.0);
 
-        if ($multipleAcks) {
-            $this->assertCount(1, $result);
+        if ($multipleAcks && 1 === count($result)) {
+            $this->assertEquals('acked 3', $result[0]);
+        } elseif ($multipleAcks && 2 === count($result)) {
+            $possibilityOne = [
+                'acked 1',
+                'acked 3'
+            ];
+            $possibilityTwo = [
+                'acked 2',
+                'acked 3'
+            ];
+            $this->assertTrue($result === $possibilityOne || $result === $possibilityTwo);
         } else {
-            $this->assertCount(2, $result);
+            $this->assertFalse($multipleAcks);
+            $this->assertCount(3, $result);
             $this->assertEquals('acked 1', $result[0]);
             $this->assertEquals('acked 2', $result[1]);
+            $this->assertEquals('acked 3', $result[2]);
         }
     }
 
@@ -264,7 +274,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements
         $message = '';
 
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setType('topic');

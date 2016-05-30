@@ -28,7 +28,6 @@ use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
-use HumusTest\Amqp\Helper\CanCreateChannel;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
@@ -40,7 +39,6 @@ use PHPUnit_Framework_TestCase as TestCase;
  */
 abstract class AbstractChannelRecoverTest extends TestCase implements
     CanCreateConnection,
-    CanCreateChannel,
     CanCreateExchange,
     CanCreateQueue
 {
@@ -67,7 +65,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
     {
         $result = [];
 
-        $channel1 = $this->createChannel($this->createConnection());
+        $channel1 = $this->createConnection()->newChannel();
         $channel1->setPrefetchCount(5);
 
         $exchange1 = $this->createExchange($channel1);
@@ -106,7 +104,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
         $queue1->cancel(); // we have to do that to prevent redelivering to the same consumer
 
         $newConnection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
-        $channel2 = $this->createChannel($newConnection);
+        $channel2 = $newConnection->newChannel();
         $channel2->setPrefetchCount(8);
 
         $queue2 = $this->createQueue($channel2);

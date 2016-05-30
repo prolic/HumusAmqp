@@ -115,7 +115,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_processes_messages_and_acks()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -221,7 +221,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_processes_messages_and_rejects()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -327,7 +327,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_processes_messages_rejects_and_requeues()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -377,7 +377,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_processes_messages_defers_and_acks_block()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -462,7 +462,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_uses_custom_flush_deferred_callback()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -565,7 +565,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_handles_delivery_exception()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -655,7 +655,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_handles_flush_deferred_exception()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -734,7 +734,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_handles_shutdown_message()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');
@@ -829,7 +829,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     public function it_handles_reconfigure_message()
     {
         $connection = $this->createConnection();
-        $channel = $this->createChannel($connection);
+        $channel = $connection->newChannel();
 
         $exchange = $this->createExchange($channel);
         $exchange->setName('test-exchange');

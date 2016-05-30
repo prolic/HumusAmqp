@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\PhpAmqpLib;
 
 use HumusTest\Amqp\AbstractCallbackConsumerTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
@@ -35,7 +34,6 @@ use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 class CallbackConsumerTest extends AbstractCallbackConsumerTest
 {
     use CreateConnectionTrait;
-    use CreateChannelTrait;
     use CreateExchangeTrait;
     use CreateQueueTrait;
 }

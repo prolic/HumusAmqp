@@ -24,7 +24,6 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 
 use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractChannelTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateChannelTrait;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
 /**
@@ -34,14 +33,13 @@ use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 final class ChannelTest extends AbstractChannelTest
 {
     use CreateConnectionTrait;
-    use CreateChannelTrait;
 
     /**
      * @test
      */
     public function it_changes_qos()
     {
-        $channel = $this->createChannel($this->connection);
+        $channel = $this->connection->newChannel();
 
         $channel->qos(0, 5);
         $channel->setPrefetchSize(0);
@@ -55,7 +53,7 @@ final class ChannelTest extends AbstractChannelTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $channel = $this->createChannel($this->connection);
+        $channel = $this->connection->newChannel();
         $channel->isConnected();
     }
 
@@ -66,7 +64,7 @@ final class ChannelTest extends AbstractChannelTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $channel = $this->createChannel($this->connection);
+        $channel = $this->connection->newChannel();
         $channel->getPrefetchSize();
     }
 
@@ -77,7 +75,7 @@ final class ChannelTest extends AbstractChannelTest
     {
         $this->expectException(BadMethodCallException::class);
 
-        $channel = $this->createChannel($this->connection);
+        $channel = $this->connection->newChannel();
         $channel->getPrefetchCount();
     }
 }

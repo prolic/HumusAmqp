@@ -24,7 +24,7 @@ namespace HumusTest\Amqp\Helper;
  * Class CanCreateQueue
  * @package HumusTest\Amqp\Helper
  */
-interface CanCreateQueue extends CanCreateChannel
+interface CanCreateQueue extends CanCreateConnection
 {
     /**
      * @param \Humus\Amqp\Channel $channel

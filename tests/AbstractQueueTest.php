@@ -61,7 +61,7 @@ abstract class AbstractQueueTest extends TestCase implements
     protected function setUp()
     {
         $connection = $this->createConnection();
-        $this->channel = $this->createChannel($connection);
+        $this->channel = $connection->newChannel();
 
         $this->exchange = $this->createExchange($this->channel);
         $this->exchange->setType('topic');

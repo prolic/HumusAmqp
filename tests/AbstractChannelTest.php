@@ -26,14 +26,14 @@ use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use HumusTest\Amqp\Helper\CanCreateChannel;
+use HumusTest\Amqp\Helper\CanCreateConnection;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractChannelTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
+abstract class AbstractChannelTest extends TestCase implements CanCreateConnection
 {
     /**
      * @var Connection
@@ -48,7 +48,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
     protected function setUp()
     {
         $this->connection = $this->createConnection();
-        $this->channel = $this->createChannel($this->connection);
+        $this->channel = $this->connection->newChannel();
     }
 
     /**
@@ -75,7 +75,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
      */
     public function it_creates_multiple_channels()
     {
-        $this->createChannel($this->connection);
+        $this->connection->newChannel();
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
      */
     public function it_creates_new_exchange()
     {
-        $channel = $this->createChannel($this->connection);
+        $channel = $this->connection->newChannel();
 
         $exchange = $channel->newExchange();
 
@@ -95,7 +95,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateChannel
      */
     public function it_creates_new_queue()
     {
-        $channel = $this->createChannel($this->connection);
+        $channel = $this->connection->newChannel();
 
         $queue = $channel->newQueue();
 

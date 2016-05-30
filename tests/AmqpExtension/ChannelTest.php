@@ -25,7 +25,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\AmqpExtension\Connection;
 use HumusTest\Amqp\AbstractChannelTest;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateChannelTrait;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
 /**
@@ -35,7 +34,6 @@ use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 final class ChannelTest extends AbstractChannelTest
 {
     use CreateConnectionTrait;
-    use CreateChannelTrait;
 
     protected function setUp()
     {
@@ -64,7 +62,7 @@ final class ChannelTest extends AbstractChannelTest
 
         $connection = new Connection(new ConnectionOptions());
 
-        $this->createChannel($connection);
+        $connection->newChannel();
     }
 
     /**
@@ -72,7 +70,7 @@ final class ChannelTest extends AbstractChannelTest
      */
     public function it_changes_qos()
     {
-        $channel = $this->createChannel($this->connection);
+        $channel = $this->connection->newChannel();
         $channel->qos(0, 5);
 
         $this->assertEquals(0, $channel->getPrefetchSize());
