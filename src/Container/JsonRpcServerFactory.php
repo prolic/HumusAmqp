@@ -91,10 +91,8 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
 
         $queueName = $options['queue'];
         $queue = QueueFactory::$queueName($container);
-        $channel = $queue->getChannel();
 
-        $exchangeName = $options['exchange'];
-        $exchange = ExchangeFactory::$exchangeName($container, $channel);
+        $deliveryCallback = $container->get($options['delivery_callback']);
 
         if (null === $options['logger']) {
             $logger = new NullLogger();
@@ -104,7 +102,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
 
         return new JsonRpcServer(
             $queue,
-            $exchange,
+            $deliveryCallback,
             $logger,
             $options['idle_timeout'],
             $options['consumer_tag'],
@@ -140,6 +138,8 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     public function mandatoryOptions()
     {
         return [
+            'queue',
+            'delivery_callback',
             'idle_timeout'
         ];
     }

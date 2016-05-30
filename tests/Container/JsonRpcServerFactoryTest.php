@@ -66,6 +66,7 @@ class JsonRpcServerFactoryTest extends TestCase
                     'json_rpc_server' => [
                         'my_server' => [
                             'exchange' => 'my_exchange',
+                            'delivery_callback' => 'my_callback',
                             'queue' => 'my_queue',
                             'idle_timeout' => 1.5,
                         ],
@@ -76,6 +77,7 @@ class JsonRpcServerFactoryTest extends TestCase
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
         $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $container->get('my_callback')->willReturn(function () {})->shouldBeCalled();
 
         $factory = new JsonRpcServerFactory('my_server');
         $jsonRpcServer = $factory($container->reveal());
@@ -116,6 +118,7 @@ class JsonRpcServerFactoryTest extends TestCase
                     'json_rpc_server' => [
                         'my_server' => [
                             'exchange' => 'my_exchange',
+                            'delivery_callback' => 'my_callback',
                             'queue' => 'my_queue',
                             'idle_timeout' => 1.5,
                             'logger' => 'my_logger',
@@ -127,6 +130,7 @@ class JsonRpcServerFactoryTest extends TestCase
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
         $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $container->get('my_callback')->willReturn(function () {})->shouldBeCalled();
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 
         $serverName = 'my_server';

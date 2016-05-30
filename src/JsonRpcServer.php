@@ -49,7 +49,7 @@ final class JsonRpcServer extends AbstractConsumer
      * Constructor
      *
      * @param Queue $queue
-     * @param Exchange $exchange
+     * @param callable $deliveryCallback
      * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
@@ -58,7 +58,7 @@ final class JsonRpcServer extends AbstractConsumer
      */
     public function __construct(
         Queue $queue,
-        Exchange $exchange,
+        callable $deliveryCallback,
         LoggerInterface $logger,
         float $idleTimeout,
         string $consumerTag = null,
@@ -80,7 +80,9 @@ final class JsonRpcServer extends AbstractConsumer
         }
 
         $this->queue = $queue;
-        $this->exchange = $exchange;
+        $this->exchange = $queue->getChannel()->newExchange();
+        $this->exchange->setType('direct');
+        $this->deliveryCallback = $deliveryCallback;
         $this->logger = $logger;
         $this->idleTimeout = $idleTimeout;
         $this->consumerTag = $consumerTag;
@@ -98,7 +100,7 @@ final class JsonRpcServer extends AbstractConsumer
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
         $this->lastDeliveryTag = $envelope->getDeliveryTag();
-        $this->timestampLastMessage = microtime(1);
+        $this->timestampLastMessage = microtime(true);
         $this->ack();
 
         try {

@@ -121,19 +121,19 @@ class JsonRpcClient
      */
     public function getReplies() : array
     {
-        $now = microtime(1);
+        $now = microtime(true);
         $this->replies = [];
 
         do {
             $message = $this->queue->get(Constants::AMQP_AUTOACK);
 
             if ($message instanceof Envelope) {
-                $this->replies[$message->getCorrelationId()] = json_decode($message->getBody());
+                $this->replies[$message->getCorrelationId()] = json_decode($message->getBody(), true);
             } else {
                 usleep($this->waitMicros);
             }
 
-            $time = microtime(1);
+            $time = microtime(true);
         } while (
             count($this->replies) < $this->requests
             || ($time - $now) < $this->timeout

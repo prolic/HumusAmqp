@@ -208,7 +208,7 @@ abstract class AbstractConsumer implements Consumer
      *
      * @return void
      */
-    protected function shutdown()
+    public function shutdown()
     {
         $this->keepAlive = false;
     }

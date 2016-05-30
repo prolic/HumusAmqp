@@ -20,25 +20,20 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp;
+namespace HumusTest\Amqp\AmqpExtension;
+
+use HumusTest\Amqp\AbstractJsonRpcClientAndServerTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
- * Interface Consumer
- * @package Humus\Amqp
+ * Class JsonRpcClientAndServerTest
+ * @package HumusTest\Amqp\AmqpExtension
  */
-interface Consumer
+class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
 {
-    /**
-     * Start consumer
-     *
-     * @param int $msgAmount
-     */
-    public function consume(int $msgAmount = 0);
-
-    /**
-     * Shutdown consumer
-     * 
-     * @return void
-     */
-    public function shutdown();
+    use CreateConnectionTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
 }

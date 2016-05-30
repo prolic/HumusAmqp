@@ -20,25 +20,25 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp;
+namespace HumusTest\Amqp\PhpAmqpLib;
+
+use HumusTest\Amqp\AbstractJsonRpcClientAndServerTest;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 
 /**
- * Interface Consumer
- * @package Humus\Amqp
+ * Class JsonRpcClientAndServerTest
+ * @package HumusTest\Amqp\PhpAmqpLib
  */
-interface Consumer
+class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
 {
-    /**
-     * Start consumer
-     *
-     * @param int $msgAmount
-     */
-    public function consume(int $msgAmount = 0);
+    use CreateConnectionTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
 
-    /**
-     * Shutdown consumer
-     * 
-     * @return void
-     */
-    public function shutdown();
+    protected function setUp()
+    {
+        $this->markTestSkipped('PhpAmqlLib rpc client and server test not working');
+    }
 }
