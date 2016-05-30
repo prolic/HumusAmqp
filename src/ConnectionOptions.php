@@ -240,7 +240,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getCACert() : string
+    public function getCACert()
     {
         return $this->cacert;
     }
@@ -256,7 +256,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getCert() : string
+    public function getCert()
     {
         return $this->cert;
     }
@@ -272,7 +272,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getKey() : string
+    public function getKey()
     {
         return $this->key;
     }
@@ -288,7 +288,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return bool
      */
-    public function getVerify() : bool
+    public function getVerify()
     {
         return $this->verify;
     }
