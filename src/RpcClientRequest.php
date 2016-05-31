@@ -77,7 +77,7 @@ class RpcClientRequest
      * @param string $server
      * @param string $requestId
      * @param string|null $routingKey
-     * @param int $expiration
+     * @param float $expiration in seconds
      * @param string|null $messageId
      * @param string|null $timestamp
      * @param string|null $type
@@ -87,7 +87,7 @@ class RpcClientRequest
         string $server,
         string $requestId,
         string $routingKey = null,
-        int $expiration = 0,
+        float $expiration = 0,
         string $messageId = null,
         string $timestamp = null,
         string $type = null
@@ -98,7 +98,6 @@ class RpcClientRequest
 
         Assertion::minLength($server, 1);
         Assertion::minLength($requestId, 1);
-        Assertion::min($expiration, 0);
 
         $this->payload = $payload;
         $this->server = $server;
@@ -143,9 +142,10 @@ class RpcClientRequest
     }
 
     /**
-     * @return int
+     * Expiration in seconds
+     * @return float
      */
-    public function expiration() : int
+    public function expiration() : float
     {
         return $this->expiration;
     }

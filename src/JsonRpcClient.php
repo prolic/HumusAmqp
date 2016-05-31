@@ -46,11 +46,6 @@ class JsonRpcClient
     private $replies = [];
 
     /**
-     * @var int
-     */
-    private $timeout = 0;
-
-    /**
      * Microseconds to wait between two tries when reply is not yet there
      *
      * @var int
@@ -101,10 +96,6 @@ class JsonRpcClient
         $exchange->publish(json_encode($request->payload()), $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
         $this->requests++;
-
-        if ($request->expiration() > $this->timeout) {
-            $this->timeout = $request->expiration();
-        }
     }
 
     /**
@@ -117,9 +108,10 @@ class JsonRpcClient
      *     'message_id_2' => ['success' => false, 'error' => 'invalid parameters']
      * )
      *
+     * @param float $timeout in seconds
      * @return array
      */
-    public function getReplies() : array
+    public function getReplies(float $timeout = 0) : array
     {
         $now = microtime(true);
         $this->replies = [];
@@ -136,11 +128,10 @@ class JsonRpcClient
             $time = microtime(true);
         } while (
             count($this->replies) < $this->requests
-            || ($time - $now) < $this->timeout
+            || ($timeout > 0 && (($time - $now) < $timeout))
         );
 
         $this->requests = 0;
-        $this->timeout = 0;
 
         return $this->replies;
     }
@@ -175,10 +166,10 @@ class JsonRpcClient
             'reply_to' => $this->queue->getName(),
             'app_id' => $this->appId,
             'user_id' => $this->queue->getConnection()->getOptions()->getLogin(),
-         ];
+        ];
 
-        if (0 !== $request->expiration()) {
-            $attributes['expiration'] = $request->expiration();
+        if (0 < $request->expiration()) {
+            $attributes['expiration'] = (int) floor($request->expiration() * 1000); // in microseconds
         }
 
         if (null !== $request->messageId()) {

@@ -47,11 +47,13 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
 
     /**
      * @test
+     * @group my
      */
     public function it_sends_requests_and_server_responds()
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
 
         $clientExchange = $this->createExchange($channel);
         $clientExchange->setType('direct');
@@ -59,7 +61,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel);
+        $serverExchange = $this->createExchange($channel2);
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
@@ -70,7 +72,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
 
-        $serverQueue = $this->createQueue($channel);
+        $serverQueue = $this->createQueue($channel2);
         $serverQueue->setName('rpc-server-queue');
         $serverQueue->delete();
         $serverQueue->declareQueue();
