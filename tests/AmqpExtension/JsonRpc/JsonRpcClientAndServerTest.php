@@ -20,18 +20,18 @@
 
 declare (strict_types=1);
 
-namespace HumusTest\Amqp\PhpAmqpLib;
+namespace HumusTest\Amqp\AmqpExtension\JsonRpc;
 
-use HumusTest\Amqp\AbstractJsonRpcClientAndServerTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+use HumusTest\Amqp\JsonRpc\AbstractClientAndServerTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
- * Class JsonRpcClientAndServerTest
- * @package HumusTest\Amqp\PhpAmqpLib
+ * Class ClientAndServerTest
+ * @package HumusTest\Amqp\AmqpExtension\JsonRpc
  */
-class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
+class ClientAndServerTest extends AbstractClientAndServerTest
 {
     use CreateConnectionTrait;
     use CreateExchangeTrait;

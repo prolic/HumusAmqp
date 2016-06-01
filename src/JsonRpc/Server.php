@@ -20,15 +20,21 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp;
+namespace Humus\Amqp\JsonRpc;
 
+use Humus\Amqp\AbstractConsumer;
+use Humus\Amqp\Constants;
+use Humus\Amqp\DeliveryResult;
+use Humus\Amqp\Envelope;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class JsonRpcServer
- * @package Humus\Amqp
+ * Class Server
+ * @package Humus\Amqp\JsonRpc
  */
-final class JsonRpcServer extends AbstractConsumer
+final class Server extends AbstractConsumer
 {
     /**
      * @var Exchange

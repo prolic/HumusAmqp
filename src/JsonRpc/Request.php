@@ -20,15 +20,15 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp;
+namespace Humus\Amqp\JsonRpc;
 
 use Assert\Assertion;
 
 /**
- * Class RpcClientRequest
- * @package Humus\Amqp
+ * Class Request
+ * @package Humus\Amqp\JsonRpc
  */
-class RpcClientRequest
+class Request
 {
     /**
      * @var array|string|integer|float|bool
@@ -71,7 +71,7 @@ class RpcClientRequest
     private $type = null;
 
     /**
-     * RpcClientRequest constructor.
+     * Request constructor.
      *
      * @param array|string|integer|float|bool $payload
      * @param string $server

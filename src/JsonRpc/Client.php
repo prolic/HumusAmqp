@@ -20,15 +20,20 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp;
+namespace Humus\Amqp\JsonRpc;
 
 use Assert\Assertion;
+use Humus\Amqp\Constants;
+use Humus\Amqp\Envelope;
+use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 
 /**
- * Class JsonRpcClient
- * @package Humus\Amqp
+ * Class Client
+ * @package Humus\Amqp\JsonRpc
  */
-class JsonRpcClient
+class Client
 {
     /**
      * @var Queue
@@ -70,7 +75,7 @@ class JsonRpcClient
      * @param int $waitMicros
      * @param string $appId
      */
-    public function __construct(Queue $queue, array $exchanges, int $waitMicros = 1000, string $appId = '')
+    public function __construct(Queue $queue, array $exchanges, int $waitMicros = 5000, string $appId = '')
     {
         Assertion::min($waitMicros, 1);
         Assertion::notEmpty($exchanges, 'No exchanges given');
@@ -85,10 +90,10 @@ class JsonRpcClient
     /**
      * Add a request to rpc client
      *
-     * @param RpcClientRequest $request
+     * @param Request $request
      * @throws Exception\InvalidArgumentException
      */
-    public function addRequest(RpcClientRequest $request)
+    public function addRequest(Request $request)
     {
         $attributes = $this->createAttributes($request);
 
@@ -153,10 +158,10 @@ class JsonRpcClient
     }
 
     /**
-     * @param RpcClientRequest $request
+     * @param Request $request
      * @return array
      */
-    private function createAttributes(RpcClientRequest $request) : array
+    private function createAttributes(Request $request) : array
     {
         $attributes = [
             'content_type' => 'application/json',

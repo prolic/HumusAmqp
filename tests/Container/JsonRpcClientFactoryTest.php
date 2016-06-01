@@ -24,6 +24,7 @@ namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Container\JsonRpcClientFactory;
 use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\JsonRpc\Client;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -80,7 +81,7 @@ class JsonRpcClientFactoryTest extends TestCase
         $factory = new JsonRpcClientFactory('my_client');
         $jsonRpcClient = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\JsonRpcClient::class, $jsonRpcClient);
+        $this->assertInstanceOf(Client::class, $jsonRpcClient);
     }
 
     /**
@@ -130,7 +131,7 @@ class JsonRpcClientFactoryTest extends TestCase
         $clientName = 'my_client';
         $jsonRpcClient = JsonRpcClientFactory::$clientName($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\JsonRpcClient::class, $jsonRpcClient);
+        $this->assertInstanceOf(Client::class, $jsonRpcClient);
     }
 
     /**
@@ -191,6 +192,6 @@ class JsonRpcClientFactoryTest extends TestCase
         $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
         $factory = new JsonRpcClientFactory('my_client');
-        $jsonRpcClient = $factory($container->reveal());
+        $factory($container->reveal());
     }
 }

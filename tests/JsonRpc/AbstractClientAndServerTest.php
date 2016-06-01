@@ -20,13 +20,13 @@
 
 declare (strict_types=1);
 
-namespace HumusTest\Amqp;
+namespace HumusTest\Amqp\JsonRpc;
 
 use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
-use Humus\Amqp\JsonRpcClient;
-use Humus\Amqp\JsonRpcServer;
-use Humus\Amqp\RpcClientRequest;
+use Humus\Amqp\JsonRpc\Client;
+use Humus\Amqp\JsonRpc\Server;
+use Humus\Amqp\JsonRpc\Request;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
@@ -35,10 +35,10 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Psr\Log\NullLogger;
 
 /**
- * Class AbstractJsonRpcClientAndServerTest
- * @package HumusTest\Amqp
+ * Class AbstractClientAndServerTest
+ * @package HumusTest\Amqp\JsonRpc
  */
-abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
+abstract class AbstractClientAndServerTest extends TestCase implements
     CanCreateConnection,
     CanCreateExchange,
     CanCreateQueue
@@ -83,11 +83,11 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
         $time = time();
-        $request1 = new RpcClientRequest(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
-        $request2 = new RpcClientRequest(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
+        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
@@ -96,7 +96,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
             return $envelope->getBody() * 2;
         };
 
-        $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
+        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
 
         $server->consume(2);
 
@@ -140,8 +140,8 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $this->addToCleanUp($serverExchange);
         $this->addToCleanUp($clientQueue);
 
-        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $client->addRequest(new RpcClientRequest(1, 'invalid-rpc-server', 'request-1'));
+        $client->addRequest(new Request(1, 'invalid-rpc-server', 'request-1'));
     }
 }
