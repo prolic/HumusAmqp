@@ -112,7 +112,7 @@ final class Server extends AbstractConsumer
         try {
             $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
 
-            if ($envelope->getAppId() === __NAMESPACE__) {
+            if ($envelope->getAppId() === 'Humus\Amqp') {
                 $this->handleInternalMessage($envelope);
             } else {
                 $callback = $this->deliveryCallback;

@@ -111,6 +111,142 @@ abstract class AbstractClientAndServerTest extends TestCase implements
     /**
      * @test
      */
+    public function it_sends_requests_and_server_responds_and_handles_exception()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $this->createExchange($channel);
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $this->createExchange($channel2);
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $this->createQueue($channel);
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $this->createQueue($channel2);
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $time = time();
+        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
+        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $callback = function (Envelope $envelope) {
+            $body = $envelope->getBody();
+            if ("1" === $body) {
+                throw new \Exception('invalid body');
+            }
+            return $body * 2;
+        };
+
+        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+
+        $server->consume(2);
+
+        $replies = $client->getReplies();
+
+        $this->assertCount(2, $replies);
+        $this->assertEquals(false, $replies['request-1']['success']);
+        $this->assertEquals('invalid body', $replies['request-1']['error']);
+        $this->assertEquals(true, $replies['request-2']['success']);
+        $this->assertEquals(4, $replies['request-2']['result']);
+    }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_sends_requests_and_server_responds_and_handles_exception_with_trace()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $this->createExchange($channel);
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $this->createExchange($channel2);
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $this->createQueue($channel);
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $this->createQueue($channel2);
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $time = time();
+        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
+        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $callback = function (Envelope $envelope) {
+            $body = $envelope->getBody();
+            if ("2" === $body) {
+                throw new \Exception('invalid body');
+            }
+            return $body * 2;
+        };
+
+        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0, null, '', true);
+
+        $server->consume(2);
+
+        $replies = $client->getReplies();
+
+        $this->assertCount(2, $replies);
+        $this->assertEquals(true, $replies['request-1']['success']);
+        $this->assertEquals(2, $replies['request-1']['result']);
+        $this->assertEquals(false, $replies['request-2']['success']);
+        $this->assertEquals('invalid body', $replies['request-2']['error']);
+        $this->assertArrayHasKey('trace', $replies['request-2']);
+    }
+
+    /**
+     * @test
+     */
     public function it_sends_requests_and_server_times_out()
     {
         $connection = $this->createConnection();
