@@ -93,8 +93,8 @@ class Request
         string $timestamp = null,
         string $type = null
     ) {
-        if (!is_array($payload) && !is_scalar($payload)) {
-            throw new Exception\InvalidArgumentException('$payload must be of type array or scalar');
+        if (!is_array($payload) && !is_scalar($payload) && null !== $payload) {
+            throw new Exception\InvalidArgumentException('Payload must be of type array, scalar or null');
         }
 
         Assertion::minLength($server, 1);
