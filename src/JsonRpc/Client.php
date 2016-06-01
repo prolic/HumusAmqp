@@ -75,7 +75,7 @@ class Client
      * @param int $waitMicros
      * @param string $appId
      */
-    public function __construct(Queue $queue, array $exchanges, int $waitMicros = 5000, string $appId = '')
+    public function __construct(Queue $queue, array $exchanges, int $waitMicros = 10000, string $appId = '')
     {
         Assertion::min($waitMicros, 1);
         Assertion::notEmpty($exchanges, 'No exchanges given');
@@ -129,11 +129,10 @@ class Client
             } else {
                 usleep($this->waitMicros);
             }
-
             $time = microtime(true);
         } while (
             count($this->replies) < $this->requests
-            || ($timeout > 0 && (($time - $now) < $timeout))
+            && (0 == $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
         );
 
         $this->requests = 0;
@@ -174,7 +173,7 @@ class Client
         ];
 
         if (0 < $request->expiration()) {
-            $attributes['expiration'] = (int) floor($request->expiration() * 1000); // in microseconds
+            $attributes['expiration'] = $request->expiration();
         }
 
         if (null !== $request->messageId()) {

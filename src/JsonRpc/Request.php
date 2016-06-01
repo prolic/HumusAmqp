@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\JsonRpc;
 
 use Assert\Assertion;
+use Humus\Amqp\Exception;
 
 /**
  * Class Request
@@ -77,7 +78,7 @@ class Request
      * @param string $server
      * @param string $requestId
      * @param string|null $routingKey
-     * @param float $expiration in seconds
+     * @param int $expiration in milliseconds
      * @param string|null $messageId
      * @param string|null $timestamp
      * @param string|null $type
@@ -87,7 +88,7 @@ class Request
         string $server,
         string $requestId,
         string $routingKey = null,
-        float $expiration = 0,
+        int $expiration = 0, // in milliseconds
         string $messageId = null,
         string $timestamp = null,
         string $type = null
@@ -142,10 +143,10 @@ class Request
     }
 
     /**
-     * Expiration in seconds
-     * @return float
+     * Expiration in milliseconds
+     * @return int
      */
-    public function expiration() : float
+    public function expiration() : int
     {
         return $this->expiration;
     }

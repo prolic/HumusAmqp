@@ -47,7 +47,6 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
     /**
      * @test
-     * @group my
      */
     public function it_sends_requests_and_server_responds()
     {
@@ -107,6 +106,133 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->assertEquals(2, $replies['request-1']['result']);
         $this->assertEquals(true, $replies['request-2']['success']);
         $this->assertEquals(4, $replies['request-2']['result']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_requests_and_server_times_out()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $this->createExchange($channel);
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $this->createExchange($channel2);
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $this->createQueue($channel);
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $this->createQueue($channel2);
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $time = time();
+        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
+        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $callback = function (Envelope $envelope) {
+            return $envelope->getBody() * 2;
+        };
+
+        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+
+        $server->consume(1);
+
+        $replies = $client->getReplies(1);
+
+        $this->assertCount(1, $replies);
+        $this->assertEquals(true, $replies['request-1']['success']);
+        $this->assertEquals(2, $replies['request-1']['result']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_ttl_requests_and_server_responds_late()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $this->createExchange($channel);
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $this->createExchange($channel2);
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $this->createQueue($channel);
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $this->createQueue($channel2);
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $time = time();
+        $request1 = new Request(1, 'rpc-server', 'request-1', null, 100, 'my_user', 'message-id-1', (string) $time, 'times2');
+        $request2 = new Request(2, 'rpc-server', 'request-2', null, 100, 'my_user', 'message-id-2', (string) $time, 'times2');
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $callback = function (Envelope $envelope) {
+            return $envelope->getBody() * 2;
+        };
+
+        sleep(1);
+
+        $serverExchange->publish('shutdown', null, Constants::AMQP_NOPARAM, [
+            'type' => 'shutdown',
+            'app_id' => 'Humus\Amqp',
+        ]);
+
+        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+
+        $server->consume(1);
+
+        $replies = $client->getReplies(0.2);
+
+        $this->assertCount(0, $replies);
     }
 
     /**
