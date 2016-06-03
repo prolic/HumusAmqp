@@ -562,6 +562,63 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     /**
      * @test
      */
+    public function it_rejects_and_requeues_on_flush_deferred()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 7; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+
+        $flushes = 0;
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            $this->logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return DeliveryResult::MSG_DEFER();
+            },
+            function () use (&$result, &$flushes) {
+                $flushes++;
+                $result[] = 'flushed';
+                if (1 === $flushes) {
+                    return FlushDeferredResult::MSG_REJECT_REQUEUE();
+                }
+                return FlushDeferredResult::MSG_ACK();
+            },
+            null,
+            null,
+            3
+        );
+
+        $consumer->consume(9);
+
+        $this->assertCount(12, $result);
+        $this->assertEquals(3, $flushes);
+    }
+
+    /**
+     * @test
+     */
     public function it_handles_delivery_exception()
     {
         $connection = $this->createConnection();
@@ -959,5 +1016,134 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $this->assertEquals('info', $loggerResult[16]['level']);
         $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[16]['message']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_errors_invalid_reconfigure_message()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        $exchange->publish(
+            json_encode([
+                'invalid'
+            ]),
+            null,
+            Constants::AMQP_NOPARAM,
+            [
+                'app_id' => 'Humus\Amqp',
+                'type' => 'reconfigure',
+            ]
+        );
+
+        $result = [];
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            $this->logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return DeliveryResult::MSG_ACK();
+            }
+        );
+
+        $consumer->consume(1);
+
+        $this->assertEquals([], $result);
+
+        $loggerResult = $this->logger->loggerResult();
+
+        $this->assertCount(4, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+
+        $this->assertEquals('info', $loggerResult[1]['level']);
+        $this->assertEquals('Reconfigure message received', $loggerResult[1]['message']);
+
+        $this->assertEquals('error', $loggerResult[2]['level']);
+        $this->assertEquals('Exception during reconfiguration: Undefined offset: 1', $loggerResult[2]['message']);
+
+        $this->assertEquals('debug', $loggerResult[3]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[3]['message']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_errors_invalid_internal_message()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $exchange = $this->createExchange($channel);
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $this->createQueue($channel);
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        $exchange->publish(
+            json_encode(['invalid']),
+            null,
+            Constants::AMQP_NOPARAM,
+            [
+                'app_id' => 'Humus\Amqp',
+                'type' => 'invalid',
+            ]
+        );
+
+        $result = [];
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            $this->logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return DeliveryResult::MSG_ACK();
+            }
+        );
+
+        $consumer->consume(1);
+
+        $this->assertEquals([], $result);
+
+        $loggerResult = $this->logger->loggerResult();
+
+        $this->assertCount(3, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+
+        $this->assertEquals('error', $loggerResult[1]['level']);
+        $this->assertEquals('Invalid internal message: invalid', $loggerResult[1]['message']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[2]['message']);
     }
 }

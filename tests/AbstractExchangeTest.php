@@ -96,13 +96,13 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $this->exchange->setArguments([
             'foo' => 'bar',
-            'baz' => 'bam'
+            'baz' => 'bam',
         ]);
 
         $this->assertEquals(
             [
                 'foo' => 'bar',
-                'baz' => 'bam'
+                'baz' => 'bam',
             ],
             $this->exchange->getArguments()
         );
@@ -129,6 +129,10 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->setName('test');
         $this->exchange->setArguments([
             'foo' => 'bar',
+            'array' => [
+                'foo' => 'bar',
+            ],
+            'int' => 2,
         ]);
         $this->exchange->declareExchange();
     }
@@ -209,7 +213,14 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->declareExchange();
         $exchange2->declareExchange();
 
-        $this->exchange->bind($exchange2->getName(), '', ['foo' => 'bar']);
+        $this->exchange->bind($exchange2->getName(), '', [
+            'foo' => 'bar',
+            'array' => [
+                'foo' => 'bar',
+            ],
+            'int' => 2,
+            'bool' => true,
+        ]);
 
         $this->exchange->unbind($exchange2->getName());
     }

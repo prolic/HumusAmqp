@@ -373,9 +373,8 @@ abstract class AbstractConsumer implements Consumer
             $this->logger->info('Shutdown message received');
             $this->shutdown();
 
-            return DeliveryResult::MSG_ACK();
-        }
-        if ('reconfigure' === $envelope->getType()) {
+            $result = DeliveryResult::MSG_ACK();
+        } elseif ('reconfigure' === $envelope->getType()) {
             $this->logger->info('Reconfigure message received');
             try {
                 list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
@@ -398,8 +397,13 @@ abstract class AbstractConsumer implements Consumer
             $this->target = $target;
             $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
 
-            return DeliveryResult::MSG_ACK();
+            $result = DeliveryResult::MSG_ACK();
+        } else {
+            $this->logger->error('Invalid internal message: ' . $envelope->getType());
+            $result = DeliveryResult::MSG_REJECT();
         }
+
+        return $result;
     }
 
     /**
