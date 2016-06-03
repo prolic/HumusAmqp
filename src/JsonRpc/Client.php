@@ -41,9 +41,9 @@ class Client
     private $queue;
 
     /**
-     * @var int
+     * @var string[]
      */
-    private $requests = 0;
+    private $requestIds = [];
 
     /**
      * @var ResponseCollection
@@ -101,7 +101,7 @@ class Client
         $exchange = $this->getExchange($request->server());
         $exchange->publish(json_encode($request->params()), $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
-        $this->requests++;
+        $this->requestIds[] = $request->id();
     }
 
     /**
@@ -113,7 +113,7 @@ class Client
     public function getResponseCollection(float $timeout = 0) : ResponseCollection
     {
         $now = microtime(true);
-        $this->replies = [];
+        $this->responseCollection = new ResponseCollection();
 
         do {
             $message = $this->queue->get(Constants::AMQP_AUTOACK);
@@ -125,16 +125,13 @@ class Client
             }
             $time = microtime(true);
         } while (
-            $this->responseCollection->count() < $this->requests
+            $this->responseCollection->count() < count($this->requestIds)
             && (0 == $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
         );
 
-        $responseCollection = $this->responseCollection;
+        $this->requestIds = [];
 
-        $this->requests = 0;
-        $this->responseCollection = new ResponseCollection();
-        
-        return $responseCollection;
+        return $this->responseCollection;
     }
 
     /**
@@ -191,30 +188,40 @@ class Client
             || $envelope->getContentEncoding() !== 'UTF-8'
             || $envelope->getContentType() !== 'application/json'
         ) {
-            throw new Exception\RuntimeException(
-                'Received invalid response from json rpc server'
-            );
+            return new Response(null, new Error(Error::ERROR_CODE_32603, 'Invalid JSON-RPC response'));
         }
         
         $payload = json_decode($envelope->getBody(), true);
-        
-        if (isset($payload['result'])) {
-            return new Response($payload['result'], null, $envelope->getCorrelationId());
+
+        if (null === $payload) {
+            $response = new Response(
+                null,
+                new Error(Error::ERROR_CODE_32603, 'JSON cannot be decoded'),
+                $envelope->getCorrelationId()
+            );
+        } elseif (! in_array($envelope->getCorrelationId(), $this->requestIds)) {
+            $response = new Response(
+                null,
+                new Error(Error::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs'),
+                $envelope->getCorrelationId()
+            );
+        } elseif (isset($payload['result'])) {
+            $response = new Response($payload['result'], null, $envelope->getCorrelationId());
         } elseif (! isset($payload['error']['code'])
             || ! isset($payload['error']['message'])
             || ! is_int($payload['error']['code'])
             || ! is_string($payload['error']['message'])
         ) {
-            throw new Exception\RuntimeException(
-                'Received invalid response from json rpc server'
+            $response = new Response(null, new Error(Error::ERROR_CODE_32603, 'Invalid JSON-RPC response'));
+        } else {
+            $response = new Response(
+                null,
+                new Error($payload['error']['code'], $payload['error']['message']),
+                $envelope->getCorrelationId(),
+                $payload['data'] ?? null
             );
         }
-        
-        return new Response(
-            null,
-            new Error($payload['error']['code'], $payload['error']['message']),
-            $envelope->getCorrelationId(),
-            $payload['data'] ?? null
-        );
+
+        return $response;
     }
 }

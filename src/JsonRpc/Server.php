@@ -168,7 +168,7 @@ final class Server extends AbstractConsumer
                     'code' => $response->error()->code(),
                     'message' => $response->error()->message(),
                 ],
-                'data' => $response->error()->data(),
+                'data' => $response->data(),
             ];
         } else {
             $payload = [
