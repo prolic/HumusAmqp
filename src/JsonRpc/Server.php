@@ -76,11 +76,11 @@ final class Server extends AbstractConsumer
             $consumerTag = bin2hex(random_bytes(24));
         }
 
-        if (function_exists('pcntl_signal_dispatch')) {
-            $this->usePcntlSignalDispatch = true;
-        }
+        if (extension_loaded('pcntl')) {
+            declare (ticks = 1);
 
-        if (function_exists('pcntl_signal')) {
+            $this->usePcntlSignalDispatch = true;
+
             pcntl_signal(SIGTERM, [$this, 'shutdown']);
             pcntl_signal(SIGINT, [$this, 'shutdown']);
             pcntl_signal(SIGHUP, [$this, 'shutdown']);

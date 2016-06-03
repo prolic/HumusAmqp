@@ -71,7 +71,7 @@ class ResponseCollection implements Countable, IteratorAggregate
     {
         return count($this->responses);
     }
-    
+
     /**
      * @return \ArrayIterator
      */

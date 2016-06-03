@@ -72,7 +72,7 @@ class Error
                 $code
             ));
         }
-        
+
         if (null === $message) {
             $message = $this->recommendedMessagePhrases[$code];
         }

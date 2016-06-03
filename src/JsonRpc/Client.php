@@ -190,7 +190,7 @@ class Client
         ) {
             return new Response(null, new Error(Error::ERROR_CODE_32603, 'Invalid JSON-RPC response'));
         }
-        
+
         $payload = json_decode($envelope->getBody(), true);
 
         if (null === $payload) {

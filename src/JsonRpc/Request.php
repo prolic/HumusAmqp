@@ -31,7 +31,7 @@ use Humus\Amqp\Exception;
  */
 class Request
 {
-    CONST JSONRPC = "2.0";
+    const JSONRPC = "2.0";
 
     /**
      * @var string
