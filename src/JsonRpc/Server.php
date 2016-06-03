@@ -26,6 +26,7 @@ use Humus\Amqp\AbstractConsumer;
 use Humus\Amqp\Constants;
 use Humus\Amqp\DeliveryResult;
 use Humus\Amqp\Envelope;
+use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Psr\Log\LoggerInterface;
@@ -109,23 +110,33 @@ final class Server extends AbstractConsumer
         $this->timestampLastMessage = microtime(true);
         $this->ack();
 
-        try {
-            $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
+        $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
 
-            if ($envelope->getAppId() === 'Humus\Amqp') {
-                $this->handleInternalMessage($envelope);
-            } else {
-                $callback = $this->deliveryCallback;
-                $result = $callback($envelope, $queue);
-                $response = ['success' => true, 'result' => $result];
-                $this->sendReply($response, $envelope);
+        if ($envelope->getAppId() === 'Humus\Amqp') {
+            $this->handleInternalMessage($envelope);
+            return DeliveryResult::MSG_ACK();
+        }
+
+        try {
+            $request = $this->requestFromEnvelope($envelope);
+            $e = null;
+
+            $callback = $this->deliveryCallback;
+            $response = $callback($request);
+
+            if (!$response instanceof Response) {
+                $response = new Response($response, null, $envelope->getCorrelationId());
             }
+        } catch (Exception\InvalidJsonRpcVersion $e) {
+            $response = new Response(null, new Error(Error::ERROR_CODE_32600), $envelope->getCorrelationId());
+        } catch (Exception\InvalidJsonRpcRequest $e) {
+            $response = new Response(null, new Error(Error::ERROR_CODE_32600), $envelope->getCorrelationId());
+        } catch (Exception\JsonParseError $e) {
+            $response = new Response(null, new Error(Error::ERROR_CODE_32700), $envelope->getCorrelationId());
         } catch (\Exception $e) {
-            $response = ['success' => false, 'error' => $e->getMessage()];
-            if ($this->returnTrace) {
-                $response['trace'] = $e->getTraceAsString();
-            }
-            $this->sendReply($response, $envelope);
+            $response = new Response(null, new Error(Error::ERROR_CODE_32603), $envelope->getCorrelationId());
+        } finally {
+            $this->sendReply($response, $envelope, $e);
         }
 
         return DeliveryResult::MSG_ACK();
@@ -133,12 +144,12 @@ final class Server extends AbstractConsumer
 
     /**
      * Send reply to rpc client
-     *
-     * @param array $response
+     * 
+     * @param Response $response
      * @param Envelope $envelope
-     * @param Envelope $envelope
+     * @param \Exception|null $e
      */
-    protected function sendReply(array $response, Envelope $envelope)
+    protected function sendReply(Response $response, Envelope $envelope, \Exception $e = null)
     {
         $attributes = [
             'content_type' => 'application/json',
@@ -146,9 +157,26 @@ final class Server extends AbstractConsumer
             'delivery_mode' => 2,
             'correlation_id' => $envelope->getCorrelationId(),
             'app_id' => $this->appId,
+            'headers' => [
+                'jsonrpc' => Response::JSONRPC,
+            ]
         ];
 
-        $this->exchange->publish(json_encode($response), $envelope->getReplyTo(), Constants::AMQP_NOPARAM, $attributes);
+        if ($response->hasError()) {
+            $payload = [
+                'error' => [
+                    'code' => $response->error()->code(),
+                    'message' => $response->error()->message(),
+                ],
+                'data' => $response->error()->data(),
+            ];
+        } else {
+            $payload = [
+                'result' => $response->result(),
+            ];
+        }
+
+        $this->exchange->publish(json_encode($payload), $envelope->getReplyTo(), Constants::AMQP_NOPARAM, $attributes);
     }
 
     /**
@@ -161,5 +189,39 @@ final class Server extends AbstractConsumer
     protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
     {
         // do nothing, message was already acknowledged
+    }
+
+    /**
+     * @param Envelope $envelope
+     * @return Request
+     * @throws Exception\InvalidJsonRpcVersion
+     * @throws Exception\JsonParseError
+     */
+    protected function requestFromEnvelope(Envelope $envelope) : Request
+    {
+        if ($envelope->getHeader('jsonrpc') !== Request::JSONRPC) {
+            throw new Exception\InvalidJsonRpcVersion();
+        }
+
+        if ($envelope->getContentEncoding() !== 'UTF-8'
+            || $envelope->getContentType() !== 'application/json') {
+            throw new Exception\InvalidJsonRpcRequest();
+        }
+
+        $payload = json_decode($envelope->getBody(), true);
+
+        if (0 != json_last_error()) {
+            throw new Exception\JsonParseError();
+        }
+
+        return new Request(
+            $envelope->getExchangeName(),
+            $envelope->getType(),
+            $payload,
+            $envelope->getCorrelationId(),
+            $envelope->getRoutingKey(),
+            $envelope->getExpiration(),
+            $envelope->getTimestamp()
+        );
     }
 }

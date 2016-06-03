@@ -31,10 +31,7 @@ use Humus\Amqp\Exception;
  */
 class Request
 {
-    /**
-     * @var array|string|integer|float|bool
-     */
-    private $payload;
+    CONST JSONRPC = "2.0";
 
     /**
      * @var string
@@ -44,7 +41,16 @@ class Request
     /**
      * @var string
      */
-    private $requestId;
+    private $method;
+    /**
+     * @var array|string|integer|float|bool
+     */
+    private $params;
+
+    /**
+     * @var string
+     */
+    private $id;
 
     /**
      * @var string|null
@@ -59,63 +65,49 @@ class Request
     /**
      * @var string|null
      */
-    private $messageId = null;
-
-    /**
-     * @var string|null
-     */
     private $timestamp = null;
-
-    /**
-     * @var string|null
-     */
-    private $type = null;
 
     /**
      * Request constructor.
      *
-     * @param array|string|integer|float|bool $payload
      * @param string $server
-     * @param string $requestId
+     * @param string $method
+     * @param array|string|integer|float|bool $params
      * @param string|null $routingKey
      * @param int $expiration in milliseconds
-     * @param string|null $messageId
+     * @param string|null $id
      * @param string|null $timestamp
-     * @param string|null $type
      */
     public function __construct(
-        $payload,
         string $server,
-        string $requestId,
+        string $method,
+        $params,
+        string $id = null,
         string $routingKey = null,
         int $expiration = 0, // in milliseconds
-        string $messageId = null,
-        string $timestamp = null,
-        string $type = null
+        string $timestamp = null
     ) {
-        if (!is_array($payload) && !is_scalar($payload) && null !== $payload) {
-            throw new Exception\InvalidArgumentException('Payload must be of type array, scalar or null');
+        if (!is_array($params) && !is_scalar($params) && null !== $params) {
+            throw new Exception\InvalidArgumentException('Params must be of type array, scalar or null');
         }
 
         Assertion::minLength($server, 1);
-        Assertion::minLength($requestId, 1);
 
-        $this->payload = $payload;
         $this->server = $server;
-        $this->requestId = $requestId;
+        $this->method = $method;
+        $this->params = $params;
+        $this->id = $id ? $id : bin2hex(random_bytes(24));
         $this->routingKey = $routingKey;
         $this->expiration = $expiration;
-        $this->messageId = $messageId;
-        $this->timestamp = $timestamp;
-        $this->type = $type;
+        $this->timestamp = $timestamp ? $timestamp : (string) time();
     }
 
     /**
      * @return array|bool|float|int|string
      */
-    public function payload()
+    public function params()
     {
-        return $this->payload;
+        return $this->params;
     }
 
     /**
@@ -124,14 +116,6 @@ class Request
     public function server() : string
     {
         return $this->server;
-    }
-
-    /**
-     * @return string
-     */
-    public function requestId() : string
-    {
-        return $this->requestId;
     }
 
     /**
@@ -154,24 +138,24 @@ class Request
     /**
      * @return null|string
      */
-    public function messageId()
+    public function id()
     {
-        return $this->messageId;
+        return $this->id;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function timestamp()
+    public function timestamp() : string
     {
         return $this->timestamp;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function type()
+    public function method() : string
     {
-        return $this->type;
+        return $this->method;
     }
 }

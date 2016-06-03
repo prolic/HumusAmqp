@@ -46,9 +46,9 @@ class Client
     private $requests = 0;
 
     /**
-     * @var array
+     * @var ResponseCollection
      */
-    private $replies = [];
+    private $responseCollection;
 
     /**
      * Microseconds to wait between two tries when reply is not yet there
@@ -85,6 +85,7 @@ class Client
         $this->exchanges = $exchanges;
         $this->waitMicros = $waitMicros;
         $this->appId = $appId;
+        $this->responseCollection = new ResponseCollection();
     }
 
     /**
@@ -98,25 +99,18 @@ class Client
         $attributes = $this->createAttributes($request);
 
         $exchange = $this->getExchange($request->server());
-        $exchange->publish(json_encode($request->payload()), $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
+        $exchange->publish(json_encode($request->params()), $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
         $this->requests++;
     }
 
     /**
-     * Get rpc client replies
-     *
-     * Example:
-     *
-     * array(
-     *     'message_id_1' => ['success' => true, 'result' => 'foo'],
-     *     'message_id_2' => ['success' => false, 'error' => 'invalid parameters']
-     * )
+     * Get response collection
      *
      * @param float $timeout in seconds
-     * @return array
+     * @return ResponseCollection
      */
-    public function getReplies(float $timeout = 0) : array
+    public function getResponseCollection(float $timeout = 0) : ResponseCollection
     {
         $now = microtime(true);
         $this->replies = [];
@@ -125,19 +119,22 @@ class Client
             $message = $this->queue->get(Constants::AMQP_AUTOACK);
 
             if ($message instanceof Envelope) {
-                $this->replies[$message->getCorrelationId()] = json_decode($message->getBody(), true);
+                $this->responseCollection->addResponse($this->responseFromEnvelope($message));
             } else {
                 usleep($this->waitMicros);
             }
             $time = microtime(true);
         } while (
-            count($this->replies) < $this->requests
+            $this->responseCollection->count() < $this->requests
             && (0 == $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
         );
 
-        $this->requests = 0;
+        $responseCollection = $this->responseCollection;
 
-        return $this->replies;
+        $this->requests = 0;
+        $this->responseCollection = new ResponseCollection();
+        
+        return $responseCollection;
     }
 
     /**
@@ -166,28 +163,58 @@ class Client
             'content_type' => 'application/json',
             'content_encoding' => 'UTF-8',
             'delivery_mode' => 2,
-            'correlation_id' => $request->requestId(),
+            'correlation_id' => $request->id(),
+            'type' => $request->method(),
+            'timestamp' => $request->timestamp(),
             'reply_to' => $this->queue->getName(),
             'app_id' => $this->appId,
             'user_id' => $this->queue->getConnection()->getOptions()->getLogin(),
+            'headers' => [
+                'jsonrpc' => $request::JSONRPC,
+            ],
         ];
 
         if (0 < $request->expiration()) {
             $attributes['expiration'] = $request->expiration();
         }
 
-        if (null !== $request->messageId()) {
-            $attributes['message_id'] = $request->messageId();
-        }
-
-        if (null !== $request->timestamp()) {
-            $attributes['timestamp'] = $request->timestamp();
-        }
-
-        if (null !== $request->type()) {
-            $attributes['type'] = $request->type();
-        }
-
         return $attributes;
+    }
+
+    /**
+     * @param Envelope $envelope
+     * @return Response
+     */
+    private function responseFromEnvelope(Envelope $envelope) : Response
+    {
+        if ($envelope->getHeader('jsonrpc') !== Request::JSONRPC
+            || $envelope->getContentEncoding() !== 'UTF-8'
+            || $envelope->getContentType() !== 'application/json'
+        ) {
+            throw new Exception\RuntimeException(
+                'Received invalid response from json rpc server'
+            );
+        }
+        
+        $payload = json_decode($envelope->getBody(), true);
+        
+        if (isset($payload['result'])) {
+            return new Response($payload['result'], null, $envelope->getCorrelationId());
+        } elseif (! isset($payload['error']['code'])
+            || ! isset($payload['error']['message'])
+            || ! is_int($payload['error']['code'])
+            || ! is_string($payload['error']['message'])
+        ) {
+            throw new Exception\RuntimeException(
+                'Received invalid response from json rpc server'
+            );
+        }
+        
+        return new Response(
+            null,
+            new Error($payload['error']['code'], $payload['error']['message']),
+            $envelope->getCorrelationId(),
+            $payload['data'] ?? null
+        );
     }
 }
