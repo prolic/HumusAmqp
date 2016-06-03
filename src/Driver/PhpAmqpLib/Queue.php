@@ -27,7 +27,6 @@ use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Queue as QueueInterface;
-use Humus\Amqp\Exception\ConnectionException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -246,7 +245,7 @@ final class Queue implements QueueInterface
                 }
             }
         } catch (\Exception $e) {
-            throw ConnectionException::fromPhpAmqpLib($e);
+            throw Exception\QueueException::fromPhpAmqpLib($e);
         }
     }
 

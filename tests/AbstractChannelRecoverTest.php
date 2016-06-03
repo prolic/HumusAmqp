@@ -95,7 +95,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
 
         $queue1->consume(function (Envelope $envelope, Queue $queue) use (&$consume, &$result) {
             $result[] = 'consumed ' . $envelope->getBody() . ' '
-                . ($envelope->isRedelivery() ? '(redeliverd)' : '(original)');
+                . ($envelope->isRedelivery() ? '(redelivered)' : '(original)');
             $queue->ack($envelope->getDeliveryTag());
 
             return (--$consume > 0);
@@ -115,7 +115,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
         try {
             $queue2->consume(function (Envelope $envelope, Queue $queue) use (&$consume, &$result) {
                 $result[] =  'consumed ' . $envelope->getBody() . ' '
-                    . ($envelope->isRedelivery() ? '(redeliverd)' : '(original)');
+                    . ($envelope->isRedelivery() ? '(redelivered)' : '(original)');
                 $queue->ack($envelope->getDeliveryTag());
 
                 return (--$consume > 0);
@@ -123,6 +123,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
         } catch (\Exception $e) {
             $result[] = get_class($e);
         }
+
         $queue2->cancel();
 
         // yes, we do it repeatedly, basic.recover works in a slightly different way than it looks like. As it said,

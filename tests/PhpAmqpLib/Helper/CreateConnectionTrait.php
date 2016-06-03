@@ -21,7 +21,7 @@
 namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 
 use Humus\Amqp\ConnectionOptions;
-use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 
 /**
  * Class CreateConnectionTrait
@@ -41,6 +41,6 @@ trait CreateConnectionTrait
 
         $options->setVhost('/humus-amqp-test');
 
-        return new StreamConnection($options);
+        return new SocketConnection($options);
     }
 }

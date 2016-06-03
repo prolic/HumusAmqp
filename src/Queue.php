@@ -164,6 +164,7 @@ interface Queue
      * @param string   $consumerTag A string describing this consumer. Used
      *                              for canceling subscriptions with cancel().
      * @return void
+     * @throws Exception\QueueException
      */
     public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = null);
 

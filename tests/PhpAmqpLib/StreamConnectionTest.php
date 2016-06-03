@@ -22,10 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\PhpAmqpLib;
 
+use Humus\Amqp\Connection;
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractConnectionTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
 /**
  * Class StreamConnectionTest
@@ -33,8 +34,6 @@ use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
  */
 final class StreamConnectionTest extends AbstractConnectionTest
 {
-    use CreateConnectionTrait;
-
     /**
      * @test
      */
@@ -94,5 +93,20 @@ final class StreamConnectionTest extends AbstractConnectionTest
 
         $connection = $this->createConnection();
         $connection->disconnect();
+    }
+
+    /**
+     * @param ConnectionOptions|null $options
+     * @return Connection
+     */
+    public function createConnection(ConnectionOptions $options = null) : Connection
+    {
+        if (null === $options) {
+            $options = new ConnectionOptions();
+        }
+
+        $options->setVhost('/humus-amqp-test');
+
+        return new StreamConnection($options);
     }
 }

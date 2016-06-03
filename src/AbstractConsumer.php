@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp;
 
 use Assert\Assertion;
-use Humus\Amqp\Exception\ConnectionException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -128,7 +127,7 @@ abstract class AbstractConsumer implements Consumer
      * Start consumer
      *
      * @param int $msgAmount
-     * @throws ConnectionException
+     * @throws Exception\QueueException
      */
     public function consume(int $msgAmount = 0)
     {
@@ -176,7 +175,7 @@ abstract class AbstractConsumer implements Consumer
         do {
             try {
                 $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
-            } catch (ConnectionException $e) {
+            } catch (Exception\QueueException $e) {
                 if (!$this->queue->getConnection()->reconnect()) {
                     throw $e;
                 }

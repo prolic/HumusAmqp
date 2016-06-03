@@ -83,7 +83,7 @@ abstract class AbstractConnection implements ConnectionInterface
     {
         $this->connection->reconnect();
 
-        return true;
+        return $this->isConnected();
     }
 
     /**

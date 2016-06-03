@@ -25,7 +25,6 @@ use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Queue as AmqpQueueInterface;
-use Humus\Amqp\Exception\ConnectionException;
 
 /**
  * Class Queue
@@ -165,7 +164,7 @@ final class Queue implements AmqpQueueInterface
         try {
             $this->queue->consume($innerCallback, $flags, $consumerTag);
         } catch (\AMQPConnectionException $e) {
-            throw ConnectionException::fromAmqpExtension($e);
+            throw QueueException::fromAmqpExtension($e);
         } catch (\AMQPQueueException $e) {
             throw QueueException::fromAmqpExtension($e);
         }

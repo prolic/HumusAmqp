@@ -23,9 +23,9 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\PhpAmqpLib;
 
 use HumusTest\Amqp\AbstractChannelRecoverTest;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 
 /**
  * Class ChannelRecoverTest
