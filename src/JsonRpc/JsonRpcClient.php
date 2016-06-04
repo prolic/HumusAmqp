@@ -181,7 +181,7 @@ final class JsonRpcClient implements Client
             'app_id' => $this->appId,
             'user_id' => $this->queue->getConnection()->getOptions()->getLogin(),
             'headers' => [
-                'jsonrpc' => self::JSONRPC_VERSION,
+                'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
         ];
 
@@ -200,9 +200,9 @@ final class JsonRpcClient implements Client
      * @param Envelope $envelope
      * @return Response
      */
-    private function responseFromEnvelope(Envelope $envelope) : JsonRpcResponse
+    private function responseFromEnvelope(Envelope $envelope) : Response
     {
-        if ($envelope->getHeader('jsonrpc') !== self::JSONRPC_VERSION
+        if ($envelope->getHeader('jsonrpc') !== JsonRpcResponse::JSONRPC_VERSION
             || $envelope->getContentEncoding() !== 'UTF-8'
             || $envelope->getContentType() !== 'application/json'
         ) {
