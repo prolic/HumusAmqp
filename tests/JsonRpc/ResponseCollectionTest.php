@@ -56,6 +56,6 @@ class ResponseCollectionTest extends TestCase
         $this->assertEquals('id1', $response->id());
         $this->assertEquals(['foo' => 'bar'], $response->result());
 
-        $this->assertFalse($responseCollection->getResponse('unknown id'));
+        $this->assertNull($responseCollection->getResponse('unknown id'));
     }
 }

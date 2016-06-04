@@ -46,15 +46,13 @@ class ResponseCollection implements Countable, IteratorAggregate
 
     /**
      * @param string $id
-     * @return Response|false
+     * @return Response|null
      */
     public function getResponse(string $id)
     {
         if ($this->hasResponse($id)) {
             return $this->responses[$id];
         }
-
-        return false;
     }
 
     /**

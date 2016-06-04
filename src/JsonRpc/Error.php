@@ -68,7 +68,7 @@ class Error
      */
     public function __construct(int $code, string $message = null)
     {
-        if (! defined(Error::class . '::' . 'ERROR_CODE_' . -$code)) {
+        if (! defined(Error::class . '::ERROR_CODE_' . -$code)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid status code provided: %s',
                 $code
