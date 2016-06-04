@@ -7,11 +7,11 @@ PHP 7 AMQP library
 
 ## Overview
 
-PHP 7 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JsonRpc implementations.
+PHP 7 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.
 
-The JsonRpc part implements JsonRpc 2.0 specifications.
+The JSON-RPC part implements [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification).
 
-Current supported drivers are: php-amqp (PHP-Extension) and PhpAmqpLib
+Current supported drivers are: [php-amqp](https://github.com/pdezwart/php-amqp) and [PhpAmqpLib](https://github.com/php-amqplib/php-amqplib).
 
 This library ships with `container-interop` factories that help you setting up everything.
 
