@@ -160,7 +160,7 @@ final class Server extends AbstractConsumer
             'correlation_id' => $envelope->getCorrelationId(),
             'app_id' => $this->appId,
             'headers' => [
-                'jsonrpc' => Response::JSONRPC,
+                'jsonrpc' => Response::JSONRPC_VERSION,
             ]
         ];
 
@@ -201,7 +201,7 @@ final class Server extends AbstractConsumer
      */
     protected function requestFromEnvelope(Envelope $envelope) : Request
     {
-        if ($envelope->getHeader('jsonrpc') !== Request::JSONRPC) {
+        if ($envelope->getHeader('jsonrpc') !== Request::JSONRPC_VERSION) {
             throw new Exception\InvalidJsonRpcVersion();
         }
 

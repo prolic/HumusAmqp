@@ -181,7 +181,7 @@ class Client
             'app_id' => $this->appId,
             'user_id' => $this->queue->getConnection()->getOptions()->getLogin(),
             'headers' => [
-                'jsonrpc' => $request::JSONRPC,
+                'jsonrpc' => $request::JSONRPC_VERSION,
             ],
         ];
 
@@ -202,7 +202,7 @@ class Client
      */
     private function responseFromEnvelope(Envelope $envelope) : Response
     {
-        if ($envelope->getHeader('jsonrpc') !== Request::JSONRPC
+        if ($envelope->getHeader('jsonrpc') !== Request::JSONRPC_VERSION
             || $envelope->getContentEncoding() !== 'UTF-8'
             || $envelope->getContentType() !== 'application/json'
         ) {
