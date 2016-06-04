@@ -8,6 +8,15 @@ php:
 services:
   - rabbitmq
 
+env:
+  matrix:
+    - DEPENDENCIES=""
+    - DEPENDENCIES="--prefer-lowest --prefer-stable"
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 before_script:
   - phpenv config-rm xdebug.ini
   - sudo cp $TRAVIS_BUILD_DIR/provision/rabbitmq.config /etc/rabbitmq/
@@ -21,7 +30,7 @@ before_script:
   - sudo make install
   - cd ..
   - composer self-update
-  - composer update
+  - composer update --prefer-dist $DEPENDENCIES
   - sudo rabbitmqctl add_vhost /humus-amqp-test
   - sudo rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
   # patching php-amqplib, see: https://github.com/php-amqplib/php-amqplib/pull/399
