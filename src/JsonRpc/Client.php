@@ -214,12 +214,7 @@ class Client
 
         $payload = json_decode($envelope->getBody(), true);
 
-        if (null === $payload) {
-            $response = Response::withError(
-                $envelope->getCorrelationId(),
-                new Error(Error::ERROR_CODE_32603, 'JSON cannot be decoded')
-            );
-        } elseif (! in_array($envelope->getCorrelationId(), $this->requestIds)) {
+        if (! in_array($envelope->getCorrelationId(), $this->requestIds)) {
             $response = Response::withError(
                 $envelope->getCorrelationId(),
                 new Error(Error::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')

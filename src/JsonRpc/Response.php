@@ -119,7 +119,7 @@ class Response
     /**
      * @return bool
      */
-    public function hasError()
+    public function isError()
     {
         return null !== $this->error;
     }

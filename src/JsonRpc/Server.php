@@ -114,7 +114,7 @@ final class Server extends AbstractConsumer
             $callback = $this->deliveryCallback;
             $response = $callback($request);
 
-            if (null === $request->id()) {
+            if ('' === $request->id()) {
                 // notifications have no reply
                 return DeliveryResult::MSG_ACK();
             }
@@ -138,9 +138,9 @@ final class Server extends AbstractConsumer
             $extra['exception_trace'] = $e->getTraceAsString();
             $this->logger->error('Exception occurred', $extra);
             $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32603));
-        } finally {
-            $this->sendReply($response, $envelope);
         }
+
+        $this->sendReply($response, $envelope);
 
         return DeliveryResult::MSG_ACK();
     }
@@ -164,7 +164,7 @@ final class Server extends AbstractConsumer
             ]
         ];
 
-        if ($response->hasError()) {
+        if ($response->isError()) {
             $payload = [
                 'error' => [
                     'code' => $response->error()->code(),

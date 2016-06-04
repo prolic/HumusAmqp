@@ -107,11 +107,11 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->assertCount(2, $responses);
 
         $response1 = $responses->getResponse('request-1');
-        $this->assertFalse($response1->hasError());
+        $this->assertFalse($response1->isError());
         $this->assertEquals(2, $response1->result());
 
         $response2 = $responses->getResponse('request-2');
-        $this->assertFalse($response2->hasError());
+        $this->assertFalse($response2->isError());
         $this->assertEquals(4, $response2->result());
 
         $loggerResult = $logger->loggerResult();
@@ -131,6 +131,62 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->assertEquals('debug', $loggerResult[3]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
         $this->assertEquals('2', $loggerResult[3]['context']['body']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_notifications()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $this->createExchange($channel);
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $this->createExchange($channel2);
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $this->createQueue($channel);
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $this->createQueue($channel2);
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $request1 = new Request('rpc-server', 'time2', 1);
+        $request2 = new Request('rpc-server', 'time2', 2);
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $callback = function (Request $request) {};
+
+        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+
+        $server->consume(2);
+
+        $responses = $client->getResponseCollection();
+
+        $this->assertCount(0, $responses);
     }
 
     /**
@@ -196,12 +252,12 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->assertCount(2, $responses);
 
         $response1 = $responses->getResponse('request-1');
-        $this->assertTrue($response1->hasError());
+        $this->assertTrue($response1->isError());
         $this->assertEquals(Error::ERROR_CODE_32603, $response1->error()->code());
         $this->assertEquals('Internal error', $response1->error()->message());
 
         $response2 = $responses->getResponse('request-2');
-        $this->assertFalse($response2->hasError());
+        $this->assertFalse($response2->isError());
         $this->assertEquals(4, $response2->result());
 
         $loggerResult = $logger->loggerResult();
@@ -285,7 +341,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->assertCount(1, $responses);
 
         $response1 = $responses->getResponse('request-1');
-        $this->assertFalse($response1->hasError());
+        $this->assertFalse($response1->isError());
         $this->assertEquals(2, $response1->result());
     }
 
@@ -388,5 +444,199 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
         $client->addRequest(new Request('invalid-rpc-server', 'time2', 1, 'request-1', '', 100));
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_invalid_requests_and_responses()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $this->createExchange($channel);
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $this->createExchange($channel2);
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $this->createQueue($channel);
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $this->createQueue($channel2);
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new Request('rpc-server', 'time3', 2, 'request-2');
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $serverExchange->publish('{]kk]}', null, Constants::AMQP_NOPARAM, [
+            'content_type' => 'application/json',
+            'content_encoding' => 'UTF-8',
+            'delivery_mode' => 2,
+            'correlation_id' => 'request-3',
+            'type' => 'time2',
+            'reply_to' => $clientQueue->getName(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'headers' => [
+                'jsonrpc' => Request::JSONRPC_VERSION,
+            ],
+        ]);
+
+        $serverExchange->publish('2', null, Constants::AMQP_NOPARAM, [
+            'content_type' => 'application/json',
+            'content_encoding' => 'UTF-8',
+            'delivery_mode' => 2,
+            'correlation_id' => 'request-4',
+            'type' => 'time2',
+            'reply_to' => $clientQueue->getName(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+        ]);
+
+        $serverExchange->publish('2', null, Constants::AMQP_NOPARAM, [
+            'content_encoding' => 'UTF-8',
+            'delivery_mode' => 2,
+            'type' => 'time2',
+            'correlation_id' => 'request-5',
+            'reply_to' => $clientQueue->getName(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'headers' => [
+                'jsonrpc' => Request::JSONRPC_VERSION,
+            ],
+        ]);
+
+        $serverExchange->publish('2', null, Constants::AMQP_NOPARAM, [
+            'content_type' => 'application/json',
+            'delivery_mode' => 2,
+            'type' => 'time2',
+            'correlation_id' => 'request-6',
+            'reply_to' => $clientQueue->getName(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'headers' => [
+                'jsonrpc' => Request::JSONRPC_VERSION,
+            ],
+        ]);
+
+        // manipulate client to receive more responses
+        $reflectionProperty = new \ReflectionProperty(get_class($client), 'requestIds');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($client, [
+            'request-1',
+            'request-2',
+            'request-3',
+            'request-4',
+            'request-5',
+            'request-6',
+            'request-7',
+            'request-8',
+            'request-9'
+        ]);
+
+        $callback = function (Request $request) {
+            if ('time2' === $request->method()) {
+                return Response::withResult($request->id(), $request->params() * 2);
+            } else {
+                return Response::withError($request->id(), new Error(Error::ERROR_CODE_32601));
+            }
+        };
+
+        $logger = new ArrayLogger();
+        $server = new Server($serverQueue, $callback, $logger, 1.0);
+
+        $server->consume(6);
+
+        $clientExchange->publish('invalid response', null, Constants::AMQP_NOPARAM, [
+            'reply_to' => $clientQueue->getName(),
+            'correlation_id' => 'invalid_id',
+            'content_type' => 'application/json',
+            'content_encoding' => 'UTF-8',
+            'headers' => [
+                'jsonrpc' => Response::JSONRPC_VERSION,
+            ]
+        ]);
+
+        $clientExchange->publish('invalid response', null, Constants::AMQP_NOPARAM, [
+            'reply_to' => $clientQueue->getName(),
+            'correlation_id' => 'request-8'
+        ]);
+
+        $clientExchange->publish('{"foo":"bar"}', null, Constants::AMQP_NOPARAM, [
+            'reply_to' => $clientQueue->getName(),
+            'correlation_id' => 'request-9',
+            'content_type' => 'application/json',
+            'content_encoding' => 'UTF-8',
+            'headers' => [
+                'jsonrpc' => Response::JSONRPC_VERSION,
+            ]
+        ]);
+
+        $responses = $client->getResponseCollection();
+
+        $this->assertCount(9, $responses);
+
+        $response1 = $responses->getResponse('request-1');
+        $this->assertFalse($response1->isError());
+        $this->assertEquals(2, $response1->result());
+
+        $response2 = $responses->getResponse('request-2');
+        $this->assertTrue($response2->isError());
+        $this->assertEquals(Error::ERROR_CODE_32601, $response2->error()->code());
+        $this->assertEquals('Method not found', $response2->error()->message());
+
+        $response3 = $responses->getResponse('request-3');
+        $this->assertTrue($response3->isError());
+        $this->assertEquals(Error::ERROR_CODE_32700, $response3->error()->code());
+        $this->assertEquals('Parse error', $response3->error()->message());
+
+        $response4 = $responses->getResponse('request-4');
+        $this->assertTrue($response4->isError());
+        $this->assertEquals(Error::ERROR_CODE_32600, $response4->error()->code());
+        $this->assertEquals('Invalid Request', $response4->error()->message());
+
+        $response5 = $responses->getResponse('request-5');
+        $this->assertTrue($response5->isError());
+        $this->assertEquals(Error::ERROR_CODE_32600, $response5->error()->code());
+        $this->assertEquals('Invalid Request', $response5->error()->message());
+
+        $response6 = $responses->getResponse('request-6');
+        $this->assertTrue($response6->isError());
+        $this->assertEquals(Error::ERROR_CODE_32600, $response6->error()->code());
+        $this->assertEquals('Invalid Request', $response6->error()->message());
+
+        $response6 = $responses->getResponse('invalid_id');
+        $this->assertTrue($response6->isError());
+        $this->assertEquals(Error::ERROR_CODE_32603, $response6->error()->code());
+        $this->assertEquals('Mismatched JSON-RPC IDs', $response6->error()->message());
+
+        $response8 = $responses->getResponse('request-8');
+        $this->assertTrue($response6->isError());
+        $this->assertEquals(Error::ERROR_CODE_32603, $response8->error()->code());
+        $this->assertEquals('Invalid JSON-RPC response', $response8->error()->message());
+
+        $response9 = $responses->getResponse('request-9');
+        $this->assertTrue($response6->isError());
+        $this->assertEquals(Error::ERROR_CODE_32603, $response9->error()->code());
+        $this->assertEquals('Invalid JSON-RPC response', $response9->error()->message());
     }
 }
