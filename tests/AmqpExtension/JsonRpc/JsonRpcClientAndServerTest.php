@@ -20,21 +20,20 @@
 
 declare (strict_types=1);
 
-namespace Humus\Amqp\JsonRpc;
+namespace HumusTest\Amqp\AmqpExtension\JsonRpc;
+
+use HumusTest\Amqp\JsonRpc\AbstractJsonRpcClientAndServerTest;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
+use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
- * Class JsonRpcError
- * @package Humus\Amqp\JsonRpc
+ * Class JsonRpcJsonRpcClientAndServerTest
+ * @package HumusTest\Amqp\AmqpExtension\JsonRpc
  */
-interface Error
+class JsonRpcJsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
 {
-    /**
-     * @return int
-     */
-    public function code();
-
-    /**
-     * @return string
-     */
-    public function message();
+    use CreateConnectionTrait;
+    use CreateExchangeTrait;
+    use CreateQueueTrait;
 }

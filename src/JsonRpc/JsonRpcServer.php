@@ -32,10 +32,10 @@ use Humus\Amqp\Queue;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Server
+ * Class JsonRpcServer
  * @package Humus\Amqp\JsonRpc
  */
-final class Server extends AbstractConsumer
+final class JsonRpcServer extends AbstractConsumer
 {
     /**
      * @var Exchange
@@ -51,7 +51,7 @@ final class Server extends AbstractConsumer
      * Constructor
      *
      * @param Queue $queue
-     * @param callable(Request):Response $deliveryCallback
+     * @param callable(JsonRpcRequest):JsonRpcResponse $deliveryCallback
      * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
@@ -119,25 +119,25 @@ final class Server extends AbstractConsumer
                 return DeliveryResult::MSG_ACK();
             }
 
-            if (! $response instanceof Response) {
-                $response = Response::withResult($envelope->getCorrelationId(), $response);
+            if (! $response instanceof JsonRpcResponse) {
+                $response = JsonRpcResponse::withResult($envelope->getCorrelationId(), $response);
             }
         } catch (Exception\InvalidJsonRpcVersion $e) {
             $this->logger->error('Invalid json rpc version', $this->extractMessageInformation($envelope));
-            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32600));
+            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32600));
         } catch (Exception\InvalidJsonRpcRequest $e) {
             $this->logger->error('Invalid json rpc request', $this->extractMessageInformation($envelope));
-            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32600));
+            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32600));
         } catch (Exception\JsonParseError $e) {
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
-            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32700));
+            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32700));
         } catch (\Exception $e) {
             $extra = $this->extractMessageInformation($envelope);
             $extra['exception_class'] = get_class($e);
             $extra['exception_message'] = $e->getMessage();
             $extra['exception_trace'] = $e->getTraceAsString();
             $this->logger->error('Exception occurred', $extra);
-            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32603));
+            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32603));
         }
 
         $this->sendReply($response, $envelope);
@@ -147,7 +147,7 @@ final class Server extends AbstractConsumer
 
     /**
      * Send reply to rpc client
-     * 
+     *
      * @param Response $response
      * @param Envelope $envelope
      */
@@ -160,7 +160,7 @@ final class Server extends AbstractConsumer
             'correlation_id' => $envelope->getCorrelationId(),
             'app_id' => $this->appId,
             'headers' => [
-                'jsonrpc' => Response::JSONRPC_VERSION,
+                'jsonrpc' => JsonRpcResponse::JSONRPC_VERSION,
             ]
         ];
 
@@ -201,7 +201,7 @@ final class Server extends AbstractConsumer
      */
     protected function requestFromEnvelope(Envelope $envelope) : Request
     {
-        if ($envelope->getHeader('jsonrpc') !== Request::JSONRPC_VERSION) {
+        if ($envelope->getHeader('jsonrpc') !== JsonRpcRequest::JSONRPC_VERSION) {
             throw new Exception\InvalidJsonRpcVersion();
         }
 
@@ -217,7 +217,7 @@ final class Server extends AbstractConsumer
             throw new Exception\JsonParseError();
         }
 
-        return new Request(
+        return new JsonRpcRequest(
             $envelope->getExchangeName(),
             $envelope->getType(),
             $payload,

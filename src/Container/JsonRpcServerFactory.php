@@ -23,7 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
-use Humus\Amqp\JsonRpc\Server;
+use Humus\Amqp\JsonRpc\JsonRpcServer;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
@@ -59,10 +59,10 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
      *
      * @param string $name
      * @param array $arguments
-     * @return Server
+     * @return JsonRpcServer
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : Server
+    public static function __callStatic(string $name, array $arguments) : JsonRpcServer
     {
         if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -83,9 +83,9 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
 
     /**
      * @param ContainerInterface $container
-     * @return Server
+     * @return JsonRpcServer
      */
-    public function __invoke(ContainerInterface $container) : Server
+    public function __invoke(ContainerInterface $container) : JsonRpcServer
     {
         $options = $this->options($container->get('config'), $this->serverName);
 
@@ -100,7 +100,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
             $logger = $container->get($options['logger']);
         }
 
-        return new Server(
+        return new JsonRpcServer(
             $queue,
             $deliveryCallback,
             $logger,

@@ -22,8 +22,8 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\JsonRpc;
 
-use Humus\Amqp\JsonRpc\Response;
-use Humus\Amqp\JsonRpc\ResponseCollection;
+use Humus\Amqp\JsonRpc\JsonRpcResponse;
+use Humus\Amqp\JsonRpc\JsonRpcResponseCollection;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -37,9 +37,9 @@ class ResponseCollectionTest extends TestCase
      */
     public function it_iterates_and_accesses_correctly()
     {
-        $responseCollection = new ResponseCollection();
-        $responseCollection->addResponse(Response::withResult('id1', ['foo' => 'bar']));
-        $responseCollection->addResponse(Response::withResult('id2', ['foo' => 'bam']));
+        $responseCollection = new JsonRpcResponseCollection();
+        $responseCollection->addResponse(JsonRpcResponse::withResult('id1', ['foo' => 'bar']));
+        $responseCollection->addResponse(JsonRpcResponse::withResult('id2', ['foo' => 'bam']));
 
         $i = 0;
         foreach ($responseCollection as $response) {

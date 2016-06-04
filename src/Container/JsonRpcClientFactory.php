@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\JsonRpc\Client;
+use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
@@ -63,7 +64,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      * @return Client
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : Client
+    public static function __callStatic(string $name, array $arguments) : JsonRpcClient
     {
         if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -86,7 +87,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      * @param ContainerInterface $container
      * @return Client
      */
-    public function __invoke(ContainerInterface $container) : Client
+    public function __invoke(ContainerInterface $container) : JsonRpcClient
     {
         $options = $this->options($container->get('config'), $this->clientName);
 
@@ -110,7 +111,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
             $exchanges[] = ExchangeFactory::$exchange($container, $channel);
         }
 
-        return new Client($queue, $exchanges, $options['wait_micros'], $options['app_id']);
+        return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id']);
     }
 
     /**

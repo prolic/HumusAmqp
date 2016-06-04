@@ -23,8 +23,8 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception\InvalidArgumentException;
-use Humus\Amqp\JsonRpc\Error;
-use Humus\Amqp\JsonRpc\Response;
+use Humus\Amqp\JsonRpc\JsonRpcError;
+use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -38,7 +38,7 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_result()
     {
-        $response = Response::withResult('id', ['foo' => 'bar']);
+        $response = JsonRpcResponse::withResult('id', ['foo' => 'bar']);
         $this->assertEquals(['foo' => 'bar'], $response->result());
         $this->assertEquals('id', $response->id());
     }
@@ -48,9 +48,9 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_error()
     {
-        $response = Response::withError('id', new Error(Error::ERROR_CODE_32603));
-        $this->assertInstanceOf(Error::class, $response->error());
-        $this->assertEquals(Error::ERROR_CODE_32603, $response->error()->code());
+        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603));
+        $this->assertInstanceOf(JsonRpcError::class, $response->error());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('Internal error', $response->error()->message());
         $this->assertEquals('id', $response->id());
         $this->assertNull($response->data());
@@ -61,9 +61,9 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_error_with_data()
     {
-        $response = Response::withError('id', new Error(Error::ERROR_CODE_32603), ['foo' => 'bar']);
-        $this->assertInstanceOf(Error::class, $response->error());
-        $this->assertEquals(Error::ERROR_CODE_32603, $response->error()->code());
+        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603), ['foo' => 'bar']);
+        $this->assertInstanceOf(JsonRpcError::class, $response->error());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('Internal error', $response->error()->message());
         $this->assertEquals('id', $response->id());
         $this->assertEquals(['foo' => 'bar'], $response->data());
@@ -74,9 +74,9 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_error_with_custom_message()
     {
-        $response = Response::withError('id', new Error(Error::ERROR_CODE_32603, 'custom message'));
-        $this->assertInstanceOf(Error::class, $response->error());
-        $this->assertEquals(Error::ERROR_CODE_32603, $response->error()->code());
+        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603, 'custom message'));
+        $this->assertInstanceOf(JsonRpcError::class, $response->error());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('custom message', $response->error()->message());
         $this->assertEquals('id', $response->id());
     }
@@ -89,7 +89,7 @@ class ResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('result must only contain arrays and scalar values');
 
-        Response::withResult('id', new \stdClass());
+        JsonRpcResponse::withResult('id', new \stdClass());
     }
 
     /**
@@ -100,7 +100,7 @@ class ResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('result must only contain arrays and scalar values');
 
-        Response::withResult('id', ['foo' => new \stdClass()]);
+        JsonRpcResponse::withResult('id', ['foo' => new \stdClass()]);
     }
 
     /**
@@ -111,6 +111,6 @@ class ResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid status code provided: 100');
 
-        Response::withError('id', new Error(100));
+        JsonRpcResponse::withError('id', new JsonRpcError(100));
     }
 }

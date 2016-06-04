@@ -23,7 +23,7 @@ declare (strict_types=1);
 namespace HumusTest\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception\InvalidArgumentException;
-use Humus\Amqp\JsonRpc\Request;
+use Humus\Amqp\JsonRpc\JsonRpcRequest;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -40,6 +40,6 @@ class RequestTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Params must be of type array, scalar or null');
 
-        new Request('server', 'method', new \stdClass(), 'id');
+        new JsonRpcRequest('server', 'method', new \stdClass(), 'id');
     }
 }

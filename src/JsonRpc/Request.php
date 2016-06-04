@@ -22,140 +22,45 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-use Assert\Assertion;
-use Humus\Amqp\Exception;
-
 /**
- * Class Request
+ * Class JsonRpcRequest
  * @package Humus\Amqp\JsonRpc
  */
-class Request
+interface Request
 {
-    const JSONRPC_VERSION = "2.0";
-
-    /**
-     * @var string
-     */
-    private $server;
-
-    /**
-     * @var string
-     */
-    private $method;
-    /**
-     * @var array|string|integer|float|bool
-     */
-    private $params;
-
-    /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var string|null
-     */
-    private $routingKey = null;
-
-    /**
-     * @var int
-     */
-    private $expiration = 0;
-
-    /**
-     * @var string|null
-     */
-    private $timestamp = null;
-
-    /**
-     * Request constructor.
-     *
-     * @param string $server
-     * @param string $method
-     * @param array|string|integer|float|bool $params
-     * @param string|null $routingKey
-     * @param int $expiration in milliseconds
-     * @param string|null $id
-     * @param string|null $timestamp
-     */
-    public function __construct(
-        string $server,
-        string $method,
-        $params,
-        string $id = null,
-        string $routingKey = null,
-        int $expiration = 0, // in milliseconds
-        string $timestamp = null
-    ) {
-        if (!is_array($params) && !is_scalar($params) && null !== $params) {
-            throw new Exception\InvalidArgumentException('Params must be of type array, scalar or null');
-        }
-
-        Assertion::minLength($server, 1);
-
-        $this->server = $server;
-        $this->method = $method;
-        $this->params = $params;
-        $this->id = $id;
-        $this->routingKey = $routingKey;
-        $this->expiration = $expiration;
-        $this->timestamp = $timestamp ?: (string) time();
-    }
-
     /**
      * @return array|bool|float|int|string
      */
-    public function params()
-    {
-        return $this->params;
-    }
+    public function params();
 
     /**
      * @return string
      */
-    public function server() : string
-    {
-        return $this->server;
-    }
+    public function server() : string;
 
     /**
      * @return string|null
      */
-    public function routingKey()
-    {
-        return $this->routingKey;
-    }
+    public function routingKey();
 
     /**
      * Expiration in milliseconds
      * @return int
      */
-    public function expiration() : int
-    {
-        return $this->expiration;
-    }
+    public function expiration() : int;
 
     /**
      * @return null|string
      */
-    public function id()
-    {
-        return $this->id;
-    }
+    public function id();
 
     /**
      * @return string
      */
-    public function timestamp() : string
-    {
-        return $this->timestamp;
-    }
+    public function timestamp() : string;
 
     /**
      * @return string
      */
-    public function method() : string
-    {
-        return $this->method;
-    }
+    public function method() : string;
 }

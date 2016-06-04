@@ -24,11 +24,12 @@ namespace HumusTest\Amqp\JsonRpc;
 
 use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
-use Humus\Amqp\JsonRpc\Client;
-use Humus\Amqp\JsonRpc\Error;
-use Humus\Amqp\JsonRpc\Response;
-use Humus\Amqp\JsonRpc\Server;
+use Humus\Amqp\JsonRpc\JsonRpcClient;
+use Humus\Amqp\JsonRpc\JsonRpcError;
+use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use Humus\Amqp\JsonRpc\Request;
+use Humus\Amqp\JsonRpc\JsonRpcServer;
+use Humus\Amqp\JsonRpc\JsonRpcRequest;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
@@ -38,10 +39,10 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Psr\Log\NullLogger;
 
 /**
- * Class AbstractClientAndServerTest
+ * Class AbstractJsonRpcClientAndServerTest
  * @package HumusTest\Amqp\JsonRpc
  */
-abstract class AbstractClientAndServerTest extends TestCase implements
+abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
     CanCreateConnection,
     CanCreateExchange,
     CanCreateQueue
@@ -85,20 +86,20 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
-        $request2 = new Request('rpc-server', 'time2', 2, 'request-2');
+        $request1 = new JsonRpcRequest('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new JsonRpcRequest('rpc-server', 'time2', 2, 'request-2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
 
         $callback = function (Request $request) {
-            return Response::withResult($request->id(), $request->params() * 2);
+            return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
         };
 
         $logger = new ArrayLogger();
-        $server = new Server($serverQueue, $callback, $logger, 1.0);
+        $server = new JsonRpcServer($serverQueue, $callback, $logger, 1.0);
 
         $server->consume(2);
 
@@ -170,17 +171,17 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $request1 = new Request('rpc-server', 'time2', 1);
-        $request2 = new Request('rpc-server', 'time2', 2);
+        $request1 = new JsonRpcRequest('rpc-server', 'time2', 1);
+        $request2 = new JsonRpcRequest('rpc-server', 'time2', 2);
 
         $client->addRequest($request1);
         $client->addRequest($request2);
 
         $callback = function (Request $request) {};
 
-        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+        $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
 
         $server->consume(2);
 
@@ -226,10 +227,10 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
-        $request2 = new Request('rpc-server', 'time2', 2, 'request-2');
+        $request1 = new JsonRpcRequest('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new JsonRpcRequest('rpc-server', 'time2', 2, 'request-2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
@@ -243,7 +244,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         };
 
         $logger = new ArrayLogger();
-        $server = new Server($serverQueue, $callback, $logger, 1.0);
+        $server = new JsonRpcServer($serverQueue, $callback, $logger, 1.0);
 
         $server->consume(2);
 
@@ -253,7 +254,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $response1 = $responses->getResponse('request-1');
         $this->assertTrue($response1->isError());
-        $this->assertEquals(Error::ERROR_CODE_32603, $response1->error()->code());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response1->error()->code());
         $this->assertEquals('Internal error', $response1->error()->message());
 
         $response2 = $responses->getResponse('request-2');
@@ -320,19 +321,19 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
-        $request2 = new Request('rpc-server', 'time2', 2, 'request-2');
+        $request1 = new JsonRpcRequest('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new JsonRpcRequest('rpc-server', 'time2', 2, 'request-2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
 
         $callback = function (Request $request) {
-            return Response::withResult($request->id(), $request->params() * 2);
+            return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
         };
 
-        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+        $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
 
         $server->consume(1);
 
@@ -382,10 +383,10 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $request1 = new Request('rpc-server', 'time2', 1, 'request-1', '', 100);
-        $request2 = new Request('rpc-server', 'time2', 2, 'request-2', '', 100);
+        $request1 = new JsonRpcRequest('rpc-server', 'time2', 1, 'request-1', '', 100);
+        $request2 = new JsonRpcRequest('rpc-server', 'time2', 2, 'request-2', '', 100);
 
         $client->addRequest($request1);
         $client->addRequest($request2);
@@ -401,7 +402,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
             'app_id' => 'Humus\Amqp',
         ]);
 
-        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+        $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
 
         $server->consume(1);
 
@@ -441,9 +442,9 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->addToCleanUp($serverExchange);
         $this->addToCleanUp($clientQueue);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $client->addRequest(new Request('invalid-rpc-server', 'time2', 1, 'request-1', '', 100));
+        $client->addRequest(new JsonRpcRequest('invalid-rpc-server', 'time2', 1, 'request-1', '', 100));
     }
 
     /**
@@ -483,10 +484,10 @@ abstract class AbstractClientAndServerTest extends TestCase implements
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
-        $request2 = new Request('rpc-server', 'time3', 2, 'request-2');
+        $request1 = new JsonRpcRequest('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new JsonRpcRequest('rpc-server', 'time3', 2, 'request-2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
@@ -500,7 +501,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
             'reply_to' => $clientQueue->getName(),
             'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
             'headers' => [
-                'jsonrpc' => Request::JSONRPC_VERSION,
+                'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
         ]);
 
@@ -522,7 +523,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
             'reply_to' => $clientQueue->getName(),
             'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
             'headers' => [
-                'jsonrpc' => Request::JSONRPC_VERSION,
+                'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
         ]);
 
@@ -534,7 +535,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
             'reply_to' => $clientQueue->getName(),
             'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
             'headers' => [
-                'jsonrpc' => Request::JSONRPC_VERSION,
+                'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
         ]);
 
@@ -555,14 +556,14 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $callback = function (Request $request) {
             if ('time2' === $request->method()) {
-                return Response::withResult($request->id(), $request->params() * 2);
+                return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
             } else {
-                return Response::withError($request->id(), new Error(Error::ERROR_CODE_32601));
+                return JsonRpcResponse::withError($request->id(), new JsonRpcError(JsonRpcError::ERROR_CODE_32601));
             }
         };
 
         $logger = new ArrayLogger();
-        $server = new Server($serverQueue, $callback, $logger, 1.0);
+        $server = new JsonRpcServer($serverQueue, $callback, $logger, 1.0);
 
         $server->consume(6);
 
@@ -572,7 +573,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
             'content_type' => 'application/json',
             'content_encoding' => 'UTF-8',
             'headers' => [
-                'jsonrpc' => Response::JSONRPC_VERSION,
+                'jsonrpc' => JsonRpcResponse::JSONRPC_VERSION,
             ]
         ]);
 
@@ -587,7 +588,7 @@ abstract class AbstractClientAndServerTest extends TestCase implements
             'content_type' => 'application/json',
             'content_encoding' => 'UTF-8',
             'headers' => [
-                'jsonrpc' => Response::JSONRPC_VERSION,
+                'jsonrpc' => JsonRpcResponse::JSONRPC_VERSION,
             ]
         ]);
 
@@ -601,42 +602,42 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $response2 = $responses->getResponse('request-2');
         $this->assertTrue($response2->isError());
-        $this->assertEquals(Error::ERROR_CODE_32601, $response2->error()->code());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32601, $response2->error()->code());
         $this->assertEquals('Method not found', $response2->error()->message());
 
         $response3 = $responses->getResponse('request-3');
         $this->assertTrue($response3->isError());
-        $this->assertEquals(Error::ERROR_CODE_32700, $response3->error()->code());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32700, $response3->error()->code());
         $this->assertEquals('Parse error', $response3->error()->message());
 
         $response4 = $responses->getResponse('request-4');
         $this->assertTrue($response4->isError());
-        $this->assertEquals(Error::ERROR_CODE_32600, $response4->error()->code());
-        $this->assertEquals('Invalid Request', $response4->error()->message());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32600, $response4->error()->code());
+        $this->assertEquals('Invalid JsonRpcRequest', $response4->error()->message());
 
         $response5 = $responses->getResponse('request-5');
         $this->assertTrue($response5->isError());
-        $this->assertEquals(Error::ERROR_CODE_32600, $response5->error()->code());
-        $this->assertEquals('Invalid Request', $response5->error()->message());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32600, $response5->error()->code());
+        $this->assertEquals('Invalid JsonRpcRequest', $response5->error()->message());
 
         $response6 = $responses->getResponse('request-6');
         $this->assertTrue($response6->isError());
-        $this->assertEquals(Error::ERROR_CODE_32600, $response6->error()->code());
-        $this->assertEquals('Invalid Request', $response6->error()->message());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32600, $response6->error()->code());
+        $this->assertEquals('Invalid JsonRpcRequest', $response6->error()->message());
 
         $response6 = $responses->getResponse('invalid_id');
         $this->assertTrue($response6->isError());
-        $this->assertEquals(Error::ERROR_CODE_32603, $response6->error()->code());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response6->error()->code());
         $this->assertEquals('Mismatched JSON-RPC IDs', $response6->error()->message());
 
         $response8 = $responses->getResponse('request-8');
         $this->assertTrue($response6->isError());
-        $this->assertEquals(Error::ERROR_CODE_32603, $response8->error()->code());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response8->error()->code());
         $this->assertEquals('Invalid JSON-RPC response', $response8->error()->message());
 
         $response9 = $responses->getResponse('request-9');
         $this->assertTrue($response6->isError());
-        $this->assertEquals(Error::ERROR_CODE_32603, $response9->error()->code());
+        $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response9->error()->code());
         $this->assertEquals('Invalid JSON-RPC response', $response9->error()->message());
     }
 }

@@ -20,20 +20,62 @@
 
 declare (strict_types=1);
 
-namespace HumusTest\Amqp\PhpAmqpLib\JsonRpc;
+namespace Humus\Amqp\JsonRpc;
 
-use HumusTest\Amqp\JsonRpc\AbstractClientAndServerTest;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
+use ArrayIterator;
 
 /**
- * Class JsonRpcClientAndServerTest
- * @package HumusTest\Amqp\PhpAmqpLib\JsonRpc
+ * Class JsonRpcResponseCollection
+ * @package Humus\Amqp\JsonRpc
  */
-class ClientAndServerTest extends AbstractClientAndServerTest
+final class JsonRpcResponseCollection implements ResponseCollection
 {
-    use CreateConnectionTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
+    /**
+     * @var Response[]
+     */
+    private $responses;
+
+    /**
+     * @param Response $response
+     */
+    public function addResponse(Response $response)
+    {
+        $this->responses[$response->id()] = $response;
+    }
+
+    /**
+     * @param string $id
+     * @return Response|null
+     */
+    public function getResponse(string $id)
+    {
+        if ($this->hasResponse($id)) {
+            return $this->responses[$id];
+        }
+    }
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    public function hasResponse(string $id)
+    {
+        return isset($this->responses[$id]);
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->responses);
+    }
+
+    /**
+     * @return ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->responses);
+    }
 }

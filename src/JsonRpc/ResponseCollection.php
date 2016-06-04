@@ -26,57 +26,25 @@ use Countable;
 use IteratorAggregate;
 
 /**
- * Class ResponseCollection
+ * Class JsonRpcResponseCollection
  * @package Humus\Amqp\JsonRpc
  */
-class ResponseCollection implements Countable, IteratorAggregate
+interface ResponseCollection extends Countable, IteratorAggregate
 {
-    /**
-     * @var Response[]
-     */
-    private $responses;
-
     /**
      * @param Response $response
      */
-    public function addResponse(Response $response)
-    {
-        $this->responses[$response->id()] = $response;
-    }
+    public function addResponse(Response $response);
 
     /**
      * @param string $id
      * @return Response|null
      */
-    public function getResponse(string $id)
-    {
-        if ($this->hasResponse($id)) {
-            return $this->responses[$id];
-        }
-    }
+    public function getResponse(string $id);
 
     /**
      * @param string $id
      * @return bool
      */
-    public function hasResponse(string $id)
-    {
-        return isset($this->responses[$id]);
-    }
-
-    /**
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->responses);
-    }
-
-    /**
-     * @return \ArrayIterator
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->responses);
-    }
+    public function hasResponse(string $id);
 }

@@ -24,7 +24,7 @@ namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Container\JsonRpcServerFactory;
 use Humus\Amqp\Driver\Driver;
-use Humus\Amqp\JsonRpc\Server;
+use Humus\Amqp\JsonRpc\JsonRpcServer;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Psr\Log\LoggerInterface;
@@ -83,7 +83,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $factory = new JsonRpcServerFactory('my_server');
         $jsonRpcServer = $factory($container->reveal());
 
-        $this->assertInstanceOf(Server::class, $jsonRpcServer);
+        $this->assertInstanceOf(JsonRpcServer::class, $jsonRpcServer);
     }
 
     /**
@@ -137,7 +137,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $serverName = 'my_server';
         $jsonRpcServer = JsonRpcServerFactory::$serverName($container->reveal());
 
-        $this->assertInstanceOf(Server::class, $jsonRpcServer);
+        $this->assertInstanceOf(JsonRpcServer::class, $jsonRpcServer);
     }
 
     /**
