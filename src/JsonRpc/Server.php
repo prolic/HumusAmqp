@@ -51,7 +51,7 @@ final class Server extends AbstractConsumer
      * Constructor
      *
      * @param Queue $queue
-     * @param callable $deliveryCallback
+     * @param callable(Request):Response $deliveryCallback
      * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
@@ -111,8 +111,6 @@ final class Server extends AbstractConsumer
 
         try {
             $request = $this->requestFromEnvelope($envelope);
-            $e = null;
-
             $callback = $this->deliveryCallback;
             $response = $callback($request);
 
@@ -121,25 +119,25 @@ final class Server extends AbstractConsumer
                 return DeliveryResult::MSG_ACK();
             }
 
-            if (!$response instanceof Response) {
-                $response = new Response($response, null, $envelope->getCorrelationId());
+            if (! $response instanceof Response) {
+                $response = Response::withResult($envelope->getCorrelationId(), $response);
             }
         } catch (Exception\InvalidJsonRpcVersion $e) {
             $this->logger->error('Invalid json rpc version', $this->extractMessageInformation($envelope));
-            $response = new Response(null, new Error(Error::ERROR_CODE_32600), $envelope->getCorrelationId());
+            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32600));
         } catch (Exception\InvalidJsonRpcRequest $e) {
             $this->logger->error('Invalid json rpc request', $this->extractMessageInformation($envelope));
-            $response = new Response(null, new Error(Error::ERROR_CODE_32600), $envelope->getCorrelationId());
+            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32600));
         } catch (Exception\JsonParseError $e) {
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
-            $response = new Response(null, new Error(Error::ERROR_CODE_32700), $envelope->getCorrelationId());
+            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32700));
         } catch (\Exception $e) {
             $extra = $this->extractMessageInformation($envelope);
             $extra['exception_class'] = get_class($e);
             $extra['exception_message'] = $e->getMessage();
             $extra['exception_trace'] = $e->getTraceAsString();
             $this->logger->error('Exception occurred', $extra);
-            $response = new Response(null, new Error(Error::ERROR_CODE_32603), $envelope->getCorrelationId());
+            $response = Response::withError($envelope->getCorrelationId(), new Error(Error::ERROR_CODE_32603));
         } finally {
             $this->sendReply($response, $envelope);
         }
@@ -208,7 +206,8 @@ final class Server extends AbstractConsumer
         }
 
         if ($envelope->getContentEncoding() !== 'UTF-8'
-            || $envelope->getContentType() !== 'application/json') {
+            || $envelope->getContentType() !== 'application/json'
+        ) {
             throw new Exception\InvalidJsonRpcRequest();
         }
 
@@ -224,7 +223,7 @@ final class Server extends AbstractConsumer
             $payload,
             $envelope->getCorrelationId(),
             $envelope->getRoutingKey(),
-            $envelope->getExpiration(),
+            (int) $envelope->getExpiration(),
             $envelope->getTimestamp()
         );
     }

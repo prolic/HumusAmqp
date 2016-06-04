@@ -22,24 +22,40 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\JsonRpc;
 
-use Humus\Amqp\Exception\InvalidArgumentException;
-use Humus\Amqp\JsonRpc\Request;
+use Humus\Amqp\JsonRpc\Response;
+use Humus\Amqp\JsonRpc\ResponseCollection;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * Class RequestTest
+ * Class ResponseCollectionTest
  * @package HumusTest\Amqp\JsonRpc
  */
-class RequestTest extends TestCase
+class ResponseCollectionTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_throws_exception_when_invalid_payload_given()
+    public function it_iterates_and_accesses_correctly()
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Params must be of type array, scalar or null');
+        $responseCollection = new ResponseCollection();
+        $responseCollection->addResponse(Response::withResult('id1', ['foo' => 'bar']));
+        $responseCollection->addResponse(Response::withResult('id2', ['foo' => 'bam']));
 
-        new Request('server', 'method', new \stdClass(), 'id');
+        $i = 0;
+        foreach ($responseCollection as $response) {
+            $this->assertEquals('id' . ++$i, $response->id());
+        }
+
+        $this->assertEquals(2, $i);
+        $this->assertCount(2, $responseCollection);
+
+        $this->assertTrue($responseCollection->hasResponse('id2'));
+        $this->assertFalse($responseCollection->hasResponse('unknown id'));
+
+        $response = $responseCollection->getResponse('id1');
+        $this->assertEquals('id1', $response->id());
+        $this->assertEquals(['foo' => 'bar'], $response->result());
+
+        $this->assertFalse($responseCollection->getResponse('unknown id'));
     }
 }

@@ -109,7 +109,7 @@ class Client
             $this->requestIds[] = $request->id();
         }
 
-        if (0 != $request->expiration() && ceil($request->expiration() / 1000) > $this->timeout ) {
+        if (0 != $request->expiration() && ceil($request->expiration() / 1000) > $this->timeout) {
             $this->timeout = ceil($request->expiration() / 1000);
         }
     }
@@ -206,36 +206,42 @@ class Client
             || $envelope->getContentEncoding() !== 'UTF-8'
             || $envelope->getContentType() !== 'application/json'
         ) {
-            return new Response(null, new Error(Error::ERROR_CODE_32603, 'Invalid JSON-RPC response'));
+            return Response::withError(
+                $envelope->getCorrelationId(),
+                new Error(Error::ERROR_CODE_32603, 'Invalid JSON-RPC response')
+            );
         }
 
         $payload = json_decode($envelope->getBody(), true);
 
         if (null === $payload) {
-            $response = new Response(
-                null,
-                new Error(Error::ERROR_CODE_32603, 'JSON cannot be decoded'),
-                $envelope->getCorrelationId()
+            $response = Response::withError(
+                $envelope->getCorrelationId(),
+                new Error(Error::ERROR_CODE_32603, 'JSON cannot be decoded')
             );
         } elseif (! in_array($envelope->getCorrelationId(), $this->requestIds)) {
-            $response = new Response(
-                null,
-                new Error(Error::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs'),
-                $envelope->getCorrelationId()
+            $response = Response::withError(
+                $envelope->getCorrelationId(),
+                new Error(Error::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')
             );
         } elseif (isset($payload['result'])) {
-            $response = new Response($payload['result'], null, $envelope->getCorrelationId());
+            $response = Response::withResult(
+                $envelope->getCorrelationId(),
+                $payload['result']
+            );
         } elseif (! isset($payload['error']['code'])
             || ! isset($payload['error']['message'])
             || ! is_int($payload['error']['code'])
             || ! is_string($payload['error']['message'])
         ) {
-            $response = new Response(null, new Error(Error::ERROR_CODE_32603, 'Invalid JSON-RPC response'));
-        } else {
-            $response = new Response(
-                null,
-                new Error($payload['error']['code'], $payload['error']['message']),
+            $response = Response::withError(
                 $envelope->getCorrelationId(),
+                new Error(Error::ERROR_CODE_32603, 'Invalid JSON-RPC response')
+            );
+        } else {
+            $response = Response::withError(
+                $envelope->getCorrelationId(),
+                new Error($payload['error']['code'], $payload['error']['message']),
                 $payload['data'] ?? null
             );
         }

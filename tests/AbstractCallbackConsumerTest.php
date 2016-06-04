@@ -31,7 +31,7 @@ use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
-use Psr\Log\LoggerInterface;
+use HumusTest\Amqp\TestAsset\ArrayLogger;
 use Psr\Log\NullLogger;
 
 /**
@@ -41,73 +41,6 @@ use Psr\Log\NullLogger;
 abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase implements CanCreateExchange, CanCreateQueue
 {
     use DeleteOnTearDownTrait;
-
-    /**
-     * @var NullLogger
-     */
-    protected $logger;
-
-    protected function setUp()
-    {
-        $this->logger = new class() implements LoggerInterface
- {
-     private $loggerResult = [];
-
-     public function loggerResult()
-     {
-         return $this->loggerResult;
-     }
-
-     public function emergency($message, array $context = [])
-     {
-         $this->log('emergency', $message, $context);
-     }
-
-     public function alert($message, array $context = [])
-     {
-         $this->log('alert', $message, $context);
-     }
-
-     public function critical($message, array $context = [])
-     {
-         $this->log('critical', $message, $context);
-     }
-
-     public function error($message, array $context = [])
-     {
-         $this->log('error', $message, $context);
-     }
-
-     public function warning($message, array $context = [])
-     {
-         $this->log('warning', $message, $context);
-     }
-
-     public function notice($message, array $context = [])
-     {
-         $this->log('notice', $message, $context);
-     }
-
-     public function info($message, array $context = [])
-     {
-         $this->log('info', $message, $context);
-     }
-
-     public function debug($message, array $context = [])
-     {
-         $this->log('debug', $message, $context);
-     }
-
-     public function log($level, $message, array $context = [])
-     {
-         $this->loggerResult[] = [
-                    'level' => $level,
-                    'message' => $message,
-                    'context' => $context,
-                ];
-     }
- };
-    }
 
     /**
      * @test
@@ -136,10 +69,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -162,7 +96,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
         $this->assertCount(14, $loggerResult);
 
         $this->assertEquals('debug', $loggerResult[0]['level']);
@@ -242,10 +176,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -268,7 +203,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
         $this->assertCount(14, $loggerResult);
 
         $this->assertEquals('debug', $loggerResult[0]['level']);
@@ -353,7 +288,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            new NullLogger(),
             7,
             function (Envelope $envelope, Queue $queue) use (&$result, &$i) {
                 $i++;
@@ -398,10 +333,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -426,7 +362,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
         $this->assertCount(7, $loggerResult);
 
         $this->assertEquals('debug', $loggerResult[0]['level']);
@@ -483,10 +419,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -519,7 +456,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
 
         $this->assertEquals('debug', $loggerResult[0]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
@@ -591,7 +528,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            new NullLogger(),
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -643,10 +580,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 throw new \Exception('foo');
@@ -668,7 +606,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
 
         $this->assertCount(9, $loggerResult);
 
@@ -733,10 +671,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -762,7 +701,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
 
         $this->assertCount(5, $loggerResult);
 
@@ -821,10 +760,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -843,7 +783,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
 
         $this->assertCount(9, $loggerResult);
 
@@ -927,10 +867,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         }
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -953,7 +894,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $result
         );
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
 
         $this->assertCount(17, $loggerResult);
 
@@ -1053,10 +994,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         );
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -1068,7 +1010,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $this->assertEquals([], $result);
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
 
         $this->assertCount(4, $loggerResult);
 
@@ -1118,10 +1060,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         );
 
         $result = [];
+        $logger = new ArrayLogger();
 
         $consumer = new CallbackConsumer(
             $queue,
-            $this->logger,
+            $logger,
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
@@ -1133,7 +1076,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $this->assertEquals([], $result);
 
-        $loggerResult = $this->logger->loggerResult();
+        $loggerResult = $logger->loggerResult();
 
         $this->assertCount(3, $loggerResult);
 

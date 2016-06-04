@@ -73,7 +73,7 @@ class Request
      * @param string $server
      * @param string $method
      * @param array|string|integer|float|bool $params
-     * @param string|null $routingKey
+     * @param string $routingKey
      * @param int $expiration in milliseconds
      * @param string|null $id
      * @param string|null $timestamp
@@ -83,7 +83,7 @@ class Request
         string $method,
         $params,
         string $id = null,
-        string $routingKey = null,
+        string $routingKey = '',
         int $expiration = 0, // in milliseconds
         string $timestamp = null
     ) {
@@ -119,9 +119,9 @@ class Request
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function routingKey()
+    public function routingKey() : string
     {
         return $this->routingKey;
     }

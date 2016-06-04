@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-use Humus\Amqp\Exception;
+use Assert\Assertion;
 
 /**
  * Class Response
@@ -53,32 +53,43 @@ class Response
     private $data;
 
     /**
-     * Response constructor.
+     * @param string $id
      * @param array|string|integer|float|bool|null $result
-     * @param Error $error
-     * @param string|null $id
-     * @param array|string|integer|float|bool|null $data
+     * @return Response
      */
-    public function __construct($result = null, Error $error = null, string $id = null, $data = null)
+    public static function withResult(string $id, $result)
     {
-        $this->id = $id;
+        $self = new self();
 
-        if (! is_array($data) || ! is_scalar($data) || null !== $data) {
-            throw new Exception\InvalidArgumentException(
-                'Data must be of type array|string|integer|float|bool|null'
-            );
-        }
+        $self->assertPayload($result, 'result');
 
-        if (null !== $error) {
-            $this->error = $error;
-            $this->data = $data;
-        } elseif (! is_array($result) || ! is_scalar($result) || null !== $result) {
-            throw new Exception\InvalidArgumentException(
-                'Result must be of type array|string|integer|float|bool|null'
-            );
-        } else {
-            $this->result = $result;
-        }
+        $self->id = $id;
+        $self->result = $result;
+
+        return $self;
+    }
+
+    /**
+     * @param string $id
+     * @param Error $error
+     * @param array|string|integer|float|bool|null $data
+     * @return Response
+     */
+    public static function withError(string $id, Error $error, $data = null)
+    {
+        $self = new self();
+
+        $self->assertPayload($data, 'data');
+
+        $self->id = $id;
+        $self->error = $error;
+        $self->data = $data;
+
+        return $self;
+    }
+
+    protected function __construct()
+    {
     }
 
     /**
@@ -102,7 +113,7 @@ class Response
      */
     public function error()
     {
-        $this->error;
+        return $this->error;
     }
 
     /**
@@ -119,5 +130,21 @@ class Response
     public function data()
     {
         return $this->data;
+    }
+
+    /**
+     * @param mixed $payload
+     * @param string $name
+     */
+    private static function assertPayload($payload, string $name)
+    {
+        if (is_array($payload)) {
+            foreach ($payload as $subPayload) {
+                self::assertPayload($subPayload, $name);
+            }
+            return;
+        }
+
+        Assertion::nullOrscalar($payload, $name . ' must only contain arrays and scalar values');
     }
 }

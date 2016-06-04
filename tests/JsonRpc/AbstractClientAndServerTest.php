@@ -25,12 +25,15 @@ namespace HumusTest\Amqp\JsonRpc;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\JsonRpc\Client;
+use Humus\Amqp\JsonRpc\Error;
+use Humus\Amqp\JsonRpc\Response;
 use Humus\Amqp\JsonRpc\Server;
 use Humus\Amqp\JsonRpc\Request;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\CanCreateExchange;
 use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
+use HumusTest\Amqp\TestAsset\ArrayLogger;
 use PHPUnit_Framework_TestCase as TestCase;
 use Psr\Log\NullLogger;
 
@@ -84,28 +87,50 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $time = time();
-        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
-        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new Request('rpc-server', 'time2', 2, 'request-2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Envelope $envelope) {
-            return $envelope->getBody() * 2;
+        $callback = function (Request $request) {
+            return Response::withResult($request->id(), $request->params() * 2);
         };
 
-        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+        $logger = new ArrayLogger();
+        $server = new Server($serverQueue, $callback, $logger, 1.0);
 
         $server->consume(2);
 
-        $replies = $client->getReplies();
+        $responses = $client->getResponseCollection();
 
-        $this->assertCount(2, $replies);
-        $this->assertEquals(true, $replies['request-1']['success']);
-        $this->assertEquals(2, $replies['request-1']['result']);
-        $this->assertEquals(true, $replies['request-2']['success']);
-        $this->assertEquals(4, $replies['request-2']['result']);
+        $this->assertCount(2, $responses);
+
+        $response1 = $responses->getResponse('request-1');
+        $this->assertFalse($response1->hasError());
+        $this->assertEquals(2, $response1->result());
+
+        $response2 = $responses->getResponse('request-2');
+        $this->assertFalse($response2->hasError());
+        $this->assertEquals(4, $response2->result());
+
+        $loggerResult = $logger->loggerResult();
+
+        $this->assertCount(4, $loggerResult);
+
+        $this->assertEquals('info', $loggerResult[0]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[0]['message']);
+
+        $this->assertEquals('debug', $loggerResult[1]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
+        $this->assertEquals('1', $loggerResult[1]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[2]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[2]['message']);
+
+        $this->assertEquals('debug', $loggerResult[3]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
+        $this->assertEquals('2', $loggerResult[3]['context']['body']);
     }
 
     /**
@@ -147,101 +172,59 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $time = time();
-        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
-        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new Request('rpc-server', 'time2', 2, 'request-2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Envelope $envelope) {
-            $body = $envelope->getBody();
-            if ("1" === $body) {
+        $callback = function (Request $request) {
+            $params = $request->params();
+            if (1 == $params) {
                 throw new \Exception('invalid body');
             }
-            return $body * 2;
+            return $params * 2; // return no response but the result instead
         };
 
-        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
+        $logger = new ArrayLogger();
+        $server = new Server($serverQueue, $callback, $logger, 1.0);
 
         $server->consume(2);
 
-        $replies = $client->getReplies();
+        $responses = $client->getResponseCollection();
 
-        $this->assertCount(2, $replies);
-        $this->assertEquals(false, $replies['request-1']['success']);
-        $this->assertEquals('invalid body', $replies['request-1']['error']);
-        $this->assertEquals(true, $replies['request-2']['success']);
-        $this->assertEquals(4, $replies['request-2']['result']);
-    }
+        $this->assertCount(2, $responses);
 
-    /**
-     * @test
-     * @group by
-     */
-    public function it_sends_requests_and_server_responds_and_handles_exception_with_trace()
-    {
-        $connection = $this->createConnection();
-        $channel = $connection->newChannel();
-        $channel2 = $connection->newChannel();
+        $response1 = $responses->getResponse('request-1');
+        $this->assertTrue($response1->hasError());
+        $this->assertEquals(Error::ERROR_CODE_32603, $response1->error()->code());
+        $this->assertEquals('Internal error', $response1->error()->message());
 
-        $clientExchange = $this->createExchange($channel);
-        $clientExchange->setType('direct');
-        $clientExchange->setName('rpc-client');
-        $clientExchange->delete();
-        $clientExchange->declareExchange();
+        $response2 = $responses->getResponse('request-2');
+        $this->assertFalse($response2->hasError());
+        $this->assertEquals(4, $response2->result());
 
-        $serverExchange = $this->createExchange($channel2);
-        $serverExchange->setType('direct');
-        $serverExchange->setName('rpc-server');
-        $serverExchange->delete();
-        $serverExchange->declareExchange();
+        $loggerResult = $logger->loggerResult();
 
-        $clientQueue = $this->createQueue($channel);
-        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
-        $clientQueue->declareQueue();
-        $clientQueue->bind($clientExchange->getName());
+        $this->assertCount(5, $loggerResult);
 
-        $serverQueue = $this->createQueue($channel2);
-        $serverQueue->setName('rpc-server-queue');
-        $serverQueue->delete();
-        $serverQueue->declareQueue();
-        $serverQueue->bind($serverExchange->getName());
+        $this->assertEquals('info', $loggerResult[0]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[0]['message']);
 
-        $this->addToCleanUp($clientExchange);
-        $this->addToCleanUp($serverExchange);
-        $this->addToCleanUp($clientQueue);
-        $this->addToCleanUp($serverQueue);
+        $this->assertEquals('debug', $loggerResult[1]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
+        $this->assertEquals('1', $loggerResult[1]['context']['body']);
 
-        $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
+        $this->assertEquals('error', $loggerResult[2]['level']);
+        $this->assertEquals('Exception occurred', $loggerResult[2]['message']);
+        $this->assertEquals('invalid body', $loggerResult[2]['context']['exception_message']);
 
-        $time = time();
-        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
-        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
 
-        $client->addRequest($request1);
-        $client->addRequest($request2);
-
-        $callback = function (Envelope $envelope) {
-            $body = $envelope->getBody();
-            if ("2" === $body) {
-                throw new \Exception('invalid body');
-            }
-            return $body * 2;
-        };
-
-        $server = new Server($serverQueue, $callback, new NullLogger(), 1.0, null, '', true);
-
-        $server->consume(2);
-
-        $replies = $client->getReplies();
-
-        $this->assertCount(2, $replies);
-        $this->assertEquals(true, $replies['request-1']['success']);
-        $this->assertEquals(2, $replies['request-1']['result']);
-        $this->assertEquals(false, $replies['request-2']['success']);
-        $this->assertEquals('invalid body', $replies['request-2']['error']);
-        $this->assertArrayHasKey('trace', $replies['request-2']);
+        $this->assertEquals('debug', $loggerResult[4]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
+        $this->assertEquals('2', $loggerResult[4]['context']['body']);
     }
 
     /**
@@ -283,26 +266,27 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $time = time();
-        $request1 = new Request(1, 'rpc-server', 'request-1', null, 0, 'my_user', 'message-id-1', (string) $time, 'times2');
-        $request2 = new Request(2, 'rpc-server', 'request-2', null, 0, 'my_user', 'message-id-2', (string) $time, 'times2');
+        $request1 = new Request('rpc-server', 'time2', 1, 'request-1');
+        $request2 = new Request('rpc-server', 'time2', 2, 'request-2');
 
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Envelope $envelope) {
-            return $envelope->getBody() * 2;
+        $callback = function (Request $request) {
+            return Response::withResult($request->id(), $request->params() * 2);
         };
 
         $server = new Server($serverQueue, $callback, new NullLogger(), 1.0);
 
         $server->consume(1);
 
-        $replies = $client->getReplies(1);
+        $responses = $client->getResponseCollection(1);
 
-        $this->assertCount(1, $replies);
-        $this->assertEquals(true, $replies['request-1']['success']);
-        $this->assertEquals(2, $replies['request-1']['result']);
+        $this->assertCount(1, $responses);
+
+        $response1 = $responses->getResponse('request-1');
+        $this->assertFalse($response1->hasError());
+        $this->assertEquals(2, $response1->result());
     }
 
     /**
@@ -344,9 +328,8 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $time = time();
-        $request1 = new Request(1, 'rpc-server', 'request-1', null, 100, 'my_user', 'message-id-1', (string) $time, 'times2');
-        $request2 = new Request(2, 'rpc-server', 'request-2', null, 100, 'my_user', 'message-id-2', (string) $time, 'times2');
+        $request1 = new Request('rpc-server', 'time2', 1, 'request-1', '', 100);
+        $request2 = new Request('rpc-server', 'time2', 2, 'request-2', '', 100);
 
         $client->addRequest($request1);
         $client->addRequest($request2);
@@ -366,9 +349,9 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $server->consume(1);
 
-        $replies = $client->getReplies(0.2);
+        $responses = $client->getResponseCollection(0.2);
 
-        $this->assertCount(0, $replies);
+        $this->assertCount(0, $responses);
     }
 
     /**
@@ -404,6 +387,6 @@ abstract class AbstractClientAndServerTest extends TestCase implements
 
         $client = new Client($clientQueue, ['rpc-server' => $serverExchange]);
 
-        $client->addRequest(new Request(1, 'invalid-rpc-server', 'request-1'));
+        $client->addRequest(new Request('invalid-rpc-server', 'time2', 1, 'request-1', '', 100));
     }
 }
