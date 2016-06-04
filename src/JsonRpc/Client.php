@@ -90,7 +90,6 @@ class Client
         $this->exchanges = $exchanges;
         $this->waitMillis = $waitMillis;
         $this->appId = $appId;
-        $this->responseCollection = new ResponseCollection();
     }
 
     /**

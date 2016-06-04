@@ -99,7 +99,7 @@ class Request
         $this->id = $id;
         $this->routingKey = $routingKey;
         $this->expiration = $expiration;
-        $this->timestamp = $timestamp ? $timestamp : (string) time();
+        $this->timestamp = $timestamp ?: (string) time();
     }
 
     /**
