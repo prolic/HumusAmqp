@@ -62,7 +62,7 @@ final class Exchange implements ExchangeInterface
      */
     public function getName() : string
     {
-        return $this->exchange->getName();
+        return $this->exchange->getName() ?: '';
     }
 
     /**
@@ -78,7 +78,7 @@ final class Exchange implements ExchangeInterface
      */
     public function getType() : string
     {
-        return $this->exchange->getType();
+        return $this->exchange->getType() ?: '';
     }
 
     /**
