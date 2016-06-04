@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-use Assert\Assertion;
+use Humus\Amqp\Exception;
 
 /**
  * Class Response
@@ -145,6 +145,8 @@ class Response
             return;
         }
 
-        Assertion::nullOrscalar($payload, $name . ' must only contain arrays and scalar values');
+        if (! is_scalar($payload) && null !== $payload) {
+            throw new Exception\InvalidArgumentException($name . ' must only contain arrays and scalar values');
+        }
     }
 }

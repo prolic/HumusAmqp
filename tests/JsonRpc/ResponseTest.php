@@ -22,7 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\JsonRpc;
 
-use Assert\InvalidArgumentException;
+use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\JsonRpc\Error;
 use Humus\Amqp\JsonRpc\Response;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -101,5 +101,16 @@ class ResponseTest extends TestCase
         $this->expectExceptionMessage('result must only contain arrays and scalar values');
 
         Response::withResult('id', ['foo' => new \stdClass()]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_invalid_error_code_given()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid status code provided: 100');
+
+        Response::withError('id', new Error(100));
     }
 }

@@ -70,7 +70,7 @@ class Error
     {
         if (! defined(Error::class . '::' . 'ERROR_CODE_' . -$code)) {
             throw new Exception\InvalidArgumentException(sprintf(
-                'Invalid status code provided: "%s"',
+                'Invalid status code provided: %s',
                 $code
             ));
         }
