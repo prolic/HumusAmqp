@@ -4,6 +4,7 @@ PHP 7 AMQP library
 
 [![Build Status](https://travis-ci.org/prolic/HumusAmqp.svg?branch=master)](https://travis-ci.org/prolic/HumusAmqp)
 [![Coverage Status](https://coveralls.io/repos/github/prolic/HumusAmqp/badge.svg?branch=master)](https://coveralls.io/github/prolic/HumusAmqp?branch=master)
+[![Gitter](https://badges.gitter.im/prolic/HumusAmqp.svg)](https://gitter.im/prolic/HumusAmqp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Overview
 
@@ -85,6 +86,11 @@ use the SocketConnection instead (assuming you don't need an SSL connection).
 
 3) When using php-amqplib as driver and you're using the LazyConnection, you should not create the channel yourself, call
 instead `$channel = $connection->newChannel()`
+
+## Support
+
+- File issues at [https://github.com/prolic/HumusAmqp/issues](https://github.com/prooph/event-store/issues).
+- Say hello in the [HumusAmqp gitter](https://gitter.im/prooph/improoph) chat.
 
 ## Contribute
 
