@@ -47,9 +47,9 @@ interface Envelope
     /**
      * Get the delivery tag of the message.
      *
-     * @return string The delivery tag of the message.
+     * @return int The delivery tag of the message.
      */
-    public function getDeliveryTag() : string;
+    public function getDeliveryTag() : int;
 
     /**
      * Get the delivery mode of the message.
@@ -101,9 +101,9 @@ interface Envelope
     /**
      * Get the timestamp of the message.
      *
-     * @return string The message timestamp.
+     * @return int The message timestamp.
      */
-    public function getTimestamp() : string;
+    public function getTimestamp() : int;
 
     /**
      * Get the priority of the message.

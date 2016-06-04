@@ -65,9 +65,9 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getDeliveryTag() : string
+    public function getDeliveryTag() : int
     {
-        return $this->getFromEnvelope('delivery_tag');
+        return (int) $this->getFromEnvelope('delivery_tag');
     }
 
     /**
@@ -129,9 +129,9 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getTimestamp() : string
+    public function getTimestamp() : int
     {
-        return $this->getFromEnvelope('timestamp');
+        return (int) $this->getFromEnvelope('timestamp');
     }
 
     /**

@@ -18,6 +18,8 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Constants;
@@ -146,7 +148,7 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM)
+    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM)
     {
         $this->exchange->delete($exchangeName, $flags);
     }
@@ -172,7 +174,7 @@ final class Exchange implements ExchangeInterface
      */
     public function publish(
         string $message,
-        string $routingKey = null,
+        string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
     ) {

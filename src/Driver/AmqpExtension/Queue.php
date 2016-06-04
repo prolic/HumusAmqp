@@ -18,6 +18,8 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Constants;
@@ -128,7 +130,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function bind(string $exchangeName, string $routingKey = null, array $arguments = [])
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
         $this->queue->bind($exchangeName, $routingKey, $arguments);
     }
@@ -150,7 +152,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = null)
+    public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = '')
     {
         if (null !== $callback) {
             $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
@@ -173,7 +175,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         $this->queue->ack($deliveryTag, $flags);
     }
@@ -181,7 +183,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         $this->queue->nack($deliveryTag, $flags);
     }
@@ -189,7 +191,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         $this->queue->reject($deliveryTag, $flags);
     }
@@ -213,7 +215,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = [])
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
         $this->queue->unbind($exchangeName, $routingKey, $arguments);
     }

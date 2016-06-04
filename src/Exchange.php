@@ -131,7 +131,7 @@ interface Exchange
      *                              it.
      * @return void
      */
-    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM);
+    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Bind to another exchange.
@@ -173,7 +173,7 @@ interface Exchange
      */
     public function publish(
         string $message,
-        string $routingKey = null,
+        string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
     );

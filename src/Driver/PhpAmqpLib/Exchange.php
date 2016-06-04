@@ -189,9 +189,9 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function delete(string $exchangeName = null, int $flags = Constants::AMQP_NOPARAM)
+    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM)
     {
-        if (null === $exchangeName) {
+        if ('' === $exchangeName) {
             $exchangeName = $this->name;
         }
 
@@ -246,7 +246,7 @@ final class Exchange implements ExchangeInterface
      */
     public function publish(
         string $message,
-        string $routingKey = null,
+        string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) {
         $attributes['user_id'] = $this->getConnection()->getOptions()->getLogin();
@@ -254,10 +254,6 @@ final class Exchange implements ExchangeInterface
 
         if (isset($attributes['headers'])) {
             $message->set('application_headers', new AMQPTable($attributes['headers']));
-        }
-
-        if (null === $routingKey) {
-            $routingKey = '';
         }
 
         $this->channel->getResource()->basic_publish(

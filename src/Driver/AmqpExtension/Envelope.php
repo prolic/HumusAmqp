@@ -18,6 +18,8 @@
  *  and is licensed under the MIT license.
  */
 
+declare (strict_types=1);
+
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Envelope as EnvelopeInterface;
@@ -61,7 +63,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getDeliveryTag() : string
+    public function getDeliveryTag() : int
     {
         return $this->envelope->getDeliveryTag();
     }
@@ -117,7 +119,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getTimestamp() : string
+    public function getTimestamp() : int
     {
         return $this->envelope->getTimeStamp();
     }

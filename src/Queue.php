@@ -116,7 +116,7 @@ interface Queue
      *
      * @return void
      */
-    public function bind(string $exchangeName, string $routingKey = null, array $arguments = []);
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []);
 
     /**
      * Retrieve the next message from the queue.
@@ -166,7 +166,7 @@ interface Queue
      * @return void
      * @throws Exception\QueueException
      */
-    public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = null);
+    public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = '');
 
     /**
      * Acknowledge the receipt of a message.
@@ -175,13 +175,13 @@ interface Queue
      * without the Constants::AMQP_AUTOACK flag through Queue::get() or
      * Queue::consume()
      *
-     * @param string  $deliveryTag The message delivery tag of which to
+     * @param int  $deliveryTag The message delivery tag of which to
      *                              acknowledge receipt.
      * @param integer $flags        The only valid flag that can be passed is
      *                              Constants::AMQP_MULTIPLE.
      * @return void
      */
-    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
+    public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Mark a message as explicitly not acknowledged.
@@ -196,13 +196,13 @@ interface Queue
      * behavior of calling this method while connected to any other broker is
      * undefined.
      *
-     * @param string  $deliveryTag Delivery tag of last message to reject.
+     * @param int     $deliveryTag Delivery tag of last message to reject.
      * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s),
      *                              Constants::AMQP_MULTIPLE to nack all previous
      *                              unacked messages as well.
      * @return void
      */
-    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
+    public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Mark one message as explicitly not acknowledged.
@@ -213,11 +213,11 @@ interface Queue
      * Queue::consume() and Queue::get() and using the Constants::AMQP_AUTOACK
      * flag are not eligible.
      *
-     * @param string  $deliveryTag Delivery tag of the message to reject.
+     * @param int     $deliveryTag Delivery tag of the message to reject.
      * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s).
      * @return void
      */
-    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
+    public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Purge the contents of a queue.
@@ -246,7 +246,7 @@ interface Queue
      * @param array  $arguments     Additional binding arguments.
      * @return void
      */
-    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = []);
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []);
 
     /**
      * Delete a queue from the broker.

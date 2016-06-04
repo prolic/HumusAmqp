@@ -332,7 +332,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements
             return false;
         });
 
-        $producer->publish(['foo' => 'bar'], null, Constants::AMQP_MANDATORY);
+        $producer->publish(['foo' => 'bar'], '', Constants::AMQP_MANDATORY);
 
         $producer->waitForBasicReturn();
 

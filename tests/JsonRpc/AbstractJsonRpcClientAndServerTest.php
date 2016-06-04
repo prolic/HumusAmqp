@@ -397,7 +397,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
 
         sleep(1);
 
-        $serverExchange->publish('shutdown', null, Constants::AMQP_NOPARAM, [
+        $serverExchange->publish('shutdown', '', Constants::AMQP_NOPARAM, [
             'type' => 'shutdown',
             'app_id' => 'Humus\Amqp',
         ]);
@@ -492,7 +492,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $serverExchange->publish('{]kk]}', null, Constants::AMQP_NOPARAM, [
+        $serverExchange->publish('{]kk]}', '', Constants::AMQP_NOPARAM, [
             'content_type' => 'application/json',
             'content_encoding' => 'UTF-8',
             'delivery_mode' => 2,
@@ -505,7 +505,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
             ],
         ]);
 
-        $serverExchange->publish('2', null, Constants::AMQP_NOPARAM, [
+        $serverExchange->publish('2', '', Constants::AMQP_NOPARAM, [
             'content_type' => 'application/json',
             'content_encoding' => 'UTF-8',
             'delivery_mode' => 2,
@@ -515,7 +515,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
             'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
         ]);
 
-        $serverExchange->publish('2', null, Constants::AMQP_NOPARAM, [
+        $serverExchange->publish('2', '', Constants::AMQP_NOPARAM, [
             'content_encoding' => 'UTF-8',
             'delivery_mode' => 2,
             'type' => 'time2',
@@ -527,7 +527,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
             ],
         ]);
 
-        $serverExchange->publish('2', null, Constants::AMQP_NOPARAM, [
+        $serverExchange->publish('2', '', Constants::AMQP_NOPARAM, [
             'content_type' => 'application/json',
             'delivery_mode' => 2,
             'type' => 'time2',
@@ -567,7 +567,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
 
         $server->consume(6);
 
-        $clientExchange->publish('invalid response', null, Constants::AMQP_NOPARAM, [
+        $clientExchange->publish('invalid response', '', Constants::AMQP_NOPARAM, [
             'reply_to' => $clientQueue->getName(),
             'correlation_id' => 'invalid_id',
             'content_type' => 'application/json',
@@ -577,12 +577,12 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
             ]
         ]);
 
-        $clientExchange->publish('invalid response', null, Constants::AMQP_NOPARAM, [
+        $clientExchange->publish('invalid response', '', Constants::AMQP_NOPARAM, [
             'reply_to' => $clientQueue->getName(),
             'correlation_id' => 'request-8'
         ]);
 
-        $clientExchange->publish('{"foo":"bar"}', null, Constants::AMQP_NOPARAM, [
+        $clientExchange->publish('{"foo":"bar"}', '', Constants::AMQP_NOPARAM, [
             'reply_to' => $clientQueue->getName(),
             'correlation_id' => 'request-9',
             'content_type' => 'application/json',

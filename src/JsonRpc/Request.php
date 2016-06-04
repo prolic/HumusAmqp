@@ -39,9 +39,9 @@ interface Request
     public function server() : string;
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function routingKey();
+    public function routingKey() : string;
 
     /**
      * Expiration in milliseconds
@@ -55,9 +55,9 @@ interface Request
     public function id();
 
     /**
-     * @return string
+     * @return int
      */
-    public function timestamp() : string;
+    public function timestamp() : int;
 
     /**
      * @return string

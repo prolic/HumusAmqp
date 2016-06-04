@@ -252,7 +252,7 @@ final class Queue implements QueueInterface
     /**
      * @inheritdoc
      */
-    public function ack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         $this->channel->getResource()->basic_ack(
             $deliveryTag,
@@ -263,7 +263,7 @@ final class Queue implements QueueInterface
     /**
      * @inheritdoc
      */
-    public function nack(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         $this->channel->getResource()->basic_nack(
             $deliveryTag,
@@ -275,7 +275,7 @@ final class Queue implements QueueInterface
     /**
      * @inheritdoc
      */
-    public function reject(string $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
         $this->channel->getResource()->basic_reject(
             $deliveryTag,
@@ -310,12 +310,8 @@ final class Queue implements QueueInterface
     /**
      * @inheritdoc
      */
-    public function unbind(string $exchangeName, string $routingKey = null, array $arguments = [])
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
-        if (null === $routingKey) {
-            $routingKey = '';
-        }
-
         $this->channel->getResource()->queue_unbind(
             $this->name,
             $exchangeName,

@@ -43,7 +43,7 @@ interface Producer
      */
     public function publish(
         $message,
-        string $routingKey = null,
+        string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
     );

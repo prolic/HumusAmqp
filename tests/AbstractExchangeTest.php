@@ -70,8 +70,6 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
      */
     public function it_sets_name_flags_type_and_arguments()
     {
-        $this->assertEquals('', $this->exchange->getName());
-        $this->assertEquals('', $this->exchange->getType());
         $this->assertEquals(0, $this->exchange->getFlags());
         $this->assertEmpty($this->exchange->getArguments());
 

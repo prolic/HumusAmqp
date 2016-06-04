@@ -750,7 +750,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $exchange->publish('message #' . $i);
         }
 
-        $exchange->publish('stop!!!', null, Constants::AMQP_NOPARAM, [
+        $exchange->publish('stop!!!', '', Constants::AMQP_NOPARAM, [
             'app_id' => 'Humus\Amqp',
             'type' => 'shutdown',
         ]);
@@ -854,7 +854,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 0,
                 1
             ]),
-            null,
+            '',
             Constants::AMQP_NOPARAM,
             [
                 'app_id' => 'Humus\Amqp',
@@ -985,7 +985,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             json_encode([
                 'invalid'
             ]),
-            null,
+            '',
             Constants::AMQP_NOPARAM,
             [
                 'app_id' => 'Humus\Amqp',
@@ -1051,7 +1051,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $exchange->publish(
             json_encode(['invalid']),
-            null,
+            '',
             Constants::AMQP_NOPARAM,
             [
                 'app_id' => 'Humus\Amqp',

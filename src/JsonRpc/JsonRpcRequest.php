@@ -53,9 +53,9 @@ final class JsonRpcRequest implements Request
     private $id;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private $routingKey = null;
+    private $routingKey;
 
     /**
      * @var int
@@ -63,9 +63,9 @@ final class JsonRpcRequest implements Request
     private $expiration = 0;
 
     /**
-     * @var string|null
+     * @var int
      */
-    private $timestamp = null;
+    private $timestamp;
 
     /**
      * JsonRpcRequest constructor.
@@ -73,19 +73,19 @@ final class JsonRpcRequest implements Request
      * @param string $server
      * @param string $method
      * @param array|string|integer|float|bool $params
-     * @param string|null $routingKey
+     * @param string $routingKey
      * @param int $expiration in milliseconds
      * @param string|null $id
-     * @param string|null $timestamp
+     * @param int $timestamp
      */
     public function __construct(
         string $server,
         string $method,
         $params,
         string $id = null,
-        string $routingKey = null,
+        string $routingKey = '',
         int $expiration = 0, // in milliseconds
-        string $timestamp = null
+        int $timestamp = 0
     ) {
         if (!is_array($params) && !is_scalar($params) && null !== $params) {
             throw new Exception\InvalidArgumentException('Params must be of type array, scalar or null');
@@ -99,7 +99,7 @@ final class JsonRpcRequest implements Request
         $this->id = $id;
         $this->routingKey = $routingKey;
         $this->expiration = $expiration;
-        $this->timestamp = $timestamp ?: (string) time();
+        $this->timestamp = (0 === $timestamp) ? $timestamp: time();
     }
 
     /**
@@ -119,9 +119,9 @@ final class JsonRpcRequest implements Request
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function routingKey()
+    public function routingKey() : string
     {
         return $this->routingKey;
     }
@@ -144,9 +144,9 @@ final class JsonRpcRequest implements Request
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function timestamp() : string
+    public function timestamp() : int
     {
         return $this->timestamp;
     }
