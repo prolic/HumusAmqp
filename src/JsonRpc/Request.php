@@ -96,7 +96,7 @@ class Request
         $this->server = $server;
         $this->method = $method;
         $this->params = $params;
-        $this->id = $id ? $id : bin2hex(random_bytes(24));
+        $this->id = $id;
         $this->routingKey = $routingKey;
         $this->expiration = $expiration;
         $this->timestamp = $timestamp ? $timestamp : (string) time();

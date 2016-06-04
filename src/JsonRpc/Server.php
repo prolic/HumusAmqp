@@ -48,11 +48,6 @@ final class Server extends AbstractConsumer
     private $appId;
 
     /**
-     * @var bool
-     */
-    private $returnTrace;
-
-    /**
      * Constructor
      *
      * @param Queue $queue
@@ -61,7 +56,6 @@ final class Server extends AbstractConsumer
      * @param float $idleTimeout in seconds
      * @param string|null $consumerTag
      * @param string|null $appId
-     * @param bool $returnTrace
      */
     public function __construct(
         Queue $queue,
@@ -69,8 +63,7 @@ final class Server extends AbstractConsumer
         LoggerInterface $logger,
         float $idleTimeout,
         string $consumerTag = null,
-        string $appId = '',
-        bool $returnTrace = false
+        string $appId = ''
     ) {
         if (null === $consumerTag) {
             $consumerTag = bin2hex(random_bytes(24));
@@ -94,7 +87,6 @@ final class Server extends AbstractConsumer
         $this->idleTimeout = $idleTimeout;
         $this->consumerTag = $consumerTag;
         $this->appId = $appId;
-        $this->returnTrace = $returnTrace;
     }
 
     /**
@@ -124,19 +116,32 @@ final class Server extends AbstractConsumer
             $callback = $this->deliveryCallback;
             $response = $callback($request);
 
+            if (null === $request->id()) {
+                // notifications have no reply
+                return DeliveryResult::MSG_ACK();
+            }
+
             if (!$response instanceof Response) {
                 $response = new Response($response, null, $envelope->getCorrelationId());
             }
         } catch (Exception\InvalidJsonRpcVersion $e) {
+            $this->logger->error('Invalid json rpc version', $this->extractMessageInformation($envelope));
             $response = new Response(null, new Error(Error::ERROR_CODE_32600), $envelope->getCorrelationId());
         } catch (Exception\InvalidJsonRpcRequest $e) {
+            $this->logger->error('Invalid json rpc request', $this->extractMessageInformation($envelope));
             $response = new Response(null, new Error(Error::ERROR_CODE_32600), $envelope->getCorrelationId());
         } catch (Exception\JsonParseError $e) {
+            $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
             $response = new Response(null, new Error(Error::ERROR_CODE_32700), $envelope->getCorrelationId());
         } catch (\Exception $e) {
+            $extra = $this->extractMessageInformation($envelope);
+            $extra['exception_class'] = get_class($e);
+            $extra['exception_message'] = $e->getMessage();
+            $extra['exception_trace'] = $e->getTraceAsString();
+            $this->logger->error('Exception occurred', $extra);
             $response = new Response(null, new Error(Error::ERROR_CODE_32603), $envelope->getCorrelationId());
         } finally {
-            $this->sendReply($response, $envelope, $e);
+            $this->sendReply($response, $envelope);
         }
 
         return DeliveryResult::MSG_ACK();
@@ -147,9 +152,8 @@ final class Server extends AbstractConsumer
      * 
      * @param Response $response
      * @param Envelope $envelope
-     * @param \Exception|null $e
      */
-    protected function sendReply(Response $response, Envelope $envelope, \Exception $e = null)
+    protected function sendReply(Response $response, Envelope $envelope)
     {
         $attributes = [
             'content_type' => 'application/json',

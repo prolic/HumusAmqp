@@ -51,11 +51,11 @@ class Client
     private $responseCollection;
 
     /**
-     * Microseconds to wait between two tries when reply is not yet there
+     * Milliseconds to wait between two tries when reply is not yet there
      *
      * @var int
      */
-    private $waitMicros;
+    private $waitMillis;
 
     /**
      * @var Exchange[]
@@ -68,22 +68,27 @@ class Client
     private $appId;
 
     /**
+     * @var int
+     */
+    private $timeout = 0;
+
+    /**
      * Constructor
      *
      * @param Queue $queue
      * @param Exchange[] $exchanges
-     * @param int $waitMicros
+     * @param int $waitMillis
      * @param string $appId
      */
-    public function __construct(Queue $queue, array $exchanges, int $waitMicros = 10000, string $appId = '')
+    public function __construct(Queue $queue, array $exchanges, int $waitMillis = 100, string $appId = '')
     {
-        Assertion::min($waitMicros, 1);
+        Assertion::min($waitMillis, 1);
         Assertion::notEmpty($exchanges, 'No exchanges given');
         Assertion::allIsInstanceOf($exchanges, Exchange::class);
 
         $this->queue = $queue;
         $this->exchanges = $exchanges;
-        $this->waitMicros = $waitMicros;
+        $this->waitMillis = $waitMillis;
         $this->appId = $appId;
         $this->responseCollection = new ResponseCollection();
     }
@@ -101,7 +106,13 @@ class Client
         $exchange = $this->getExchange($request->server());
         $exchange->publish(json_encode($request->params()), $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
-        $this->requestIds[] = $request->id();
+        if (null !== $request->id()) {
+            $this->requestIds[] = $request->id();
+        }
+
+        if (0 != $request->expiration() && ceil($request->expiration() / 1000) > $this->timeout ) {
+            $this->timeout = ceil($request->expiration() / 1000);
+        }
     }
 
     /**
@@ -112,6 +123,10 @@ class Client
      */
     public function getResponseCollection(float $timeout = 0) : ResponseCollection
     {
+        if ($timeout < $this->timeout) {
+            $timeout = $this->timeout;
+        }
+
         $now = microtime(true);
         $this->responseCollection = new ResponseCollection();
 
@@ -121,7 +136,7 @@ class Client
             if ($message instanceof Envelope) {
                 $this->responseCollection->addResponse($this->responseFromEnvelope($message));
             } else {
-                usleep($this->waitMicros);
+                usleep($this->waitMillis * 1000);
             }
             $time = microtime(true);
         } while (
@@ -130,6 +145,7 @@ class Client
         );
 
         $this->requestIds = [];
+        $this->timeout = 0;
 
         return $this->responseCollection;
     }
@@ -160,7 +176,6 @@ class Client
             'content_type' => 'application/json',
             'content_encoding' => 'UTF-8',
             'delivery_mode' => 2,
-            'correlation_id' => $request->id(),
             'type' => $request->method(),
             'timestamp' => $request->timestamp(),
             'reply_to' => $this->queue->getName(),
@@ -170,6 +185,10 @@ class Client
                 'jsonrpc' => $request::JSONRPC,
             ],
         ];
+
+        if (null !== $request->id()) {
+            $attributes['correlation_id'] = $request->id();
+        }
 
         if (0 < $request->expiration()) {
             $attributes['expiration'] = $request->expiration();
