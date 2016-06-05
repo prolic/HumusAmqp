@@ -89,7 +89,7 @@ class ConsoleRunner
     static public function addCommands(Application $cli)
     {
         $cli->addCommands([
-            new Command\ListCommand(),
+            new Command\ShowCommand(),
             new Command\PurgeQueueCommand(),
             new Command\SetupFabricCommand(),
             new Command\StartCallbackConsumerCommand(),

@@ -27,10 +27,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ListCommand
+ * Class ShowCommand
  * @package Humus\Amqp\Console\Command
  */
-class ListCommand extends AbstractCommand
+class ShowCommand extends AbstractCommand
 {
     /**
      * @var array
