@@ -172,17 +172,12 @@ abstract class AbstractConsumer implements Consumer
             }
         };
 
-        do {
-            try {
-                $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
-            } catch (Exception\QueueException $e) {
-                if (!$this->queue->getConnection()->reconnect()) {
-                    throw $e;
-                }
-                $this->ackOrNackBlock();
-                gc_collect_cycles();
-            }
-        } while ($this->keepAlive);
+        try {
+            $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
+        } catch (Exception\QueueException $e) {
+            $this->logger->error(get_class($e) . ': ' . $e->getMessage());
+            $this->ackOrNackBlock();
+        }
     }
 
     /**
@@ -265,13 +260,11 @@ abstract class AbstractConsumer implements Consumer
 
         switch ($flag) {
             case DeliveryResult::MSG_REJECT():
-                $this->ackOrNackBlock(); // @todo: remove this?
-                $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
+                $this->queue->nack($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
                 $this->logger->debug('Rejected message', $this->extractMessageInformation($envelope));
                 break;
             case DeliveryResult::MSG_REJECT_REQUEUE():
-                $this->ackOrNackBlock();
-                $this->queue->reject($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
+                $this->queue->nack($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
                 $this->logger->debug('Rejected and requeued message', $this->extractMessageInformation($envelope));
                 break;
             case DeliveryResult::MSG_ACK():

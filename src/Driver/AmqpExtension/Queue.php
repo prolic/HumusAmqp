@@ -167,6 +167,8 @@ final class Queue implements AmqpQueueInterface
             $this->queue->consume($innerCallback, $flags, $consumerTag);
         } catch (\AMQPConnectionException $e) {
             throw QueueException::fromAmqpExtension($e);
+        } catch (\AMQPChannelException $e) {
+            throw QueueException::fromAmqpExtension($e);
         } catch (\AMQPQueueException $e) {
             throw QueueException::fromAmqpExtension($e);
         }
