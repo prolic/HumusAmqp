@@ -18,6 +18,7 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
+        "symfony/console": "~2.5|~3.0",
         "container-interop/container-interop": "^1.1",
         "sandrokeil/interop-config": "^1.0",
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
