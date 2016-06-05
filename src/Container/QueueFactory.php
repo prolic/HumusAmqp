@@ -51,6 +51,11 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     private $channel;
 
     /**
+     * @var bool
+     */
+    private $autoSetupFabric;
+
+    /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
      *
      * In case you want to use another config key than provided by the factories, you can add the following factory to
@@ -84,18 +89,30 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             );
         }
 
-        return (new static($name, $arguments[1]))->__invoke($arguments[0]);
+        if (! isset($arguments[2])) {
+            $arguments[2] = false;
+        }
+
+        if (! is_bool($arguments[2])) {
+            throw new Exception\InvalidArgumentException(
+                sprintf('The third argument must be a boolean')
+            );
+        }
+
+        return (new static($name, $arguments[1], $arguments[2]))->__invoke($arguments[0]);
     }
 
     /**
      * QueueFactory constructor.
      * @param string $queueName
      * @param Channel|null $channel
+     * @param bool $autoSetupFabric
      */
-    public function __construct(string $queueName, Channel $channel = null)
+    public function __construct(string $queueName, Channel $channel = null, bool $autoSetupFabric = false)
     {
         $this->queueName = $queueName;
         $this->channel = $channel;
+        $this->autoSetupFabric = $autoSetupFabric;
     }
 
     /**
@@ -122,10 +139,17 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $queue->setFlags($this->getFlags($options));
         $queue->setArguments($options['arguments']);
 
-        if ($options['auto_setup_fabric']) {
+        if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
+            // auto setup fabric depended exchange
             $exchangeName = $options['exchange'];
-            $exchange = ExchangeFactory::$exchangeName($container, $this->channel);
-            $exchange->declareExchange();
+            ExchangeFactory::$exchangeName($container, $this->channel, true);
+
+            if (isset($options['arguments']['x-dead-letter-exchange'])) {
+                // auto setup fabric dead letter exchange
+                $exchangeName = $options['arguments']['x-dead-letter-exchange'];
+                ExchangeFactory::$exchangeName($container, $this->channel, true);
+            }
+
             $queue->declareQueue();
 
             $routingKeys = $options['routing_keys'];

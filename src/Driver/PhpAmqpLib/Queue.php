@@ -134,6 +134,21 @@ final class Queue implements QueueInterface
      */
     public function declareQueue() : int
     {
+        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
+        foreach ($this->arguments as $k => $v) {
+            if (is_array($v)) {
+                $args[$k] = ['A', $v];
+            } elseif (is_int($v)) {
+                $args[$k] = ['I', $v];
+            } elseif (is_bool($v)) {
+                $args[$k] = ['t', $v];
+            } elseif (is_string($v)) {
+                $args[$k] = ['S', $v];
+            } else {
+                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+            }
+        }
+
         $result = $this->channel->getResource()->queue_declare(
             $this->name,
             (bool) ($this->flags & Constants::AMQP_PASSIVE),
@@ -141,7 +156,7 @@ final class Queue implements QueueInterface
             (bool) ($this->flags & Constants::AMQP_EXCLUSIVE),
             (bool) ($this->flags & Constants::AMQP_AUTODELETE),
             (bool) ($this->flags & Constants::AMQP_NOWAIT),
-            $this->arguments,
+            $args,
             null
         );
 
@@ -226,6 +241,21 @@ final class Queue implements QueueInterface
             $consumerTag = bin2hex(random_bytes(24));
         }
 
+        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
+        foreach ($this->arguments as $k => $v) {
+            if (is_array($v)) {
+                $args[$k] = ['A', $v];
+            } elseif (is_int($v)) {
+                $args[$k] = ['I', $v];
+            } elseif (is_bool($v)) {
+                $args[$k] = ['t', $v];
+            } elseif (is_string($v)) {
+                $args[$k] = ['S', $v];
+            } else {
+                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+            }
+        }
+
         try {
             $this->channel->getResource()->basic_consume(
                 $this->name,
@@ -236,7 +266,7 @@ final class Queue implements QueueInterface
                 (bool) ($flags & Constants::AMQP_NOWAIT),
                 $innerCallback,
                 null,
-                $this->arguments
+                $args
             );
 
             if (isset($this->channel->getResource()->callbacks[$consumerTag])) {
@@ -312,11 +342,26 @@ final class Queue implements QueueInterface
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
+        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
+        foreach ($arguments as $k => $v) {
+            if (is_array($v)) {
+                $args[$k] = ['A', $v];
+            } elseif (is_int($v)) {
+                $args[$k] = ['I', $v];
+            } elseif (is_bool($v)) {
+                $args[$k] = ['t', $v];
+            } elseif (is_string($v)) {
+                $args[$k] = ['S', $v];
+            } else {
+                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+            }
+        }
+
         $this->channel->getResource()->queue_unbind(
             $this->name,
             $exchangeName,
             $routingKey,
-            $arguments,
+            $args,
             null
         );
     }

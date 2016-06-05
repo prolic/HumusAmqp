@@ -22,6 +22,7 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Container\CallbackConsumerFactory;
 use Humus\Amqp\Driver\Driver;
 use Interop\Container\ContainerInterface;
@@ -81,7 +82,7 @@ class CallbackConsumerFactoryTest extends TestCase
         $factory = new CallbackConsumerFactory('my_consumer');
         $callbackConsumer = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\CallbackConsumer::class, $callbackConsumer);
+        $this->assertInstanceOf(CallbackConsumer::class, $callbackConsumer);
     }
 
     /**
@@ -138,7 +139,7 @@ class CallbackConsumerFactoryTest extends TestCase
         $consumerName = 'my_consumer';
         $consumer = CallbackConsumerFactory::$consumerName($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\CallbackConsumer::class, $consumer);
+        $this->assertInstanceOf(CallbackConsumer::class, $consumer);
     }
 
     /**

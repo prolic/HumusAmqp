@@ -25,6 +25,8 @@ namespace HumusTest\Amqp\Container;
 use Humus\Amqp\Container\ExchangeFactory;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
+use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -66,7 +68,7 @@ class ExchangeFactoryTest extends TestCase
         $factory = new ExchangeFactory('my_exchange');
         $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
+        $this->assertInstanceOf(Exchange::class, $exchange);
     }
 
     /**
@@ -101,7 +103,7 @@ class ExchangeFactoryTest extends TestCase
         $exchangeName = 'my_exchange';
         $exchange = ExchangeFactory::$exchangeName($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
+        $this->assertInstanceOf(Exchange::class, $exchange);
     }
 
     /**
@@ -131,7 +133,7 @@ class ExchangeFactoryTest extends TestCase
         $exchangeName = 'my_exchange';
         $exchange = ExchangeFactory::$exchangeName($container->reveal(), $channel);
 
-        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
+        $this->assertInstanceOf(Exchange::class, $exchange);
         $this->assertEquals($channel, $exchange->getChannel());
     }
 
@@ -140,7 +142,7 @@ class ExchangeFactoryTest extends TestCase
      */
     public function it_throws_exception_with_invalid_call_static_container_param()
     {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
+        $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
 
         $exchangeName = 'my_exchange';
@@ -152,7 +154,7 @@ class ExchangeFactoryTest extends TestCase
      */
     public function it_throws_exception_with_invalid_call_static_channel_param()
     {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
+        $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The second argument must be a type of Humus\Amqp\Channel or null');
 
         $container = $this->prophesize(ContainerInterface::class);
@@ -194,7 +196,7 @@ class ExchangeFactoryTest extends TestCase
         $factory = new ExchangeFactory('my_exchange');
         $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
+        $this->assertInstanceOf(Exchange::class, $exchange);
 
         $exchange->delete();
     }
@@ -261,10 +263,72 @@ class ExchangeFactoryTest extends TestCase
         $factory = new ExchangeFactory('my_exchange');
         $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Exchange::class, $exchange);
+        $this->assertInstanceOf(Exchange::class, $exchange);
 
         $exchange->delete();
         $exchange->delete('base_exchange_one');
         $exchange->delete('base_exchange_two');
+        $exchange->delete('base_exchange_three');
+    }
+
+    /**
+     * @test
+     */
+    public function it_auto_declares_alternate_exchange()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
+                        ],
+                    ],
+                    'exchange' => [
+                        'alternate-exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'alternate-exchange',
+                            'auto_setup_fabric' => false,
+                        ],
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
+                            'auto_setup_fabric' => true,
+                            'arguments' => [
+                                'alternate-exchange' => 'alternate-exchange',
+                            ],
+                        ],
+                    ]
+                ]
+            ]
+        ])->shouldBeCalled();
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+
+        $factory = new ExchangeFactory('my_exchange');
+        $exchange = $factory($container->reveal());
+
+        $this->assertInstanceOf(Exchange::class, $exchange);
+
+        $exchange->delete();
+        $exchange->delete('alternate-exchange');
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_no_bool_given_to_call_static_as_third_parameter()
+    {
+        $this->expectException(Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The third argument must be a boolean');
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $exchangeName = 'test-exchange';
+        ExchangeFactory::$exchangeName($container->reveal(), null, 'invalid-param');
     }
 }

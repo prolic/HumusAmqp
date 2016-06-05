@@ -51,6 +51,11 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     private $channel;
 
     /**
+     * @var bool
+     */
+    private $autoSetupFabric;
+
+    /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
      *
      * In case you want to use another config key than provided by the factories, you can add the following factory to
@@ -84,18 +89,28 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             );
         }
 
-        return (new static($name, $arguments[1]))->__invoke($arguments[0]);
+        if (! isset($arguments[2])) {
+            $arguments[2] = false;
+        }
+
+        if (! is_bool($arguments[2])) {
+            throw new Exception\InvalidArgumentException('The third argument must be a boolean');
+        }
+
+        return (new static($name, $arguments[1], $arguments[2]))->__invoke($arguments[0]);
     }
 
     /**
      * QueueFactory constructor.
      * @param string $exchangeName
      * @param Channel|null $channel
+     * @param bool $autoSetupFabric
      */
-    public function __construct(string $exchangeName, Channel $channel = null)
+    public function __construct(string $exchangeName, Channel $channel = null, bool $autoSetupFabric = false)
     {
         $this->exchangeName = $exchangeName;
         $this->channel = $channel;
+        $this->autoSetupFabric = $autoSetupFabric;
     }
 
     /**
@@ -121,7 +136,13 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $exchange->setFlags($this->getFlags($options));
         $exchange->setType($options['type']);
 
-        if ($options['auto_setup_fabric']) {
+        if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
+            if (isset($options['arguments']['alternate-exchange'])) {
+                // auto setup fabric alternate exchange
+                $exchangeName = $options['arguments']['alternate-exchange'];
+                ExchangeFactory::$exchangeName($container, null, true);
+            }
+
             $exchange->declareExchange();
 
             // rabbitmq extension: exchange to exchange bindings

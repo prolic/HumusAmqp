@@ -114,7 +114,7 @@ class ProducerFactoryTest extends TestCase
         $factory = new ProducerFactory('my_producer');
         $producer = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\JsonProducer::class, $producer);
+        $this->assertInstanceOf(JsonProducer::class, $producer);
     }
 
     /**
@@ -155,7 +155,7 @@ class ProducerFactoryTest extends TestCase
         $producerName = 'my_producer';
         $producer = ProducerFactory::$producerName($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\JsonProducer::class, $producer);
+        $this->assertInstanceOf(JsonProducer::class, $producer);
     }
 
     /**

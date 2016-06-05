@@ -25,6 +25,8 @@ namespace HumusTest\Amqp\Container;
 use Humus\Amqp\Container\QueueFactory;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
+use Humus\Amqp\Exception;
+use Humus\Amqp\Queue;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -67,7 +69,7 @@ class QueueFactoryTest extends TestCase
         $factory = new QueueFactory('my_queue');
         $queue = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Queue::class, $queue);
+        $this->assertInstanceOf(Queue::class, $queue);
     }
 
     /**
@@ -103,7 +105,7 @@ class QueueFactoryTest extends TestCase
         $queueName = 'my_queue';
         $queue = QueueFactory::$queueName($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Queue::class, $queue);
+        $this->assertInstanceOf(Queue::class, $queue);
     }
 
     /**
@@ -134,7 +136,7 @@ class QueueFactoryTest extends TestCase
         $queueName = 'my_queue';
         $queue = QueueFactory::$queueName($container->reveal(), $channel);
 
-        $this->assertInstanceOf(\Humus\Amqp\Queue::class, $queue);
+        $this->assertInstanceOf(Queue::class, $queue);
         $this->assertEquals($channel, $queue->getChannel());
     }
 
@@ -143,7 +145,7 @@ class QueueFactoryTest extends TestCase
      */
     public function it_throws_exception_with_invalid_call_static_container_param()
     {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
+        $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
 
         $queueName = 'my_queue';
@@ -155,7 +157,7 @@ class QueueFactoryTest extends TestCase
      */
     public function it_throws_exception_with_invalid_call_static_channel_param()
     {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
+        $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The second argument must be a type of Humus\Amqp\Channel or null');
 
         $container = $this->prophesize(ContainerInterface::class);
@@ -205,9 +207,14 @@ class QueueFactoryTest extends TestCase
         $factory = new QueueFactory('my_queue');
         $queue = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Queue::class, $queue);
+        /* @var Queue $queue */
+
+        $this->assertInstanceOf(Queue::class, $queue);
 
         $queue->delete();
+
+        $exchange = $queue->getChannel()->newExchange();
+        $exchange->delete('my_exchange');
     }
 
     /**
@@ -244,8 +251,8 @@ class QueueFactoryTest extends TestCase
                                 'foo',
                             ],
                             'bind_arguments' => [
-                                'foo' => 'bar'
-                            ]
+                                'foo' => 'bar',
+                            ],
                         ],
                     ],
                 ],
@@ -258,8 +265,85 @@ class QueueFactoryTest extends TestCase
         $factory = new QueueFactory('my_queue');
         $queue = $factory($container->reveal());
 
-        $this->assertInstanceOf(\Humus\Amqp\Queue::class, $queue);
+        /* @var Queue $queue */
+
+        $this->assertInstanceOf(Queue::class, $queue);
 
         $queue->delete();
+
+        $exchange = $queue->getChannel()->newExchange();
+        $exchange->delete('my_exchange');
+    }
+
+    /**
+     * @test
+     */
+    public function it_auto_declares_dead_letter_exchange()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'socket',
+                        ],
+                    ],
+                    'exchange' => [
+                        'error_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'error_exchange',
+                        ],
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_exchange',
+                        ],
+                    ],
+                    'queue' => [
+                        'my_queue' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_queue',
+                            'exchange' => 'my_exchange',
+                            'arguments' => [
+                                'x-dead-letter-exchange' => 'error_exchange'
+                            ],
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+
+        $factory = new QueueFactory('my_queue');
+        $queue = $factory($container->reveal());
+
+        $this->assertInstanceOf(Queue::class, $queue);
+
+        /* @var Queue $queue */
+
+        $queue->delete();
+
+        $exchange = $queue->getChannel()->newExchange();
+        $exchange->delete('my_exchange');
+        $exchange->delete('error_exchange');
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_no_bool_given_to_call_static_as_third_parameter()
+    {
+        $this->expectException(Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The third argument must be a boolean');
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $queueName = 'test-queue';
+        QueueFactory::$queueName($container->reveal(), null, 'invalid-param');
     }
 }
