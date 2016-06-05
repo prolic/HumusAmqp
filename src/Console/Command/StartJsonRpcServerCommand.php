@@ -28,10 +28,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class StartJsonRpcServer
+ * Class StartJsonRpcServerCommand
  * @package Humus\Amqp\Console\Command
  */
-class StartJsonRpcServer extends AbstractCommand
+class StartJsonRpcServerCommand extends AbstractCommand
 {
     /**
      * {@inheritdoc}

@@ -64,18 +64,19 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @param array|Traversable $var
+     * @param array|Traversable|string $var
+     * @return string
      */
     public function dump($var)
     {
         $html = ini_get('html_errors');
 
         if ($html !== true) {
-            ini_set('html_errors', true);
+            ini_set('html_errors', "1");
         }
 
         if (extension_loaded('xdebug')) {
-            ini_set('xdebug.var_display_max_depth', 2);
+            ini_set('xdebug.var_display_max_depth', "2");
         }
 
         $var = $this->export($var);
@@ -91,14 +92,14 @@ abstract class AbstractCommand extends Command
 
         ini_set('html_errors', $html);
 
-        echo $dumpText;
+        return $dumpText;
     }
 
     /**
-     * @param array|Traversable $var
-     * @return array
+     * @param array|Traversable|string $var
+     * @return array|string
      */
-    public function export($var) : array
+    public function export($var)
     {
         if ($var instanceof Traversable) {
             $var = iterator_to_array($var);

@@ -22,11 +22,10 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Console;
 
-use Humus\Amqp\Console\Command\DeclareExchangesCommand;
+use Humus\Amqp\Console\Command;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**
@@ -52,7 +51,7 @@ class ConsoleRunner
      * Runs console with the given helperset.
      *
      * @param HelperSet  $helperSet
-     * @param Command[] $commands
+     * @param \Symfony\Component\Console\Command\Command[] $commands
      *
      * @return void
      */
@@ -67,7 +66,7 @@ class ConsoleRunner
      * optional commands.
      *
      * @param HelperSet $helperSet
-     * @param Command[] $commands
+     * @param \Symfony\Component\Console\Command\Command[] $commands
      *
      * @return Application
      */
@@ -90,7 +89,11 @@ class ConsoleRunner
     static public function addCommands(Application $cli)
     {
         $cli->addCommands([
-            new DeclareExchangesCommand(),
+            new Command\ListCommand(),
+            new Command\PurgeQueueCommand(),
+            new Command\SetupFabricCommand(),
+            new Command\StartCallbackConsumerCommand(),
+            new Command\StartJsonRpcServerCommand()
         ]);
     }
 

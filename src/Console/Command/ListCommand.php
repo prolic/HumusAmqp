@@ -52,9 +52,9 @@ class ListCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('list')
-            ->setAliases(['list', 'l'])
-            ->setDescription('List AMQP ' . join(', ', $this->knownTypes))
+            ->setName('show')
+            ->setAliases(['show'])
+            ->setDescription('Show all AMQP ' . join(', ', $this->knownTypes))
             ->setDefinition([
                 new InputOption(
                     'type',
@@ -63,13 +63,13 @@ class ListCommand extends AbstractCommand
                     'one of ' . join(', ', $this->knownTypes)
                 ),
                 new InputOption(
-                    'show-details',
+                    'details',
                     null,
                     InputOption::VALUE_NONE,
                     'show details to given type'
                 )
             ])
-            ->setHelp('List AMQP ' . join(', ', $this->knownTypes));
+            ->setHelp('Show all AMQP ' . join(', ', $this->knownTypes));
     }
 
     /**
@@ -110,8 +110,10 @@ class ListCommand extends AbstractCommand
      * @param InputInterface $input
      * @param OutputInterface $output
      * @param array $config
+     * @param string $type
+     * @return void
      */
-    protected function listType(InputInterface $input, OutputInterface $output, array $config, $type)
+    protected function listType(InputInterface $input, OutputInterface $output, array $config, string $type)
     {
         $type = substr($type, 0, -1);
 
@@ -121,8 +123,9 @@ class ListCommand extends AbstractCommand
             foreach ($config[$type] as $name => $spec) {
                 $output->writeln(ucfirst($type) . ': ' . $name);
 
-                if ($input->hasOption('show-details')) {
-                    $output->writeln($this->dump($spec));
+                if ($input->getOption('details')) {
+                    $output->writeln('Specs: ' . $this->dump($spec));
+                    $output->writeln('');
                 }
             }
         }

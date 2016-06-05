@@ -68,8 +68,13 @@ class StartCallbackConsumerCommand extends AbstractCommand
         $config = $this->getHumusAmqpConfig();
         
         $consumerName = $input->getOption('name');
+
+        if (! $consumerName) {
+            $output->writeln('No consumer given');
+            return;
+        }
         
-        if (! isset($config['callback_consumers'][$consumerName])) {
+        if (! isset($config['callback_consumer'][$consumerName])) {
             $output->writeln('No consumer with name ' . $consumerName . ' found');
             return;
         }

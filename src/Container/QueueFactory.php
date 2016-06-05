@@ -132,7 +132,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
         $queue = $this->channel->newQueue();
 
-        if (null !== $options['name']) {
+        if ('' !== $options['name']) {
             $queue->setName($options['name']);
         }
 
@@ -154,7 +154,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
             $routingKeys = $options['routing_keys'];
             if (empty($routingKeys)) {
-                $queue->bind($options['exchange'], null, $options['bind_arguments']);
+                $queue->bind($options['exchange'], '', $options['bind_arguments']);
             } else {
                 foreach ($routingKeys as $routingKey) {
                     $queue->bind($options['exchange'], $routingKey, $options['bind_arguments']);
@@ -179,7 +179,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     public function defaultOptions()
     {
         return [
-            'name' => null,
+            'name' => '',
             'passive' => false,
             'durable' => true,
             'exclusive' => false,
