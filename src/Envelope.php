@@ -115,9 +115,9 @@ interface Envelope
     /**
      * Get the expiration of the message.
      *
-     * @return string The message expiration.
+     * @return int The message expiration.
      */
-    public function getExpiration() : string;
+    public function getExpiration() : int;
 
     /**
      * Get the message user id.

@@ -59,7 +59,7 @@ final class Envelope implements EnvelopeInterface
      */
     public function getRoutingKey() : string
     {
-        return $this->getFromEnvelope('routing_key');
+        return $this->envelope->get('routing_key');
     }
 
     /**
@@ -67,7 +67,7 @@ final class Envelope implements EnvelopeInterface
      */
     public function getDeliveryTag() : int
     {
-        return (int) $this->getFromEnvelope('delivery_tag');
+        return (int) $this->envelope->get('delivery_tag');
     }
 
     /**
@@ -95,11 +95,7 @@ final class Envelope implements EnvelopeInterface
      */
     public function isRedelivery() : bool
     {
-        if ($this->envelope->has('redelivered')) {
-            return $this->envelope->get('redelivered');
-        }
-
-        return false;
+        return $this->envelope->get('redelivered');
     }
 
     /**
@@ -149,9 +145,9 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getExpiration() : string
+    public function getExpiration() : int
     {
-        return $this->getFromEnvelope('expiration');
+        return (int) $this->getFromEnvelope('expiration');
     }
 
     /**

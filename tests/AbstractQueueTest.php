@@ -227,17 +227,42 @@ abstract class AbstractQueueTest extends TestCase implements
 
     /**
      * @test
+     * @group by
      */
     public function it_produces_and_get_messages_from_queue()
     {
-        $this->exchange->publish('foo');
+        $this->exchange->publish('foo', '', Constants::AMQP_NOPARAM, [
+            'priority' => 5,
+            'expiration' => 100000,
+            'delivery_mode' => 2,
+        ]);
         $this->exchange->publish('bar');
 
         $msg1 = $this->queue->get(Constants::AMQP_AUTOACK);
-        $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
+        $msg2 = $this->queue->get(Constants::AMQP_NOPARAM);
+        $this->queue->reject($msg2->getDeliveryTag(), Constants::AMQP_REQUEUE);
+        $msg3 = $this->queue->get(Constants::AMQP_NOPARAM);
 
         $this->assertSame('foo', $msg1->getBody());
+        $this->assertFalse($msg1->isRedelivery());
+        $this->assertEquals(5, $msg1->getPriority());
+        $this->assertEmpty($msg1->getHeaders());
+        $this->assertEquals(100000, $msg1->getExpiration());
+        $this->assertEquals(2, $msg1->getDeliveryMode());
+
         $this->assertSame('bar', $msg2->getBody());
+        $this->assertFalse($msg2->isRedelivery());
+        $this->assertEquals(0, $msg2->getPriority());
+        $this->assertEmpty($msg2->getHeaders());
+        $this->assertEquals(0, $msg2->getExpiration());
+        $this->assertEquals(1, $msg2->getDeliveryMode());
+
+        $this->assertSame('bar', $msg3->getBody());
+        $this->assertTrue($msg3->isRedelivery());
+        $this->assertEquals(0, $msg3->getPriority());
+        $this->assertEmpty($msg3->getHeaders());
+        $this->assertEquals(0, $msg3->getExpiration());
+        $this->assertEquals(1, $msg3->getDeliveryMode());
     }
 
     /**

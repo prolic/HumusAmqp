@@ -135,9 +135,9 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getExpiration() : string
+    public function getExpiration() : int
     {
-        return $this->envelope->getExpiration();
+        return (int) $this->envelope->getExpiration();
     }
 
     /**
