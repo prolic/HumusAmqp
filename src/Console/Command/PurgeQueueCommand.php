@@ -22,16 +22,18 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
-use Interop\Container\ContainerInterface;
-use Symfony\Component\Console\Command\Command;
+use Humus\Amqp\Container\ExchangeFactory;
+use Humus\Amqp\Container\QueueFactory;
+use Humus\Amqp\Queue;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class DeclareExchangesCommand
+ * Class PurgeQueueCommand
  * @package Humus\Amqp\Console\Command
  */
-class DeclareExchangesCommand extends Command
+class PurgeQueueCommand extends AbstractCommand
 {
     /**
      * {@inheritdoc}
@@ -39,10 +41,18 @@ class DeclareExchangesCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('amqp:declare-exchanges')
-            ->setAliases(['amqp:declare-exchanges'])
-            ->setDescription('Declares AMQP exchanges')
-            ->setHelp('Declares AMQP exchanges');
+            ->setName('purge-queue')
+            ->setAliases(['purge-queue'])
+            ->setDescription('Purges a queue')
+            ->setDefinition([
+                new InputOption(
+                    'name',
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'name of the queue to purge'
+                )
+            ])
+            ->setHelp('Purges a queue');
     }
 
     /**
@@ -50,18 +60,21 @@ class DeclareExchangesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /* @var $container ContainerInterface */
-        $container = $this->getHelper('container')->getContainer();
+        $config = $this->getHumusAmqpConfig();
 
-        $config = $container->get('config');
+        $queueName = $input->getOption('name');
 
-        $exchanges = [];
-
-        foreach ($exchanges as $exchange) {
-            // @todo: declare exchanges
-            $output->writeln('Exchange ' . $exchange . ' declared');
+        if (! isset($config['queue'][$queueName])) {
+            $output->writeln('Queue with name ' . $queueName . ' not found');
+            return;
         }
 
-        $output->writeln('Done.');
+        $queue = QueueFactory::$queueName($this->getContainer());
+
+        /* @var Queue $queue */
+
+        $queue->purge();
+
+        $output->writeln('Queue ' . $queueName . ' purged');
     }
 }
