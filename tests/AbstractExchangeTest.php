@@ -129,8 +129,11 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->setName('test');
         $this->exchange->setArguments([
             'foo' => 'bar',
-            'array' => [
+            'table' => [
                 'foo' => 'bar',
+            ],
+            'array' => [
+                'baz',
             ],
             'int' => 2,
         ]);
@@ -215,13 +218,18 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $this->exchange->bind($exchange2->getName(), '', [
             'foo' => 'bar',
-            'array' => [
+            'table' => [
                 'foo' => 'bar',
+            ],
+            'array' => [
+                'baz',
             ],
             'int' => 2,
             'bool' => true,
         ]);
 
+        // @todo: unbinding with arguments does not work on php-amqplib
+        // @todo: see: https://github.com/php-amqplib/php-amqplib/issues/409
         $this->exchange->unbind($exchange2->getName());
     }
 

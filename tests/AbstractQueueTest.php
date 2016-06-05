@@ -70,6 +70,17 @@ abstract class AbstractQueueTest extends TestCase implements
 
         $this->queue = $this->createQueue($this->channel);
         $this->queue->setName('test-queue');
+        $this->queue->setArguments([
+            'foo' => 'bar',
+            'baz' => 1,
+            'bam' => true,
+            'table' => [
+                'foo' => 'bar',
+            ],
+            'array' => [
+                'baz',
+            ],
+        ]);
         $this->queue->declareQueue();
         $this->queue->bind('test-exchange', '#');
 
@@ -83,7 +94,20 @@ abstract class AbstractQueueTest extends TestCase implements
     public function it_sets_name_flags_type_and_arguments()
     {
         $this->assertEquals('test-queue', $this->queue->getName());
-        $this->assertEmpty($this->queue->getArguments());
+        $this->assertEquals(
+            [
+                'foo' => 'bar',
+                'baz' => 1,
+                'bam' => true,
+                'table' => [
+                    'foo' => 'bar',
+                ],
+                'array' => [
+                    'baz',
+                ],
+            ],
+            $this->queue->getArguments()
+        );
 
         $this->queue->setName('test');
 
@@ -121,14 +145,27 @@ abstract class AbstractQueueTest extends TestCase implements
      */
     public function it_binds_with_arguments()
     {
-        $this->queue->unbind('test-exchange', '#');
+        $this->queue->unbind('test-exchange', '#', [
+            'foo' => 'bar',
+            'baz' => 1,
+            'bam' => true,
+            'table' => [
+                'foo' => 'bar',
+            ],
+            'array' => [
+                'baz',
+            ],
+        ]);
         $this->queue->bind('test-exchange', '', [
             'foo' => 'bar',
             'baz' => 1,
             'bam' => true,
+            'table' => [
+                'foo' => 'bar',
+            ],
             'array' => [
-                's' => 'f'
-            ]
+                'baz',
+            ],
         ]);
     }
 
