@@ -394,7 +394,6 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
     /**
      * @test
-     * @group by
      */
     public function it_handles_flush_deferred_after_timeout()
     {
@@ -443,7 +442,6 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $queue = $ch->newQueue();
         $queue->setName('test-queue');
 
-        // @todo: create test script to find out why nacking does not always work !!!
         $envelope = $queue->get(Constants::AMQP_AUTOACK);
         $this->assertEquals('message #1', $envelope->getBody());
         $this->assertTrue($envelope->isRedelivery());
