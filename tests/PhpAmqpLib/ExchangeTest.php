@@ -24,8 +24,6 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 
 use HumusTest\Amqp\AbstractExchangeTest;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 
 /**
  * Class ExchangeTest
@@ -34,6 +32,4 @@ use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 final class ExchangeTest extends AbstractExchangeTest
 {
     use CreateConnectionTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
 }

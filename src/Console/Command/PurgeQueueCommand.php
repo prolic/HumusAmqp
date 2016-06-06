@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
-use Humus\Amqp\Container\ExchangeFactory;
 use Humus\Amqp\Container\QueueFactory;
 use Humus\Amqp\Queue;
 use Symfony\Component\Console\Input\InputInterface;

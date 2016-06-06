@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Console;
 
-use Humus\Amqp\Console\Command;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -42,9 +41,9 @@ class ConsoleRunner
      */
     public static function createHelperSet(ContainerInterface $container)
     {
-        return new HelperSet(array(
+        return new HelperSet([
             'container' => new ContainerHelper($container)
-        ));
+        ]);
     }
 
     /**
@@ -55,7 +54,7 @@ class ConsoleRunner
      *
      * @return void
      */
-    public static function run(HelperSet $helperSet, $commands = array())
+    public static function run(HelperSet $helperSet, $commands = [])
     {
         $cli = self::createApplication($helperSet, $commands);
         $cli->run();
@@ -70,7 +69,7 @@ class ConsoleRunner
      *
      * @return Application
      */
-    public static function createApplication(HelperSet $helperSet, $commands = array())
+    public static function createApplication(HelperSet $helperSet, $commands = [])
     {
         $cli = new Application('Humus Amqp Command Line Interface');
         $cli->setCatchExceptions(true);
@@ -86,7 +85,7 @@ class ConsoleRunner
      *
      * @return void
      */
-    static public function addCommands(Application $cli)
+    public static function addCommands(Application $cli)
     {
         $cli->addCommands([
             new Command\ShowCommand(),
@@ -120,6 +119,5 @@ $container = GetContainer();
 return ConsoleRunner::createHelperSet($container);
 
 HELP;
-
     }
 }

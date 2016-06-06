@@ -54,13 +54,13 @@ class ShowCommand extends AbstractCommand
         $this
             ->setName('show')
             ->setAliases(['show'])
-            ->setDescription('Show all AMQP ' . join(', ', $this->knownTypes))
+            ->setDescription('Show all AMQP ' . implode(', ', $this->knownTypes))
             ->setDefinition([
                 new InputOption(
                     'type',
                     null,
                     InputOption::VALUE_REQUIRED,
-                    'one of ' . join(', ', $this->knownTypes)
+                    'one of ' . implode(', ', $this->knownTypes)
                 ),
                 new InputOption(
                     'details',
@@ -69,7 +69,7 @@ class ShowCommand extends AbstractCommand
                     'show details to given type'
                 )
             ])
-            ->setHelp('Show all AMQP ' . join(', ', $this->knownTypes));
+            ->setHelp('Show all AMQP ' . implode(', ', $this->knownTypes));
     }
 
     /**
@@ -83,7 +83,7 @@ class ShowCommand extends AbstractCommand
 
         if (! in_array($type, $this->knownTypes)) {
             $output->writeln(
-                'No type given, use one of ' . join(', ', $this->knownTypes)
+                'No type given, use one of ' . implode(', ', $this->knownTypes)
             );
             return;
         }

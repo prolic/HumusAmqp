@@ -58,7 +58,7 @@ class SetupFabricCommand extends AbstractCommand
             foreach ($config['exchange'] as $exchange => $spec) {
                 ExchangeFactory::$exchange($this->getContainer(), null, true);
                 $output->writeln('Exchange ' . $exchange . ' declared');
-            }    
+            }
         }
 
         if (! isset($config['queue']) || empty($config['queue'])) {

@@ -29,18 +29,13 @@ use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
 use HumusTest\Amqp\Helper\CanCreateConnection;
-use HumusTest\Amqp\Helper\CanCreateExchange;
-use HumusTest\Amqp\Helper\CanCreateQueue;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
  * Class AbstractChannelRecoverTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractChannelRecoverTest extends TestCase implements
-    CanCreateConnection,
-    CanCreateExchange,
-    CanCreateQueue
+abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateConnection
 {
     /**
      * @var Exchange
@@ -68,13 +63,13 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
         $channel1 = $this->createConnection()->newChannel();
         $channel1->setPrefetchCount(5);
 
-        $exchange1 = $this->createExchange($channel1);
+        $exchange1 = $channel1->newExchange();
         $exchange1->setType('topic');
         $exchange1->setName('test');
         $exchange1->setFlags(Constants::AMQP_AUTODELETE);
         $exchange1->declareExchange();
 
-        $queue1 = $this->createQueue($channel1);
+        $queue1 = $channel1->newQueue();
         $queue1->setName('test');
         $queue1->setFlags(Constants::AMQP_DURABLE);
         $queue1->declareQueue();
@@ -107,7 +102,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements
         $channel2 = $newConnection->newChannel();
         $channel2->setPrefetchCount(8);
 
-        $queue2 = $this->createQueue($channel2);
+        $queue2 = $channel2->newQueue();
         $queue2->setName('test');
 
         $consume = 10;

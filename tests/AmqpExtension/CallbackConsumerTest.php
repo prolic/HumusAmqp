@@ -24,8 +24,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 
 use HumusTest\Amqp\AbstractCallbackConsumerTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
  * Class CallbackConsumerTest
@@ -34,6 +32,4 @@ use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 class CallbackConsumerTest extends AbstractCallbackConsumerTest
 {
     use CreateConnectionTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
 }

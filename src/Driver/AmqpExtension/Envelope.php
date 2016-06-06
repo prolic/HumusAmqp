@@ -49,7 +49,7 @@ final class Envelope implements EnvelopeInterface
      */
     public function getBody() : string
     {
-        return $this->envelope->getBody();
+        return (string) $this->envelope->getBody();
     }
 
     /**

@@ -43,6 +43,7 @@ final class StreamConnection extends AbstractConnection
         }
 
         $this->options = $options;
+
         $this->connection = new BaseAMQPStreamConnection(
             $options->getHost(),
             $options->getPort(),
@@ -53,10 +54,10 @@ final class StreamConnection extends AbstractConnection
             'AMQPLAIN',
             null,
             'en_US',
-            $options->getReadTimeout(),
-            $options->getWriteTimeout(),
+            $options->getConnectTimeout(),
+            $options->getReadTimeout() ?: $options->getWriteTimeout(),
             null,
-            false,
+            $options->getHeartbeat() > 0,
             $options->getHeartbeat()
         );
     }

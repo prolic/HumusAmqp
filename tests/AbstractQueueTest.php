@@ -28,8 +28,7 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
-use HumusTest\Amqp\Helper\CanCreateExchange;
-use HumusTest\Amqp\Helper\CanCreateQueue;
+use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -37,9 +36,7 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Class AbstractQueueTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractQueueTest extends TestCase implements
-    CanCreateExchange,
-    CanCreateQueue
+abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
@@ -63,12 +60,12 @@ abstract class AbstractQueueTest extends TestCase implements
         $connection = $this->createConnection();
         $this->channel = $connection->newChannel();
 
-        $this->exchange = $this->createExchange($this->channel);
+        $this->exchange = $this->channel->newExchange();
         $this->exchange->setType('topic');
         $this->exchange->setName('test-exchange');
         $this->exchange->declareExchange();
 
-        $this->queue = $this->createQueue($this->channel);
+        $this->queue = $this->channel->newQueue();
         $this->queue->setName('test-queue');
         $this->queue->setArguments([
             'foo' => 'bar',
@@ -227,7 +224,6 @@ abstract class AbstractQueueTest extends TestCase implements
 
     /**
      * @test
-     * @group by
      */
     public function it_produces_and_get_messages_from_queue()
     {

@@ -29,8 +29,7 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Queue;
-use HumusTest\Amqp\Helper\CanCreateExchange;
-use HumusTest\Amqp\Helper\CanCreateQueue;
+use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -38,7 +37,7 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Class AbstractExchangeTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractExchangeTest extends TestCase implements CanCreateExchange, CanCreateQueue
+abstract class AbstractExchangeTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
@@ -61,8 +60,8 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
     {
         $connection = $this->createConnection();
         $this->channel = $connection->newChannel();
-        $this->exchange = $this->createExchange($this->channel);
-        $this->queue = $this->createQueue($this->channel);
+        $this->exchange = $this->channel->newExchange();
+        $this->queue = $this->channel->newQueue();
     }
 
     /**
@@ -160,7 +159,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
-        $exchange2 = $this->createExchange($channel);
+        $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
         $this->addToCleanUp($exchange2);
@@ -184,7 +183,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
-        $exchange2 = $this->createExchange($channel);
+        $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
         $this->addToCleanUp($exchange2);
@@ -208,7 +207,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
-        $exchange2 = $this->createExchange($channel);
+        $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
         $this->addToCleanUp($exchange2);
@@ -244,7 +243,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
-        $exchange2 = $this->createExchange($channel);
+        $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
         $this->addToCleanUp($exchange2);
@@ -274,7 +273,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
             //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
         }
 
-        $this->exchange = $this->createExchange($channel);
+        $this->exchange = $channel->newExchange();
         $this->exchange->setName('test');
         $this->exchange->setType('fanout');
         $this->exchange->setFlags(Constants::AMQP_AUTODELETE);
@@ -345,7 +344,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
 
         $this->exchange->delete();
 
-        $exchange2 = $this->createExchange($channel);
+        $exchange2 = $channel->newExchange();
         $exchange2->setName('non-existent');
         $exchange2->publish('message 2', 'routing.key');
 
@@ -383,7 +382,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->getChannel()->confirmSelect();
 
         $connection = $this->createConnection();
-        $queue = $this->createQueue($connection->newChannel());
+        $queue = $connection->newChannel()->newQueue();
 
         $this->addToCleanUp($queue);
 
@@ -416,7 +415,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateExchang
         $this->exchange->setName('test-exchange');
         $this->exchange->declareExchange();
 
-        $queue = $this->createQueue($this->channel);
+        $queue = $this->channel->newQueue();
         $queue->setName('test-mandatory');
         $queue->setFlags(Constants::AMQP_AUTODELETE);
         $queue->declareQueue();

@@ -28,8 +28,7 @@ use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
 use Humus\Amqp\PlainProducer;
-use HumusTest\Amqp\Helper\CanCreateExchange;
-use HumusTest\Amqp\Helper\CanCreateQueue;
+use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -37,9 +36,7 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Class AbstractPlainProducerTest
  * @package HumusTest\Amqp
  */
-abstract class AbstractPlainProducerTest extends TestCase implements
-    CanCreateExchange,
-    CanCreateQueue
+abstract class AbstractPlainProducerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
@@ -82,12 +79,12 @@ abstract class AbstractPlainProducerTest extends TestCase implements
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setType('topic');
         $exchange->setName('test-exchange');
         $exchange->declareExchange();
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange', '#');
@@ -165,7 +162,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements
 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('text-queue2');
         $queue->declareQueue();
         $queue->bind('test-exchange');

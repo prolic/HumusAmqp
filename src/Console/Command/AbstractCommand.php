@@ -36,18 +36,18 @@ abstract class AbstractCommand extends Command
      * @var ContainerInterface
      */
     private $container;
-    
+
     /**
      * @return array
      */
     public function getHumusAmqpConfig() : array
     {
         $config = $this->getContainer()->get('config');
-        
+
         if ($config instanceof Traversable) {
             $config = iterator_to_array($config);
         }
-        
+
         return $config['humus']['amqp'] ?? [];
     }
 
@@ -60,7 +60,7 @@ abstract class AbstractCommand extends Command
             $this->container = $this->getHelper('container')->getContainer();
         }
 
-        return $this->container; 
+        return $this->container;
     }
 
     /**
@@ -110,11 +110,11 @@ abstract class AbstractCommand extends Command
 
             foreach ($var as $k => $v) {
                 $return[$k] = $this->export($v);
-            }    
+            }
         } else {
             $return = $var;
         }
-        
+
 
         return $return;
     }

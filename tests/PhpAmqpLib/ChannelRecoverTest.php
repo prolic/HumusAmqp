@@ -24,8 +24,6 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 
 use HumusTest\Amqp\AbstractChannelRecoverTest;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 
 /**
  * Class ChannelRecoverTest
@@ -34,6 +32,4 @@ use HumusTest\Amqp\PhpAmqpLib\Helper\CreateQueueTrait;
 final class ChannelRecoverTest extends AbstractChannelRecoverTest
 {
     use CreateConnectionTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
 }

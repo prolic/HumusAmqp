@@ -24,8 +24,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 
 use HumusTest\Amqp\AbstractQueueTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateExchangeTrait;
-use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 
 /**
  * Class QueueTest
@@ -34,8 +32,6 @@ use HumusTest\Amqp\AmqpExtension\Helper\CreateQueueTrait;
 final class QueueTest extends AbstractQueueTest
 {
     use CreateConnectionTrait;
-    use CreateExchangeTrait;
-    use CreateQueueTrait;
 
     protected function setUp()
     {

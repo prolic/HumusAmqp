@@ -61,6 +61,11 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @var float
      */
+    protected $connectTimeout = 1.00; //secs
+
+    /**
+     * @var float
+     */
     protected $readTimeout = 1.00; // secs
 
     /**
@@ -155,6 +160,22 @@ class ConnectionOptions extends AbstractOptions
     public function getPort() : int
     {
         return $this->port;
+    }
+
+    /**
+     * @return float
+     */
+    public function getConnectTimeout() : float
+    {
+        return $this->connectTimeout;
+    }
+
+    /**
+     * @param float $connectTimeout
+     */
+    public function setConnectTimeout(float $connectTimeout)
+    {
+        $this->connectTimeout = $connectTimeout;
     }
 
     /**

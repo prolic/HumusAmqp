@@ -52,10 +52,10 @@ final class LazyConnection extends AbstractConnection
             'AMQPLAIN',
             null,
             'en_US',
-            $options->getReadTimeout(),
-            $options->getWriteTimeout(),
+            $options->getConnectTimeout(),
+            $options->getReadTimeout() ?: $options->getWriteTimeout(),
             null,
-            false,
+            $options->getHeartbeat() > 0,
             $options->getHeartbeat()
         );
     }

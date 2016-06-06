@@ -31,8 +31,6 @@ use Humus\Amqp\JsonRpc\Request;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
 use Humus\Amqp\JsonRpc\JsonRpcRequest;
 use HumusTest\Amqp\Helper\CanCreateConnection;
-use HumusTest\Amqp\Helper\CanCreateExchange;
-use HumusTest\Amqp\Helper\CanCreateQueue;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use HumusTest\Amqp\TestAsset\ArrayLogger;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -42,10 +40,7 @@ use Psr\Log\NullLogger;
  * Class AbstractJsonRpcClientAndServerTest
  * @package HumusTest\Amqp\JsonRpc
  */
-abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
-    CanCreateConnection,
-    CanCreateExchange,
-    CanCreateQueue
+abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
@@ -58,24 +53,24 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $channel = $connection->newChannel();
         $channel2 = $connection->newChannel();
 
-        $clientExchange = $this->createExchange($channel);
+        $clientExchange = $channel->newExchange();
         $clientExchange->setType('direct');
         $clientExchange->setName('rpc-client');
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel2);
+        $serverExchange = $channel2->newExchange();
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
         $serverExchange->declareExchange();
 
-        $clientQueue = $this->createQueue($channel);
+        $clientQueue = $channel->newQueue();
         $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
 
-        $serverQueue = $this->createQueue($channel2);
+        $serverQueue = $channel2->newQueue();
         $serverQueue->setName('rpc-server-queue');
         $serverQueue->delete();
         $serverQueue->declareQueue();
@@ -143,24 +138,24 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $channel = $connection->newChannel();
         $channel2 = $connection->newChannel();
 
-        $clientExchange = $this->createExchange($channel);
+        $clientExchange = $channel->newExchange();
         $clientExchange->setType('direct');
         $clientExchange->setName('rpc-client');
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel2);
+        $serverExchange = $channel2->newExchange();
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
         $serverExchange->declareExchange();
 
-        $clientQueue = $this->createQueue($channel);
+        $clientQueue = $channel->newQueue();
         $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
 
-        $serverQueue = $this->createQueue($channel2);
+        $serverQueue = $channel2->newQueue();
         $serverQueue->setName('rpc-server-queue');
         $serverQueue->delete();
         $serverQueue->declareQueue();
@@ -199,24 +194,24 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $channel = $connection->newChannel();
         $channel2 = $connection->newChannel();
 
-        $clientExchange = $this->createExchange($channel);
+        $clientExchange = $channel->newExchange();
         $clientExchange->setType('direct');
         $clientExchange->setName('rpc-client');
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel2);
+        $serverExchange = $channel2->newExchange();
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
         $serverExchange->declareExchange();
 
-        $clientQueue = $this->createQueue($channel);
+        $clientQueue = $channel->newQueue();
         $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
 
-        $serverQueue = $this->createQueue($channel2);
+        $serverQueue = $channel2->newQueue();
         $serverQueue->setName('rpc-server-queue');
         $serverQueue->delete();
         $serverQueue->declareQueue();
@@ -293,24 +288,24 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $channel = $connection->newChannel();
         $channel2 = $connection->newChannel();
 
-        $clientExchange = $this->createExchange($channel);
+        $clientExchange = $channel->newExchange();
         $clientExchange->setType('direct');
         $clientExchange->setName('rpc-client');
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel2);
+        $serverExchange = $channel2->newExchange();
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
         $serverExchange->declareExchange();
 
-        $clientQueue = $this->createQueue($channel);
+        $clientQueue = $channel->newQueue();
         $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
 
-        $serverQueue = $this->createQueue($channel2);
+        $serverQueue = $channel2->newQueue();
         $serverQueue->setName('rpc-server-queue');
         $serverQueue->delete();
         $serverQueue->declareQueue();
@@ -355,24 +350,24 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $channel = $connection->newChannel();
         $channel2 = $connection->newChannel();
 
-        $clientExchange = $this->createExchange($channel);
+        $clientExchange = $channel->newExchange();
         $clientExchange->setType('direct');
         $clientExchange->setName('rpc-client');
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel2);
+        $serverExchange = $channel2->newExchange();
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
         $serverExchange->declareExchange();
 
-        $clientQueue = $this->createQueue($channel);
+        $clientQueue = $channel->newQueue();
         $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
 
-        $serverQueue = $this->createQueue($channel2);
+        $serverQueue = $channel2->newQueue();
         $serverQueue->setName('rpc-server-queue');
         $serverQueue->delete();
         $serverQueue->declareQueue();
@@ -421,19 +416,19 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $clientExchange = $this->createExchange($channel);
+        $clientExchange = $channel->newExchange();
         $clientExchange->setType('direct');
         $clientExchange->setName('rpc-client');
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel);
+        $serverExchange = $channel->newExchange();
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
         $serverExchange->declareExchange();
 
-        $clientQueue = $this->createQueue($channel);
+        $clientQueue = $channel->newQueue();
         $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
@@ -456,24 +451,24 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements
         $channel = $connection->newChannel();
         $channel2 = $connection->newChannel();
 
-        $clientExchange = $this->createExchange($channel);
+        $clientExchange = $channel->newExchange();
         $clientExchange->setType('direct');
         $clientExchange->setName('rpc-client');
         $clientExchange->delete();
         $clientExchange->declareExchange();
 
-        $serverExchange = $this->createExchange($channel2);
+        $serverExchange = $channel2->newExchange();
         $serverExchange->setType('direct');
         $serverExchange->setName('rpc-server');
         $serverExchange->delete();
         $serverExchange->declareExchange();
 
-        $clientQueue = $this->createQueue($channel);
+        $clientQueue = $channel->newQueue();
         $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
         $clientQueue->declareQueue();
         $clientQueue->bind($clientExchange->getName());
 
-        $serverQueue = $this->createQueue($channel2);
+        $serverQueue = $channel2->newQueue();
         $serverQueue->setName('rpc-server-queue');
         $serverQueue->delete();
         $serverQueue->declareQueue();

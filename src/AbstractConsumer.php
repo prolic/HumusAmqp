@@ -175,8 +175,13 @@ abstract class AbstractConsumer implements Consumer
         try {
             $this->queue->consume($callback, Constants::AMQP_NOPARAM, $this->consumerTag);
         } catch (Exception\QueueException $e) {
-            $this->logger->error(get_class($e) . ': ' . $e->getMessage());
+            $this->logger->error('Exception: ' . $e->getMessage());
             $this->ackOrNackBlock();
+            $this->queue->cancel($this->consumerTag);
+            // hack for php-amqplib
+            if ($this->queue->getChannel() instanceof Driver\PhpAmqpLib\Channel) {
+                $this->queue->getChannel()->getResource()->close();
+            }
         }
     }
 
@@ -237,7 +242,7 @@ abstract class AbstractConsumer implements Consumer
         }
 
         try {
-            $result = $callback($this);
+            $result = $callback($this->queue);
         } catch (\Exception $e) {
             $this->logger->error('Exception during flushDeferred: ' . $e->getMessage());
             $result = FlushDeferredResult::MSG_REJECT();
@@ -321,9 +326,11 @@ abstract class AbstractConsumer implements Consumer
         ));
 
         $flags = Constants::AMQP_MULTIPLE;
+
         if ($requeue) {
             $flags |= Constants::AMQP_REQUEUE;
         }
+
         $this->queue->nack($this->lastDeliveryTag, $flags);
         $this->lastDeliveryTag = null;
         $this->countMessagesUnacked = 0;
@@ -389,6 +396,9 @@ abstract class AbstractConsumer implements Consumer
             $this->target = $target;
             $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
 
+            $result = DeliveryResult::MSG_ACK();
+        } elseif ('ping' === $envelope->getType()) {
+            $this->logger->info('Ping message received');
             $result = DeliveryResult::MSG_ACK();
         } else {
             $this->logger->error('Invalid internal message: ' . $envelope->getType());

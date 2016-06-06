@@ -22,14 +22,14 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Constants;
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\DeliveryResult;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\FlushDeferredResult;
 use Humus\Amqp\Queue;
-use HumusTest\Amqp\Helper\CanCreateExchange;
-use HumusTest\Amqp\Helper\CanCreateQueue;
+use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use HumusTest\Amqp\TestAsset\ArrayLogger;
 use Psr\Log\NullLogger;
@@ -38,7 +38,7 @@ use Psr\Log\NullLogger;
  * Class AbstractCallbackConsumer
  * @package HumusTest\Amqp
  */
-abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase implements CanCreateExchange, CanCreateQueue
+abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
@@ -50,14 +50,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -157,14 +157,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -264,14 +264,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -314,14 +314,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -394,20 +394,109 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
     /**
      * @test
+     * @group by
+     */
+    public function it_handles_flush_deferred_after_timeout()
+    {
+        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
+        $channel = $connection->newChannel();
+
+        $exchange = $channel->newExchange();
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $queue = $channel->newQueue();
+        $queue->setName('test-queue');
+        $queue->setFlags(Constants::AMQP_DURABLE);
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        for ($i = 1; $i < 3; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $exchange->delete();
+
+        $result = [];
+        $logger = new ArrayLogger();
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            $logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return DeliveryResult::MSG_DEFER();
+            },
+            function (Queue $queue) {
+                return FlushDeferredResult::MSG_REJECT_REQUEUE();
+            },
+            null,
+            null,
+            3
+        );
+
+        $consumer->consume(3);
+
+        $ch = $connection->newChannel(); // create new channel, old one is closed
+        $queue = $ch->newQueue();
+        $queue->setName('test-queue');
+
+        // @todo: create test script to find out why nacking does not always work !!!
+        $envelope = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertEquals('message #1', $envelope->getBody());
+        $this->assertTrue($envelope->isRedelivery());
+
+        $envelope = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertEquals('message #2', $envelope->getBody());
+        $this->assertTrue($envelope->isRedelivery());
+
+        $queue->delete();
+
+        $this->assertEquals(
+            [
+                'message #1',
+                'message #2',
+            ],
+            $result
+        );
+
+        $loggerResult = $logger->loggerResult();
+
+        $this->assertCount(4, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[1]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
+        $this->assertEquals('message #2', $loggerResult[1]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[2]['level']);
+        $this->assertRegExp('/^Exception.+/', $loggerResult[2]['message']);
+
+        $this->assertEquals('info', $loggerResult[3]['level']);
+        $this->assertRegExp('/^Not acknowledged 2 messages at.+/', $loggerResult[3]['message']);
+    }
+
+    /**
+     * @test
      */
     public function it_uses_custom_flush_deferred_callback()
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -504,14 +593,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -561,14 +650,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -652,14 +741,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -732,14 +821,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -823,19 +912,83 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     /**
      * @test
      */
-    public function it_handles_reconfigure_message()
+    public function it_handles_ping_message()
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        $exchange->publish(
+            '',
+            '',
+            Constants::AMQP_NOPARAM,
+            [
+                'app_id' => 'Humus\Amqp',
+                'type' => 'ping',
+            ]
+        );
+
+        $result = [];
+        $logger = new ArrayLogger();
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            $logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                $result[] = $envelope->getBody();
+                return DeliveryResult::MSG_ACK();
+            }
+        );
+
+        $consumer->consume(1);
+
+        $this->assertEmpty($result);
+
+        $loggerResult = $logger->loggerResult();
+
+        $this->assertCount(3, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('info', $loggerResult[1]['level']);
+        $this->assertEquals('Ping message received', $loggerResult[1]['message']);
+
+        $this->assertEquals('info', $loggerResult[2]['level']);
+        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[2]['message']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_reconfigure_message()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $exchange = $channel->newExchange();
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -967,14 +1120,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
@@ -1035,14 +1188,14 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
 
-        $exchange = $this->createExchange($channel);
+        $exchange = $channel->newExchange();
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $this->addToCleanUp($exchange);
 
-        $queue = $this->createQueue($channel);
+        $queue = $channel->newQueue();
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
