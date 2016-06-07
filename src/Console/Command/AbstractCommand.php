@@ -24,7 +24,6 @@ namespace Humus\Amqp\Console\Command;
 
 use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
-use Traversable;
 
 /**
  * Class AbstractCommand
@@ -38,20 +37,6 @@ abstract class AbstractCommand extends Command
     private $container;
 
     /**
-     * @return array
-     */
-    public function getHumusAmqpConfig() : array
-    {
-        $config = $this->getContainer()->get('config');
-
-        if ($config instanceof Traversable) {
-            $config = iterator_to_array($config);
-        }
-
-        return $config['humus']['amqp'] ?? [];
-    }
-
-    /**
      * @return ContainerInterface
      */
     public function getContainer() : ContainerInterface
@@ -61,61 +46,5 @@ abstract class AbstractCommand extends Command
         }
 
         return $this->container;
-    }
-
-    /**
-     * @param array|Traversable|string $var
-     * @return string
-     */
-    public function dump($var)
-    {
-        $html = ini_get('html_errors');
-
-        if ($html !== true) {
-            ini_set('html_errors', "1");
-        }
-
-        if (extension_loaded('xdebug')) {
-            ini_set('xdebug.var_display_max_depth', "2");
-        }
-
-        $var = $this->export($var);
-
-        ob_start();
-        var_dump($var);
-
-        $dump = ob_get_contents();
-
-        ob_end_clean();
-
-        $dumpText = strip_tags(html_entity_decode($dump));
-
-        ini_set('html_errors', $html);
-
-        return $dumpText;
-    }
-
-    /**
-     * @param array|Traversable|string $var
-     * @return array|string
-     */
-    public function export($var)
-    {
-        if ($var instanceof Traversable) {
-            $var = iterator_to_array($var);
-        }
-
-        if (is_array($var)) {
-            $return = [];
-
-            foreach ($var as $k => $v) {
-                $return[$k] = $this->export($v);
-            }
-        } else {
-            $return = $var;
-        }
-
-
-        return $return;
     }
 }

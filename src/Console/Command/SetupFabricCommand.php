@@ -50,7 +50,13 @@ class SetupFabricCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getHumusAmqpConfig();
+        $config = $this->getContainer()->get('config');
+
+        if ($config instanceof \Traversable) {
+            $config = iterator_to_array($config);
+        }
+
+        $config = $config['humus']['amqp'] ?? [];
 
         if (! isset($config['exchange']) || empty($config['exchange'])) {
             $output->writeln('No exchanges to configure');

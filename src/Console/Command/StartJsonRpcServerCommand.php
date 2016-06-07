@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Console\Command;
 
 use Humus\Amqp\Consumer;
-use Humus\Amqp\Container\JsonRpcServerFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,16 +65,15 @@ class StartJsonRpcServerCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getHumusAmqpConfig();
-
         $serverName = $input->getOption('name');
+        $container = $this->getContainer();
 
-        if (! isset($config['json_rpc_server'][$serverName])) {
+        if (! $container->has($serverName)) {
             $output->writeln('No JSON-RPC server with name ' . $serverName . ' found');
             return 1;
         }
 
-        $jsonRpcServer = JsonRpcServerFactory::$serverName($this->getContainer());
+        $jsonRpcServer = $container->get($serverName);
         /* @var Consumer $jsonRpcServer */
 
         $jsonRpcServer->consume($input->getOption('amount'));

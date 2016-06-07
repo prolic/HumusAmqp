@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
-use Humus\Amqp\Container\QueueFactory;
 use Humus\Amqp\Queue;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -59,16 +58,15 @@ class PurgeQueueCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getHumusAmqpConfig();
-
         $queueName = $input->getOption('name');
+        $container = $this->getContainer();
 
-        if (! isset($config['queue'][$queueName])) {
+        if (! $container->has($queueName)) {
             $output->writeln('Queue with name ' . $queueName . ' not found');
             return 1;
         }
 
-        $queue = QueueFactory::$queueName($this->getContainer());
+        $queue = $container->get($queueName);
 
         /* @var Queue $queue */
 

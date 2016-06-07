@@ -77,7 +77,13 @@ class ShowCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getHumusAmqpConfig();
+        $config = $this->getContainer()->get('config');
+
+        if ($config instanceof \Traversable) {
+            $config = iterator_to_array($config);
+        }
+
+        $config = $config['humus']['amqp'] ?? [];
 
         $type = $input->getOption('type');
 
@@ -100,6 +106,9 @@ class ShowCommand extends AbstractCommand
                 break;
             case 'all':
                 foreach ($this->knownTypes as $type) {
+                    if ($type === 'all') {
+                        continue;
+                    }
                     $this->listType($input, $output, $config, $type);
                 }
                 break;
@@ -124,7 +133,7 @@ class ShowCommand extends AbstractCommand
                 $output->writeln(ucfirst($type) . ': ' . $name);
 
                 if ($input->getOption('details')) {
-                    $output->writeln('Specs: ' . $this->dump($spec));
+                    $output->writeln('Specs: ' . json_encode($spec, JSON_PRETTY_PRINT));
                     $output->writeln('');
                 }
             }

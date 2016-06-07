@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Console\Command;
 
 use Humus\Amqp\Constants;
-use Humus\Amqp\Container\ProducerFactory;
 use Humus\Amqp\Producer;
 use Humus\Amqp\Queue;
 use Symfony\Component\Console\Input\InputInterface;
@@ -103,11 +102,10 @@ class PublishMessageCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getHumusAmqpConfig();
-
         $producerName = $input->getOption('producer');
+        $container = $this->getContainer();
 
-        if (! isset($config['producer'][$producerName])) {
+        if (! $container->has($producerName)) {
             $output->writeln('Producer with name ' . $producerName . ' not found');
             return 1;
         }
@@ -151,7 +149,7 @@ class PublishMessageCommand extends AbstractCommand
             $output->writeln('Cannot decode arguments');
         }
 
-        $producer = ProducerFactory::$producerName($this->getContainer());
+        $producer = $container->get($producerName);
 
         /* @var Producer $producer */
 

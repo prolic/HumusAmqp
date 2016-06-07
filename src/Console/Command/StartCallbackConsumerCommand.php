@@ -23,7 +23,6 @@ declare (strict_types=1);
 namespace Humus\Amqp\Console\Command;
 
 use Humus\Amqp\Consumer;
-use Humus\Amqp\Container\CallbackConsumerFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,8 +65,6 @@ class StartCallbackConsumerCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getHumusAmqpConfig();
-
         $consumerName = $input->getOption('name');
 
         if (! $consumerName) {
@@ -75,12 +72,14 @@ class StartCallbackConsumerCommand extends AbstractCommand
             return 1;
         }
 
-        if (! isset($config['callback_consumer'][$consumerName])) {
+        $container = $this->getContainer();
+
+        if (! $container->has($consumerName)) {
             $output->writeln('No consumer with name ' . $consumerName . ' found');
             return 1;
         }
 
-        $callbackConsumer = CallbackConsumerFactory::$consumerName($this->getContainer());
+        $callbackConsumer = $container->get($consumerName);
         /* @var Consumer $callbackConsumer */
 
         $callbackConsumer->consume($input->getOption('amount'));
