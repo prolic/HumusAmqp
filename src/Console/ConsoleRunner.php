@@ -54,7 +54,7 @@ class ConsoleRunner
      *
      * @return void
      */
-    public static function run(HelperSet $helperSet, $commands = [])
+    public static function run(HelperSet $helperSet, array $commands = [])
     {
         $cli = self::createApplication($helperSet, $commands);
         $cli->run();
@@ -72,9 +72,12 @@ class ConsoleRunner
     public static function createApplication(HelperSet $helperSet, $commands = [])
     {
         $cli = new Application('Humus Amqp Command Line Interface');
+
         $cli->setCatchExceptions(true);
         $cli->setHelperSet($helperSet);
+
         self::addCommands($cli);
+
         $cli->addCommands($commands);
 
         return $cli;

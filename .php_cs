@@ -1,5 +1,6 @@
 <?php
 $finder = Symfony\CS\Finder\DefaultFinder::create()
+    ->in('bin')
     ->in('src')
     ->in('tests');
 $config = Symfony\CS\Config\Config::create();

@@ -21,8 +21,10 @@
 use Humus\Amqp\Console\ConsoleRunner;
 use Symfony\Component\Console\Helper\HelperSet;
 
-$autoloadFiles = array(__DIR__ . '/../vendor/autoload.php',
-    __DIR__ . '/../../../autoload.php');
+$autoloadFiles = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php'
+];
 
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
@@ -31,7 +33,7 @@ foreach ($autoloadFiles as $autoloadFile) {
     }
 }
 
-$directories = array(getcwd(), getcwd() . DIRECTORY_SEPARATOR . 'config');
+$directories = [getcwd(), getcwd() . DIRECTORY_SEPARATOR . 'config'];
 
 $configFile = null;
 foreach ($directories as $directory) {
@@ -42,21 +44,19 @@ foreach ($directories as $directory) {
     }
 }
 
-if ( ! file_exists($configFile)) {
+if (! file_exists($configFile)) {
     ConsoleRunner::printCliConfigTemplate();
     exit(1);
 }
 
-if ( ! is_readable($configFile)) {
+if (! is_readable($configFile)) {
     echo 'Configuration file [' . $configFile . '] does not have read permission.' . "\n";
     exit(1);
 }
 
-$commands = array();
-
 $helperSet = require $configFile;
 
-if ( ! ($helperSet instanceof HelperSet)) {
+if (! ($helperSet instanceof HelperSet)) {
     foreach ($GLOBALS as $helperSetCandidate) {
         if ($helperSetCandidate instanceof HelperSet) {
             $helperSet = $helperSetCandidate;
@@ -65,4 +65,4 @@ if ( ! ($helperSet instanceof HelperSet)) {
     }
 }
 
-ConsoleRunner::run($helperSet, $commands);
+ConsoleRunner::run($helperSet);
