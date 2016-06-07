@@ -58,13 +58,13 @@ class ShowCommand extends AbstractCommand
             ->setDefinition([
                 new InputOption(
                     'type',
-                    null,
+                    't',
                     InputOption::VALUE_REQUIRED,
                     'one of ' . implode(', ', $this->knownTypes)
                 ),
                 new InputOption(
                     'details',
-                    null,
+                    'd',
                     InputOption::VALUE_NONE,
                     'show details to given type'
                 )
@@ -77,15 +77,12 @@ class ShowCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getContainer()->get('config');
-
-        if ($config instanceof \Traversable) {
-            $config = iterator_to_array($config);
-        }
-
-        $config = $config['humus']['amqp'] ?? [];
-
         $type = $input->getOption('type');
+
+        if (! $type) {
+            $output->writeln('No type given');
+            return 1;
+        }
 
         if (! in_array($type, $this->knownTypes)) {
             $output->writeln(
@@ -93,6 +90,14 @@ class ShowCommand extends AbstractCommand
             );
             return 1;
         }
+
+        $config = $this->getContainer()->get('config');
+
+        if ($config instanceof \Traversable) {
+            $config = iterator_to_array($config);
+        }
+
+        $config = $config['humus']['amqp'] ?? [];
 
         switch ($type) {
             case 'connections':

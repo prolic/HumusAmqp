@@ -45,13 +45,13 @@ class StartJsonRpcServerCommand extends AbstractCommand
             ->setDefinition([
                 new InputOption(
                     'name',
-                    null,
+                    'n',
                     InputOption::VALUE_REQUIRED,
                     'name of the JSON-RPC server to start'
                 ),
                 new InputOption(
                     'amount',
-                    null,
+                    'a',
                     InputOption::VALUE_OPTIONAL,
                     'amount of messages to consume',
                     0

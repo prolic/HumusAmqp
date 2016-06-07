@@ -24,7 +24,6 @@ namespace HumusTest\Amqp\Console\Command;
 
 use Humus\Amqp\Console\Command\ShowCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Humus\Amqp\Consumer;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -42,13 +41,24 @@ class ShowCommandTest extends TestCase
     public function it_returns_when_invalid_type_given()
     {
         $container = $this->prophesize(ContainerInterface::class);
-        $container->get('config')->willReturn(new \ArrayObject())->shouldBeCalled();
 
         $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['--type' => 'invalid']);
+        $tester->execute(['-t' => 'invalid']);
 
         $this->assertEquals(1, $tester->getStatusCode());
         $this->assertStringStartsWith('Invalid type given, use one of', $tester->getDisplay(true));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_when_no_name_given()
+    {
+        $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
+        $tester->execute([]);
+
+        $this->assertEquals(1, $tester->getStatusCode());
+        $this->assertStringStartsWith('No type given', $tester->getDisplay(true));
     }
 
     /**
