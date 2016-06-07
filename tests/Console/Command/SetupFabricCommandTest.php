@@ -22,123 +22,97 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Console\Command;
 
-use Humus\Amqp\Console\Command\ShowCommand;
+use Humus\Amqp\Console\Command\SetupFabricCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
+use Humus\Amqp\Container\ExchangeFactory;
+use Humus\Amqp\Container\QueueFactory;
+use Humus\Amqp\Driver\Driver;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * Class ShowCommandTest
+ * Class SetupFabricCommand
  * @package HumusTest\Amqp\Console\Command
  */
-class ShowCommandTest extends TestCase
+class SetupFabricCommandTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_returns_when_invalid_type_given()
-    {
-        $container = $this->prophesize(ContainerInterface::class);
-
-        $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['-t' => 'invalid']);
-
-        $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('Invalid type given, use one of', $tester->getDisplay(true));
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_when_no_name_given()
-    {
-        $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
-        $tester->execute([]);
-
-        $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No type given', $tester->getDisplay(true));
-    }
-
-    /**
-     * @test
-     * @dataProvider dataProvider
-     */
-    public function it_returns_when_types_not_available(string $type)
+    public function it_outputs_that_nothing_is_to_do()
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(new \ArrayObject())->shouldBeCalled();
 
         $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['--type' => $type]);
+        $tester->execute([]);
 
         $this->assertEquals(0, $tester->getStatusCode());
-        $this->assertStringStartsWith('No ' . $type . ' found', $tester->getDisplay(true));
+        $this->assertEquals(
+            "No exchanges to configure\nNo queues to configure\n",
+            $tester->getDisplay(true)
+        );
     }
 
     /**
      * @test
      */
-    public function it_lists_all_types_with_specs()
+    public function it_declares_exchanges_and_queues()
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(
             [
                 'humus' => [
                     'amqp' => [
-                        'driver' => 'amqp-extension',
+                        'driver' => 'php-amqplib',
                         'exchange' => [
                             'demo' => [
                                 'name' => 'demo',
                                 'type' => 'direct',
+                                'connection' => 'default',
                             ],
                         ],
                         'queue' => [
                             'foo' => [
                                 'name' => 'foo',
                                 'exchange' => 'demo',
+                                'connection' => 'default',
                             ],
                         ],
                         'connection' => [
                             'default' => [
                                 'type' => 'socket',
-                            ],
-                        ],
-                        'producer' => [
-                            'demo-producer' => [
-                                'type' => 'plain',
-                                'exchange' => 'demo',
-                                'qos' => [
-                                    'prefetch_size' => 0,
-                                    'prefetch_count' => 10
-                                ],
-                            ],
-                        ],
-                        'callback_consumer' => [
-                            'demo-consumer' => [
-                                'queue' => 'foo',
-                                'callback' => 'echo',
-                                'idle_timeout' => 10,
-                                'delivery_callback' => 'my_callback'
+                                'vhost' => '/humus-amqp-test',
                             ],
                         ],
                     ]
                 ]
             ]
         )->shouldBeCalled();
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
-        $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['--type' => 'all', '--details' => true]);
+        $container = $container->reveal();
+        $tester = $this->createCommandTester($container);
+        $tester->execute([]);
 
         $this->assertEquals(0, $tester->getStatusCode());
-        $output = $tester->getDisplay(true);
-        $this->assertRegExp('/Connection: default/', $output);
-        $this->assertRegExp('/Exchange: demo/', $output);
-        $this->assertRegExp('/Queue: foo/', $output);
-        $this->assertRegExp('/Callback_consumer: demo-consumer/', $output);
-        $this->assertRegExp('/"delivery_callback": "my_callback"/', $output);
-        $this->assertRegExp('/Producer: demo-producer/', $output);
+        $this->assertEquals(
+            "Exchange demo declared\nQueue foo declared\n",
+            $tester->getDisplay(true)
+        );
+
+        // cleanup
+        $queueName = 'foo';
+        $queue = QueueFactory::$queueName($container);
+        $queue->delete();
+
+        // cleanup
+        $exchangeName = 'demo';
+        $exchange = ExchangeFactory::$exchangeName($container);
+        $exchange->delete();
     }
 
     /**
@@ -147,28 +121,12 @@ class ShowCommandTest extends TestCase
      */
     private function createCommandTester(ContainerInterface $container)
     {
-        $command = new ShowCommand();
+        $command = new SetupFabricCommand();
         $command->setHelperSet(
             new HelperSet([
                 'container' => new ContainerHelper($container)
             ])
         );
         return new CommandTester($command);
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProvider()
-    {
-        return [
-            ['connections'],
-            ['exchanges'],
-            ['queues'],
-            ['callback_consumers'],
-            ['producers'],
-            ['json_rpc_clients'],
-            ['json_rpc_servers'],
-        ];
     }
 }

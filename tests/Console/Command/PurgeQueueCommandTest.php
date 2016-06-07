@@ -22,31 +22,64 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Console\Command;
 
-use Humus\Amqp\Console\Command\ShowCommand;
+use Humus\Amqp\Console\Command\PurgeQueueCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
+use Humus\Amqp\Container\ExchangeFactory;
+use Humus\Amqp\Container\QueueFactory;
+use Humus\Amqp\Driver\Driver;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * Class ShowCommandTest
+ * Class PurgeQueueCommandTest
  * @package HumusTest\Amqp\Console\Command
  */
-class ShowCommandTest extends TestCase
+class PurgeQueueCommandTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_returns_when_invalid_type_given()
+    public function it_returns_when_invalid_name_given()
     {
         $container = $this->prophesize(ContainerInterface::class);
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->get('config')->willReturn(
+            [
+                'humus' => [
+                    'amqp' => [
+                        'driver' => 'php-amqplib',
+                        'exchange' => [
+                            'demo' => [
+                                'name' => 'demo',
+                                'type' => 'direct',
+                                'connection' => 'default',
+                            ],
+                        ],
+                        'queue' => [
+                            'foo' => [
+                                'name' => 'foo',
+                                'exchange' => 'demo',
+                                'connection' => 'default',
+                            ],
+                        ],
+                        'connection' => [
+                            'default' => [
+                                'type' => 'socket',
+                                'vhost' => '/humus-amqp-test',
+                            ],
+                        ],
+                    ]
+                ]
+            ]
+        )->shouldBeCalled();
 
         $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['-t' => 'invalid']);
+        $tester->execute(['-n' => 'invalid']);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('Invalid type given, use one of', $tester->getDisplay(true));
+        $this->assertStringStartsWith('Queue with name invalid not found', $tester->getDisplay(true));
     }
 
     /**
@@ -58,87 +91,75 @@ class ShowCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No type given', $tester->getDisplay(true));
-    }
-
-    /**
-     * @test
-     * @dataProvider dataProvider
-     */
-    public function it_returns_when_types_not_available(string $type)
-    {
-        $container = $this->prophesize(ContainerInterface::class);
-        $container->get('config')->willReturn(new \ArrayObject())->shouldBeCalled();
-
-        $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['--type' => $type]);
-
-        $this->assertEquals(0, $tester->getStatusCode());
-        $this->assertStringStartsWith('No ' . $type . ' found', $tester->getDisplay(true));
+        $this->assertStringStartsWith('No queue name given', $tester->getDisplay(true));
     }
 
     /**
      * @test
      */
-    public function it_lists_all_types_with_specs()
+    public function it_purges_the_queue()
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(
             [
                 'humus' => [
                     'amqp' => [
-                        'driver' => 'amqp-extension',
+                        'driver' => 'php-amqplib',
                         'exchange' => [
                             'demo' => [
                                 'name' => 'demo',
                                 'type' => 'direct',
+                                'connection' => 'default',
                             ],
                         ],
                         'queue' => [
                             'foo' => [
                                 'name' => 'foo',
                                 'exchange' => 'demo',
+                                'connection' => 'default',
                             ],
                         ],
                         'connection' => [
                             'default' => [
                                 'type' => 'socket',
-                            ],
-                        ],
-                        'producer' => [
-                            'demo-producer' => [
-                                'type' => 'plain',
-                                'exchange' => 'demo',
-                                'qos' => [
-                                    'prefetch_size' => 0,
-                                    'prefetch_count' => 10
-                                ],
-                            ],
-                        ],
-                        'callback_consumer' => [
-                            'demo-consumer' => [
-                                'queue' => 'foo',
-                                'callback' => 'echo',
-                                'idle_timeout' => 10,
-                                'delivery_callback' => 'my_callback'
+                                'vhost' => '/humus-amqp-test',
                             ],
                         ],
                     ]
                 ]
             ]
         )->shouldBeCalled();
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
-        $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['--type' => 'all', '--details' => true]);
+        $container = $container->reveal();
+
+        // create exchange upfront
+        $queueName = 'foo';
+        $queue = QueueFactory::$queueName($container, null, true);
+
+        // create queue upfront
+        $exchangeName = 'demo';
+        $exchange = ExchangeFactory::$exchangeName($container, null, true);
+
+        $tester = $this->createCommandTester($container);
+        $tester->execute(['--name' => 'foo']);
 
         $this->assertEquals(0, $tester->getStatusCode());
-        $output = $tester->getDisplay(true);
-        $this->assertRegExp('/Connection: default/', $output);
-        $this->assertRegExp('/Exchange: demo/', $output);
-        $this->assertRegExp('/Queue: foo/', $output);
-        $this->assertRegExp('/Callback_consumer: demo-consumer/', $output);
-        $this->assertRegExp('/"delivery_callback": "my_callback"/', $output);
-        $this->assertRegExp('/Producer: demo-producer/', $output);
+        $this->assertEquals(
+            "Queue foo purged\n",
+            $tester->getDisplay(true)
+        );
+
+        // cleanup
+        $queueName = 'foo';
+        $queue = QueueFactory::$queueName($container);
+        $queue->delete();
+
+        // cleanup
+        $exchangeName = 'demo';
+        $exchange = ExchangeFactory::$exchangeName($container);
+        $exchange->delete();
     }
 
     /**
@@ -147,28 +168,12 @@ class ShowCommandTest extends TestCase
      */
     private function createCommandTester(ContainerInterface $container)
     {
-        $command = new ShowCommand();
+        $command = new PurgeQueueCommand();
         $command->setHelperSet(
             new HelperSet([
                 'container' => new ContainerHelper($container)
             ])
         );
         return new CommandTester($command);
-    }
-
-    /**
-     * @return array
-     */
-    public function dataProvider()
-    {
-        return [
-            ['connections'],
-            ['exchanges'],
-            ['queues'],
-            ['callback_consumers'],
-            ['producers'],
-            ['json_rpc_clients'],
-            ['json_rpc_servers'],
-        ];
     }
 }

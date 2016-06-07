@@ -46,7 +46,7 @@ class PurgeQueueCommand extends AbstractCommand
             ->setDefinition([
                 new InputOption(
                     'name',
-                    null,
+                    'n',
                     InputOption::VALUE_REQUIRED,
                     'name of the queue to purge'
                 )
@@ -60,14 +60,20 @@ class PurgeQueueCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queueName = $input->getOption('name');
-        $container = $this->getContainer();
 
-        if (! $container->has($queueName)) {
-            $output->writeln('Queue with name ' . $queueName . ' not found');
+        if (! $queueName) {
+            $output->writeln('No queue name given');
             return 1;
         }
 
-        $queue = QueueFactory::$queueName($container);
+        $container = $this->getContainer();
+
+        try {
+            $queue = QueueFactory::$queueName($container);
+        } catch (\Interop\Config\Exception\OptionNotFoundException $e) {
+            $output->writeln('Queue with name ' . $queueName .' not found');
+            return 1;
+        }
 
         /* @var Queue $queue */
 
