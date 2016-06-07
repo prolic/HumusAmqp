@@ -85,7 +85,7 @@ class ShowCommand extends AbstractCommand
             $output->writeln(
                 'No type given, use one of ' . implode(', ', $this->knownTypes)
             );
-            return;
+            return 1;
         }
 
         switch ($type) {

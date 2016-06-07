@@ -65,7 +65,7 @@ class PurgeQueueCommand extends AbstractCommand
 
         if (! isset($config['queue'][$queueName])) {
             $output->writeln('Queue with name ' . $queueName . ' not found');
-            return;
+            return 1;
         }
 
         $queue = QueueFactory::$queueName($this->getContainer());

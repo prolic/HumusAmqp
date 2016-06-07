@@ -72,12 +72,12 @@ class StartCallbackConsumerCommand extends AbstractCommand
 
         if (! $consumerName) {
             $output->writeln('No consumer given');
-            return;
+            return 1;
         }
 
         if (! isset($config['callback_consumer'][$consumerName])) {
             $output->writeln('No consumer with name ' . $consumerName . ' found');
-            return;
+            return 1;
         }
 
         $callbackConsumer = CallbackConsumerFactory::$consumerName($this->getContainer());

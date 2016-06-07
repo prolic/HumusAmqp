@@ -72,7 +72,7 @@ class StartJsonRpcServerCommand extends AbstractCommand
 
         if (! isset($config['json_rpc_server'][$serverName])) {
             $output->writeln('No JSON-RPC server with name ' . $serverName . ' found');
-            return;
+            return 1;
         }
 
         $jsonRpcServer = JsonRpcServerFactory::$serverName($this->getContainer());
