@@ -76,6 +76,6 @@ class StartJsonRpcServerCommand extends AbstractCommand
         $jsonRpcServer = $container->get($serverName);
         /* @var Consumer $jsonRpcServer */
 
-        $jsonRpcServer->consume($input->getOption('amount'));
+        $jsonRpcServer->consume((int) $input->getOption('amount'));
     }
 }

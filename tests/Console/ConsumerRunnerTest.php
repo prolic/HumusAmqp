@@ -46,7 +46,7 @@ class ConsumerRunnerTest extends TestCase
 
         $this->assertInstanceOf(HelperSet::class, $helperSet);
         $this->assertInstanceOf(ContainerHelper::class, $helperSet->get('container'));
-        $this->assertSame($container,$helperSet->get('container')->getContainer());
+        $this->assertSame($container, $helperSet->get('container')->getContainer());
     }
 
     /**
