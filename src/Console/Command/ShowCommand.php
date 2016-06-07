@@ -89,7 +89,7 @@ class ShowCommand extends AbstractCommand
 
         if (! in_array($type, $this->knownTypes)) {
             $output->writeln(
-                'No type given, use one of ' . implode(', ', $this->knownTypes)
+                'Invalid type given, use one of ' . implode(', ', $this->knownTypes)
             );
             return 1;
         }

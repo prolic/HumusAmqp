@@ -66,6 +66,12 @@ class StartJsonRpcServerCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $serverName = $input->getOption('name');
+
+        if (! $serverName) {
+            $output->writeln('No JSON-RPC server given');
+            return 1;
+        }
+
         $container = $this->getContainer();
 
         if (! $container->has($serverName)) {

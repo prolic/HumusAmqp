@@ -58,6 +58,18 @@ class StartCallbackConsumerCommandTest extends TestCase
     /**
      * @test
      */
+    public function it_returns_when_no_name_given()
+    {
+        $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
+        $tester->execute([]);
+
+        $this->assertEquals(1, $tester->getStatusCode());
+        $this->assertStringStartsWith('No consumer given', $tester->getDisplay(true));
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_when_consumer_not_found()
     {
         $container = $this->prophesize(ContainerInterface::class);

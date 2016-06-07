@@ -58,6 +58,18 @@ class StartJsonRpcServerCommandTest extends TestCase
     /**
      * @test
      */
+    public function it_returns_when_no_name_given()
+    {
+        $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
+        $tester->execute([]);
+
+        $this->assertEquals(1, $tester->getStatusCode());
+        $this->assertStringStartsWith('No JSON-RPC server given', $tester->getDisplay(true));
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_when_json_rpc_server_not_found()
     {
         $container = $this->prophesize(ContainerInterface::class);
