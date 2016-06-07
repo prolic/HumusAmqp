@@ -81,6 +81,7 @@ class ConsumerRunnerTest extends TestCase
 
         $output = $tester->getDisplay(true);
 
-        $this->assertRegExp('/json_rpc_server\s\s\sStart a JSON-RPC server/', $output);
+        $this->assertRegExp('/json_rpc_server/', $output);
+        $this->assertRegExp('/Start a JSON-RPC server/', $output);
     }
 }
