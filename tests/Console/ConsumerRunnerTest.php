@@ -40,12 +40,13 @@ class ConsumerRunnerTest extends TestCase
      */
     public function it_creates_helper_set()
     {
-        $container = $this->prophesize(ContainerInterface::class);
+        $container = $this->prophesize(ContainerInterface::class)->reveal();
 
-        $helperSet = ConsoleRunner::createHelperSet($container->reveal());
+        $helperSet = ConsoleRunner::createHelperSet($container);
 
         $this->assertInstanceOf(HelperSet::class, $helperSet);
         $this->assertInstanceOf(ContainerHelper::class, $helperSet->get('container'));
+        $this->assertSame($container,$helperSet->get('container')->getContainer());
     }
 
     /**
