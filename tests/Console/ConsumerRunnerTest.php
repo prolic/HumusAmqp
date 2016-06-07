@@ -81,6 +81,6 @@ class ConsumerRunnerTest extends TestCase
 
         $output = $tester->getDisplay(true);
 
-        $this->assertStringStartsWith('Humus Amqp Command Line Interface', $output);
+        $this->assertRegExp('/json_rpc_server\s\s\sStart a JSON-RPC server/', $output);
     }
 }
