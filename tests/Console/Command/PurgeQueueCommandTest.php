@@ -44,7 +44,6 @@ class PurgeQueueCommandTest extends TestCase
     public function it_returns_when_invalid_name_given()
     {
         $container = $this->prophesize(ContainerInterface::class);
-        $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(
             [
                 'humus' => [
@@ -79,7 +78,7 @@ class PurgeQueueCommandTest extends TestCase
         $tester->execute(['-n' => 'invalid']);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('Queue with name invalid not found', $tester->getDisplay(true));
+        $this->assertEquals("Queue with name invalid not found\n", $tester->getDisplay(true));
     }
 
     /**
@@ -91,7 +90,7 @@ class PurgeQueueCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No queue name given', $tester->getDisplay(true));
+        $this->assertEquals("No queue name given\n", $tester->getDisplay(true));
     }
 
     /**

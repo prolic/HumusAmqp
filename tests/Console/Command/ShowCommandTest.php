@@ -58,7 +58,7 @@ class ShowCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No type given', $tester->getDisplay(true));
+        $this->assertEquals("No type given\n", $tester->getDisplay(true));
     }
 
     /**
@@ -74,7 +74,7 @@ class ShowCommandTest extends TestCase
         $tester->execute(['--type' => $type]);
 
         $this->assertEquals(0, $tester->getStatusCode());
-        $this->assertStringStartsWith('No ' . $type . ' found', $tester->getDisplay(true));
+        $this->assertEquals("No $type found\n", $tester->getDisplay(true));
     }
 
     /**

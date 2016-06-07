@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Console\Command;
 
 use Humus\Amqp\Constants;
+use Humus\Amqp\Exception;
 use Humus\Amqp\Producer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -60,16 +61,14 @@ class PublishMessageCommand extends AbstractCommand
                 new InputOption(
                     'transactional',
                     't',
-                    InputOption::VALUE_OPTIONAL,
-                    'whether to use a transaction for message sending',
-                    'false'
+                    InputOption::VALUE_NONE,
+                    'whether to use a transaction for message sending'
                 ),
                 new InputOption(
                     'confirm_select',
                     'c',
-                    InputOption::VALUE_OPTIONAL,
-                    'whether to use a confirm select mode for message sending',
-                    'false'
+                    InputOption::VALUE_NONE,
+                    'whether to use a confirm select mode for message sending'
                 ),
                 new InputOption(
                     'routing_key',
@@ -83,7 +82,7 @@ class PublishMessageCommand extends AbstractCommand
                     'a',
                     InputOption::VALUE_OPTIONAL,
                     'arguments to add in JSON-format',
-                    '[]'
+                    '{}'
                 ),
                 new InputOption(
                     'flags',
@@ -102,6 +101,12 @@ class PublishMessageCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $producerName = $input->getOption('producer');
+
+        if (! $producerName) {
+            $output->writeln('No producer name given');
+            return 1;
+        }
+
         $container = $this->getContainer();
 
         if (! $container->has($producerName)) {
@@ -111,12 +116,7 @@ class PublishMessageCommand extends AbstractCommand
 
         $transactional = $input->getOption('transactional');
 
-        if (! in_array($transactional, ['true', 'false'])) {
-            $output->writeln('transaction must be on of true, false');
-            return 1;
-        }
-
-        if ('true' == $transactional) {
+        if ($transactional) {
             $transactional = true;
         } else {
             $transactional = false;
@@ -124,19 +124,14 @@ class PublishMessageCommand extends AbstractCommand
 
         $confirmSelect = $input->getOption('confirm_select');
 
-        if (! in_array($confirmSelect, ['true', 'false'])) {
-            $output->writeln('confirm select must be on of true, false');
-            return 1;
-        }
-
-        if ('true' == $confirmSelect) {
+        if ($confirmSelect) {
             $confirmSelect = true;
         } else {
             $confirmSelect = false;
         }
 
         if ($confirmSelect && $transactional) {
-            $output->writeln('Can only one one of transactional or confirm');
+            $output->writeln('Can only use one of transactional or confirm select');
             return 1;
         }
 
@@ -146,6 +141,7 @@ class PublishMessageCommand extends AbstractCommand
 
         if (json_last_error() != 0) {
             $output->writeln('Cannot decode arguments');
+            return 1;
         }
 
         $producer = $container->get($producerName);
@@ -162,6 +158,9 @@ class PublishMessageCommand extends AbstractCommand
             $producer->setConfirmCallback(
                 function (int $deliveryTag, bool $multiple = false) {
                     return false;
+                },
+                function (int $deliveryTag, bool $multiple, bool $requeue) {
+                    throw new Exception\RuntimeException('Message nacked');
                 }
             );
         }

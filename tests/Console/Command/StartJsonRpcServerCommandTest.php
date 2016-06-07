@@ -64,7 +64,7 @@ class StartJsonRpcServerCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No JSON-RPC server given', $tester->getDisplay(true));
+        $this->assertEquals("No JSON-RPC server given\n", $tester->getDisplay(true));
     }
 
     /**
@@ -79,7 +79,7 @@ class StartJsonRpcServerCommandTest extends TestCase
         $tester->execute(['--name' => 'unknown_server']);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No JSON-RPC server with name unknown_server found', $tester->getDisplay(true));
+        $this->assertEquals("No JSON-RPC server with name unknown_server found\n", $tester->getDisplay(true));
     }
 
     /**

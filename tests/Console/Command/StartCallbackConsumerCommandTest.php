@@ -64,7 +64,7 @@ class StartCallbackConsumerCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No consumer given', $tester->getDisplay(true));
+        $this->assertEquals("No consumer given\n", $tester->getDisplay(true));
     }
 
     /**
@@ -79,7 +79,7 @@ class StartCallbackConsumerCommandTest extends TestCase
         $tester->execute(['-n' => 'unknown']);
 
         $this->assertEquals(1, $tester->getStatusCode());
-        $this->assertStringStartsWith('No consumer with name unknown found', $tester->getDisplay(true));
+        $this->assertEquals("No consumer with name unknown found\n", $tester->getDisplay(true));
     }
 
     /**
