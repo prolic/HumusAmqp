@@ -131,7 +131,7 @@ final class JsonRpcServer extends AbstractConsumer
         } catch (Exception\JsonParseError $e) {
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
             $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32700));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $extra = $this->extractMessageInformation($envelope);
             $extra['exception_class'] = get_class($e);
             $extra['exception_message'] = $e->getMessage();

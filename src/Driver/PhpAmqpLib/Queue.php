@@ -292,7 +292,7 @@ final class Queue implements QueueInterface
                     $this->channel->getResource()->wait();
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw Exception\QueueException::fromPhpAmqpLib($e);
         }
     }

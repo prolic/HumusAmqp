@@ -142,7 +142,7 @@ abstract class AbstractConsumer implements Consumer
         $callback = function (Envelope $envelope) {
             try {
                 $processFlag = $this->handleDelivery($envelope, $this->queue);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->logger->error('Exception during handleDelivery: ' . $e->getMessage());
                 $this->handleException($e);
                 $processFlag = DeliveryResult::MSG_REJECT_REQUEUE();
@@ -246,7 +246,7 @@ abstract class AbstractConsumer implements Consumer
 
         try {
             $result = $callback($this->queue);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('Exception during flushDeferred: ' . $e->getMessage());
             $result = FlushDeferredResult::MSG_REJECT();
             $this->handleException($e);
@@ -389,7 +389,7 @@ abstract class AbstractConsumer implements Consumer
                 Assertion::min($target, 0);
                 Assertion::min($prefetchSize, 0);
                 Assertion::min($prefetchCount, 0);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->logger->error('Exception during reconfiguration: ' . $e->getMessage());
                 return DeliveryResult::MSG_REJECT();
             }

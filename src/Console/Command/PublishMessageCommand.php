@@ -179,7 +179,7 @@ class PublishMessageCommand extends AbstractCommand
         if ($confirmSelect) {
             try {
                 $producer->waitForConfirm(2.0);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 echo get_class($e) . ': ' . $e->getMessage();
                 return 1;
             }
