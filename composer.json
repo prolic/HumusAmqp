@@ -28,6 +28,9 @@
         "satooshi/php-coveralls": "^1.0",
         "php-amqplib/php-amqplib": "^2.6"
     },
+    "conflict": {
+        "sandrokeil/interop-config": "<1.0"
+    },
     "suggest": {
         "ext-pcntl": "For process control management",
         "ext-amqp": "For usage together with php amqp extension",

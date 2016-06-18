@@ -90,7 +90,7 @@ instead `$channel = $connection->newChannel()`
 ## Support
 
 - File issues at [https://github.com/prolic/HumusAmqp/issues](https://github.com/prooph/event-store/issues).
-- Say hello in the [HumusAmqp gitter](https://gitter.im/prooph/improoph) chat.
+- Say hello in the [HumusAmqp gitter](https://gitter.im/prolic/improoph) chat.
 
 ## Contribute
 
@@ -99,4 +99,4 @@ To establish a consistent code quality, please provide unit tests for all your c
 
 ## License
 
-Released under the [MIT](LICENSE).
+Released under the [MIT](LICENSE.txt).
