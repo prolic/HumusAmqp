@@ -115,8 +115,6 @@ connection, using the ``default_connection`` configuration key.
         ]
     );
 
-Note: You don't have to configure the connection factory, as normally you just need access to the consumer and producer.
-
 Getting a connection
 --------------------
 

@@ -113,6 +113,7 @@ A sample configuration might look like this, more details an explanation will be
         'dependencies' => [
             'factories' => [
                 Driver::class => Container\DriverFactory::class,
+                'default-amqp-connection' => [Container\ConnectionFactory::class, 'default'],
                 'demo-producer' => [Container\ProducerFactory::class, 'demo-producer'],
                 'topic-producer' => [Container\ProducerFactory::class, 'topic-producer'],
                 'demo-consumer' => [Container\CallbackConsumerFactory::class, 'demo-consumer'],
@@ -130,32 +131,32 @@ A sample configuration might look like this, more details an explanation will be
                     'demo' => [
                         'name' => 'demo',
                         'type' => 'direct',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'demo.error' => [
                         'name' => 'demo.error',
                         'type' => 'direct',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'topic-exchange' => [
                         'name' => 'topic-exchange',
                         'type' => 'topic',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-client' => [
                         'name' => 'demo-rpc-client',
                         'type' => 'direct',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-server' => [
                         'name' => 'demo-rpc-server',
                         'type' => 'direct',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-server2' => [
                         'name' => 'demo-rpc-server2',
                         'type' => 'direct',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
                 'queue' => [
@@ -165,22 +166,22 @@ A sample configuration might look like this, more details an explanation will be
                         'arguments' => [
                             'x-dead-letter-exchange' => 'demo.error', // must be defined as exchange before
                         ],
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-client' => [
                         'name' => '',
                         'exchange' => 'demo-rpc-client',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-server' => [
                         'name' => 'demo-rpc-server',
                         'exchange' => 'demo-rpc-server',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-server2' => [
                         'name' => 'demo-rpc-server2',
                         'exchange' => 'demo-rpc-server2',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                     'info-queue' => [
                         'name' => 'info-queue',
@@ -188,7 +189,7 @@ A sample configuration might look like this, more details an explanation will be
                         'routingKeys' => [
                             '#.err',
                         ],
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
                 'connection' => [
