@@ -7,8 +7,8 @@ Overview of available commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can quickly get an overview of all available cli commands (incl. the commands
-from the Humus AMQP Module) by running:
+from the HumusAmqp) by running:
 
 .. code-block:: bash
 
-    $ php public/index.php
+    $ ./vendor/bin/humus-amqp

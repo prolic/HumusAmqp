@@ -6,6 +6,8 @@ PHP 7 AMQP library
 [![Coverage Status](https://coveralls.io/repos/github/prolic/HumusAmqp/badge.svg?branch=master)](https://coveralls.io/github/prolic/HumusAmqp?branch=master)
 [![Gitter](https://badges.gitter.im/prolic/HumusAmqp.svg)](https://gitter.im/prolic/HumusAmqp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+## [Documentation](https://humusamqp.readthedocs.io/) powered by Read the Docs.
+
 ## Overview
 
 PHP 7 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.

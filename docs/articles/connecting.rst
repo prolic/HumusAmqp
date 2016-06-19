@@ -8,14 +8,20 @@ Connection configuration
 
 Map options that Humus AMQP Module will recognize are
 
--  ``:host``          - amqp.host The host to connect too. Note: Max 1024 characters.
--  ``:port``          - amqp.port Port on the host.
--  ``:vhost``         - amqp.vhost The virtual host on the host. Note: Max 128 characters.
--  ``:login``         - amqp.login The login name to use. Note: Max 128 characters.
--  ``:password``      - amqp.password Password. Note: Max 128 characters.
--  ``:persistent``    - Establish a persistent connection with the AMQP broker, if set to true.
--  ``:read_timeout``  - Timeout in for income activity. Note: 0 or greater seconds. May be fractional.
--  ``:write_timeout`` - Timeout in for outcome activity. Note: 0 or greater seconds. May be fractional.
+-  ``:host``            - amqp.host The host to connect too. Note: Max 1024 characters.
+-  ``:port``            - amqp.port Port on the host.
+-  ``:vhost``           - amqp.vhost The virtual host on the host. Note: Max 128 characters.
+-  ``:login``           - amqp.login The login name to use. Note: Max 128 characters.
+-  ``:password``        - amqp.password Password. Note: Max 128 characters.
+-  ``:persistent``      - Establish a persistent connection with the AMQP broker, if set to true.
+-  ``:connect_timeout`` - Connection timeout. Note: 0 or greater seconds. May be fractional.
+-  ``:read_timeout``    - Timeout in for income activity. Note: 0 or greater seconds. May be fractional.
+-  ``:write_timeout``   - Timeout in for outcome activity. Note: 0 or greater seconds. May be fractional.
+-  ``:heartbeat``       - The heartbeat to use. Should be approx half the read_timeout.
+-  ``:cacert``          - CA Cert for SSL Connections
+-  ``:cert``            - Cert for SSL Connections
+-  ``:key``             - Key for SSL Connections
+-  ``:verify``          - Verify SSL Certs (true or false)
 
 Default parameters
 ------------------
@@ -25,31 +31,29 @@ Default connection parameters are
 .. code-block:: php
 
     [
-      'host'         => "127.0.0.1",
+      'host'         => "localhost",
       'port'         => 5672,
       'vhost'        => "/",
       'login'        => "guest",
       'password'     => "guest",
       'persistent'   => false,
-      'readTimeout'  => 1.0,
-      'writeTimeout' => 1.0
+      'connect_timeout' => 1.0,
+      'read_timeout'  => 1.0,
+      'write_timeout' => 1.0,
+      'heartbeat' => 0,
     ]
-
-.. note:: The persistent parameter is only used by the Humus AMQP Module's ConnectionAbstractServiceFactory.
-Based on this parameter the module will decide, whether to call pconnect() or connect() on the connection.
 
 Creating a connection
 ---------------------
 
 .. code-block:: php
 
-    <?php
+    $options = new Humus\Amqp\ConnectionOptions();
+    $options->setLogin('username');
+    $options->setPassword('password');
 
-    $conn = new AMQPConnection();
-    $conn->setLogin('demouser');
-    $conn->setPassword('password');
-    ...
-    $conn->pconnect();
+    $connection = new Humus\Amqp\Driver\AmqpExtension\Connection($options);
+    $connection->connect();
 
 Opening a Channel
 -----------------
@@ -67,31 +71,15 @@ To open a channel:
 
     <?php
 
-    $conn = new AMQPConnection();
-    $conn->connect();
-    $ch   = new AMQPChannel($conn);
+    $connection = new Humus\Amqp\Driver\PhpAmqpLib\SocketConnection(new Humus\Amqp\ConnectionOptions());
+    $channel    = $connection->newChannel();
 
 Channels are typically long lived: you open one or more of them and use
 them for a period of time, as opposed to opening a new channel for each
 published message, for example.
 
-Disconnecting
--------------
-
-To close a connection, use the disconnect() method. This
-will automatically close all channels of that connection first:
-
-.. code-block:: php
-
-    <?php
-
-    $conn = new AMQPConnection();
-    $conn->connect();
-    $ch   = new AMQPChannel($conn);
-    $conn->disconnect();
-
-Module Configuration
---------------------
+Using configuration and factory
+-------------------------------
 
 You can simply configure as many connection as needed and simply give them a name. You can also set a default
 connection, using the ``default_connection`` configuration key.
@@ -100,33 +88,43 @@ connection, using the ``default_connection`` configuration key.
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'default_connection' => 'default',
-            'connections' => array(
-                'default' => array(
-                    'host' => 'localhost',
-                    'port' => 5672,
-                    'login' => 'guest',
-                    'password' => 'guest',
-                    'vhost' => '/',
-                    'persistent' => true,
-                )
-            )
-        )
+    return [
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => true,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+            ]
+        ]
     );
+
+Note: You don't have to configure the connection factory, as normally you just need access to the consumer and producer.
 
 Getting a connection
 --------------------
-
-All connections are handled by the HumusAmqp\PluginManager\Connection. To grab a connection simply call:
 
 .. code-block:: php
 
     <?php
 
-    $connectionManager = $serviceManager->get('HumusAmqp\PluginManager\Connection');
-    $defaultConnection = $connectionManager->get('default');
+    $defaultConnection = $container->get('default-amqp-connection');
 
 
 Troubleshooting
