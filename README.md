@@ -5,6 +5,7 @@ PHP 7 AMQP library
 [![Build Status](https://travis-ci.org/prolic/HumusAmqp.svg?branch=master)](https://travis-ci.org/prolic/HumusAmqp)
 [![Coverage Status](https://coveralls.io/repos/github/prolic/HumusAmqp/badge.svg?branch=master)](https://coveralls.io/github/prolic/HumusAmqp?branch=master)
 [![Gitter](https://badges.gitter.im/prolic/HumusAmqp.svg)](https://gitter.im/prolic/HumusAmqp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Documentation Status](https://readthedocs.org/projects/humusamqp/badge/?version=latest)](https://readthedocs.org/projects/humusamqp/badge/?version=latest)
 
 ## [Documentation](https://humusamqp.readthedocs.io/) powered by Read the Docs.
 
