@@ -329,8 +329,9 @@ this order:
 Tell Us What You Think!
 -----------------------
 
-Please take a moment to tell us what you think about this guide: `Send an e-mail
-<saschaprolic@googlemail.com>`_ or raise an issue on `Github <https://www.github.com/prolic/HumusAmqpModule/issues>`_.
+Please take a moment to tell us what you think about this guide: `Send an e-mail <saschaprolic@googlemail.com>`_,
+say hello in the `HumusAmqp gitter <https://gitter.im/prolic/HumusAmqp>`_ chat.
+or raise an issue on `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 
 Let us know what was unclear or what has not been covered. Maybe you
 do not like the guide style or grammar or discover spelling

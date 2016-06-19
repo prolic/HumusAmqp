@@ -8,7 +8,7 @@ We recommend that you read these guides, if possible, in this order:
 :ref:`Getting started <getting-started>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-An overview of HumusAmqpModule with a quick tutorial that helps you to get started
+An overview of HumusAmqp with a quick tutorial that helps you to get started
 with it. It should take about 20 minutes to read and study the provided
 code examples.
 
@@ -30,7 +30,7 @@ This guide covers:
 
 This guide covers:
 
--  How to connect to RabbitMQ with HumusAmqpModule
+-  How to connect to RabbitMQ with HumusAmqp
 -  How to use connection URI to connect to RabbitMQ (also: in PaaS
    environments such as Heroku and CloudFoundry)
 -  How to open a channel
@@ -42,7 +42,7 @@ This guide covers:
 
 This guide covers:
 
--  How to declare AMQP queues with HumusAmqpModule
+-  How to declare AMQP queues with HumusAmqp
 -  Queue properties
 -  How to declare server-named queues
 -  How to declare temporary exclusive queues
@@ -60,7 +60,7 @@ This guide covers:
 This guide covers:
 
 -  Exchange types
--  How to declare AMQP exchanges with HumusAmqpModule
+-  How to declare AMQP exchanges with HumusAmqp
 -  How to publish messages
 -  Exchange properties
 -  Fanout exchanges
@@ -124,8 +124,9 @@ This guide covers:
 Tell Us What You Think!
 -----------------------
 
-Please take a moment to tell us what you think about this guide: `Send an e-mail
-<saschaprolic@googlemail.com>`_ or raise an issue on `Github <https://www.github.com/prolic/HumusAmqpModule/issues>`_.
+Please take a moment to tell us what you think about this guide: `Send an e-mail <saschaprolic@googlemail.com>`_,
+say hello in the `HumusAmqp gitter <https://gitter.im/prolic/HumusAmqp>`_ chat.
+or raise an issue on `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 
 Let us know what was unclear or what has not been covered. Maybe you
 do not like the guide style or grammar or discover spelling

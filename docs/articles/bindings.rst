@@ -41,26 +41,40 @@ Example:
 
 .. code-block:: php
 
-    .. code-block:: php
-
-    <?php
-
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
-                    'name' => 'demo-exchange',
-                    'type' => 'direct'
-                )
-            ),
-            'queues' => array(
-                'my-queue' => array(
-                    'name' => 'my-queue',
-                    'exchange' => 'demo-exchange'
-                )
-            )
-        )
-    );
+    return [
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => true,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'exchanges' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct',
+                        'connection' => 'default',
+                    ]
+                ],
+                'queues' => [
+                    'my-queue' => [
+                        'name' => 'my-queue',
+                        'exchange' => 'demo-exchange'
+                        'connection' => 'default',
+                    ]
+                ]
+            ]
+        ]
+    ];
 
 Unbinding queues from exchanges
 -------------------------------
@@ -75,8 +89,7 @@ Exchange-to-Exchange Bindings
 -----------------------------
 
 Exchange-to-Exchange bindings is a RabbitMQ extension to AMQP 0.9.1. It
-is covered in the `RabbitMQ extensions
-guide </articles/extensions.html>`_.
+is covered in the `RabbitMQ extensions guide </articles/extensions.html>`_.
 
 Bindings, Routing and Returned Messages
 ---------------------------------------
@@ -144,8 +157,9 @@ this order:
 Tell Us What You Think!
 -----------------------
 
-Please take a moment to tell us what you think about this guide: `Send an e-mail
-<saschaprolic@googlemail.com>`_ or raise an issue on `Github <https://www.github.com/prolic/HumusAmqpModule/issues>`_.
+Please take a moment to tell us what you think about this guide: `Send an e-mail <saschaprolic@googlemail.com>`_,
+say hello in the `HumusAmqp gitter <https://gitter.im/prolic/HumusAmqp>`_ chat.
+or raise an issue on `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 
 Let us know what was unclear or what has not been covered. Maybe you
 do not like the guide style or grammar or discover spelling

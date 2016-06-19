@@ -119,13 +119,13 @@ connection, using the ``default_connection`` configuration key.
 Getting a connection
 --------------------
 
-All connections are handled by the HumusAmqpModule\PluginManager\Connection. To grab a connection simply call:
+All connections are handled by the HumusAmqp\PluginManager\Connection. To grab a connection simply call:
 
 .. code-block:: php
 
     <?php
 
-    $connectionManager = $serviceManager->get('HumusAmqpModule\PluginManager\Connection');
+    $connectionManager = $serviceManager->get('HumusAmqp\PluginManager\Connection');
     $defaultConnection = $connectionManager->get('default');
 
 
@@ -134,7 +134,7 @@ Troubleshooting
 
 If you have read this guide and still have issues with connecting, check
 our :ref:`Troubleshooting guide <troubleshooting>` and feel
-free to raise an issue at `Github <https://www.github.com/prolic/HumusAmqpModule/issues>`_.
+free to raise an issue at `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 
 What to Read Next
 -----------------
@@ -156,8 +156,9 @@ this order:
 Tell Us What You Think!
 -----------------------
 
-Please take a moment to tell us what you think about this guide: `Send an e-mail
-<saschaprolic@googlemail.com>`_ or raise an issue on `Github <https://www.github.com/prolic/HumusAmqpModule/issues>`_.
+Please take a moment to tell us what you think about this guide: `Send an e-mail <saschaprolic@googlemail.com>`_,
+say hello in the `HumusAmqp gitter <https://gitter.im/prolic/HumusAmqp>`_ chat.
+or raise an issue on `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 
 Let us know what was unclear or what has not been covered. Maybe you
 do not like the guide style or grammar or discover spelling

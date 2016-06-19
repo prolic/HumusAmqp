@@ -7,15 +7,14 @@ About this guide
 ----------------
 
 This guide is a quick tutorial that helps you to get started with
-RabbitMQ and `HumusAmqpModule <https://www.github.com/prolic/HumusAmqpModule>`_.  It should
+RabbitMQ and `HumusAmqp <https://www.github.com/prolic/HumusAmqp>`_.  It should
 take about 20 minutes to read and study the provided code
 examples. This guide covers:
 
  * Installing RabbitMQ, a mature popular messaging broker server.
- * Installing HumusAmqpModule via `Composer <http://www.getcomposer.org/>`_.
- * Installing HumusAmqpDemoModule.
+ * Installing HumusAmqp via `Composer <http://www.getcomposer.org/>`_.
  * Producing and consuming messages from cli.
- * Running a rpc server and and a client.
+ * Running a JSON-RPC server and client.
 
 
 Installing RabbitMQ
@@ -51,208 +50,245 @@ provides an `RPM package
 <http://www.rabbitmq.com/install.html#rpm>`_.
 
 
-Installing HumusAmqpModule & HumusAmqpDemoModule
-------------------------------------------------
+Installing HumusAmqp
+--------------------
 
-a) Make sure you have the `php-amqp extension <https://github.com/pdezwart/php-amqp>`_ installed
-
-b) The minimum required version is 1.4.0
-
-c) Make sure that you have a running
-`Zend Framework 2 Skeleton Application <https://github.com/zendframework/ZendSkeletonApplication>`_
-
-d) You can use composer to install HumusAmqpModule
+a) You can use composer to install HumusAmqp
 
 .. code-block:: bash
 
-    $ cd path/to/zf2app
-    $ php composer.phar require prolic/humus-amqp-module dev-master
-    $ php composer.phar require prolic/humus-amqp-demo-module dev-master
+    $ php composer.phar require prolic/humus-amqp dev-master
 
-e) Adding HumusAmqpModule & HumusAmqpDemoModule to application configuration
+b) Select a driver to use, currently only php-amqplib and php-amqp (PHP extension) are supported.
 
-Edit your config/application.config.php
+Configure your container to return the DriverFactory for the Driver class. If your container supports configuration by
+array like Zend\ServiceManager f.e., this should look similar to this.
 
 .. code-block:: php
 
-    <?php
-        return array(
-            // This should be an array of module namespaces used in the application.
-            'modules' => array(
-                'Application',
-        ),
+    return [
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Container\DriverFactory::class,
+            ]
+        ]
+    ];
 
-to
-
-.. code-block:: php
-
-    <?php
-        return array(
-        // This should be an array of module namespaces used in the application.
-        'modules' => array(
-            'Application',
-            'HumusAmqpModule',
-            'HumusAmqpDemoModule'
-        ),
-
-Running demos from CLI
-----------------------
-
-Demo-Consumer and Producer
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Open up 2 terminals.
-
-Then run the demo consumer
-
-.. code-block:: bash
-
-    $ php public/index.php humus amqp consumer demo-consumer
-
-Next, open another shell and run the demo producer
-
-.. code-block:: bash
-
-    $ php public/index.php humus amqp stdin-producer demo-producer "demo-message"
-
-You should see the output in the demo consumer's shell. It should look something like this:
-
-.. code-block:: bash
-
-    hallo
-    2014-08-27T18:43:30+02:00 DEBUG (7): Acknowledged 1 messages at 0 msg/s
-
-If you run the command multiple times, you can see that it the consumer will also ack bundles of messages.
-You noticed perhabs, that you run it with the stdin-producer command, but what does this mean? Try this:
-
-.. code-block:: bash
-
-    $ cat README.md | xargs -0 php public/index.php humus amqp stdin-producer demo-producer
-    $ echo "my test message" | xargs -0 php public/index.php humus amqp stdin-producer demo-producer
-
-For now, let's check what a demo consumer looks like and how to configure it.
-
-The `EchoCallback <https://github.com/prolic/HumusAmqpDemoModule/blob/master/src/HumusAmqpDemoModule/Demo/EchoCallback.php>`_
-is the implementation part of the consumer. As you can see, you simply provide a callable,
-you get the parameters (message and queue) and you're ready to start. You don't need to extend
-or even write yourself the consumer implementation.
-
-The required connection configuration can be found at:
-`module.config.php#L85-L95 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L85-L95>`_.
-
-The required exchange configuration is also there:
-`module.config.php#L27-L37 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L27-L37>`_.
-
-The required queue configuration:
-`module.config.php#L56-L64 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L56-L64>`_.
-
-The required consumer configuration:
-`module.config.php#L112-L119 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L112-L119>`_.
-
-And finally, the required producer configuration:
-`module.config.php#L98-L105 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L98-L105>`_.
-
-More information about the configuration of the Humus AMQP module, check the other sections of the manual.
-
-That's it, send a SIGUSR1-signal (kill -10) to stop the consumer. You probably noticed,
-that there is an error-exchange configured for the demo exchange.
-
-That's a nice exercise: Go and change the consumer callback to "return false;",
-so the messages get a nack and will be routed to the error exchange. Attach a queue
-to that exchange and create the consumer configuration. You can also reuse the already
-existing
-`EchoErrorCallback <https://github.com/prolic/HumusAmqpDemoModule/blob/master/src/HumusAmqpDemoModule/Demo/EchoErrorCallback.php>`_.
-
-
-Topic consumer and producer example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-First, run the consumer again:
-
-.. code-block:: bash
-
-    $ php public/index.php humus amqp consumer topic-consumer-error
-
-This consumer is only interested in routing keys matching #.err, so let's send some messages with different routing keys.
-
-.. code-block:: bash
-
-    $ php public/index.php humus amqp stdin-producer topic-producer --route=level.err err
-    $ php public/index.php humus amqp stdin-producer topic-producer --route=level.warn warn
-    $ php public/index.php humus amqp stdin-producer topic-producer --route=level.info info
-    $ php public/index.php humus amqp stdin-producer topic-producer --route=level.debug debug
-
-As you can see, only the first message in interessting for the consumer, all others are trashed. Go, send a lot of messages:
-
-.. code-block:: bash
-
-    $ php public/index.php humus amqpdemo topic-producer 1000
-
-This will send 1000 messages that will be consumed by the topic-consumer-error. You probably noticed, that by default,
-the consumer will never ack more than 3 messages at once, even if you send tons of messages. You can change that, go to the module.config.php file:
+c) Configure your application to use the desired driver.
 
 .. code-block:: php
 
-   'topic-consumer-error' => array(
-        'queues' => array(
-            'info-queue',
-        ),
-        'callback' => 'HumusAmqpDemoModule\Demo\EchoCallback',
-        'qos' => array(
-            'prefetch_count' => 100
-        ),
-        'auto_setup_fabric' => true
-    ),
+    return [
+        'humus' => [
+            'amqp' => [
+                'driver' => 'amqp-extension',
+            ]
+        ]
+    ];
 
-If you set the prefetch count to 100, the consumer will ack up to 100 messages at once. For more information, see: `Consumer Prefetch <http://www.rabbitmq.com/consumer-prefetch.html>`_.
+d) Notes about drivers:
+
+1) The PHP Extension (php-amqp) is the fastest one, we strongly recommend using 1.7.0 or building yourself from master to
+be able to use all features.
+
+There is currently a bug in PhpAmqpLib, see: https://github.com/php-amqplib/php-amqplib/pull/399
+As long as this is not merged and release, you have to manually apply the patch, sorry!
+
+You can do this from the command-line with:
+
+`sed -i '/$message = $this->get_and_unset_message($delivery_tag);/a \ \ \ \ \ \ \ \ \ \ \ \ $message->delivery_info["delivery_tag"] = $delivery_tag;' vendor/php-amqplib/php-amqplib/PhpAmqpLib/Channel/AMQPChannel.php`
+
+2) When using php-amqplib as driver, it's worth point out, that a StreamConnection (same goes for SSLConnection) does not
+have the possibility to timeout. If you want to let the consumer timeout, when no more messages are received, you should
+use the SocketConnection instead (assuming you don't need an SSL connection).
+
+Sample-Configuration
+--------------------
+
+A sample configuration might look like this, more details an explanation will be in the coming chapters.
+
+.. code-block:: php
+
+    return [
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Container\DriverFactory::class,
+                'demo-producer' => [Container\ProducerFactory::class, 'demo-producer'],
+                'topic-producer' => [Container\ProducerFactory::class, 'topic-producer'],
+                'demo-consumer' => [Container\CallbackConsumerFactory::class, 'demo-consumer'],
+                'topic-consumer-error' => [Container\CallbackConsumerFactory::class, 'topic-consumer-error'],
+                'demo-rpc-server' => [Container\JsonRpcServerFactory::class, 'demo-rpc-server'],
+                'demo-rpc-server2' => [Container\JsonRpcServerFactory::class, 'demo-rpc-server2'],
+                'demo-rpc-client' => [Container\JsonRpcClientFactory::class, 'demo-rpc-client'],
+                'my_callback' => $my_callback_factory,
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'exchange' => [
+                    'demo' => [
+                        'name' => 'demo',
+                        'type' => 'direct',
+                        'connection' => 'default',
+                    ],
+                    'demo.error' => [
+                        'name' => 'demo.error',
+                        'type' => 'direct',
+                        'connection' => 'default',
+                    ],
+                    'topic-exchange' => [
+                        'name' => 'topic-exchange',
+                        'type' => 'topic',
+                        'connection' => 'default',
+                    ],
+                    'demo-rpc-client' => [
+                        'name' => 'demo-rpc-client',
+                        'type' => 'direct',
+                        'connection' => 'default',
+                    ],
+                    'demo-rpc-server' => [
+                        'name' => 'demo-rpc-server',
+                        'type' => 'direct',
+                        'connection' => 'default',
+                    ],
+                    'demo-rpc-server2' => [
+                        'name' => 'demo-rpc-server2',
+                        'type' => 'direct',
+                        'connection' => 'default',
+                    ],
+                ],
+                'queue' => [
+                    'foo' => [
+                        'name' => 'foo',
+                        'exchange' => 'demo', // must be defined as exchange before
+                        'arguments' => [
+                            'x-dead-letter-exchange' => 'demo.error', // must be defined as exchange before
+                        ],
+                        'connection' => 'default',
+                    ],
+                    'demo-rpc-client' => [
+                        'name' => '',
+                        'exchange' => 'demo-rpc-client',
+                        'connection' => 'default',
+                    ],
+                    'demo-rpc-server' => [
+                        'name' => 'demo-rpc-server',
+                        'exchange' => 'demo-rpc-server',
+                        'connection' => 'default',
+                    ],
+                    'demo-rpc-server2' => [
+                        'name' => 'demo-rpc-server2',
+                        'exchange' => 'demo-rpc-server2',
+                        'connection' => 'default',
+                    ],
+                    'info-queue' => [
+                        'name' => 'info-queue',
+                        'exchange' => 'topic-exchange',
+                        'routingKeys' => [
+                            '#.err',
+                        ],
+                        'connection' => 'default',
+                    ],
+                ],
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => true,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'producer' => [
+                    'demo-producer' => [
+                        'type' => 'plain',
+                        'exchange' => 'demo',
+                        'qos' => [
+                            'prefetch_size' => 0,
+                            'prefetch_count' => 10,
+                        ],
+                        'auto_setup_fabric' => true,
+                    ],
+                    'topic-producer' => [
+                        'exchange' => 'topic-exchange',
+                        'auto_setup_fabric' => true,
+                    ],
+                ],
+                'callback_consumer' => [
+                    'demo-consumer' => [
+                        'queue' => 'foo',
+                        'callback' => 'echo',
+                        'idle_timeout' => 10,
+                        'delivery_callback' => 'my_callback',
+                    ],
+                    'topic-consumer-error' => [
+                        'queues' => [
+                            'info-queue',
+                        ],
+                        'qos' => [
+                            'prefetch_count' => 100,
+                        ],
+                        'auto_setup_fabric' => true,
+                        'callback' => 'echo',
+                        'logger' => 'consumer-logger',
+                    ],
+                ],
+                'json_rpc_server' => [
+                    'demo-rpc-server' => [
+                        'callback' => 'poweroftwo',
+                        'queue' => 'demo-rpc-server',
+                        'auto_setup_fabric' => true,
+                    ],
+                    'demo-rpc-server2' => [
+                        'callback' => 'randomint',
+                        'queue' => 'demo-rpc-server2',
+                        'auto_setup_fabric' => true,
+                    ],
+                ],
+                'json_rpc_client' => [
+                    'demo-rpc-client' => [
+                        'queue' => 'demo-rpc-client',
+                        'auto_setup_fabric' => true,
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 
-Running RPC-client & -server example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Running from CLI
+----------------
 
-Open up 3 terminals.
+In order to run cli commands, you need to setup your connection, exchange and queue configuration.
+See here on how to do this:
 
-Then run 2 rpc-servers
+You can run cli commands like this:
 
 .. code-block:: bash
 
-    $ php public/index.php humus amqp rpc-server demo-rpc-server
-    $ php public/index.php humus amqp rpc-server demo-rpc-server2
+    $ ./vendor/bin/humus-amqp
 
-Before we start the client, let's see, how a rpc-server get's configured what in the demo servers.
-
-First, we need exchanges: `module.config.php#L46-L53 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L46-L53>`_.
-
-Queues, too: `module.config.php#L65-L76 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L65-L76>`_.
-
-And here's how the servers/ clients are configured: `module.config.phpL128-L145 <https://github.com/prolic/HumusAmqpDemoModule/blob/master/config/module.config.php#L128-L145>`_.
-
-You can check the callbacks `here <https://github.com/prolic/HumusAmqpDemoModule/tree/master/src/HumusAmqpDemoModule/Demo>`_.
-
-The PowerOfTwoCallback does a sleep(1) before returning, the RandomIntCallback does a sleep(2); With this, it's more easy to show real parallel processing.
-
-Start the rpc-client
+To start a consumer:
 
 .. code-block:: bash
 
-    $ php public/index.php humus amqpdemo rpc-client 5
+    $ ./vendor/bin/humus-amqp consumer -n myconsumer -a 100
 
-This will send 5 messages, you can see in the server output, that the messages are acknowledged and the response in the client afterwards.
-No let's send messages to both:
+This will start the myconsumer and consume 100 messages until if stops.
 
-.. code-block:: bash
 
-    $ php public/index.php humus amqpdemo rpc-client 5 --parallel
-
-What? Don't believe it? It's truly parallel!
+To start a JSON-RPC server
 
 .. code-block:: bash
 
-    $ time php public/index.php humus amqpdemo rpc-client 5 --parallel
+    $ ./vendor/bin/humus-amqp json_rpc_server -n myserver -a 100
 
-Enjoy!
-
-See :ref:`Running from CLI <cli>` get know more about Humus AMQP Module's CLI commands.
+This will start the myserver and consume 100 messages until if stops.
 
 What to read next
 -----------------
@@ -275,8 +311,9 @@ We recommend that you read the following guides next, if possible, in this order
 Tell Us What You Think!
 -----------------------
 
-Please take a moment to tell us what you think about this guide: `Send an e-mail
-<saschaprolic@googlemail.com>`_ or raise an issue on `Github <https://www.github.com/prolic/HumusAmqpModule/issues>`_.
+Please take a moment to tell us what you think about this guide: `Send an e-mail <saschaprolic@googlemail.com>`_,
+say hello in the `HumusAmqp gitter <https://gitter.im/prolic/HumusAmqp>`_ chat.
+or raise an issue on `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 
 Let us know what was unclear or what has not been covered. Maybe you
 do not like the guide style or grammar or discover spelling

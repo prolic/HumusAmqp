@@ -87,7 +87,7 @@ messages.
 
 Graphically this can be represented as:
 
-.. figure:: https://github.com/prolic/HumusAmqpModuleDocs/raw/master/diagrams/004_fanout_exchange.png
+.. figure:: https://github.com/prolic/HumusAmqpDocs/raw/master/diagrams/004_fanout_exchange.png
    :align: center
    :alt: fanout exchange routing
 
@@ -161,7 +161,7 @@ routing <http://en.wikipedia.org/wiki/Multicast>`_ as well).
 
 Here is a graphical representation:
 
-.. figure:: https://github.com/prolic/HumusAmqpModuleDocs/raw/master/diagrams/005_direct_exchange.png
+.. figure:: https://github.com/prolic/HumusAmqpDocs/raw/master/diagrams/005_direct_exchange.png
    :align: center
    :alt: direct exchange routing
 
@@ -403,7 +403,7 @@ To publish a message, get the producer plugin manager, get the producer and publ
 
     <?php
 
-    $pm = $serivceManager->get('HumusAmqpModule\PluginManager\Producer');
+    $pm = $serivceManager->get('HumusAmqp\PluginManager\Producer');
     $producer = $pm->get('my-producer');
 
     $producer->publish('foo', 'my.routing.key');
@@ -1239,8 +1239,9 @@ this order:
 Tell Us What You Think!
 -----------------------
 
-Please take a moment to tell us what you think about this guide: `Send an e-mail
-<saschaprolic@googlemail.com>`_ or raise an issue on `Github <https://www.github.com/prolic/HumusAmqpModule/issues>`_.
+Please take a moment to tell us what you think about this guide: `Send an e-mail <saschaprolic@googlemail.com>`_,
+say hello in the `HumusAmqp gitter <https://gitter.im/prolic/HumusAmqp>`_ chat.
+or raise an issue on `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 
 Let us know what was unclear or what has not been covered. Maybe you
 do not like the guide style or grammar or discover spelling
