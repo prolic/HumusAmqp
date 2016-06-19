@@ -22,9 +22,12 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use Humus\Amqp\Container\JsonRpcServerFactory;
-use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
+use Humus\Amqp\Queue;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Psr\Log\LoggerInterface;
@@ -76,9 +79,26 @@ class JsonRpcServerFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {})->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName('test_exchange');
+
+        $channel2 = $this->prophesize(Channel::class);
+        $channel2->newExchange()->willReturn($exchange->reveal());
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal());
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal());
+
+        $container->get('my_connection')->willReturn($connection->reveal());
+        $container->get('my_callback')->willReturn(function () {});
 
         $factory = new JsonRpcServerFactory('my_server');
         $jsonRpcServer = $factory($container->reveal());
@@ -129,9 +149,26 @@ class JsonRpcServerFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {})->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName('test_exchange');
+
+        $channel2 = $this->prophesize(Channel::class);
+        $channel2->newExchange()->willReturn($exchange->reveal());
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal());
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal());
+
+        $container->get('my_connection')->willReturn($connection->reveal());
+        $container->get('my_callback')->willReturn(function () {});
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 
         $serverName = 'my_server';

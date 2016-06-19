@@ -22,9 +22,12 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use Humus\Amqp\Container\JsonRpcClientFactory;
-use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
+use Humus\Amqp\Queue;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -75,8 +78,24 @@ class JsonRpcClientFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $channel2 = $this->prophesize(Channel::class);
+        $channel2->newExchange()->willReturn($exchange->reveal());
+
+        $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new JsonRpcClientFactory('my_client');
         $jsonRpcClient = $factory($container->reveal());
@@ -125,8 +144,24 @@ class JsonRpcClientFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $channel2 = $this->prophesize(Channel::class);
+        $channel2->newExchange()->willReturn($exchange->reveal());
+
+        $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $clientName = 'my_client';
         $jsonRpcClient = JsonRpcClientFactory::$clientName($container->reveal());
@@ -188,8 +223,18 @@ class JsonRpcClientFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new JsonRpcClientFactory('my_client');
         $factory($container->reveal());

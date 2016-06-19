@@ -22,11 +22,12 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Console\Command;
 
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use Humus\Amqp\Console\Command\SetupFabricCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Humus\Amqp\Container\ExchangeFactory;
-use Humus\Amqp\Container\QueueFactory;
-use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\Exchange;
+use Humus\Amqp\Queue;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -66,7 +67,6 @@ class SetupFabricCommandTest extends TestCase
             [
                 'humus' => [
                     'amqp' => [
-                        'driver' => 'php-amqplib',
                         'exchange' => [
                             'demo' => [
                                 'name' => 'demo',
@@ -83,19 +83,36 @@ class SetupFabricCommandTest extends TestCase
                         ],
                         'connection' => [
                             'default' => [
-                                'type' => 'socket',
-                                'vhost' => '/humus-amqp-test',
                             ],
                         ],
                     ]
                 ]
             ]
         )->shouldBeCalled();
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
-        $container = $container->reveal();
-        $tester = $this->createCommandTester($container);
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName('demo')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->declareExchange()->shouldBeCalled();
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('foo')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('demo', '', [])->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('default')->willReturn($connection->reveal())->shouldBeCalled();
+
+        $tester = $this->createCommandTester($container->reveal());
         $tester->execute([]);
 
         $this->assertEquals(0, $tester->getStatusCode());
@@ -103,16 +120,6 @@ class SetupFabricCommandTest extends TestCase
             "Exchange demo declared\nQueue foo declared\n",
             $tester->getDisplay(true)
         );
-
-        // cleanup
-        $queueName = 'foo';
-        $queue = QueueFactory::$queueName($container);
-        $queue->delete();
-
-        // cleanup
-        $exchangeName = 'demo';
-        $exchange = ExchangeFactory::$exchangeName($container);
-        $exchange->delete();
     }
 
     /**

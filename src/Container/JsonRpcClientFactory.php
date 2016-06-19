@@ -85,7 +85,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
 
     /**
      * @param ContainerInterface $container
-     * @return Client
+     * @return JsonRpcClient
      */
     public function __invoke(ContainerInterface $container) : JsonRpcClient
     {

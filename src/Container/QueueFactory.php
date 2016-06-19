@@ -125,8 +125,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $options = $this->options($container->get('config'), $this->queueName);
 
         if (null === $this->channel) {
-            $connectionName = $options['connection'];
-            $connection = ConnectionFactory::$connectionName($container);
+            $connection = $container->get($options['connection']);
             $this->channel = $connection->newChannel();
         }
 

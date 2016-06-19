@@ -135,6 +135,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
                 'baz',
             ],
             'int' => 2,
+            'bool' => true,
         ]);
         $this->exchange->declareExchange();
     }

@@ -22,9 +22,9 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\Connection;
 use Humus\Amqp\Container\ExchangeFactory;
-use Humus\Amqp\Driver\Driver;
-use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
+use Humus\Amqp\Channel;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Interop\Container\ContainerInterface;
@@ -62,13 +62,23 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange = $exchange->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange)->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
-        $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(Exchange::class, $exchange);
+        $this->assertSame($exchange, $factory($container->reveal()));
     }
 
     /**
@@ -97,13 +107,23 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange = $exchange->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange)->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $exchangeName = 'my_exchange';
-        $exchange = ExchangeFactory::$exchangeName($container->reveal());
 
-        $this->assertInstanceOf(Exchange::class, $exchange);
+        $this->assertSame($exchange, ExchangeFactory::$exchangeName($container->reveal()));
     }
 
     /**
@@ -112,10 +132,6 @@ class ExchangeFactoryTest extends TestCase
     public function it_creates_exchange_with_call_static_and_given_channel()
     {
         $container = $this->prophesize(ContainerInterface::class);
-
-        $connection = new StreamConnection(['vhost' => '/humus-amqp-test']);
-
-        $channel = $connection->newChannel();
 
         $container->get('config')->willReturn([
             'humus' => [
@@ -130,11 +146,19 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $exchangeName = 'my_exchange';
-        $exchange = ExchangeFactory::$exchangeName($container->reveal(), $channel);
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange = $exchange->reveal();
 
-        $this->assertInstanceOf(Exchange::class, $exchange);
-        $this->assertEquals($channel, $exchange->getChannel());
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange)->shouldBeCalled();
+
+        $exchangeName = 'my_exchange';
+
+        $this->assertSame($exchange, ExchangeFactory::$exchangeName($container->reveal(), $channel->reveal()));
     }
 
     /**
@@ -190,15 +214,24 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->declareExchange()->shouldBeCalled();
+        $exchange = $exchange->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange)->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
-        $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(Exchange::class, $exchange);
-
-        $exchange->delete();
+        $this->assertSame($exchange, $factory($container->reveal()));
     }
 
     /**
@@ -257,18 +290,54 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $baseExchangeOne = $this->prophesize(Exchange::class);
+        $baseExchangeOne->setType('direct')->shouldBeCalled();
+        $baseExchangeOne->setName('base_exchange_one')->shouldBeCalled();
+        $baseExchangeOne->setFlags(2)->shouldBeCalled();
+        $baseExchangeOne->setArguments(['internal' => false])->shouldBeCalled();
+        $baseExchangeOne->declareExchange()->shouldBeCalled();
+        $baseExchangeOne = $baseExchangeOne->reveal();
+
+        $baseExchangeTwo = $this->prophesize(Exchange::class);
+        $baseExchangeTwo->setType('direct')->shouldBeCalled();
+        $baseExchangeTwo->setName('base_exchange_two')->shouldBeCalled();
+        $baseExchangeTwo->setFlags(2)->shouldBeCalled();
+        $baseExchangeTwo->setArguments(['internal' => false])->shouldBeCalled();
+        $baseExchangeTwo->declareExchange()->shouldBeCalled();
+        $baseExchangeTwo = $baseExchangeTwo->reveal();
+
+        $baseExchangeThree = $this->prophesize(Exchange::class);
+        $baseExchangeThree->setType('direct')->shouldBeCalled();
+        $baseExchangeThree->setName('base_exchange_three')->shouldBeCalled();
+        $baseExchangeThree->setFlags(2)->shouldBeCalled();
+        $baseExchangeThree->setArguments(['internal' => false])->shouldBeCalled();
+        $baseExchangeThree->declareExchange()->shouldBeCalled();
+        $baseExchangeThree = $baseExchangeThree->reveal();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->declareExchange()->shouldBeCalled();
+        $exchange->bind('base_exchange_one', 'routing_key_one', ['my first argument' => 'my first value'])->shouldBeCalled();
+        $exchange->bind('base_exchange_one', 'routing_key_two', ['my second argument' => 'my second value'])->shouldBeCalled();
+        $exchange->bind('base_exchange_two', '', [])->shouldBeCalled();
+        $exchange->bind('base_exchange_two', 'routing_key_three', [])->shouldBeCalled();
+        $exchange->bind('base_exchange_three')->shouldBeCalled();
+
+        $exchange = $exchange->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange, $baseExchangeOne, $baseExchangeTwo, $baseExchangeThree)->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
-        $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(Exchange::class, $exchange);
-
-        $exchange->delete();
-        $exchange->delete('base_exchange_one');
-        $exchange->delete('base_exchange_two');
-        $exchange->delete('base_exchange_three');
+        $this->assertSame($exchange, $factory($container->reveal()));
     }
 
     /**
@@ -306,16 +375,33 @@ class ExchangeFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $alternateExchange = $this->prophesize(Exchange::class);
+        $alternateExchange->setType('direct')->shouldBeCalled();
+        $alternateExchange->setName('alternate-exchange')->shouldBeCalled();
+        $alternateExchange->setFlags(2)->shouldBeCalled();
+        $alternateExchange->setArguments(['internal' => false])->shouldBeCalled();
+        $alternateExchange->declareExchange()->shouldBeCalled();
+        $alternateExchange = $alternateExchange->reveal();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setArguments(['internal' => false, 'alternate-exchange' => 'alternate-exchange'])->shouldBeCalled();
+        $exchange->declareExchange()->shouldBeCalled();
+
+        $exchange = $exchange->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange, $alternateExchange)->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new ExchangeFactory('my_exchange');
-        $exchange = $factory($container->reveal());
 
-        $this->assertInstanceOf(Exchange::class, $exchange);
-
-        $exchange->delete();
-        $exchange->delete('alternate-exchange');
+        $this->assertSame($exchange, $factory($container->reveal()));
     }
 
     /**

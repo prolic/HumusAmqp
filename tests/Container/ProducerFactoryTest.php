@@ -22,8 +22,10 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use Humus\Amqp\Container\ProducerFactory;
-use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\PlainProducer;
 use Interop\Container\ContainerInterface;
@@ -67,8 +69,14 @@ class ProducerFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange->reveal());
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new ProducerFactory('my_producer');
         $producer = $factory($container->reveal());
@@ -108,8 +116,14 @@ class ProducerFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange->reveal());
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new ProducerFactory('my_producer');
         $producer = $factory($container->reveal());
@@ -149,8 +163,14 @@ class ProducerFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange->reveal());
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $producerName = 'my_producer';
         $producer = ProducerFactory::$producerName($container->reveal());
@@ -205,8 +225,14 @@ class ProducerFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newExchange()->willReturn($exchange->reveal());
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new ProducerFactory('my_producer');
         $factory($container->reveal());

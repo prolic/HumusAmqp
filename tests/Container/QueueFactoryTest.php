@@ -22,10 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\Connection;
 use Humus\Amqp\Container\QueueFactory;
-use Humus\Amqp\Driver\Driver;
-use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
+use Humus\Amqp\Channel;
 use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -63,8 +64,17 @@ class QueueFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('test_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new QueueFactory('my_queue');
         $queue = $factory($container->reveal());
@@ -99,8 +109,17 @@ class QueueFactoryTest extends TestCase
             ]
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('test_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $queueName = 'my_queue';
         $queue = QueueFactory::$queueName($container->reveal());
@@ -115,9 +134,14 @@ class QueueFactoryTest extends TestCase
     {
         $container = $this->prophesize(ContainerInterface::class);
 
-        $connection = new StreamConnection(['vhost' => '/humus-amqp-test']);
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('test_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue = $queue->reveal();
 
-        $channel = $connection->newChannel();
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue)->shouldBeCalled();
 
         $container->get('config')->willReturn([
             'humus' => [
@@ -134,10 +158,8 @@ class QueueFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $queueName = 'my_queue';
-        $queue = QueueFactory::$queueName($container->reveal(), $channel);
 
-        $this->assertInstanceOf(Queue::class, $queue);
-        $this->assertEquals($channel, $queue->getChannel());
+        $this->assertSame($queue, QueueFactory::$queueName($container->reveal(), $channel->reveal()));
     }
 
     /**
@@ -201,20 +223,27 @@ class QueueFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('my_exchange', '', [])->shouldBeCalled();
+        $queue = $queue->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue)->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new QueueFactory('my_queue');
-        $queue = $factory($container->reveal());
 
-        /* @var Queue $queue */
-
-        $this->assertInstanceOf(Queue::class, $queue);
-
-        $queue->delete();
-
-        $exchange = $queue->getChannel()->newExchange();
-        $exchange->delete('my_exchange');
+        $this->assertSame($queue, $factory($container->reveal()));
     }
 
     /**
@@ -259,20 +288,28 @@ class QueueFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $exchange = $this->prophesize(Exchange::class);
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('my_exchange', '', ['foo' => 'bar'])->shouldBeCalled();
+        $queue->bind('my_exchange', 'foo', ['foo' => 'bar'])->shouldBeCalled();
+        $queue = $queue->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue)->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new QueueFactory('my_queue');
-        $queue = $factory($container->reveal());
 
-        /* @var Queue $queue */
-
-        $this->assertInstanceOf(Queue::class, $queue);
-
-        $queue->delete();
-
-        $exchange = $queue->getChannel()->newExchange();
-        $exchange->delete('my_exchange');
+        $this->assertSame($queue, $factory($container->reveal()));
     }
 
     /**
@@ -316,21 +353,39 @@ class QueueFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+        $deadLetterExchange = $this->prophesize(Exchange::class);
+        $deadLetterExchange->setType('direct')->shouldBeCalled();
+        $deadLetterExchange->setName('error_exchange')->shouldBeCalled();
+        $deadLetterExchange->setFlags(2)->shouldBeCalled();
+        $deadLetterExchange->setArguments(['internal' => false])->shouldBeCalled();
+        $deadLetterExchange->declareExchange()->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setName('my_exchange')->shouldBeCalled();
+        $exchange->setFlags(2)->shouldBeCalled();
+        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->declareExchange()->shouldBeCalled();
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments(['x-dead-letter-exchange' => 'error_exchange'])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('my_exchange', '', [])->shouldBeCalled();
+        $queue = $queue->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue)->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal(), $deadLetterExchange->reveal())->shouldBeCalledTimes(2);
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
 
         $factory = new QueueFactory('my_queue');
-        $queue = $factory($container->reveal());
 
-        $this->assertInstanceOf(Queue::class, $queue);
-
-        /* @var Queue $queue */
-
-        $queue->delete();
-
-        $exchange = $queue->getChannel()->newExchange();
-        $exchange->delete('my_exchange');
-        $exchange->delete('error_exchange');
+        $this->assertSame($queue, $factory($container->reveal()));
     }
 
     /**

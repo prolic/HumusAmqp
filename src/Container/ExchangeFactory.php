@@ -124,8 +124,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $options = $this->options($config, $this->exchangeName);
 
         if (null === $this->channel) {
-            $connectionName = $options['connection'];
-            $connection = ConnectionFactory::$connectionName($container);
+            $connection = $container->get($options['connection']);
             $this->channel = $connection->newChannel();
         }
 

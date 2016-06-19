@@ -22,11 +22,11 @@ declare (strict_types=1);
 
 namespace HumusTest\Amqp\Console\Command;
 
+use Humus\Amqp\Channel;
+use Humus\Amqp\Connection;
 use Humus\Amqp\Console\Command\PurgeQueueCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Humus\Amqp\Container\ExchangeFactory;
-use Humus\Amqp\Container\QueueFactory;
-use Humus\Amqp\Driver\Driver;
+use Humus\Amqp\Queue;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -128,20 +128,21 @@ class PurgeQueueCommandTest extends TestCase
                 ]
             ]
         )->shouldBeCalled();
-        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
-        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
-        $container = $container->reveal();
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('foo')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->purge()->shouldBeCalled();
 
-        // create exchange upfront
-        $queueName = 'foo';
-        $queue = QueueFactory::$queueName($container, null, true);
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
 
-        // create queue upfront
-        $exchangeName = 'demo';
-        $exchange = ExchangeFactory::$exchangeName($container, null, true);
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('default')->willReturn($connection->reveal())->shouldBeCalled();
 
-        $tester = $this->createCommandTester($container);
+        $tester = $this->createCommandTester($container->reveal());
         $tester->execute(['--name' => 'foo']);
 
         $this->assertEquals(0, $tester->getStatusCode());
@@ -149,16 +150,6 @@ class PurgeQueueCommandTest extends TestCase
             "Queue foo purged\n",
             $tester->getDisplay(true)
         );
-
-        // cleanup
-        $queueName = 'foo';
-        $queue = QueueFactory::$queueName($container);
-        $queue->delete();
-
-        // cleanup
-        $exchangeName = 'demo';
-        $exchange = ExchangeFactory::$exchangeName($container);
-        $exchange->delete();
     }
 
     /**
