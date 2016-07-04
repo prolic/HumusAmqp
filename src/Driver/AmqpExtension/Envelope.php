@@ -31,15 +31,15 @@ use Humus\Amqp\Envelope as EnvelopeInterface;
 final class Envelope implements EnvelopeInterface
 {
     /**
-     * @var \AMQPBasicProperties
+     * @var \AMQPEnvelope
      */
     private $envelope;
 
     /**
      * Envelope constructor.
-     * @param \AMQPBasicProperties $envelope
+     * @param \AMQPEnvelope $envelope
      */
-    public function __construct(\AMQPBasicProperties $envelope)
+    public function __construct(\AMQPEnvelope $envelope)
     {
         $this->envelope = $envelope;
     }
