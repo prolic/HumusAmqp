@@ -168,12 +168,12 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     {
         return [
             'arguments' => [
-                'internal' => false // RabbitMQ Extension
             ],
             'auto_delete' => false, // RabbitMQ Extension
             'exchange_bindings' => [], // RabbitMQ Extension
             'passive' => false,
             'durable' => true,
+            'internal' => false, // RabbitMQ Extension
             'type' => 'direct',
             // factory configs
             'auto_setup_fabric' => false,
@@ -201,6 +201,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;
         $flags |= $options['durable'] ? Constants::AMQP_DURABLE : 0;
         $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0; // RabbitMQ Extension
+        $flags |= $options['internal'] ? Constants::AMQP_INTERNAL : 0; // RabbitMQ Extension
 
         return $flags;
     }
