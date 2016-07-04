@@ -357,14 +357,14 @@ class QueueFactoryTest extends TestCase
         $deadLetterExchange->setType('direct')->shouldBeCalled();
         $deadLetterExchange->setName('error_exchange')->shouldBeCalled();
         $deadLetterExchange->setFlags(2)->shouldBeCalled();
-        $deadLetterExchange->setArguments(['internal' => false])->shouldBeCalled();
+        $deadLetterExchange->setArguments([])->shouldBeCalled();
         $deadLetterExchange->declareExchange()->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setName('my_exchange')->shouldBeCalled();
         $exchange->setFlags(2)->shouldBeCalled();
-        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
         $exchange->declareExchange()->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);

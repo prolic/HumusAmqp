@@ -66,7 +66,7 @@ class ExchangeFactoryTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setName('test_exchange')->shouldBeCalled();
         $exchange->setFlags(2)->shouldBeCalled();
-        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
         $exchange = $exchange->reveal();
 
         $channel = $this->prophesize(Channel::class);
@@ -111,7 +111,7 @@ class ExchangeFactoryTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setName('test_exchange')->shouldBeCalled();
         $exchange->setFlags(2)->shouldBeCalled();
-        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
         $exchange = $exchange->reveal();
 
         $channel = $this->prophesize(Channel::class);
@@ -150,7 +150,7 @@ class ExchangeFactoryTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setName('test_exchange')->shouldBeCalled();
         $exchange->setFlags(2)->shouldBeCalled();
-        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
         $exchange = $exchange->reveal();
 
         $channel = $this->prophesize(Channel::class);
@@ -218,7 +218,7 @@ class ExchangeFactoryTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setName('test_exchange')->shouldBeCalled();
         $exchange->setFlags(2)->shouldBeCalled();
-        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
         $exchange->declareExchange()->shouldBeCalled();
         $exchange = $exchange->reveal();
 
@@ -294,7 +294,7 @@ class ExchangeFactoryTest extends TestCase
         $baseExchangeOne->setType('direct')->shouldBeCalled();
         $baseExchangeOne->setName('base_exchange_one')->shouldBeCalled();
         $baseExchangeOne->setFlags(2)->shouldBeCalled();
-        $baseExchangeOne->setArguments(['internal' => false])->shouldBeCalled();
+        $baseExchangeOne->setArguments([])->shouldBeCalled();
         $baseExchangeOne->declareExchange()->shouldBeCalled();
         $baseExchangeOne = $baseExchangeOne->reveal();
 
@@ -302,7 +302,7 @@ class ExchangeFactoryTest extends TestCase
         $baseExchangeTwo->setType('direct')->shouldBeCalled();
         $baseExchangeTwo->setName('base_exchange_two')->shouldBeCalled();
         $baseExchangeTwo->setFlags(2)->shouldBeCalled();
-        $baseExchangeTwo->setArguments(['internal' => false])->shouldBeCalled();
+        $baseExchangeTwo->setArguments([])->shouldBeCalled();
         $baseExchangeTwo->declareExchange()->shouldBeCalled();
         $baseExchangeTwo = $baseExchangeTwo->reveal();
 
@@ -310,7 +310,7 @@ class ExchangeFactoryTest extends TestCase
         $baseExchangeThree->setType('direct')->shouldBeCalled();
         $baseExchangeThree->setName('base_exchange_three')->shouldBeCalled();
         $baseExchangeThree->setFlags(2)->shouldBeCalled();
-        $baseExchangeThree->setArguments(['internal' => false])->shouldBeCalled();
+        $baseExchangeThree->setArguments([])->shouldBeCalled();
         $baseExchangeThree->declareExchange()->shouldBeCalled();
         $baseExchangeThree = $baseExchangeThree->reveal();
 
@@ -318,7 +318,7 @@ class ExchangeFactoryTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setName('test_exchange')->shouldBeCalled();
         $exchange->setFlags(2)->shouldBeCalled();
-        $exchange->setArguments(['internal' => false])->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
         $exchange->declareExchange()->shouldBeCalled();
         $exchange->bind('base_exchange_one', 'routing_key_one', ['my first argument' => 'my first value'])->shouldBeCalled();
         $exchange->bind('base_exchange_one', 'routing_key_two', ['my second argument' => 'my second value'])->shouldBeCalled();
@@ -379,7 +379,7 @@ class ExchangeFactoryTest extends TestCase
         $alternateExchange->setType('direct')->shouldBeCalled();
         $alternateExchange->setName('alternate-exchange')->shouldBeCalled();
         $alternateExchange->setFlags(2)->shouldBeCalled();
-        $alternateExchange->setArguments(['internal' => false])->shouldBeCalled();
+        $alternateExchange->setArguments([])->shouldBeCalled();
         $alternateExchange->declareExchange()->shouldBeCalled();
         $alternateExchange = $alternateExchange->reveal();
 
@@ -387,7 +387,7 @@ class ExchangeFactoryTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setName('test_exchange')->shouldBeCalled();
         $exchange->setFlags(2)->shouldBeCalled();
-        $exchange->setArguments(['internal' => false, 'alternate-exchange' => 'alternate-exchange'])->shouldBeCalled();
+        $exchange->setArguments(['alternate-exchange' => 'alternate-exchange'])->shouldBeCalled();
         $exchange->declareExchange()->shouldBeCalled();
 
         $exchange = $exchange->reveal();
