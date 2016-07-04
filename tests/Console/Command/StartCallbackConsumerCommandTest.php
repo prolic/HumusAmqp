@@ -76,7 +76,7 @@ class StartCallbackConsumerCommandTest extends TestCase
         $container->has('unknown')->willReturn(false)->shouldBeCalled();
 
         $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['-n' => 'unknown']);
+        $tester->execute(['-c' => 'unknown']);
 
         $this->assertEquals(1, $tester->getStatusCode());
         $this->assertEquals("No consumer with name unknown found\n", $tester->getDisplay(true));

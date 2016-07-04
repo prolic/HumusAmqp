@@ -45,7 +45,7 @@ class StartCallbackConsumerCommand extends AbstractCommand
             ->setDefinition([
                 new InputOption(
                     'name',
-                    'n',
+                    'c',
                     InputOption::VALUE_REQUIRED,
                     'name of the consumer to start'
                 ),
