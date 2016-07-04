@@ -48,5 +48,8 @@
         "psr-4": {
             "HumusTest\\Amqp\\": "tests/"
         }
-    }
+    },
+    "bin": [
+        "bin/humus-amqp"
+    ]
 }
