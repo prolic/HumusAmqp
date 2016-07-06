@@ -24,6 +24,8 @@ namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\Exception\ChannelException;
+use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange as ExchangeInterface;
 use Humus\Amqp\Queue as QueueInterface;
 
@@ -177,7 +179,13 @@ final class Channel implements ChannelInterface
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
-        $this->channel->waitForConfirm($timeout);
+        try {
+            $this->channel->waitForConfirm($timeout);
+        } catch (\AMQPChannelException $e) {
+            throw ChannelException::fromAmqpExtension($e);
+        } catch (\AMQPQueueException $e) {
+            throw QueueException::fromAmqpExtension($e);
+        }
     }
 
     /**
@@ -207,7 +215,13 @@ final class Channel implements ChannelInterface
      */
     public function waitForBasicReturn(float $timeout = 0.0)
     {
-        $this->channel->waitForBasicReturn($timeout);
+        try {
+            $this->channel->waitForBasicReturn($timeout);
+        } catch (\AMQPChannelException $e) {
+            throw ChannelException::fromAmqpExtension($e);
+        } catch (\AMQPQueueException $e) {
+            throw QueueException::fromAmqpExtension($e);
+        }
     }
 
     /**

@@ -25,6 +25,7 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Exception\BadMethodCallException;
+use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exchange as ExchangeInterface;
 use Humus\Amqp\Queue as QueueInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -195,7 +196,11 @@ final class Channel implements ChannelInterface
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
-        $this->channel->wait_for_pending_acks_returns($timeout);
+        try {
+            $this->channel->wait_for_pending_acks_returns($timeout);
+        } catch (\Exception $e) {
+            throw ChannelException::fromPhpAmqpLib($e);
+        }
     }
 
     /**
@@ -226,7 +231,11 @@ final class Channel implements ChannelInterface
      */
     public function waitForBasicReturn(float $timeout = 0.0)
     {
-        $this->channel->wait(null, false, $timeout);
+        try {
+            $this->channel->wait(null, false, $timeout);
+        } catch (\Exception $e) {
+            throw ChannelException::fromPhpAmqpLib($e);
+        }
     }
 
     /**

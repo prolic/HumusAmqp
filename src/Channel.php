@@ -21,6 +21,8 @@
 declare (strict_types=1);
 
 namespace Humus\Amqp;
+use Humus\Amqp\Exception\ChannelException;
+use Humus\Amqp\Exception\QueueException;
 
 /**
  * Represents a AMQP channel between PHP and a AMQP server.
@@ -189,6 +191,9 @@ interface Channel
      * Note, this method also catch all basic.return message from server.
      *
      * @param float $timeout Timeout in seconds. May be fractional.
+     * @return void
+     * @throws ChannelException
+     * @throws QueueException
      */
     public function waitForConfirm(float $timeout = 0.0);
 
@@ -196,6 +201,7 @@ interface Channel
      * Set callback to process basic.return AMQP server method
      *
      * @param callable|null $returnCallback
+     * @return void
      *
      * Callback function with all arguments has the following signature:
      *
@@ -215,6 +221,9 @@ interface Channel
      * Start wait loop for basic.return AMQP server methods
      *
      * @param float $timeout Timeout in seconds. May be fractional.
+     * @return void
+     * @throws ChannelException
+     * @throws QueueException
      */
     public function waitForBasicReturn(float $timeout = 0.0);
 

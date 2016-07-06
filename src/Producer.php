@@ -21,6 +21,8 @@
 declare (strict_types=1);
 
 namespace Humus\Amqp;
+use Humus\Amqp\Exception\ChannelException;
+use Humus\Amqp\Exception\QueueException;
 
 /**
  * Interface Producer
@@ -40,6 +42,7 @@ interface Producer
      *                             correlation_id, reply_to, headers,
      *                             message_id, user_id, app_id, delivery_mode,
      *                             priority, timestamp, expiration or type.
+     * @return void
      */
     public function publish(
         $message,
@@ -108,6 +111,9 @@ interface Producer
      * Note, this method also catch all basic.return message from server.
      *
      * @param float $timeout Timeout in seconds. May be fractional.
+     * @return void
+     * @throws ChannelException
+     * @throws QueueException
      */
     public function waitForConfirm($timeout = 0.0);
 
@@ -115,6 +121,7 @@ interface Producer
      * Set callback to process basic.return AMQP server method
      *
      * @param callable|null $returnCallback
+     * @return void
      *
      * Callback function with all arguments has the following signature:
      *
@@ -134,6 +141,9 @@ interface Producer
      * Start wait loop for basic.return AMQP server methods
      *
      * @param float $timeout Timeout in seconds. May be fractional.
+     * @return void
+     * @throws ChannelException
+     * @throws QueueException
      */
     public function waitForBasicReturn(float $timeout = 0.0);
 }
