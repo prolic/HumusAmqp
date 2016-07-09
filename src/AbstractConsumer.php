@@ -63,7 +63,7 @@ abstract class AbstractConsumer implements Consumer
     /**
      * Last delivery tag seen
      *
-     * @var string
+     * @var int
      */
     protected $lastDeliveryTag;
 
@@ -218,10 +218,10 @@ abstract class AbstractConsumer implements Consumer
     /**
      * Handle exception
      *
-     * @param \Exception $e
+     * @param \Throwable $e
      * @return void
      */
-    protected function handleException(\Exception $e)
+    protected function handleException(\Throwable $e)
     {
         $callback = $this->errorCallback;
 
