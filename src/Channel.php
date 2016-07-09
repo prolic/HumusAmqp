@@ -21,6 +21,7 @@
 declare (strict_types=1);
 
 namespace Humus\Amqp;
+
 use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exception\QueueException;
 
