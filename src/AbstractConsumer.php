@@ -42,7 +42,7 @@ abstract class AbstractConsumer implements Consumer
     protected $queue;
 
     /**
-     * @var string|null
+     * @var string
      */
     protected $consumerTag;
 
