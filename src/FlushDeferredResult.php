@@ -29,9 +29,9 @@ use MabeEnum\EnumSerializableTrait;
  * Class FlushDeferredResult
  * @package Humus\Amqp
  *
- * @method static DeliveryResult MSG_ACK()
- * @method static DeliveryResult MSG_REJECT()
- * @method static DeliveryResult MSG_REJECT_REQUEUE()
+ * @method static FlushDeferredResult MSG_ACK()
+ * @method static FlushDeferredResult MSG_REJECT()
+ * @method static FlushDeferredResult MSG_REJECT_REQUEUE()
  */
 final class FlushDeferredResult extends Enum
 {
