@@ -109,12 +109,12 @@ abstract class AbstractConsumer implements Consumer
     protected $deliveryCallback;
 
     /**
-     * @var callable
+     * @var callable|null
      */
     protected $flushCallback;
 
     /**
-     * @var callable
+     * @var callable|null
      */
     protected $errorCallback;
 
@@ -223,6 +223,10 @@ abstract class AbstractConsumer implements Consumer
      */
     protected function handleException(\Throwable $e)
     {
+        if (null === $this->errorCallback) {
+            return;
+        }
+
         $callback = $this->errorCallback;
 
         $callback($e, $this);
