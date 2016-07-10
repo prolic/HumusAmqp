@@ -75,7 +75,7 @@ class PurgeQueueCommandTest extends TestCase
         )->shouldBeCalled();
 
         $tester = $this->createCommandTester($container->reveal());
-        $tester->execute(['-q' => 'invalid']);
+        $tester->execute(['-p' => 'invalid']);
 
         $this->assertEquals(1, $tester->getStatusCode());
         $this->assertEquals("Queue with name invalid not found\n", $tester->getDisplay(true));
