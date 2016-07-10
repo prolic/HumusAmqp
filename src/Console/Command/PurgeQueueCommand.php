@@ -46,7 +46,7 @@ class PurgeQueueCommand extends AbstractCommand
             ->setDefinition([
                 new InputOption(
                     'name',
-                    'n',
+                    'q',
                     InputOption::VALUE_REQUIRED,
                     'name of the queue to purge'
                 )
