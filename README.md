@@ -68,7 +68,7 @@ You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "
 
 ### AMQP-Extension
 
-1) Currently the latest master of php-amqp is recommended, if you encounter any problems with the amqp extension, check
+1) We recommend using php-amqp >=v1.7.1 or compiling it from master, if you encounter any problems with the amqp extension, check
 their issue tracker, first. 
 
 The ext-amqp driver is the most performant. Benchmarks are added soon. 
