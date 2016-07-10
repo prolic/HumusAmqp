@@ -88,7 +88,7 @@ c) Configure your application to use the desired driver.
 
 d) Notes about drivers:
 
-1) The PHP Extension (php-amqp) is the fastest one, we strongly recommend using 1.7.0 or building yourself from master to
+1) The PHP Extension (php-amqp) is the fastest one, we strongly recommend using 1.7.1 or building yourself from master to
 be able to use all features.
 
 There is currently a bug in PhpAmqpLib, see: https://github.com/php-amqplib/php-amqplib/pull/399
@@ -126,7 +126,7 @@ A sample configuration might look like this, more details an explanation will be
         ],
         'humus' => [
             'amqp' => [
-                'driver' => 'php-amqplib',
+                'driver' => 'amqp-extension',
                 'exchange' => [
                     'demo' => [
                         'name' => 'demo',
@@ -193,7 +193,7 @@ A sample configuration might look like this, more details an explanation will be
                     ],
                 ],
                 'connection' => [
-                    'default' => [
+                    'default-amqp-connection' => [
                         'type' => 'socket',
                         'host' => 'localhost',
                         'port' => 5672,
@@ -274,13 +274,21 @@ You can run cli commands like this:
 
     $ ./vendor/bin/humus-amqp
 
+To setup all exchanges and queues configured:
+
+.. code-block:: bash
+
+    $ ./vendor/bin/humus-amqp setup-fabric
+
+This will create all exchanges and queues.
+
 To start a consumer:
 
 .. code-block:: bash
 
     $ ./vendor/bin/humus-amqp consumer -n myconsumer -a 100
 
-This will start the myconsumer and consume 100 messages until if stops.
+This will start the myconsumer and consume 100 messages until if stops or times out.
 
 
 To start a JSON-RPC server
@@ -289,7 +297,35 @@ To start a JSON-RPC server
 
     $ ./vendor/bin/humus-amqp json_rpc_server -n myserver -a 100
 
-This will start the myserver and consume 100 messages until if stops.
+This will start the myserver and consume 100 messages until if stops or times out.
+
+
+Show availables connections, exchanges, queues, callback_consumers, producers, json_rpc_clients and json_rpc_servers
+
+.. code-block:: bash
+
+    $ ./vendor/bin/humus-amqp show -t exchanges
+
+This will list all known exchanges.
+
+
+To purge a queue:
+
+.. code-block:: bash
+
+    $ ./vendor/bin/humus-amqp purge-queue -c myqueue
+
+This will remove all messages from the given queue.
+
+
+To publish a message to an exchane via CLI:
+
+.. code-block:: bash
+
+    $ ./vendor/bin/humus-amqp publish-message -p myproducer -m "my text" -c -r my.routing.key
+
+This will send a message with body "my text" and routing key "my.routing.key" via the "myproducer"-producer.
+
 
 What to read next
 -----------------
