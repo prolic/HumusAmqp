@@ -139,7 +139,6 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
     /**
      * @test
-     * @group byg
      */
     public function it_produces_in_confirm_mode()
     {
@@ -181,7 +180,6 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
     /**
      * @test
-     * @group by
      */
     public function it_produces_in_nested_confirm_mode()
     {
