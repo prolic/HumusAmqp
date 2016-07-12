@@ -139,12 +139,15 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
     /**
      * @test
+     * @group byg
      */
     public function it_produces_in_confirm_mode()
     {
+        $count = 2;
+
         $this->exchange->getChannel()->setConfirmCallback(
-            function () {
-                return false;
+            function (int $delivery_tag, bool $multiple) use (& $count) {
+                return $delivery_tag !== $count;
             },
             function (int $delivery_tag, bool $multiple, bool $requeue) {
                 throw new \Exception('Could not confirm message publishing');
@@ -163,6 +166,61 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $this->addToCleanUp($queue);
 
         $producer->publish(['foo' => 'bar']);
+        $producer->publish(['baz' => 'bam']);
+
+        $this->channel->waitForConfirm();
+
+        $msg1 = $queue->get(Constants::AMQP_NOPARAM);
+        $msg2 = $queue->get(Constants::AMQP_AUTOACK);
+
+        $this->assertEquals(['foo' => 'bar'], json_decode($msg1->getBody(), true));
+        $this->assertEquals(['baz' => 'bam'], json_decode($msg2->getBody(), true));
+
+        $queue->delete();
+    }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_produces_in_nested_confirm_mode()
+    {
+        $count = 1;
+
+        $this->exchange->getChannel()->setConfirmCallback(
+            function (int $delivery_tag, bool $multiple) use (&$count) {
+                var_dump(__LINE__, $delivery_tag, $count);
+                return ($delivery_tag !== $count);
+            },
+            function (int $delivery_tag, bool $multiple, bool $requeue) {
+                throw new \Exception('Could not confirm message publishing');
+            }
+        );
+
+        $producer = new JsonProducer($this->exchange);
+        $producer->confirmSelect();
+
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $queue = $channel->newQueue();
+        $queue->setName('text-queue2');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+        $this->addToCleanUp($queue);
+
+        $producer->publish(['foo' => 'bar']);
+
+        $count = 2;
+
+        $this->exchange->getChannel()->setConfirmCallback(
+            function (int $delivery_tag, bool $multiple) use (&$count) {
+                return ($delivery_tag !== $count);
+            },
+            function (int $delivery_tag, bool $multiple, bool $requeue) {
+                throw new \Exception('Could not confirm message publishing');
+            }
+        );
+
         $producer->publish(['baz' => 'bam']);
 
         $this->channel->waitForConfirm();
