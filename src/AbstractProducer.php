@@ -99,7 +99,7 @@ abstract class AbstractProducer implements Producer
     /**
      * @inheritdoc
      */
-    public function waitForConfirm($timeout = 0.0)
+    public function waitForConfirm(float $timeout = 0.0)
     {
         $this->exchange->getChannel()->waitForConfirm($timeout);
     }

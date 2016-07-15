@@ -116,7 +116,7 @@ interface Producer
      * @throws ChannelException
      * @throws QueueException
      */
-    public function waitForConfirm($timeout = 0.0);
+    public function waitForConfirm(float $timeout = 0.0);
 
     /**
      * Set callback to process basic.return AMQP server method
