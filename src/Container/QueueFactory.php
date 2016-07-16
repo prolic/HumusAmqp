@@ -140,23 +140,37 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
         if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
             // auto setup fabric depended exchange
-            $exchangeName = $options['exchange'];
-            ExchangeFactory::$exchangeName($container, $this->channel, true);
-
             if (isset($options['arguments']['x-dead-letter-exchange'])) {
                 // auto setup fabric dead letter exchange
                 $exchangeName = $options['arguments']['x-dead-letter-exchange'];
                 ExchangeFactory::$exchangeName($container, $this->channel, true);
             }
 
+            $exchanges = $options['exchanges'];
+
+            if ($exchanges instanceof \Traversable) {
+                $exchanges = iterator_to_array($exchanges);
+            }
+
+            if (! is_array($exchanges) || empty($exchanges)) {
+                throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
+            }
+
+            foreach ($exchanges as $exchange => $exchangeOptions) {
+                ExchangeFactory::$exchange($container, $this->channel, true);
+            }
+
             $queue->declareQueue();
 
-            $routingKeys = $options['routing_keys'];
-            if (empty($routingKeys)) {
-                $queue->bind($options['exchange'], '', $options['bind_arguments']);
-            } else {
-                foreach ($routingKeys as $routingKey) {
-                    $queue->bind($options['exchange'], $routingKey, $options['bind_arguments']);
+            foreach ($exchanges as $exchange => $exchangeOptions) {
+                if (empty($exchangeOptions)) {
+                    $this->bindQueue($queue, $exchange, [], []);
+                } else {
+                    foreach ($exchangeOptions as $exchangeOption) {
+                        $routingKeys = $exchangeOption['routing_keys'] ?? [];
+                        $bindArguments = $exchangeOption['bind_arguments'] ?? [];
+                        $this->bindQueue($queue, $exchange, $routingKeys, $bindArguments);
+                    }
                 }
             }
         }
@@ -184,8 +198,6 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             'exclusive' => false,
             'auto_delete' => false,
             'arguments' => [],
-            'routing_keys' => [],
-            'bind_arguments' => [],
             // factory configs
             'auto_setup_fabric' => false
         ];
@@ -198,7 +210,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     {
         return [
             'connection',
-            'exchange',
+            'exchanges',
         ];
     }
 
@@ -215,5 +227,22 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $flags |= $options['auto_delete'] ? Constants::AMQP_AUTODELETE : 0;
 
         return $flags;
+    }
+
+    /**
+     * @param Queue $queue
+     * @param string $exchange
+     * @param array $routingKeys
+     * @param array $bindArguments
+     */
+    private function bindQueue(Queue $queue, string $exchange, array $routingKeys, array $bindArguments)
+    {
+        if (empty($routingKeys)) {
+            $queue->bind($exchange, '', $bindArguments);
+        } else {
+            foreach ($routingKeys as $routingKey) {
+                $queue->bind($exchange, $routingKey, $bindArguments);
+            }
+        }
     }
 }

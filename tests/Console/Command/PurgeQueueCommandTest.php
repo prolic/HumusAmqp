@@ -114,7 +114,9 @@ class PurgeQueueCommandTest extends TestCase
                         'queue' => [
                             'foo' => [
                                 'name' => 'foo',
-                                'exchange' => 'demo',
+                                'exchanges' => [
+                                    'demo' => [],
+                                ],
                                 'connection' => 'default',
                             ],
                         ],

@@ -77,13 +77,14 @@ class SetupFabricCommandTest extends TestCase
                         'queue' => [
                             'foo' => [
                                 'name' => 'foo',
-                                'exchange' => 'demo',
+                                'exchanges' => [
+                                    'demo' => [],
+                                ],
                                 'connection' => 'default',
                             ],
                         ],
                         'connection' => [
-                            'default' => [
-                            ],
+                            'default' => [],
                         ],
                     ]
                 ]

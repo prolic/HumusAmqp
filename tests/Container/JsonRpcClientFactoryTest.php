@@ -63,7 +63,9 @@ class JsonRpcClientFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                         ],
                     ],
                     'json_rpc_client' => [
@@ -129,7 +131,9 @@ class JsonRpcClientFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                         ],
                     ],
                     'json_rpc_client' => [
@@ -210,7 +214,9 @@ class JsonRpcClientFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                         ],
                     ],
                     'json_rpc_client' => [

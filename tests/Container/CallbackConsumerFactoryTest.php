@@ -63,7 +63,9 @@ class CallbackConsumerFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                         ],
                     ],
                     'callback_consumer' => [
@@ -123,7 +125,9 @@ class CallbackConsumerFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                         ],
                     ],
                     'callback_consumer' => [

@@ -64,7 +64,9 @@ class JsonRpcServerFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                         ],
                     ],
                     'json_rpc_server' => [
@@ -133,7 +135,9 @@ class JsonRpcServerFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                         ],
                     ],
                     'json_rpc_server' => [

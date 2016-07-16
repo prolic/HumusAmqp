@@ -57,7 +57,9 @@ class QueueFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'test_queue',
-                            'exchange' => 'test_exchange',
+                            'exchanges' => [
+                                'test_exchange' => [],
+                            ],
                         ]
                     ]
                 ]
@@ -102,7 +104,9 @@ class QueueFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'test_queue',
-                            'exchange' => 'test_exchange',
+                            'exchanges' => [
+                                'test_exchange' => [],
+                            ],
                         ]
                     ]
                 ]
@@ -150,7 +154,9 @@ class QueueFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'test_queue',
-                            'exchange' => 'test_exchange',
+                            'exchanges' => [
+                                'test_exchange' => [],
+                            ],
                         ]
                     ]
                 ]
@@ -215,7 +221,9 @@ class QueueFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                             'auto_setup_fabric' => true,
                         ],
                     ],
@@ -249,6 +257,122 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
+    public function it_auto_declares_exchange_as_iterator()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
+                        ],
+                    ],
+                    'exchange' => [
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_exchange',
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                    'queue' => [
+                        'my_queue' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_queue',
+                            'exchanges' => new \ArrayIterator([
+                                'my_exchange' => [],
+                            ]),
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('my_exchange', '', [])->shouldBeCalled();
+        $queue = $queue->reveal();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue)->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
+
+        $factory = new QueueFactory('my_queue');
+
+        $this->assertSame($queue, $factory($container->reveal()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_during_auto_declare_with_empty_exchanges()
+    {
+        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected an array or traversable of exchange');
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
+                        ],
+                    ],
+                    'exchange' => [
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_exchange',
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                    'queue' => [
+                        'my_queue' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_queue',
+                            'exchanges' => [],
+                            'auto_setup_fabric' => true,
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
+
+        $factory = new QueueFactory('my_queue');
+        $factory($container->reveal());
+    }
+
+    /**
+     * @test
+     */
     public function it_auto_declares_exchange_with_routing_key_and_bind_arguments()
     {
         $container = $this->prophesize(ContainerInterface::class);
@@ -273,15 +397,20 @@ class QueueFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [
+                                    [
+                                        'routing_keys' => [
+                                            '',
+                                            'foo',
+                                        ],
+                                        'bind_arguments' => [
+                                            'foo' => 'bar',
+                                        ],
+                                    ]
+                                ],
+                            ],
                             'auto_setup_fabric' => true,
-                            'routing_keys' => [
-                                '',
-                                'foo',
-                            ],
-                            'bind_arguments' => [
-                                'foo' => 'bar',
-                            ],
                         ],
                     ],
                 ],
@@ -342,7 +471,9 @@ class QueueFactoryTest extends TestCase
                         'my_queue' => [
                             'connection' => 'my_connection',
                             'name' => 'my_queue',
-                            'exchange' => 'my_exchange',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
                             'arguments' => [
                                 'x-dead-letter-exchange' => 'error_exchange'
                             ],
@@ -377,7 +508,7 @@ class QueueFactoryTest extends TestCase
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue)->shouldBeCalled();
-        $channel->newExchange()->willReturn($exchange->reveal(), $deadLetterExchange->reveal())->shouldBeCalledTimes(2);
+        $channel->newExchange()->willReturn($deadLetterExchange->reveal(), $exchange->reveal())->shouldBeCalledTimes(2);
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
