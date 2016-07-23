@@ -31,7 +31,7 @@
         "phpspec/prophecy": "^1.6",
         "friendsofphp/php-cs-fixer": "^1.11.5",
         "satooshi/php-coveralls": "^1.0",
-        "php-amqplib/php-amqplib": "^2.6"
+        "php-amqplib/php-amqplib": "^2.6.3"
     },
     "conflict": {
         "sandrokeil/interop-config": "<1.0"
