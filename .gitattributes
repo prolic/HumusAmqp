@@ -1,0 +1,9 @@
+/docs             export-ignore
+/provision        export-ignore
+/tests            export-ignore
+.coveralls.yml    export-ignore
+.editorconfig     export-ignore
+.gitignore        export-ignore
+.php_cs           export-ignore
+.travis.yml       export-ignore
+phpunit.xml.dist export-ignore
