@@ -1,12 +1,12 @@
 .. _connecting:
 
-Connecting to RabbitMQ from Zend Framework 2 with Humus AMQP Module
-===================================================================
+Connecting to RabbitMQ with HumusAmqp
+=====================================
 
 Connection configuration
 ------------------------
 
-Map options that Humus AMQP Module will recognize are
+Map options that HumusAmqp will recognize are
 
 -  ``:host``            - amqp.host The host to connect too. Note: Max 1024 characters.
 -  ``:port``            - amqp.port Port on the host.

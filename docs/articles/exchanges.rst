@@ -71,6 +71,70 @@ route the message. This is similar to, but more generic than, a URL in
 HTTP. Most exchange types use the routing key to implement routing
 logic, but some ignore it and use other criteria (e.g. message content).
 
+Declaring an exchange
+---------------------
+
+.. code-block:: php
+
+    $options = new Humus\Amqp\ConnectionOptions();
+    $options->setLogin('username');
+    $options->setPassword('password');
+
+    $connection = new Humus\Amqp\Driver\AmqpExtension\Connection($options);
+    $connection->connect();
+
+    $channel = $connection->newChannel();
+
+    $exchange = $channel->newExchange();
+    $exchange->setName('my-exchange');
+    $exchange->setType('direct');
+    $exchange->declareExchange();
+
+Using configuration and factory
+-------------------------------
+
+.. code-block:: php
+
+    <?php
+
+    return [
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => false,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'exchange' => [
+                    'my-exchange' => [
+                        'name' => 'my-exchange',
+                        'type' => 'direct',
+                        'connection' => 'default-amqp-connection',
+                        'auto_setup_fabric' => true,
+                    ],
+                ]
+            ]
+        ]
+    );
+
+When `auto_setup_fabric` is set to true, the exchange factory will automatically declare the configured exchanged.
+It's recommended for production to disable it, and declare all needed exchanges and queues upfront.
+
 Fanout exchanges
 ----------------
 
@@ -87,31 +151,11 @@ messages.
 
 Graphically this can be represented as:
 
-.. figure:: https://github.com/prolic/HumusAmqpDocs/raw/master/diagrams/004_fanout_exchange.png
+.. figure:: https://github.com/prolic/HumusAmqp/raw/master/docs/diagrams/004_fanout_exchange.png
    :align: center
    :alt: fanout exchange routing
 
    fanout exchange routing
-
-Declaring a fanout exchange
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can simply define an exchange in the module configuration.
-
-.. code-block:: php
-
-    <?php
-
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'myexchange' => array(
-                    'name' => 'myexchange',
-                    'type' => 'fanout'
-                )
-            )
-        )
-    );
 
 Fanout use cases
 ~~~~~~~~~~~~~~~~
@@ -161,29 +205,11 @@ routing <http://en.wikipedia.org/wiki/Multicast>`_ as well).
 
 Here is a graphical representation:
 
-.. figure:: https://github.com/prolic/HumusAmqpDocs/raw/master/diagrams/005_direct_exchange.png
+.. figure:: https://github.com/prolic/HumusAmqp/raw/master/docs/diagrams/005_direct_exchange.png
    :align: center
    :alt: direct exchange routing
 
    direct exchange routing
-
-Declaring a direct exchange
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: php
-
-    <?php
-
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'myexchange' => array(
-                    'name' => 'myexchange',
-                    'type' => 'direct'
-                )
-            )
-        )
-    );
 
 Direct routing example
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -275,38 +301,6 @@ Topic exchanges can be used for `broadcast
 routing <http://en.wikipedia.org/wiki/Broadcasting_%28computing%29>`_,
 but fanout exchanges are usually more efficient for this use case.
 
-Declaring a topic exchange
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: php
-
-    <?php
-
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'myexchange' => array(
-                    'name' => 'myexchange',
-                    'type' => 'topic',
-                    'connection' => 'my_other_connection'
-                )
-            )
-        )
-    );
-
-As you can see, you can also specify to which connection the exchange belongs to. If nothing is present,
-the default connection will be used. You can set the default like this:
-
-.. code-block:: php
-
-    <?php
-
-    return array(
-        'humus_amqp_module' => array(
-            'default_connection' => 'my_other_connection'
-        )
-    );
-
 Topic Exchange Routing Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -370,28 +364,41 @@ be considered. To name a few examples:
 Publishing messages
 -------------------
 
+.. code-block:: php
+
+    <?php
+
+    $exchange->publish(
+        'some message',
+        'routing_key',
+        Constants::AMQP_NOPARAM,
+        [
+            'arg1' => 'value'
+        ]
+    );
+
 To publish a message to an exchange, first we need a configured producer.
 
 .. code-block:: php
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'myexchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'myexchange' => [
                     'name' => 'myexchange',
                     'type' => 'topic',
-                )
-            ),
-            'producers' => array(
-                'my-producer' => array(
+                ],
+            ],,
+            'producers' => [
+                'my-producer' => [
                     'exchange' => 'myexchange',
                     'auto_setup_fabric' => true
-                )
-            )
-        )
-    );
+                ],
+            ],
+        ],
+    ];
 
 
 You define a producer name (my-producer) and tell to which exchange it should publish. Additionally
@@ -408,14 +415,14 @@ To publish a message, get the producer plugin manager, get the producer and publ
 
     $producer->publish('foo', 'my.routing.key');
 
-    $messages = array('foo', 'bar', 'baz');
+    $messages = ['foo', 'bar', 'baz');
 
     $producer->publishBatch($messages, 'my.routing.key');
 
 The method accepts message body, a routing key and some message attributes.
 Routing key can be blank (``""``) but never ``null``.
 The body needs to be a string. The message payload is completely opaque
-to the library and is not modified by Bunny or RabbitMQ in any way.
+to the library and is not modified by HumusAmqp or RabbitMQ in any way.
 
 Data serialization
 ~~~~~~~~~~~~~~~~~~
@@ -443,7 +450,7 @@ RabbitMQ messages have various metadata attributes that can be set when
 a message is published. Some of the attributes are well-known and
 mentioned in the AMQP 0.9.1 specification, others are specific to a
 particular application. Well-known attributes are listed here as options
-that Humus AMQP Module takes:
+that HumusAmqp takes:
 
 -  ``:persistent``
 -  ``:delivery_mode``
@@ -469,17 +476,15 @@ An example:
 
     <?php
 
-    $now = microtime(1);
-
     $attribs = new MessageAttributes()
     $attribs->setAppId('amqp.example');
     $attribs->setAppId(8);
     $attribs->setType('kinda.checkin';
-    $attribs->setHeaders(array(
+    $attribs->setHeaders([
         'latitude' => 59.35,
         'longituide' => 18.0666667
-    ));
-    $attribs->setTimestamp($now)
+    ]);
+    $attribs->setTimestamp(time())
     $attribs->setCorrelationId('r-1');
     $attribs->setContentType('application/json');
 
@@ -786,7 +791,7 @@ this property is set by a publisher, its value must be the same as the
 name of the user used to open the connection. If the user-id property is
 not set, the publisher's identity is not validated and remains private.
 
-.. note:: Validated user id not yet implemented in Humus AMQP Module.
+.. note:: Validated user id not yet implemented in HumusAmqp.
 
 Publishing Callbacks and Reliable Delivery in Distributed Environments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -794,7 +799,7 @@ Publishing Callbacks and Reliable Delivery in Distributed Environments
 A commonly asked question about RabbitMQ clients is "how to execute a
 piece of code after a message is received".
 
-Message publishing with Bunny happens in several steps:
+Message publishing with HumusAmqp happens in several steps:
 
 -  AMQPExchange::publish takes a payload and various metadata
    attributes
@@ -812,7 +817,7 @@ data was travelling down the wire.
 The only way to reliably know whether data was received by the broker or
 a peer application is to use message acknowledgements. This is how TCP
 works and this approach is proven to work at the enormous scale of the
-modern Internet. AMQP 0.9.1 fully embraces this fact and Bunny follows.
+modern Internet. AMQP 0.9.1 fully embraces this fact and HumusAmqp follows.
 
 In cases when you cannot afford to lose a single message, AMQP 0.9.1
 applications can use one (or a combination of) the following protocol
@@ -827,7 +832,7 @@ A more detailed overview of the pros and cons of each option can be
 found in a `blog post that introduces Publisher Confirms
 extension <http://bit.ly/rabbitmq-publisher-confirms>`_ by the RabbitMQ
 team. The next sections of this guide will describe how the features
-above can be used with Bunny.
+above can be used with HumusAmqp.
 
 Publishing messages as mandatory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -883,7 +888,7 @@ persistent and the queue that they were routed to MUST be durable.
 Publishing In Multi-threaded Environments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When using Humus AMQP Module in multi-threaded environments, the rule of thumb is:
+When using HumusAmqp in multi-threaded environments, the rule of thumb is:
 avoid sharing channels across threads.
 
 In other words, publishers in your application that publish from
@@ -933,40 +938,40 @@ used to define matching rules:
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'header-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'header-exchange' => [
                     'name' => 'header-exchange',
                     'type' => 'headers'
-                )
-            ),
-            'queues' => array(
-                'myqueue-1' => array(
+                ],
+            ],
+            'queues' => [
+                'myqueue-1' => [
                     'name' => 'myqueue',
                     'exchange' => 'header-exchange',
-                    'arguments' => array(
+                    'arguments' => [
                         'os' => 'linux',
                         'x-match' => 'all'
-                    )
-                ),
-                'myqueue-2' => array(
+                    ],
+                ],
+                'myqueue-2' => [
                     'name' => 'myqueue',
                     'exchange' => 'header-exchange',
-                    'arguments' => array(
+                    'arguments' => [
                         'os' => 'osx',
                         'x-match' => 'any'
-                    )
-                )
-            ),
-            'producers' => array(
-                'my-producer' => array(
+                    ],
+                ],
+            ],
+            'producers' => [
+                'my-producer' => [
                     'exchange' => 'exchanges',
                     'auto_setup_fabric' => true
-                )
-            )
-        )
-    );
+                ],
+            ],
+        ],
+    ];
 
 When matching on one header, a message is considered matching if the
 value of the header equals the value specified upon binding. An example
@@ -978,16 +983,16 @@ that demonstrates headers routing:
 
     $attribs = new MessageAttributes();
 
-    $attribs->setHeaders(array(
+    $attribs->setHeaders([
         'os' => 'linux',
         'cores' => 8
-    ));
+    ]);
     $producer->publish('8 cores/Linux', '', $attribs);
 
-    $attribs->setHeaders(array(
+    $attribs->setHeaders([
         'os' => 'osx',
         'cores' => 8
-    ));
+    ]);
 
     $producer->publish('4 cores/OS X', '', $attribs);
 
@@ -1192,15 +1197,17 @@ use the ``:auto_delete`` option on declaration:
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'header-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'header-exchange' => [
                     'name' => 'header-exchange',
                     'type' => 'headers',
                     'auto_delete' => true
-                )
-            ),
+                ],
+            ],
+        ],
+    ];
 
 An auto-deleted exchange is removed when the last queue bound to it is
 unbound.

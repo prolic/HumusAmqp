@@ -3,7 +3,7 @@
 RabbitMQ Extensions
 ===================
 
-Humus AMQP Module supports all `RabbitMQ extensions to AMQP
+HumusAmqp supports all `RabbitMQ extensions to AMQP
 0.9.1 <http://www.rabbitmq.com/extensions.html>`_ that the PHP AMQP Extension supports, too:
 
 -  `Negative acknowledgements <http://www.rabbitmq.com/nack.html>`_
@@ -26,12 +26,12 @@ The following RabbitMQ extensions are note supported due to php extension limita
    user\_id <http://www.rabbitmq.com/validated-user-id.html>`_
 
 
-This guide briefly describes how to use these extensions with Humus AMQP Module.
+This guide briefly describes how to use these extensions with HumusAmqp.
 
 Enabling RabbitMQ Extensions
 ----------------------------
 
-You don't need to require any additional files to make Humus AMQP Module support
+You don't need to require any additional files to make HumusAmqp support
 RabbitMQ extensions. The support is built into the core.
 
 Per-queue Message Time-to-Live
@@ -47,25 +47,25 @@ messages will not be delivered to consumers and cannot be fetched.
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct'
-                )
-            ),
-            'queues' => array(
-                'my-queue' => array(
+                ]
+            ],
+            'queues' => [
+                'my-queue' => [
                     'name' => 'my-queue',
                     'exchange' => 'demo-exchange',
-                    'arguments' => array(
+                    'arguments' => [
                         'x-message-ttl' => 1000
-                    )
-                )
-            )
-        )
-    );
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 When a published message is routed to multiple queues, each of the
 queues gets a *copy of the message*. If the message subsequently dies in
@@ -90,10 +90,10 @@ To solve this, RabbitMQ supports the basic.nack method that provides all
 of the functionality of basic.reject whilst also allowing for bulk
 processing of messages.
 
-How To Use It With Humus AMQP Module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How To Use It With HumusAmqp
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Humus AMQP Module makes already use of the nack method to reject a block of messages.
+The HumusAmqp makes already use of the nack method to reject a block of messages.
 You don't need to take care of that, unless you want to write a consumer yourself.
 
 Learn More
@@ -113,19 +113,19 @@ be sent.
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct',
-                    'arguments' => array(
+                    'arguments' => [
                         'alternate_exchange' => 'alternate-exchange-name'
-                    )
-                )
-            ),
-        )
-    );
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 Learn More
 ~~~~~~~~~~
@@ -145,18 +145,18 @@ tracing).
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct',
-                    'exchange_bindings' => array(
-                        'exchange1' => array(
+                    'exchange_bindings' => [
+                        'exchange1' => [
                             'routingKey.1',
                             'routingKey.2'
                         ),
-                        'exchange2' => array(
+                        'exchange2' => [
                             'routingKey.3'
                         )
                     )
@@ -186,19 +186,19 @@ queue is allowed to be *unused*. After that moment, it will be deleted.
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct',
-                    'arguments' => array(
+                    'arguments' => [
                         'x-expires' => 10000
-                    )
-                )
-            ),
-        )
-    );
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 Learn More
 ~~~~~~~~~~
@@ -245,8 +245,8 @@ headers is present, this extension has no effect.
     <?php
 
     $attribs = new MessageAttributes()
-    $attribs->setHeaders(array(
-        'CC' => array('two', 'three')
+    $attribs->setHeaders([
+        'CC' => ['two', 'three')
     ));
 
     $producer->publish('some message', '', $attribs);
@@ -267,8 +267,8 @@ message is dead-lettered when any of the following events occur:
 The message is rejected (basic.reject or basic.nack) with requeue=false;
 or the TTL for the message expires.
 
-How To Use It With Bunny 0.9+
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How To Use It With HumusAmqp
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Dead-letter Exchange is a feature that is used by specifying additional
 queue arguments:
@@ -282,18 +282,19 @@ queue arguments:
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'queues' => array(
-                'foo' => array(
+    return [
+        'humus_amqp_module' => [
+            'queues' => [
+                'foo' => [
                     'name' => 'foo',
                     'exchange' => 'demo',
-                    'arguments' => array(
+                    'arguments' => [
                         'x-dead-letter-exchange' => 'demo.error'
-                    ),
-            ),
-        )
-    );
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 Learn More
 ~~~~~~~~~~
@@ -307,10 +308,10 @@ Wrapping Up
 RabbitMQ provides a number of useful extensions to the AMQP 0.9.1
 specification.
 
-Bunny 0.9 and later releases have RabbitMQ extensions support built into
+HumusAmqp releases have RabbitMQ extensions support built into
 the core. Some features are based on optional arguments for queues,
-exchanges or messages, and some are Bunny public API features. Any
-future argument-based extensions are likely to be useful with Bunny
+exchanges or messages, and some are HumusAmqp public API features. Any
+future argument-based extensions are likely to be useful with HumusAmqp
 immediately, without any library modifications.
 
 What to Read Next

@@ -132,7 +132,7 @@ Unroutable messages are either dropped or returned to producers.
 RabbitMQ extensions can provide additional ways of handling unroutable
 messages: for example, RabbitMQ's `Alternate Exchanges
 extension <http://www.rabbitmq.com/ae.html>`_ makes it possible to route
-unroutable messages to another exchange. Bunny support for it is
+unroutable messages to another exchange. HumusAmqp support for it is
 documented in the `RabbitMQ Extensions
 guide </articles/extensions.html>`_.
 

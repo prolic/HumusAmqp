@@ -69,22 +69,22 @@ for them. The configure a queue with an explicit name:
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct'
-                )
-            ),
-            'queues' => array(
-                'my-queue' => array(
+                ],
+            ],
+            'queues' => [
+                'my-queue' => [
                     'name' => 'my-queue',
                     'exchange' => 'demo-exchange'
-                )
-            )
-        )
-    );
+                ],
+            ],
+        ],
+    ];
 
 
 Server-named queues
@@ -99,22 +99,22 @@ that the method returns:
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct'
-                )
-            ),
-            'queues' => array(
-                'my-queue' => array(
+                ],
+            ],
+            'queues' => [
+                'my-queue' => [
                     'name' => '',
                     'exchange' => 'demo-exchange'
-                )
-            )
-        )
-    );
+                ],
+            ],
+        ],
+    ];
 
 .. note:: While it is common to declare server-named queues as
     ``:exclusive``, it is not necessary.
@@ -154,7 +154,7 @@ similar to this:
 This error results in the channel that was used for the declaration
 being forcibly closed by RabbitMQ. If the program subsequently tries to
 communicate with RabbitMQ using the same channel without re-opening it
-then Bunny will throw an ``AMQPChannelException' with message
+then HumusAmqp will throw an ``HumusAmqp\Exception\ChannelException' with message
 'Could not create exchange. No channel available``. In order
 to continue communications in the same program after such an error, a
 different channel would have to be used.
@@ -224,23 +224,23 @@ non-blank string and use the ``:durable`` option:
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct'
-                )
-            ),
-            'queues' => array(
-                'my-queue' => array(
+                ],
+            ],
+            'queues' => [
+                'my-queue' => [
                     'name' => 'demo-queue',
                     'exchange' => 'demo-exchange',
                     'durable' => true
-                )
-            )
-        )
-    );
+                ],
+            ],
+        ],
+    ];
 
 Declaring a Temporary Exclusive Queue
 -------------------------------------
@@ -252,16 +252,16 @@ empty string) as the queue name and use the ``:exclusive`` option:
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct'
                 )
             ),
-            'queues' => array(
-                'my-queue' => array(
+            'queues' => [
+                'my-queue' => [
                     'name' => '',
                     'exchange' => 'demo-exchange',
                     'exclusive' => true
@@ -301,27 +301,27 @@ Publishing </articles/exchanges.html>`_ guide for more details).
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'exchanges' => array(
-                'demo-exchange' => array(
+    return [
+        'humus_amqp_module' => [
+            'exchanges' => [
+                'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct'
-                )
-            ),
-            'queues' => array(
-                'my-queue' => array(
+                ],
+            ],
+            'queues' => [
+                'my-queue' => [
                     'name' => 'demo-queue',
                     'exchange' => 'demo-exchange',
-                    'routingKeys => array(
+                    'routingKeys => [
                         'v1.0.*',
                         'v1.1.0',
                         'v2.0.0'
-                    )
-                )
-            )
-        )
-    );
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 Unbinding Queues From Exchanges
 -------------------------------

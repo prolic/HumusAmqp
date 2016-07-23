@@ -15,7 +15,7 @@ Here is the break-down of exceptions that can be raised by the PHP AMQP Extensio
     AMQPExchangeException
     AMQPQueueException
 
-Additionally the Humus AMQP Module throws some of the following exceptions
+Additionally the HumusAmqp throws some of the following exceptions
 
 ::
 

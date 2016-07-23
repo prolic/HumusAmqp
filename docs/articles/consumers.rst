@@ -3,7 +3,7 @@
 Consumers
 =========
 
-The Humus AMQP Module provides a default consumer implementation that suites most use-cases.
+The HumusAmqp provides a default consumer implementation that suites most use-cases.
 If you have a special use-case, you can extend this class or implement the consumer interface
 yourself.
 
@@ -134,7 +134,7 @@ acknowledgement.
 In AMQP 0.9.1 parlance this is known as *QoS* or *message prefetching*.
 Prefetching is configured on a per-channel basis.
 
-The default implementation of the Humus AMQP Module's consumer will
+The default implementation of the HumusAmqp's consumer will
 work with prefetch count, so if you set the prefetch count to 50, a block
 size of 50 messages will be used.
 
@@ -152,14 +152,14 @@ Set up the consumer
 
     <?php
 
-    return array(
-        'humus_amqp_module' => array(
-            'consumers' => array(
-                'demo-consumer' => array(
-                    'queues' => array(
+    return [
+        'humus_amqp_module' => [
+            'consumers' => [
+                'demo-consumer' => [
+                    'queues' => [
                         'queue1',
                         'queue2'
-                    ),
+                    ],
                     'auto_setup_fabric' => true,
                     'callback' => 'echoCallback',
                     'flush_callback' => 'flushCallback',
@@ -167,19 +167,19 @@ Set up the consumer
                     'idle_timeout' => 5.0, // secs
                     'wait_timeout' => 5000, // microsecs
                     'logger' => 'consumer-logger'
-                )
-            ),
-            'plugin_managers' => array(
-                'callback' => array(
-                    'invokables' => array(
+                ]
+            ],
+            'plugin_managers' => [
+                'callback' => [
+                    'invokables' => [
                         'echoCallback' => 'My\Callback\Echo',
                         'flushCallback' => 'My\Callback\Flush',
                         'errorCallback' => 'My\Callback\Error',
-                    )
-                )
-            )
-        )
-    );
+                    ]
+                ]
+            ]
+        ]
+    ];
 
 Using Multiple Consumers Per Queue
 ----------------------------------
@@ -203,7 +203,7 @@ Killing a Consumer gracefully
 -----------------------------
 
 You can send a SIGUSER1 signal to gracefully shutdown the consumer (if started
-from the consumer controller in Humus AMQP Module).
+from the consumer controller in HumusAmqp).
 
 .. code-block:: bash
 

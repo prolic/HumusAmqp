@@ -53,9 +53,9 @@ Use some custom message headers to specify version constraints:
     <?php
 
     $attribs = new MessageAttributes();
-    $attribs->setHeaders(array(
+    $attribs->setHeaders([
         'x-version' => 'v1.0.0'
-    ));
+    ]);
     $producer->publish('some message', '', $attribs);
 
 This way a message with a version not handled by your consumer, will also be at least delivered to him. The consumer

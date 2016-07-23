@@ -1,7 +1,7 @@
 .. _getting-started:
 
-Getting Started with Humus AMQP Module, RabbitMQ and Zend Framework 2
-=====================================================================
+Getting Started with HumusAmqp and RabbitMQ
+===========================================
 
 About this guide
 ----------------
@@ -63,6 +63,7 @@ b) Select a driver to use, currently only php-amqplib and php-amqp (PHP extensio
 
 Configure your container to return the DriverFactory for the Driver class. If your container supports configuration by
 array like Zend\ServiceManager f.e., this should look similar to this.
+For integration with the Symfony Framework use the `Symfony container-interop bundle <https://github.com/proophsoftware/prooph-interop-bundle>`_.
 
 .. code-block:: php
 
@@ -91,14 +92,14 @@ d) Notes about drivers:
 1) The PHP Extension (php-amqp) is the fastest one, we strongly recommend using 1.7.1 or building yourself from master to
 be able to use all features.
 
-There is currently a bug in PhpAmqpLib, see: https://github.com/php-amqplib/php-amqplib/pull/399
+There is currently a bug in PhpAmqpLib, see `this pull-request <https://github.com/php-amqplib/php-amqplib/pull/399>`_.
 As long as this is not merged and release, you have to manually apply the patch, sorry!
 
 You can do this from the command-line with:
 
 `sed -i '/$message = $this->get_and_unset_message($delivery_tag);/a \ \ \ \ \ \ \ \ \ \ \ \ $message->delivery_info["delivery_tag"] = $delivery_tag;' vendor/php-amqplib/php-amqplib/PhpAmqpLib/Channel/AMQPChannel.php`
 
-2) When using php-amqplib as driver, it's worth point out, that a StreamConnection (same goes for SSLConnection) does not
+2) When using php-amqplib as driver, it's worth pointing out, that a StreamConnection (same goes for SSLConnection) does not
 have the possibility to timeout. If you want to let the consumer timeout, when no more messages are received, you should
 use the SocketConnection instead (assuming you don't need an SSL connection).
 
@@ -338,8 +339,8 @@ handling.
 We recommend that you read the following guides next, if possible, in this order:
 
  * `AMQP 0.9.1 Model Explained <http://www.rabbitmq.com/tutorials/amqp-concepts.html>`_. A simple 2 page long introduction to the AMQP Model concepts and features. Understanding the AMQP 0.9.1 Model
-   will make a lot of other documentation, both for Bunny and RabbitMQ itself, easier to follow. With this guide, you don't have to waste hours of time reading the whole specification.
- * :ref:`connecting`. This guide explains how to connect to an RabbitMQ and how to integrate Bunny into standalone and Web applications.
+   will make a lot of other documentation, both for HumusAmqp and RabbitMQ itself, easier to follow. With this guide, you don't have to waste hours of time reading the whole specification.
+ * :ref:`connecting`. This guide explains how to connect to an RabbitMQ and how to integrate HumusAmqp into standalone and Web applications.
  * :ref:`queues`. This guide focuses on features that consumer applications use heavily.
  * :ref:`exchanges`. This guide focuses on features that producer applications use heavily.
  * :ref:`error_handling`. This guide explains how to handle protocol errors, network failures and other things that may go wrong in real world projects.
