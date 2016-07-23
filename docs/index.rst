@@ -24,7 +24,6 @@ Contents
    articles/getting_started
    articles/connecting
    articles/exchanges
-   articles/producers
    articles/queues
    articles/bindings
    articles/consumers

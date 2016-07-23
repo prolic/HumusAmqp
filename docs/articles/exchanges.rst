@@ -373,56 +373,11 @@ Publishing messages
         'routing_key',
         Constants::AMQP_NOPARAM,
         [
-            'arg1' => 'value'
+            'arguments' => [
+                'arg1' => 'value'
+            ],
         ]
     );
-
-To publish a message to an exchange, first we need a configured producer.
-
-.. code-block:: php
-
-    <?php
-
-    return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'myexchange' => [
-                    'name' => 'myexchange',
-                    'type' => 'topic',
-                ],
-            ],,
-            'producers' => [
-                'my-producer' => [
-                    'exchange' => 'myexchange',
-                    'auto_setup_fabric' => true
-                ],
-            ],
-        ],
-    ];
-
-
-You define a producer name (my-producer) and tell to which exchange it should publish. Additionally
-you can set "auto_setup_fabric" to true. This will automatically create the exchange if none is present.
-
-To publish a message, get the producer plugin manager, get the producer and publish:
-
-.. code-block:: php
-
-    <?php
-
-    $pm = $serivceManager->get('HumusAmqp\PluginManager\Producer');
-    $producer = $pm->get('my-producer');
-
-    $producer->publish('foo', 'my.routing.key');
-
-    $messages = ['foo', 'bar', 'baz');
-
-    $producer->publishBatch($messages, 'my.routing.key');
-
-The method accepts message body, a routing key and some message attributes.
-Routing key can be blank (``""``) but never ``null``.
-The body needs to be a string. The message payload is completely opaque
-to the library and is not modified by HumusAmqp or RabbitMQ in any way.
 
 Data serialization
 ~~~~~~~~~~~~~~~~~~
@@ -476,19 +431,24 @@ An example:
 
     <?php
 
-    $attribs = new MessageAttributes()
-    $attribs->setAppId('amqp.example');
-    $attribs->setAppId(8);
-    $attribs->setType('kinda.checkin';
-    $attribs->setHeaders([
-        'latitude' => 59.35,
-        'longituide' => 18.0666667
-    ]);
-    $attribs->setTimestamp(time())
-    $attribs->setCorrelationId('r-1');
-    $attribs->setContentType('application/json');
-
-    $producer->publish('{"foo": "bar"}', '', $attribs);
+    $exchange->publish(
+        '{"foo": "bar"}',
+        'routing_key',
+        Constants::AMQP_NOPARAM,
+        [
+            'app_id' => 'amqp.example',
+            'type' => 'kinda.checkin',
+            'headers' => [
+                'latitude' => 59.35,
+                'longituide' => 18.0666667
+            ],
+            'timestamp' => time(),
+            'correlation_id' => 'r-1',
+            'content_type' => 'application/json',
+            'delivery_mode' => 2,
+            'content_encoding' => 'UTF-8',
+        ]
+    );
 
 .. raw:: html
 
@@ -730,8 +690,7 @@ Application identifier string, for example, "eventoverse" or
    </dt>
      <dd>
 
-Timestamp of the moment when message was sent, in seconds since the
-Epoch
+Timestamp of the moment when message was sent, in seconds since the Epoch
 
 .. raw:: html
 
@@ -790,8 +749,6 @@ ID <http://www.rabbitmq.com/extensions.html#validated-user-id>`_. If
 this property is set by a publisher, its value must be the same as the
 name of the user used to open the connection. If the user-id property is
 not set, the publisher's identity is not validated and remains private.
-
-.. note:: Validated user id not yet implemented in HumusAmqp.
 
 Publishing Callbacks and Reliable Delivery in Distributed Environments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -872,14 +829,6 @@ versa, on a message-by-message basis.
 
 To publish a persistent message, use the ``:persistent`` option:
 
-.. code-block:: php
-
-    <?php
-
-    $attribs = new MessageAttributes();
-    $attribs->setPersistent(true);
-    $producer->publish($data, '', $attribs);
-
 **Note** that in order to survive a broker crash, the messages MUST be
 persistent and the queue that they were routed to MUST be durable.
 
@@ -939,35 +888,54 @@ used to define matching rules:
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'header-exchange' => [
-                    'name' => 'header-exchange',
-                    'type' => 'headers'
-                ],
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
             ],
-            'queues' => [
-                'myqueue-1' => [
-                    'name' => 'myqueue',
-                    'exchange' => 'header-exchange',
-                    'arguments' => [
-                        'os' => 'linux',
-                        'x-match' => 'all'
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => false,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
                     ],
                 ],
-                'myqueue-2' => [
-                    'name' => 'myqueue',
-                    'exchange' => 'header-exchange',
-                    'arguments' => [
-                        'os' => 'osx',
-                        'x-match' => 'any'
+                'exchange' => [
+                    'header-exchange' => [
+                        'name' => 'header-exchange',
+                        'type' => 'headers',
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
-            ],
-            'producers' => [
-                'my-producer' => [
-                    'exchange' => 'exchanges',
-                    'auto_setup_fabric' => true
+                'queue' => [
+                    'myqueue-1' => [
+                        'name' => 'myqueue',
+                        'exchange' => 'header-exchange',
+                        'arguments' => [
+                            'os' => 'linux',
+                            'x-match' => 'all'
+                        ],
+                        'connection' => 'default-amqp-connection',
+                    ],
+                    'myqueue-2' => [
+                        'name' => 'myqueue',
+                        'exchange' => 'header-exchange',
+                        'arguments' => [
+                            'os' => 'osx',
+                            'x-match' => 'any'
+                        ],
+                        'connection' => 'default-amqp-connection',
+                    ],
                 ],
             ],
         ],
@@ -981,20 +949,29 @@ that demonstrates headers routing:
 
     <?php
 
-    $attribs = new MessageAttributes();
+    $exchange->publish(
+        '8 cores/Linux',
+        '',
+        Constants::AMQP_NOPARAM,
+        [
+            'headers' => [
+                'os' => 'linux',
+                'cores' => 8
+            ],
+        ]
+    );
 
-    $attribs->setHeaders([
-        'os' => 'linux',
-        'cores' => 8
-    ]);
-    $producer->publish('8 cores/Linux', '', $attribs);
-
-    $attribs->setHeaders([
-        'os' => 'osx',
-        'cores' => 8
-    ]);
-
-    $producer->publish('4 cores/OS X', '', $attribs);
+    $exchange->publish(
+        '4 cores/OS X',
+        '',
+        Constants::AMQP_NOPARAM,
+        [
+            'headers' => [
+                'os' => 'osx',
+                'cores' => 4
+            ],
+        ]
+    );
 
 
 When executed, it outputs
@@ -1175,20 +1152,19 @@ topic is described in detail in the :ref:`Queues and Consumers guide <queues>`.
 Deleting Exchanges
 ------------------
 
-Explicitly Deleting an Exchange
+Explicitly deleting an Exchange
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Exchanges are deleted using the ``AMQPExchange#delete``:
+Exchanges are deleted using the ``HumusAmqp\Exchange#delete``:
 
 .. code-block:: php
 
     <?php
 
-    /* @var $exchange \AMQPExchange */
     $exchange->delete();
 
-Auto-deleted exchanges
-~~~~~~~~~~~~~~~~~~~~~~
+Auto-delete exchanges via configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Exchanges can be *auto-deleted*. To declare an exchange as auto-deleted,
 use the ``:auto_delete`` option on declaration:
@@ -1198,12 +1174,14 @@ use the ``:auto_delete`` option on declaration:
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'header-exchange' => [
-                    'name' => 'header-exchange',
-                    'type' => 'headers',
-                    'auto_delete' => true
+        'humus' => [
+            'amqp' => [
+                'exchanges' => [
+                    'header-exchange' => [
+                        'name' => 'header-exchange',
+                        'type' => 'headers',
+                        'auto_delete' => true
+                    ],
                 ],
             ],
         ],
