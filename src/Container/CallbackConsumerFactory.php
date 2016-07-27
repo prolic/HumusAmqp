@@ -24,7 +24,6 @@ namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
 use Humus\Amqp\CallbackConsumer;
-use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
@@ -86,7 +85,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
      * @param ContainerInterface $container
      * @return CallbackConsumer
      */
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container) : CallbackConsumer
     {
         $options = $this->options($container->get('config'), $this->consumerName);
 
@@ -127,7 +126,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function dimensions()
+    public function dimensions() : array
     {
         return ['humus', 'amqp', 'callback_consumer'];
     }
@@ -135,7 +134,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function defaultOptions()
+    public function defaultOptions() : array
     {
         return [
             'logger' => null,
@@ -153,7 +152,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function mandatoryOptions()
+    public function mandatoryOptions() : array
     {
         return [
             'queue',
