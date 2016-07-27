@@ -156,7 +156,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function dimensions()
+    public function dimensions() : array
     {
         return ['humus', 'amqp', 'exchange'];
     }
@@ -164,7 +164,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function defaultOptions()
+    public function defaultOptions() : array
     {
         return [
             'arguments' => [
@@ -183,7 +183,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * return array
      */
-    public function mandatoryOptions()
+    public function mandatoryOptions() : array
     {
         return [
             'connection',
@@ -195,7 +195,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @param array|ArrayAccess
      * @return int
      */
-    private function getFlags($options)
+    private function getFlags($options) : int
     {
         $flags = 0;
         $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;

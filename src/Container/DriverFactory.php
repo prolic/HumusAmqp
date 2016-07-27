@@ -50,7 +50,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
     /**
      * @return array
      */
-    public function dimensions()
+    public function dimensions() : array
     {
         return ['humus', 'amqp'];
     }
@@ -58,7 +58,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
     /**
      * @return array
      */
-    public function mandatoryOptions()
+    public function mandatoryOptions() : array
     {
         return [
             'driver'

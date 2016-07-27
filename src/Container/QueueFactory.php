@@ -181,7 +181,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * @return array
      */
-    public function dimensions()
+    public function dimensions() : array
     {
         return ['humus', 'amqp', 'queue'];
     }
@@ -189,7 +189,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * @return array
      */
-    public function defaultOptions()
+    public function defaultOptions() : array
     {
         return [
             'name' => '',
@@ -206,7 +206,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * return array
      */
-    public function mandatoryOptions()
+    public function mandatoryOptions() : array
     {
         return [
             'connection',
@@ -218,7 +218,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @param array|ArrayAccess
      * @return int
      */
-    private function getFlags($options)
+    private function getFlags($options) : int
     {
         $flags = 0;
         $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;

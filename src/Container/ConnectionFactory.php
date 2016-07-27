@@ -140,7 +140,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function dimensions()
+    public function dimensions() : array
     {
         return ['humus', 'amqp', 'connection'];
     }
@@ -148,7 +148,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function defaultOptions()
+    public function defaultOptions() : array
     {
         return [
             'host' => 'localhost',

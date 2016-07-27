@@ -114,7 +114,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     /**
      * @return array
      */
-    public function dimensions()
+    public function dimensions() : array
     {
         return ['humus', 'amqp', 'json_rpc_server'];
     }
@@ -122,7 +122,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     /**
      * @return array
      */
-    public function defaultOptions()
+    public function defaultOptions() : array
     {
         return [
             'consumer_tag' => null,
@@ -135,7 +135,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     /**
      * @return array
      */
-    public function mandatoryOptions()
+    public function mandatoryOptions() : array
     {
         return [
             'queue',
