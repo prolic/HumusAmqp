@@ -167,8 +167,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     public function defaultOptions() : array
     {
         return [
-            'arguments' => [
-            ],
+            'arguments' => [],
             'auto_delete' => false, // RabbitMQ Extension
             'exchange_bindings' => [], // RabbitMQ Extension
             'passive' => false,
