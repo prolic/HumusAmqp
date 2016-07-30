@@ -1,7 +1,7 @@
 .. _exchanges:
 
-Exchanges and Producers
-=======================
+Exchanges
+=========
 
 Exchanges in AMQP 0.9.1 — Overview
 ----------------------------------
@@ -799,7 +799,46 @@ option to publish a message as "mandatory". When a mandatory message
 cannot be *routed* to any queue (for example, there are no bindings or
 none of the bindings match), the message is returned to the producer.
 
-.. note:: The PHP AMQP Extension currently has not full support of the mandatory flag.
+.. code-block:: php
+
+    <?php
+
+    $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection();
+    $connection->connect();
+
+    $channel = $connection->newChannel();
+
+    $exchange = $channel->newExchange();
+    $exchange->setName('my-exchange');
+
+    $exchange->publish(
+        '{"foo": "bar"}',
+        'routing_key',
+        Constants::AMQP_MANDATORY
+    );
+
+    $this->channel->setReturnCallback(
+        function (
+            int $replyCode,
+            string $replyText,
+            string $exchange,
+            string $routingKey,
+            Envelope $envelope,
+            string $body
+        ) use (&$result) {
+            $result[] = 'Message returned';
+            $result[] = func_get_args();
+            return false;
+        }
+    );
+
+    try {
+        $this->channel->waitForBasicReturn();
+    } catch (\Exception $e) {
+        //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+    }
+
+    var_dump($result);
 
 Returned messages
 ~~~~~~~~~~~~~~~~~
@@ -920,19 +959,29 @@ used to define matching rules:
                 'queue' => [
                     'myqueue-1' => [
                         'name' => 'myqueue',
-                        'exchange' => 'header-exchange',
-                        'arguments' => [
-                            'os' => 'linux',
-                            'x-match' => 'all'
+                        'exchanges' => [
+                            'header-exchange' => [
+                                [
+                                    'arguments' => [
+                                        'os' => 'linux',
+                                        'x-match' => 'all'
+                                    ],
+                                ]
+                            ],
                         ],
                         'connection' => 'default-amqp-connection',
                     ],
                     'myqueue-2' => [
                         'name' => 'myqueue',
-                        'exchange' => 'header-exchange',
-                        'arguments' => [
-                            'os' => 'osx',
-                            'x-match' => 'any'
+                        'exchanges' => [
+                            'header-exchange' => [
+                                [
+                                    'arguments' => [
+                                        'os' => 'osx',
+                                        'x-match' => 'any'
+                                    ],
+                                ]
+                            ]
                         ],
                         'connection' => 'default-amqp-connection',
                     ],
@@ -1214,6 +1263,7 @@ The documentation is organized as :ref:`a number of guides <guides>`, covering v
 We recommend that you read the following guides first, if possible, in
 this order:
 
+-  :ref:`Producers <producers>`
 -  :ref:`Bindings <bindings>`
 -  `RabbitMQ Extensions to AMQP
    0.9.1 <rabbitmq_extensions>`_

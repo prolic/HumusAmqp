@@ -163,25 +163,36 @@ A sample configuration might look like this, more details an explanation will be
                 'queue' => [
                     'foo' => [
                         'name' => 'foo',
-                        'exchange' => 'demo', // must be defined as exchange before
-                        'arguments' => [
-                            'x-dead-letter-exchange' => 'demo.error', // must be defined as exchange before
+                        'exchanges' => [
+                            'demo' => [
+                                [
+                                    'arguments' => [
+                                        'x-dead-letter-exchange' => 'demo.error', // must be defined as exchange before
+                                    ],
+                                ],
+                            ],
                         ],
                         'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-client' => [
                         'name' => '',
-                        'exchange' => 'demo-rpc-client',
+                        'exchanges' => [
+                            'demo-rpc-client' => [],
+                        ],
                         'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-server' => [
                         'name' => 'demo-rpc-server',
-                        'exchange' => 'demo-rpc-server',
+                        'exchanges' => [
+                            'demo-rpc-server' => [],
+                        ],
                         'connection' => 'default-amqp-connection',
                     ],
                     'demo-rpc-server2' => [
                         'name' => 'demo-rpc-server2',
-                        'exchange' => 'demo-rpc-server2',
+                        'exchanges' => [
+                            'demo-rpc-server2' => [],
+                        ],
                         'connection' => 'default-amqp-connection',
                     ],
                     'info-queue' => [
@@ -229,9 +240,7 @@ A sample configuration might look like this, more details an explanation will be
                         'delivery_callback' => 'my_callback',
                     ],
                     'topic-consumer-error' => [
-                        'queues' => [
-                            'info-queue',
-                        ],
+                        'queue' => 'info-queue',
                         'qos' => [
                             'prefetch_count' => 100,
                         ],
@@ -343,6 +352,7 @@ We recommend that you read the following guides next, if possible, in this order
  * :ref:`connecting`. This guide explains how to connect to an RabbitMQ and how to integrate HumusAmqp into standalone and Web applications.
  * :ref:`queues`. This guide focuses on features that consumer applications use heavily.
  * :ref:`exchanges`. This guide focuses on features that producer applications use heavily.
+ * :ref:`producers`. This guide focuses on Humus\Amqp\Producer's, a simple approach to send messages.
  * :ref:`error_handling`. This guide explains how to handle protocol errors, network failures and other things that may go wrong in real world projects.
 
 

@@ -56,6 +56,15 @@ This guide covers:
 -  How to delete exchanges
 -  Other topics related to exchanges and publishing
 
+:ref:`Humus\Amqp\Producer's <producers>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This guide covers:
+
+-  Producer types
+-  Custom producers types
+-  How to easily handle publishing messages with Humus\Amqp
+
 :ref:`Bindings <bindings>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
