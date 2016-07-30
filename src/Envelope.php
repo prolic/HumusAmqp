@@ -113,7 +113,7 @@ interface Envelope
     public function getPriority() : int;
 
     /**
-     * Get the expiration of the message.
+     * Get the expiration of the message in milliseconds.
      *
      * @return int The message expiration.
      */

@@ -46,7 +46,7 @@ final class JsonProducer extends AbstractProducer
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
     ) {
-        $attributes = array_merge($this->defaultAttributes, $attributes);
+        $attributes = array_merge_recursive($this->defaultAttributes, $attributes);
 
         $this->exchange->publish(json_encode($message), $routingKey, $flags, $attributes);
     }
