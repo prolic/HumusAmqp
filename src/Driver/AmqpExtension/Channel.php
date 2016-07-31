@@ -184,7 +184,7 @@ final class Channel implements ChannelInterface
         } catch (\AMQPChannelException $e) {
             throw ChannelException::fromAmqpExtension($e);
         } catch (\AMQPQueueException $e) {
-            throw QueueException::fromAmqpExtension($e);
+            throw ChannelException::fromAmqpExtension($e);
         }
     }
 

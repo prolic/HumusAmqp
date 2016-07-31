@@ -26,6 +26,7 @@ use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Envelope;
+use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Queue;
@@ -264,45 +265,46 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     {
         $result = [];
 
+        set_error_handler(function(int $errno, string $errstr, string $errfile, int $errline) use (&$result) {
+            $result[] = $errstr;
+        });
+
         $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 2]));
         $channel = $connection->newChannel();
         $channel->confirmSelect();
 
-        try {
-            $channel->waitForConfirm(1);
-        } catch (\Exception $e) {
-            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
-        }
-
         $this->exchange = $channel->newExchange();
-        $this->exchange->setName('test');
+        $this->exchange->setName('test9');
         $this->exchange->setType('fanout');
         $this->exchange->setFlags(Constants::AMQP_AUTODELETE);
         $this->exchange->declareExchange();
 
         $this->exchange->publish('message 1', 'routing.key');
-        $this->exchange->publish('message 1', 'routing.key', Constants::AMQP_MANDATORY);
+        $this->exchange->publish('message 2', 'routing.key', Constants::AMQP_MANDATORY);
 
         try {
             $channel->waitForConfirm();
         } catch (\Exception $e) {
-            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+            $result[] = get_class($e);
+            $result[] = $e->getMessage();
         }
 
         try {
             $channel->waitForConfirm();
         } catch (\Exception $e) {
-            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+            $result[] = get_class($e);
+            $result[] = $e->getMessage();
         }
 
         try {
             $channel->waitForConfirm(1);
         } catch (\Exception $e) {
-            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+            $result[] = get_class($e);
+            $result[] = $e->getMessage();
         }
 
-        $this->exchange->publish('message 1', 'routing.key');
-        $this->exchange->publish('message 1', 'routing.key', Constants::AMQP_MANDATORY);
+        $this->exchange->publish('message 3', 'routing.key');
+        $this->exchange->publish('message 4', 'routing.key', Constants::AMQP_MANDATORY);
 
         $channel->setReturnCallback(function (
             int $replyCode,
@@ -311,7 +313,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
             string $routingKey,
             Envelope $envelope,
             string $body
-        ) {
+        ) use (&$result) {
             $result[] = 'Message returned: ' . $replyText . ', message body:' . $body;
         });
 
@@ -323,7 +325,6 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
                 bool $multiple = false
             ) use (&$cnt, &$result) {
                 $result[] = 'Message acked';
-                $result[] = func_get_args();
                 return --$cnt > 0;
             },
             function (
@@ -332,7 +333,6 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
                 bool $requeue
             ) use (&$result) {
                 $result[] = 'Message nacked';
-                $result[] = func_get_args();
                 return false;
             }
         );
@@ -340,7 +340,8 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         try {
             $channel->waitForConfirm();
         } catch (\Exception $e) {
-            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+            $result[] = get_class($e);
+            $result[] = $e->getMessage() . 'fd';
         }
 
         $this->exchange->delete();
@@ -352,15 +353,36 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         try {
             $channel->waitForConfirm(1);
         } catch (\Exception $e) {
+            $result[] = get_class($e);
             $result[] = $e->getMessage();
         }
 
-        $this->assertCount(5, $result);
-        $this->assertEquals('Message acked', $result[0]);
-        $this->assertEquals('3', $result[1][0]);
-        $this->assertEquals('Message acked', $result[2]);
-        $this->assertEquals('4', $result[3][0]);
-        $this->assertRegExp("/.+no exchange 'non-existent' in vhost '.+'/", $result[4]);
+        $this->assertCount(8, $result);
+        $this->assertStringStartsWith('Unhandled basic.ack method from server received.', $result[0]);
+        $this->assertStringStartsWith('Unhandled basic.return method from server received.', $result[1]);
+        $this->assertStringStartsWith('Unhandled basic.ack method from server received.', $result[2]);
+        $this->assertEquals('Message acked', $result[3]);
+        $this->assertEquals('Message returned: NO_ROUTE, message body:message 4', $result[4]);
+        $this->assertEquals('Message acked', $result[5]);
+        $this->assertEquals(ChannelException::class, $result[6]);
+        $this->assertRegExp("/.+no exchange 'non-existent' in vhost '.+'/", $result[7]);
+
+        restore_error_handler();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_negative_wait_confirm_timeout_given()
+    {
+        $this->expectException(ChannelException::class);
+        $this->expectExceptionMessage('Timeout must be greater than or equal to zero.');
+
+        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 2]));
+        $channel = $connection->newChannel();
+        $channel->confirmSelect();
+
+        $channel->waitForConfirm(-1);
     }
 
     /**

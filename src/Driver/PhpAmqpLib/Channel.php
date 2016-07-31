@@ -29,6 +29,8 @@ use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exchange as ExchangeInterface;
 use Humus\Amqp\Queue as QueueInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Exception\AMQPTimeoutException;
+use PhpAmqpLib\Helper\Protocol\Wait091;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -57,6 +59,15 @@ final class Channel implements ChannelInterface
     {
         $this->connection = $connection;
         $this->channel = $channel;
+        $this->channel->set_ack_handler(function() {
+            trigger_error('Unhandled basic.ack method from server received.');
+        });
+        $this->channel->set_nack_handler(function() {
+            trigger_error('Unhandled basic.nack method from server received.');
+        });
+        $this->channel->set_return_listener(function() {
+            trigger_error('Unhandled basic.return method from server received.');
+        });
     }
 
     /**
@@ -196,8 +207,31 @@ final class Channel implements ChannelInterface
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
+        // hack phpamqplib, see: https://github.com/php-amqplib/php-amqplib/issues/428
+        if ($timeout < 0) {
+            throw new ChannelException('Timeout must be greater than or equal to zero.');
+        }
+
+        $publishedMessagesProperty = new \ReflectionProperty(get_class($this->channel), 'published_messages');
+        $publishedMessagesProperty->setAccessible(true);
+
+        $waitHelper = new Wait091();
+
+        $functions = array(
+            $waitHelper->get_wait('basic.ack'),
+            $waitHelper->get_wait('basic.nack'),
+            $waitHelper->get_wait('basic.return'),
+        );
+
+        $now = microtime(true);
+
         try {
-            $this->channel->wait_for_pending_acks_returns($timeout);
+            while (count($publishedMessagesProperty->getValue($this->channel)) != 0) {
+                $this->channel->wait($functions);
+                if ($timeout > 0 && (microtime(true) - $now) > $timeout) {
+                    throw new AMQPTimeoutException('Timeout waiting on channel 4');
+                }
+            }
         } catch (\Exception $e) {
             throw ChannelException::fromPhpAmqpLib($e);
         }
