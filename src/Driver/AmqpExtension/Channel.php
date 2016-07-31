@@ -25,7 +25,6 @@ namespace Humus\Amqp\Driver\AmqpExtension;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception\ChannelException;
-use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange as ExchangeInterface;
 use Humus\Amqp\Queue as QueueInterface;
 
