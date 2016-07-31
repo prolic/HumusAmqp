@@ -292,10 +292,11 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             7,
             function (Envelope $envelope, Queue $queue) use (&$result, &$i) {
                 $i++;
-                $result[] = $envelope->getBody();
-                if ($i % 2 === 0 && ! $envelope->isRedelivery()) {
+                if ($envelope->getBody() % 2 === 0 && ! $envelope->isRedelivery()) {
+                    $result[] = $envelope->getBody() . ' REQUEUE' . ($envelope->isRedelivery() ? ' REDELIVERY' : ' GOOD');
                     return DeliveryResult::MSG_REJECT_REQUEUE();
                 } else {
+                    $result[] = $envelope->getBody() . ' ACK' . ($envelope->isRedelivery() ? ' REDELIVERY' : ' GOOD');
                     return DeliveryResult::MSG_ACK();
                 }
             }
