@@ -400,21 +400,20 @@ exchanges.
 What to Read Next
 -----------------
 
-The documentation is organized as `a number of
-guides </articles/guides.html>`_, covering various topics.
+The documentation is organized as :ref:`a number of guides <guides>`, covering various topics.
 
 We recommend that you read the following guides first, if possible, in
 this order:
 
--  `Exchanges and Publishing </articles/exchanges.html>`_
--  `Bindings </articles/bindings.html>`_
--  `RabbitMQ Extensions to AMQP
-   0.9.1 </articles/rabbitmq_extensions.html>`_
--  `Durability and Related Matters </articles/durability.html>`_
--  `Error Handling and Recovery </articles/error_handling.html>`_
--  `Concurrency Considerations </articles/concurrency.html>`_
--  `Troubleshooting </articles/troubleshooting.html>`_
--  `Using TLS (SSL) Connections </articles/tls.html>`_
+-  :ref:`Queues and Consumers <queues>`
+-  :ref:`Bindings <bindings>`
+-  :ref:`Consumers <consumers>`
+-  :ref:`CLI <cli>`
+-  :ref:`Durability and Related Matters <durability>`
+-  :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
+-  :ref:`Error Handling and Recovery <error_handling>`
+-  :ref:`Troubleshooting <troubleshooting>`
+-  :ref:`Deployment <deployment>`
 
 Tell Us What You Think!
 -----------------------

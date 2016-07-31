@@ -13,11 +13,10 @@ to put the payment system offline and not to process messages even for half an h
 This guide tries to show some different deployment strategies. Note, that there is no general way to do this, it will
 always depend on the use-case you have.
 
-
 Create a new node and switch configuration
 ------------------------------------------
 
-Let's say you have a running rabbitmq configuration on a given node (or vhost). An easy way to update configuration
+Let's say you have a running RabbitMQ configuration on a given node (or vhost). An easy way to update configuration
 would be to just deploy a new node (or vhost) and switch you application configuration to use that new node (vhost)
 instead of the old one.
 
@@ -27,7 +26,7 @@ Message-Versioning
 Message-Versioning with Routing Keys
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can use the routing keys for versioning, like this:
+You could use the routing keys for versioning, like this:
 
 
 .. code-block:: php
@@ -52,11 +51,11 @@ Use some custom message headers to specify version constraints:
 
     <?php
 
-    $attribs = new MessageAttributes();
-    $attribs->setHeaders([
-        'x-version' => 'v1.0.0'
+    $producer->publish('some message', '', [
+        'headers' => [
+            'x-version' => 'v1.0.0',
+        ],
     ]);
-    $producer->publish('some message', '', $attribs);
 
 This way a message with a version not handled by your consumer, will also be at least delivered to him. The consumer
 will then need to check for the x-version header and process if possible or throw an exception. Compared to the
@@ -85,19 +84,8 @@ Getting queues empty first
 --------------------------
 
 Sometimes you might want to upgrade the consumers because of a new message format and you don't want to maintain
-backwards compatibility. If you don't want to lose any messages, stop all producers first, untill the queues are empty,
+backwards compatibility. If you don't want to lose any messages, stop all producers first, until the queues are empty,
 then you can to the switch without losing messages.
-
-What to Read Next
------------------
-
-The documentation is organized as :ref:`a number of guides <guides>`, covering various topics.
-
-We recommend that you read the following guides first, if possible, in
-this order:
-
--  :ref:`Error Handling and Recovery <error_handling>`
--  :ref:`Troubleshooting <troubleshooting>`
 
 Tell Us What You Think!
 -----------------------

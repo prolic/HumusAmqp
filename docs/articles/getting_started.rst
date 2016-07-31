@@ -275,68 +275,6 @@ A sample configuration might look like this, more details an explanation will be
 Running from CLI
 ----------------
 
-In order to run cli commands, you need to setup your connection, exchange and queue configuration.
-See here on how to do this:
-
-You can run cli commands like this:
-
-.. code-block:: bash
-
-    $ ./vendor/bin/humus-amqp
-
-To setup all exchanges and queues configured:
-
-.. code-block:: bash
-
-    $ ./vendor/bin/humus-amqp setup-fabric
-
-This will create all exchanges and queues.
-
-To start a consumer:
-
-.. code-block:: bash
-
-    $ ./vendor/bin/humus-amqp consumer -n myconsumer -a 100
-
-This will start the myconsumer and consume 100 messages until if stops or times out.
-
-
-To start a JSON-RPC server
-
-.. code-block:: bash
-
-    $ ./vendor/bin/humus-amqp json_rpc_server -n myserver -a 100
-
-This will start the myserver and consume 100 messages until if stops or times out.
-
-
-Show availables connections, exchanges, queues, callback_consumers, producers, json_rpc_clients and json_rpc_servers
-
-.. code-block:: bash
-
-    $ ./vendor/bin/humus-amqp show -t exchanges
-
-This will list all known exchanges.
-
-
-To purge a queue:
-
-.. code-block:: bash
-
-    $ ./vendor/bin/humus-amqp purge-queue -c myqueue
-
-This will remove all messages from the given queue.
-
-
-To publish a message to an exchane via CLI:
-
-.. code-block:: bash
-
-    $ ./vendor/bin/humus-amqp publish-message -p myproducer -m "my text" -c -r my.routing.key
-
-This will send a message with body "my text" and routing key "my.routing.key" via the "myproducer"-producer.
-
-
 What to read next
 -----------------
 
@@ -352,7 +290,7 @@ We recommend that you read the following guides next, if possible, in this order
  * :ref:`connecting`. This guide explains how to connect to an RabbitMQ and how to integrate HumusAmqp into standalone and Web applications.
  * :ref:`queues`. This guide focuses on features that consumer applications use heavily.
  * :ref:`exchanges`. This guide focuses on features that producer applications use heavily.
- * :ref:`producers`. This guide focuses on Humus\Amqp\Producer's, a simple approach to send messages.
+ * :ref:`producers`. This guide focuses on HumusAmqp Producer's, a simple approach to send messages.
  * :ref:`error_handling`. This guide explains how to handle protocol errors, network failures and other things that may go wrong in real world projects.
 
 

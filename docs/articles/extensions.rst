@@ -317,15 +317,15 @@ immediately, without any library modifications.
 What to Read Next
 -----------------
 
-The documentation is organized as `a number of
-guides </articles/guides.html>`_, covering various topics.
+The documentation is organized as :ref:`a number of guides <guides>`, covering various topics.
 
 We recommend that you read the following guides first, if possible, in
 this order:
 
--  `Durability and Related Matters </articles/durability.html>`_
--  `Error Handling and Recovery </articles/error_handling.html>`_
--  `Troubleshooting </articles/troubleshooting.html>`_
+-  :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
+-  :ref:`Error Handling and Recovery <error_handling>`
+-  :ref:`Troubleshooting <troubleshooting>`
+-  :ref:`Deployment <deployment>`
 
 Tell Us What You Think!
 -----------------------

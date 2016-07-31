@@ -3,14 +3,14 @@
 Producers
 =========
 
-Producers in Humus\Amqp
+Producers in HumusAmqp
 -----------------------
 
 What are producers?
 ~~~~~~~~~~~~~~~~~~~
 
 The concept of producers has nothing to do with the AMQP protocol itself. It's a feature added in
-Humus\Amqp to allow sending messages with default attributes in a very comfortable way.
+HumusAmqp to allow sending messages with default attributes in a very comfortable way.
 
 Concept of producers
 ~~~~~~~~~~~~~~~~~~~~
@@ -21,7 +21,7 @@ for all sent messages.
 Producer types
 --------------
 
-There are two built-in exchange types in Humus\Amqp
+There are two built-in exchange types in HumusAmqp
 
 -  JSON
 -  Plain
@@ -255,12 +255,15 @@ The documentation is organized as :ref:`a number of guides <guides>`, covering v
 We recommend that you read the following guides first, if possible, in
 this order:
 
+-  :ref:`Queues and Consumers <queues>`
 -  :ref:`Bindings <bindings>`
--  `RabbitMQ Extensions to AMQP
-   0.9.1 <rabbitmq_extensions>`_
+-  :ref:`Consumers <consumers>`
+-  :ref:`CLI <cli>`
 -  :ref:`Durability and Related Matters <durability>`
+-  :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
 -  :ref:`Error Handling and Recovery <error_handling>`
 -  :ref:`Troubleshooting <troubleshooting>`
+-  :ref:`Deployment <deployment>`
 
 Tell Us What You Think!
 -----------------------

@@ -56,14 +56,31 @@ This guide covers:
 -  How to delete exchanges
 -  Other topics related to exchanges and publishing
 
-:ref:`Humus\Amqp\Producer's <producers>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:ref:`HumusAmqp Producer's <producers>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This guide covers:
 
 -  Producer types
 -  Custom producers types
--  How to easily handle publishing messages with Humus\Amqp
+-  How to easily handle publishing messages with HumusAmqp
+
+:ref:`Queues <queues>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This guide covers:
+
+-  How to declare AMQP queues with HumusAmqp
+-  Queue properties
+-  How to declare server-named queues
+-  How to declare temporary exclusive queues
+-  How to consume messages ("push API")
+-  How to fetch messages ("pull API")
+-  Message and delivery properties
+-  Message acknowledgements
+-  How to purge queues
+-  How to delete queues
+-  Other topics related to queues
 
 :ref:`Bindings <bindings>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,8 +91,7 @@ This guide covers:
 -  How to unbind exchanges from queues
 -  Other topics related to bindings
 
-
-:ref:`Queues and Consumers <queues>`
+:ref:`Consumers <consumers>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This guide covers:
@@ -126,6 +142,13 @@ This guide covers:
 
 :ref:`Troubleshooting <troubleshooting>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This guide covers:
+
+-  What to check when your apps that use HumusAmqp and RabbitMQ misbehave
+
+:ref:`Deployment <deployment>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This guide covers:
 

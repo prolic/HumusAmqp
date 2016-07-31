@@ -305,18 +305,16 @@ vhost '_testbed' refused for user '_reader'
    </dd>
    </dl>
 
-
-
 What to Read Next
 -----------------
 
-The documentation is organized as `a number of
-guides </articles/guides.html>`_, covering various topics.
+The documentation is organized as :ref:`a number of guides <guides>`, covering various topics.
 
 We recommend that you read the following guides first, if possible, in
 this order:
 
--  `Troubleshooting </articles/troubleshooting.html>`_
+-  :ref:`Troubleshooting <troubleshooting>`
+-  :ref:`Deployment <deployment>`
 
 Tell Us What You Think!
 -----------------------
