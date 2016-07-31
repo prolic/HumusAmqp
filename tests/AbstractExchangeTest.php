@@ -265,7 +265,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     {
         $result = [];
 
-        set_error_handler(function(int $errno, string $errstr, string $errfile, int $errline) use (&$result) {
+        set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use (&$result) {
             $result[] = $errstr;
         });
 
@@ -450,7 +450,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         try {
             $this->channel->waitForBasicReturn(1);
         } catch (\Exception $e) {
-            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+            $result[] = get_class($e);
         }
 
         $this->exchange->publish('message #1', 'routing.key', Constants::AMQP_MANDATORY);
@@ -474,17 +474,18 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         try {
             $this->channel->waitForBasicReturn();
         } catch (\Exception $e) {
-            //$result[] = get_class($e) . ': ' . $e->getMessage(); //@todo: make php amqplib throw these exceptions
+            $result[] = get_class($e);
         }
 
-        $this->assertCount(2, $result);
-        $this->assertEquals('Message returned', $result[0]);
-        $this->assertCount(6, $result[1]);
-        $this->assertEquals(312, $result[1][0]);
-        $this->assertEquals('NO_ROUTE', $result[1][1]);
-        $this->assertEquals('test-exchange', $result[1][2]);
-        $this->assertEquals('routing.key', $result[1][3]);
-        $this->assertInstanceOf(Envelope::class, $result[1][4]);
-        $this->assertEquals('message #1', $result[1][5]);
+        $this->assertCount(3, $result);
+        $this->assertEquals(ChannelException::class, $result[0]);
+        $this->assertEquals('Message returned', $result[1]);
+        $this->assertCount(6, $result[2]);
+        $this->assertEquals(312, $result[2][0]);
+        $this->assertEquals('NO_ROUTE', $result[2][1]);
+        $this->assertEquals('test-exchange', $result[2][2]);
+        $this->assertEquals('routing.key', $result[2][3]);
+        $this->assertInstanceOf(Envelope::class, $result[2][4]);
+        $this->assertEquals('message #1', $result[2][5]);
     }
 }

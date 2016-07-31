@@ -59,13 +59,13 @@ final class Channel implements ChannelInterface
     {
         $this->connection = $connection;
         $this->channel = $channel;
-        $this->channel->set_ack_handler(function() {
+        $this->channel->set_ack_handler(function () {
             trigger_error('Unhandled basic.ack method from server received.');
         });
-        $this->channel->set_nack_handler(function() {
+        $this->channel->set_nack_handler(function () {
             trigger_error('Unhandled basic.nack method from server received.');
         });
-        $this->channel->set_return_listener(function() {
+        $this->channel->set_return_listener(function () {
             trigger_error('Unhandled basic.return method from server received.');
         });
     }
@@ -217,11 +217,11 @@ final class Channel implements ChannelInterface
 
         $waitHelper = new Wait091();
 
-        $functions = array(
+        $functions = [
             $waitHelper->get_wait('basic.ack'),
             $waitHelper->get_wait('basic.nack'),
             $waitHelper->get_wait('basic.return'),
-        );
+        ];
 
         $now = microtime(true);
 
