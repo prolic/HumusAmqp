@@ -3,8 +3,7 @@
 Running from CLI
 ================
 
-In order to run cli commands, you need to setup your connection, exchange and queue configuration.
-See here on how to do this:
+In order to run cli commands, you need to setup your connection, exchange and queue configuration first.
 
 You can run cli commands like this:
 
@@ -63,7 +62,7 @@ To purge a queue:
 
 .. code-block:: bash
 
-    $ ./vendor/bin/humus-amqp purge-queue -c myqueue
+    $ ./vendor/bin/humus-amqp purge-queue -p myqueue
 
 This will remove all messages from the given queue.
 
@@ -74,9 +73,10 @@ To publish a message to an exchane via CLI:
 
 .. code-block:: bash
 
-    $ ./vendor/bin/humus-amqp publish-message -p myproducer -m "my text" -c -r my.routing.key
+    $ ./vendor/bin/humus-amqp publish-message -p myproducer -m "my text" -c -r "my.routing.key"
 
-This will send a message with body "my text" and routing key "my.routing.key" via the "myproducer"-producer.
+This will send a message with body "my text" and routing key "my.routing.key" via the
+"myproducer"-producer using confirm select mode.
 
 Troubleshooting
 ---------------

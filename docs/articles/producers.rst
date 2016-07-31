@@ -1,10 +1,7 @@
 .. _producers:
 
-Producers
-=========
-
-Producers in HumusAmqp
------------------------
+HumusAmqp Producers
+===================
 
 What are producers?
 ~~~~~~~~~~~~~~~~~~~
@@ -16,7 +13,7 @@ Concept of producers
 ~~~~~~~~~~~~~~~~~~~~
 
 The producer wraps the exchange and corresponding channel and allows to set default attributes and parameters
-for all sent messages.
+for all messages sent.
 
 Producer types
 --------------

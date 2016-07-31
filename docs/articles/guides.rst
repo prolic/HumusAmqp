@@ -9,7 +9,7 @@ We recommend that you read these guides, if possible, in this order:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An overview of HumusAmqp with a quick tutorial that helps you to get started
-with it. It should take about 20 minutes to read and study the provided
+with it. It should take about 30 minutes to read and study the provided
 code examples.
 
 `AMQP 0.9.1 Model Concepts <http://www.rabbitmq.com/tutorials/amqp-concepts.html>`_
@@ -164,4 +164,3 @@ or raise an issue on `Github <https://www.github.com/prolic/HumusAmqp/issues>`_.
 Let us know what was unclear or what has not been covered. Maybe you
 do not like the guide style or grammar or discover spelling
 mistakes. Reader feedback is key to making the documentation better.
-

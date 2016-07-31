@@ -81,8 +81,7 @@ published message, for example.
 Using configuration and factory
 -------------------------------
 
-You can simply configure as many connection as needed and simply give them a name. You can also set a default
-connection, using the ``default_connection`` configuration key.
+You can simply configure as many connection as needed and simply give them a name.
 
 .. code-block:: php
 
