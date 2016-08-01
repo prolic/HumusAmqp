@@ -423,7 +423,6 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
     /**
      * @test
-     * @group by
      */
     public function it_cannot_declare_queue_with_closed_channel()
     {
@@ -494,5 +493,25 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $queue2->setName('test-exclusive-queue');
         $queue2->setFlags(Constants::AMQP_EXCLUSIVE | Constants::AMQP_AUTODELETE);
         $queue2->declareQueue();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_in_passive_mode_when_queues_does_not_exist()
+    {
+        $this->expectException(QueueException::class);
+        $this->expectExceptionMessage(
+            'NOT_FOUND - no queue \'unknown-queue\' in vhost \'/humus-amqp-test\''
+        );
+        $this->expectExceptionCode(404);
+
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $queue = $channel->newQueue();
+        $queue->setName('unknown-queue');
+        $queue->setFlags(Constants::AMQP_PASSIVE);
+        $queue->declareQueue();
     }
 }
