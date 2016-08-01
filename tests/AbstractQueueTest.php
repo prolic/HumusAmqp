@@ -80,7 +80,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
                 'baz',
             ],
         ]);
-        $this->queue->setFlags(AMQP_DURABLE);
+        $this->queue->setFlags(Constants::AMQP_DURABLE);
         $this->queue->declareQueue();
         $this->queue->bind('test-exchange', '#');
 
