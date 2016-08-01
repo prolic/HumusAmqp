@@ -47,6 +47,12 @@ final class CallbackConsumer extends AbstractConsumer
      * @param string|null $consumerTag
      * @param int $blockSize
      * @throws Exception\InvalidArgumentException
+     *
+     * Callback functions with all arguments have the following signature:
+     *
+     *      function deliveryCallback(Envelope $envelope, Queue $queue) : DeliveryResult;
+     *      function flushCallback(Queue $queue) : FlushDeferredResult;
+     *      function errorCallback(\Throwable $e, AbstractConsumer $consumer) : void;
      */
     public function __construct(
         Queue $queue,

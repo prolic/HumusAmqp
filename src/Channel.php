@@ -174,8 +174,8 @@ interface Channel
      *
      * Callback functions with all arguments have the following signature:
      *
-     *      function ack_callback(int $delivery_tag, bool $multiple) : bool;
-     *      function nack_callback(int $delivery_tag, bool $multiple, bool $requeue) : bool;
+     *      function ackCallback(int $delivery_tag, bool $multiple) : bool;
+     *      function nackCallback(int $delivery_tag, bool $multiple, bool $requeue) : bool;
      *
      * and should return boolean false when wait loop should be canceled.
      *

@@ -165,6 +165,10 @@ interface Queue
      *                              for canceling subscriptions with cancel().
      * @return void
      * @throws Exception\QueueException
+     *
+     * Callback function with all arguments have the following signature:
+     *
+     *      function callback(Envelope $envelope, Queue $queue = null) : bool;
      */
     public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = '');
 
