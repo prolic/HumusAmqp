@@ -80,6 +80,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
                 'baz',
             ],
         ]);
+        $this->queue->setFlags(AMQP_DURABLE);
         $this->queue->declareQueue();
         $this->queue->bind('test-exchange', '#');
 
@@ -428,6 +429,20 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
         $this->channel->getConnection()->reconnect();
 
+        $this->queue->declareQueue();
+    }
+
+    /**
+     * @test
+     */
+    public function it_cannot_redeclare_with_other_arguments()
+    {
+        $this->expectException(QueueException::class);
+        $this->expectExceptionMessage(
+            'PRECONDITION_FAILED - inequivalent arg \'durable\' for queue \'test-queue\' in vhost \'/humus-amqp-test\': received \'false\' but current is \'true\''
+        );
+
+        $this->queue->setFlags(Constants::AMQP_AUTODELETE);
         $this->queue->declareQueue();
     }
 }
