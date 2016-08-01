@@ -415,6 +415,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     {
         $this->expectException(QueueException::class);
         $this->expectExceptionMessage('ACCESS_REFUSED - queue name \'amq.foo\' contains reserved prefix \'amq.*\'');
+        $this->expectExceptionCode(403);
 
         $this->queue->setName('amq.foo');
         $this->queue->declareQueue();
@@ -422,6 +423,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
     /**
      * @test
+     * @group by
      */
     public function it_cannot_declare_queue_with_closed_channel()
     {
@@ -441,6 +443,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $this->expectExceptionMessage(
             'PRECONDITION_FAILED - inequivalent arg \'durable\' for queue \'test-queue\' in vhost \'/humus-amqp-test\': received \'false\' but current is \'true\''
         );
+        $this->expectExceptionCode(406);
 
         $this->queue->setFlags(Constants::AMQP_AUTODELETE);
         $this->queue->declareQueue();
@@ -455,6 +458,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $this->expectExceptionMessage(
             'RESOURCE_LOCKED - cannot obtain exclusive access to locked queue \'test-exclusive-queue\' in vhost \'/humus-amqp-test\''
         );
+        $this->expectExceptionCode(405);
 
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
