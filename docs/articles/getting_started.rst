@@ -272,26 +272,26 @@ A sample configuration might look like this, more details an explanation will be
     ];
 
 
-Running from CLI
-----------------
-
-What to read next
+What to Read Next
 -----------------
 
-Documentation is organized as a number of :ref:`guides <guides>`, covering all
-kinds of topics including use cases for various exchange types,
-fault-tolerant message processing with acknowledgements and error
-handling.
+The documentation is organized as :ref:`a number of guides <guides>`, covering various topics.
 
-We recommend that you read the following guides next, if possible, in this order:
+We recommend that you read the following guides first, if possible, in
+this order:
 
- * `AMQP 0.9.1 Model Explained <http://www.rabbitmq.com/tutorials/amqp-concepts.html>`_. A simple 2 page long introduction to the AMQP Model concepts and features. Understanding the AMQP 0.9.1 Model
-   will make a lot of other documentation, both for HumusAmqp and RabbitMQ itself, easier to follow. With this guide, you don't have to waste hours of time reading the whole specification.
- * :ref:`connecting`. This guide explains how to connect to an RabbitMQ and how to integrate HumusAmqp into standalone and Web applications.
- * :ref:`queues`. This guide focuses on features that consumer applications use heavily.
- * :ref:`exchanges`. This guide focuses on features that producer applications use heavily.
- * :ref:`producers`. This guide focuses on HumusAmqp Producer's, a simple approach to send messages.
- * :ref:`error_handling`. This guide explains how to handle protocol errors, network failures and other things that may go wrong in real world projects.
+-  :ref:`Connecting to RabbitMQ with HumusAmqp <connecting>`
+-  :ref:`Exchanges and Publishing <exchanges>`
+-  :ref:`HumusAmqp Producer's <producers>`
+-  :ref:`Queues and Consumers <queues>`
+-  :ref:`Bindings <bindings>`
+-  :ref:`Consumers <consumers>`
+-  :ref:`CLI <cli>`
+-  :ref:`Durability and Related Matters <durability>`
+-  :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
+-  :ref:`Error Handling and Recovery <error_handling>`
+-  :ref:`Troubleshooting <troubleshooting>`
+-  :ref:`Deployment <deployment>`
 
 
 Tell Us What You Think!

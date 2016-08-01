@@ -86,6 +86,14 @@ for them. The configure a queue with an explicit name:
         ],
     ];
 
+or
+
+.. code-block:: php
+
+    <?php
+
+    $queue->setName('my-queue');
+
 
 Server-named queues
 ~~~~~~~~~~~~~~~~~~~
@@ -124,7 +132,7 @@ Reserved Queue Name Prefix
 
 Queue names starting with "amq." are reserved for server-named queues
 and queues for internal use by the broker. Attempts to declare a queue
-with a name that violates this rule will result in an AMQPExchangeException
+with a name that violates this rule will result in an exception
 with reply code ``403`` and an exception message
 similar to this:
 
@@ -135,7 +143,7 @@ similar to this:
 This error results in the channel that was used for the declaration
 being forcibly closed by RabbitMQ. If the program subsequently tries to
 communicate with RabbitMQ using the same channel without re-opening it
-then the AMQP Extension will throw an ``AMQPChannelException' with message
+then the AMQP Extension will throw an ``\Humus\Amqp\Exception\ChannelException' with message
 'Could not create exchange. No channel available``.
 
 Queue Re-Declaration With Different Attributes
@@ -303,20 +311,25 @@ Publishing </articles/exchanges.html>`_ guide for more details).
 
     return [
         'humus_amqp_module' => [
-            'exchanges' => [
+            'exchange' => [
                 'demo-exchange' => [
                     'name' => 'demo-exchange',
                     'type' => 'direct'
                 ],
             ],
-            'queues' => [
+            'queue' => [
                 'my-queue' => [
                     'name' => 'demo-queue',
-                    'exchange' => 'demo-exchange',
-                    'routingKeys => [
-                        'v1.0.*',
-                        'v1.1.0',
-                        'v2.0.0'
+                    'exchanges' => [
+                        'demo-exchange' => [
+                            [
+                                'routing_keys => [
+                                    'v1.0.*',
+                                    'v1.1.0',
+                                    'v2.0.0'
+                                ],
+                            ],
+                        ],
                     ],
                 ],
             ],

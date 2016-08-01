@@ -35,13 +35,20 @@ Binding Queues to Exchanges
 ---------------------------
 
 In order to receive messages, a queue needs to be bound to at least one
-exchange. Most of the time binding is explcit (done by applications).
+exchange. Most of the time binding is explicit (done by applications).
 
-Example:
+Example using config and factory
+--------------------------------
 
 .. code-block:: php
 
     return [
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
         'humus' => [
             'amqp' => [
                 'driver' => 'php-amqplib',
@@ -54,22 +61,24 @@ Example:
                         'password' => 'guest',
                         'vhost' => '/',
                         'persistent' => true,
-                        'read_timeout' => 3, //sec, float allowed
-                        'write_timeout' => 1, //sec, float allowed
+                        'read_timeout' => 3,
+                        'write_timeout' => 1,
                     ],
                 ],
                 'exchanges' => [
                     'demo-exchange' => [
                         'name' => 'demo-exchange',
                         'type' => 'direct',
-                        'connection' => 'default',
+                        'connection' => 'default-amqp-connection',
                     ]
                 ],
                 'queues' => [
                     'my-queue' => [
                         'name' => 'my-queue',
-                        'exchange' => 'demo-exchange'
-                        'connection' => 'default',
+                        'exchanges' => [
+                            'demo-exchange' => [],
+                        ],
+                        'connection' => 'default-amqp-connection',
                     ]
                 ]
             ]
@@ -89,7 +98,7 @@ Exchange-to-Exchange Bindings
 -----------------------------
 
 Exchange-to-Exchange bindings is a RabbitMQ extension to AMQP 0.9.1. It
-is covered in the `RabbitMQ extensions guide </articles/extensions.html>`_.
+is covered in the :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
 
 Bindings, Routing and Returned Messages
 ---------------------------------------
@@ -133,10 +142,9 @@ RabbitMQ extensions can provide additional ways of handling unroutable
 messages: for example, RabbitMQ's `Alternate Exchanges
 extension <http://www.rabbitmq.com/ae.html>`_ makes it possible to route
 unroutable messages to another exchange. HumusAmqp support for it is
-documented in the `RabbitMQ Extensions
-guide </articles/extensions.html>`_.
+documented in the :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`.
 
-`Exchanges and Publishing </articles/exchanges.html>`_ documentation
+:ref:`Exchanges and Publishing <exchanges>` documentation
 guide provides more information on the subject, including full code
 examples.
 
