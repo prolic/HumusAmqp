@@ -445,4 +445,50 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $this->queue->setFlags(Constants::AMQP_AUTODELETE);
         $this->queue->declareQueue();
     }
+
+    /**
+     * @test
+     */
+    public function it_cannot_access_an_exclusive_queue_from_another_channel()
+    {
+        $this->expectException(QueueException::class);
+        $this->expectExceptionMessage(
+            'RESOURCE_LOCKED - cannot obtain exclusive access to locked queue \'test-exclusive-queue\' in vhost \'/humus-amqp-test\''
+        );
+
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $exchange = $channel->newExchange();
+        $exchange->setType('topic');
+        $exchange->setName('test-exchange2');
+        $exchange->declareExchange();
+
+        $queue = $channel->newQueue();
+        $queue->setName('test-exclusive-queue');
+        $queue->setArguments([
+            'foo' => 'bar',
+            'baz' => 1,
+            'bam' => true,
+            'table' => [
+                'foo' => 'bar',
+            ],
+            'array' => [
+                'baz',
+            ],
+        ]);
+        $queue->setFlags(Constants::AMQP_EXCLUSIVE | Constants::AMQP_AUTODELETE);
+        $queue->declareQueue();
+        $queue->bind('test-exchange2', '#');
+
+        $this->addToCleanUp($exchange);
+        $this->addToCleanUp($queue);
+
+        $connection2 = $this->createConnection();
+        $channel2 = $connection2->newChannel();
+        $queue2 = $channel2->newQueue();
+        $queue2->setName('test-exclusive-queue');
+        $queue2->setFlags(Constants::AMQP_EXCLUSIVE | Constants::AMQP_AUTODELETE);
+        $queue2->declareQueue();
+    }
 }
