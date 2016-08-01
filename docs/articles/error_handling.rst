@@ -48,7 +48,7 @@ Handling authentication failure is very similar to handling initial TCP
 connection failure.
 
 When you try to access RabbitMQ with invalid credentials, you'll get an
-'AMQPConnectionException' with message 'Library error: a socket error occurred - Potential login failure.'.
+``\Humus\Amqp\ConnectionException`` with message ``Library error: a socket error occurred - Potential login failure.``.
 
 In case you are wondering why the exception name has "potential" in it:
 `AMQP 0.9.1

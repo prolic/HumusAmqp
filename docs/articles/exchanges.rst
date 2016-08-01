@@ -1225,7 +1225,7 @@ use the ``:auto_delete`` option on declaration:
     return [
         'humus' => [
             'amqp' => [
-                'exchanges' => [
+                'exchange' => [
                     'header-exchange' => [
                         'name' => 'header-exchange',
                         'type' => 'headers',

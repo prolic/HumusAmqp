@@ -70,17 +70,41 @@ for them. The configure a queue with an explicit name:
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct'
-                ],
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
             ],
-            'queues' => [
-                'my-queue' => [
-                    'name' => 'my-queue',
-                    'exchange' => 'demo-exchange'
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => true,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'exchange' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct'
+                    ],
+                ],
+                'queue' => [
+                    'my-queue' => [
+                        'name' => 'my-queue',
+                        'exchanges' => [
+                            'demo-exchange' => [],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -108,17 +132,41 @@ that the method returns:
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct'
-                ],
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
             ],
-            'queues' => [
-                'my-queue' => [
-                    'name' => '',
-                    'exchange' => 'demo-exchange'
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => true,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'exchange' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct'
+                    ],
+                ],
+                'queue' => [
+                    'my-queue' => [
+                        'name' => '',
+                        'exchanges' => [
+                            'demo-exchange' => [],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -138,7 +186,7 @@ similar to this:
 
 ::
 
-    Server channel error: 403, message: ACCESS_REFUSED - exchange name 'amq.queue' contains reserved prefix 'amq.*'
+    ACCESS_REFUSED - exchange name 'amq.queue' contains reserved prefix 'amq.*'
 
 This error results in the channel that was used for the declaration
 being forcibly closed by RabbitMQ. If the program subsequently tries to
@@ -156,8 +204,7 @@ similar to this:
 
 ::
 
-    Server channel error: 406, message: PRECONDITION_FAILED - cannot redeclare exchange 'foo' in vhost '/'
-    with different type, durable, internal or autodelete value
+    PRECONDITION_FAILED - cannot redeclare exchange 'foo' in vhost '/' with different type, durable, internal or autodelete value
 
 This error results in the channel that was used for the declaration
 being forcibly closed by RabbitMQ. If the program subsequently tries to
@@ -233,22 +280,48 @@ non-blank string and use the ``:durable`` option:
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct'
-                ],
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
             ],
-            'queues' => [
-                'my-queue' => [
-                    'name' => 'demo-queue',
-                    'exchange' => 'demo-exchange',
-                    'durable' => true
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => true,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'exchange' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct'
+                    ],
+                ],
+                'queue' => [
+                    'my-queue' => [
+                        'name' => 'demo-queue',
+                        'exchanges' => [
+                            'demo-exchange'
+                        ],
+                        'durable' => true
+                    ],
                 ],
             ],
         ],
     ];
+
+.. note:: Using the \Humus\Amqp\Container\QueueFactory queues are durable by default, when no value is set.
 
 Declaring a Temporary Exclusive Queue
 -------------------------------------
@@ -261,22 +334,44 @@ empty string) as the queue name and use the ``:exclusive`` option:
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct'
-                )
-            ),
-            'queues' => [
-                'my-queue' => [
-                    'name' => '',
-                    'exchange' => 'demo-exchange',
-                    'exclusive' => true
-                )
-            )
-        )
-    );
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => true,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'exchange' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct'
+                    ],
+                ],
+                'queue' => [
+                    'my-queue' => [
+                        'name' => '',
+                        'exchange' => 'demo-exchange',
+                        'exclusive' => true
+                    ],
+                ],
+            ]
+        ]
+    ];
 
 Exclusive queues may only be accessed by the current connection and are
 deleted when that connection closes. The declaration of an exclusive
@@ -292,8 +387,8 @@ Checking if a Queue Exists
 Sometimes it's convenient to check if a queue exists. To do so, at the
 protocol level you use ``queue.declareQueue`` with ``passive`` set to
 ``true``. In response RabbitMQ responds with a channel exception if the
-queue does not exist. This will lead to an 'AMQPQueueException' with message
-'Server channel error: 404, message: NOT_FOUND - no queue 'test-queue' in vhost '/'
+queue does not exist. This will lead to an ``\Humus\Amqp\QueueException`` with message
+``NOT_FOUND - no queue 'test-queue' in vhost '/'``
 
 Binding Queues with Routing Keys
 --------------------------------
@@ -302,8 +397,7 @@ In order to receive messages, a queue needs to be bound to at least one
 exchange. Most of the time binding is explcit (done by applications).
 **Please note:** All queues are automatically bound to the default
 unnamed RabbitMQ direct exchange with a routing key that is the same as
-the queue name (see `Exchanges and
-Publishing </articles/exchanges.html>`_ guide for more details).
+the queue name, see: :ref:`Exchanges and Publishing <exchanges>` guide for more details.
 
 .. code-block:: php
 
@@ -355,7 +449,7 @@ Purging queues
 --------------
 
 It is possible to purge a queue (remove all of the messages from it)
-using the ``AMQPQueue#purge`` method:
+using the ``\Humus\Amqp\Queue#purge`` method:
 
 .. code-block:: php
 
@@ -396,12 +490,12 @@ When a queue is deleted, all of the messages in it are deleted as well.
 Queue Durability vs Message Durability
 --------------------------------------
 
-See `Durability guide </articles/durability.html>`_
+See :ref:`Durability and Related Matters <durability>`
 
 RabbitMQ Extensions Related to Queues
 -------------------------------------
 
-See `RabbitMQ Extensions guide </articles/rabbitmq_extensions.html>`_
+See :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
 
 Wrapping Up
 -----------
