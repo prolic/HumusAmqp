@@ -21,6 +21,8 @@
 declare (strict_types=1);
 
 namespace Humus\Amqp;
+use Humus\Amqp\Exception\ChannelException;
+use Humus\Amqp\Exception\QueueException;
 
 /**
  * Represents a AMQP queue
@@ -104,6 +106,8 @@ interface Queue
      * Declare a new queue on the broker.
      *
      * @return integer the message count.
+     * @throws QueueException
+     * @throws ChannelException
      */
     public function declareQueue() : int;
 

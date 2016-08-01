@@ -25,6 +25,8 @@ namespace HumusTest\Amqp;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Envelope;
+use Humus\Amqp\Exception\ChannelException;
+use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
@@ -403,5 +405,29 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
 
         $this->assertFalse($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_cannot_declare_queue_with_reserved_name_prefix()
+    {
+        $this->expectException(QueueException::class);
+        $this->expectExceptionMessage('ACCESS_REFUSED - queue name \'amq.foo\' contains reserved prefix \'amq.*\'');
+
+        $this->queue->setName('amq.foo');
+        $this->queue->declareQueue();
+    }
+
+    /**
+     * @test
+     */
+    public function it_cannot_declare_queue_with_closed_channel()
+    {
+        $this->expectException(ChannelException::class);
+
+        $this->channel->getConnection()->reconnect();
+
+        $this->queue->declareQueue();
     }
 }

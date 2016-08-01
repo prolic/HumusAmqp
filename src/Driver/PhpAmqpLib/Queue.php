@@ -27,6 +27,8 @@ use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Queue as QueueInterface;
+use PhpAmqpLib\Exception\AMQPProtocolChannelException;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPAbstractCollection;
 use PhpAmqpLib\Wire\AMQPArray;
@@ -157,16 +159,23 @@ final class Queue implements QueueInterface
             }
         }
 
-        $result = $this->channel->getResource()->queue_declare(
-            $this->name,
-            (bool) ($this->flags & Constants::AMQP_PASSIVE),
-            (bool) ($this->flags & Constants::AMQP_DURABLE),
-            (bool) ($this->flags & Constants::AMQP_EXCLUSIVE),
-            (bool) ($this->flags & Constants::AMQP_AUTODELETE),
-            (bool) ($this->flags & Constants::AMQP_NOWAIT),
-            $args,
-            null
-        );
+        try {
+            $result = $this->channel->getResource()->queue_declare(
+                $this->name,
+                (bool) ($this->flags & Constants::AMQP_PASSIVE),
+                (bool) ($this->flags & Constants::AMQP_DURABLE),
+                (bool) ($this->flags & Constants::AMQP_EXCLUSIVE),
+                (bool) ($this->flags & Constants::AMQP_AUTODELETE),
+                (bool) ($this->flags & Constants::AMQP_NOWAIT),
+                $args,
+                null
+            );
+        } catch (AMQPProtocolChannelException $e) {
+            throw Exception\QueueException::fromPhpAmqpLib($e);
+        } catch (AMQPRuntimeException $e) {
+            throw Exception\ChannelException::fromPhpAmqpLib($e);
+        }
+
 
         $this->name = $result[0];
 
