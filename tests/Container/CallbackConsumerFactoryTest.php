@@ -73,6 +73,7 @@ class CallbackConsumerFactoryTest extends TestCase
                             'queue' => 'my_queue',
                             'idle_timeout' => 1.5,
                             'delivery_callback' => 'my_callback',
+                            'block_size' => 100,
                         ],
                     ],
                 ],
