@@ -33,7 +33,7 @@ Authentication Failures
 
 Here is what authentication failure looks like in a RabbitMQ log:
 
-.. code-block:: bash
+::
 
     =ERROR REPORT==== 12-Jul-2013::16:49:03 ===
     closing AMQP connection <0.31567.1> (127.0.0.1:50458 -> 127.0.0.1:5672):
@@ -47,7 +47,7 @@ were invalid. If you are seeing this message, make sure username, password and v
 
 The following entry:
 
-.. code-block:: bash
+::
 
     =ERROR REPORT==== 17-May-2011::17:26:28 ===
     exception on TCP connection <0.4201.62> from 10.8.0.30:57990
@@ -80,14 +80,14 @@ Testing Network Connection with RabbitMQ using Telnet
 
 One simple way to check network connection between a particular network node and a RabbitMQ node is to use telnet:
 
-.. code-block:: bash
+::
 
     telnet [host or ip] 5672
 
 then enter any random string of text and hit Enter. RabbitMQ should immediately close down the connection.
 Here is an example session:
 
-.. code-block:: bash
+::
 
     telnet localhost 5672
     Connected to localhost.
@@ -97,7 +97,7 @@ Here is an example session:
 
 If Telnet exits after printing instead
 
-.. code-block:: bash
+::
 
     telnet: connect to address [host or ip]: Connection refused
     telnet: Unable to connect to remote host
@@ -124,7 +124,7 @@ Missing erlang-os-mon on Debian and Ubuntu
 
 The following error on RabbitMQ startup on Debian or Ubuntu
 
-.. code-block:: bash
+::
 
     ERROR: failed to load application os_mon: {"no such file or directory","os_mon.app"}
 
@@ -133,7 +133,7 @@ suggests that the erlang-os-mon package is not installed.
 asn1 Issue with Erlang R16B01
 -----------------------------
 
-.. code-block:: bash
+::
 
     BOOT FAILED
     ===========

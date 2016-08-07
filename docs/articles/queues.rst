@@ -209,7 +209,7 @@ similar to this:
 This error results in the channel that was used for the declaration
 being forcibly closed by RabbitMQ. If the program subsequently tries to
 communicate with RabbitMQ using the same channel without re-opening it
-then HumusAmqp will throw an ``HumusAmqp\Exception\ChannelException' with message
+then HumusAmqp will throw an ``Humus\Amqp\Exception\ChannelException' with message
 'Could not create exchange. No channel available``. In order
 to continue communications in the same program after such an error, a
 different channel would have to be used.
