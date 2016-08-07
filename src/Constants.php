@@ -69,7 +69,7 @@ abstract class Constants
     const AMQP_NOLOCAL = 64;
 
     /**
-     * When passed to the {@link AMQPQueue::get()} and {@link AMQPQueue::consume()} methods as a flag,
+     * When passed to the {@link \Humus\Amqp\Queue::get()} and {@link \Humus\Amqp\Queue::consume()} methods as a flag,
      * the messages will be immediately marked as acknowledged by the server upon delivery.
      */
     const AMQP_AUTOACK = 128;
@@ -96,7 +96,7 @@ abstract class Constants
     const AMQP_IMMEDIATE = 2048;
 
     /**
-     * If set during a call to {@link AMQPQueue::ack()}, the delivery tag is treated as "up to and including", so that multiple
+     * If set during a call to {@link \Humus\Amqp\Queue::ack()}, the delivery tag is treated as "up to and including", so that multiple
      * messages can be acknowledged with a single method. If set to zero, the delivery tag refers to a single message.
      * If the AMQP_MULTIPLE flag is set, and the delivery tag is zero, this indicates acknowledgement of all outstanding
      * messages.
@@ -104,13 +104,13 @@ abstract class Constants
     const AMQP_MULTIPLE = 4096;
 
     /**
-     * If set during a call to {@link AMQPExchange::bind()}, the server will not respond to the method.The client should not wait
+     * If set during a call to {@link \Humus\Amqp\Exchange::bind()}, the server will not respond to the method.The client should not wait
      * for a reply method. If the server could not complete the method it will raise a channel or connection exception.
      */
     const AMQP_NOWAIT = 8192;
 
     /**
-     * If set during a call to {@link AMQPQueue::nack()}, the message will be placed back to the queue.
+     * If set during a call to {@link \Humus\Amqp\Queue::nack()}, the message will be placed back to the queue.
      */
     const AMQP_REQUEUE = 16384;
 
