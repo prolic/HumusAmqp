@@ -18,9 +18,6 @@ HumusAmqp supports all `RabbitMQ extensions to AMQP
 -  `Sender-selected
    Distribution <http://www.rabbitmq.com/sender-selected.html>`_
 -  `Dead Letter Exchanges <http://www.rabbitmq.com/dlx.html>`_
-
-The following RabbitMQ extensions are note supported due to php extension limitations:
-
 -  `Publisher confirms <http://www.rabbitmq.com/confirms.html>`_
 -  `Validated
    user\_id <http://www.rabbitmq.com/validated-user-id.html>`_
@@ -48,19 +45,43 @@ messages will not be delivered to consumers and cannot be fetched.
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct'
-                ]
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
             ],
-            'queues' => [
-                'my-queue' => [
-                    'name' => 'my-queue',
-                    'exchange' => 'demo-exchange',
-                    'arguments' => [
-                        'x-message-ttl' => 1000
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'amqp-extensions',
+                'connection' => [
+                    'default' => [
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                    ],
+                ],
+                'exchange' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct',
+                        'connection' => 'default-amqp-connection',
+                    ],
+                ],
+                'queue' => [
+                    'my-queue' => [
+                        'name' => 'my-queue',
+                        'exchanges' => [
+                            'demo-exchange' => [
+                                [
+                                    'arguments' => [
+                                        'x-message-ttl' => 1000
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
             ],
@@ -114,13 +135,31 @@ be sent.
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct',
-                    'arguments' => [
-                        'alternate_exchange' => 'alternate-exchange-name'
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'amqp-extensions',
+                'connection' => [
+                    'default' => [
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                    ],
+                ],
+                'exchanges' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct',
+                        'arguments' => [
+                            'alternate_exchange' => 'alternate-exchange-name'
+                        ],
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
             ],
@@ -146,24 +185,60 @@ tracing).
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct',
-                    'exchange_bindings' => [
-                        'exchange1' => [
-                            'routingKey.1',
-                            'routingKey.2'
-                        ),
-                        'exchange2' => [
-                            'routingKey.3'
-                        )
-                    )
-                )
-            ),
-        )
-    );
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'amqp-extensions',
+                'connection' => [
+                    'default' => [
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                    ],
+                ],
+                'exchange' => [
+                    'exchange1' => [
+                        'name' => 'exchange1',
+                        'type' => 'direct',
+                        'connection' => 'default-amqp-connection',
+                    ],
+                    'exchange2' => [
+                        'name' => 'exchange2',
+                        'type' => 'direct',
+                        'connection' => 'default-amqp-connection',
+                    ],
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct',
+                        'exchange_bindings' => [
+                            'exchange1' => [
+                                [
+                                    'routing_keys' => [
+                                        'routingKey.1',
+                                        'routingKey.2'
+                                    ],
+                                ],
+                            ),
+                            'exchange2' => [
+                                [
+                                    'routing_keys' => [
+                                        'routingKey.3'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'connection' => 'default-amqp-connection',
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 Learn More
 ~~~~~~~~~~
@@ -187,13 +262,31 @@ queue is allowed to be *unused*. After that moment, it will be deleted.
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchanges' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct',
-                    'arguments' => [
-                        'x-expires' => 10000
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'amqp-extensions',
+                'connection' => [
+                    'default' => [
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                    ],
+                ],
+                'exchange' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct',
+                        'arguments' => [
+                            'x-expires' => 10000
+                        ],
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
             ],
@@ -244,12 +337,14 @@ headers is present, this extension has no effect.
 
     <?php
 
-    $attribs = new MessageAttributes()
-    $attribs->setHeaders([
-        'CC' => ['two', 'three')
-    ));
-
-    $producer->publish('some message', '', $attribs);
+    $producer->publish('some message', '', Constants::AMQP_NOPARAM, [
+        'headers' => [
+            'CC' => [
+                'two',
+                'three'
+            ],
+        ],
+    ]);
 
 Learn More
 ~~~~~~~~~~
@@ -283,13 +378,33 @@ queue arguments:
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'queues' => [
-                'foo' => [
-                    'name' => 'foo',
-                    'exchange' => 'demo',
-                    'arguments' => [
-                        'x-dead-letter-exchange' => 'demo.error'
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
+            ],
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'amqp-extensions',
+                'connection' => [
+                    'default' => [
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                    ],
+                ],
+                'queue' => [
+                    'foo' => [
+                        'name' => 'foo',
+                        'exchanges' => [
+                            'demo' => [],
+                        ],
+                        'arguments' => [
+                            'x-dead-letter-exchange' => 'demo.error'
+                        ],
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
             ],

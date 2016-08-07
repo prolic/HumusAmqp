@@ -6,29 +6,19 @@ Error Handling
 Client Exceptions
 -----------------
 
-Here is the break-down of exceptions that can be raised by the PHP AMQP Extension:
+Here is the break-down of exceptions that can be raised by HumusAmqp
 
 ::
 
-    AMQPChannelException
-    AMQPConnectionException
-    AMQPExchangeException
-    AMQPQueueException
-
-Additionally the HumusAmqp throws some of the following exceptions
-
-::
-
-    HumusAmqp\Exception\BadFunctionCallException
-    HumusAmqp\Exception\BadMethodCallException
-    HumusAmqp\Exception\ExtensionNotLoadedException
-    HumusAmqp\Exception\InvalidArgumentException
-    HumusAmqp\Exception\RuntimeException
-
-The first 3 exceptions only occur, when you don't have ext-pcntl installed but you try to start
-the consumer without the --without-signals switch.
-
-The InvalidArgumentException occurs, when you have a wrong amqp module configuration.
+    Humus\Amqp\Exception\BadMethodCallException
+    Humus\Amqp\Exception\ChannelException
+    Humus\Amqp\Exception\ConnectionException
+    Humus\Amqp\Exception\InvalidArgumentException
+    Humus\Amqp\Exception\InvalidJsonRpcRequest
+    Humus\Amqp\Exception\InvalidJsonRpcVersion
+    Humus\Amqp\Exception\JsonParseError
+    Humus\Amqp\Exception\QueueException
+    Humus\Amqp\Exception\RuntimeException
 
 Initial RabbitMQ Connection Failures
 ------------------------------------
@@ -38,7 +28,7 @@ failures. Networks are not 100% reliable, even with modern system
 configuration tools like Chef or Puppet misconfigurations happen and the
 broker might also be down. Error detection should happen as early as
 possible. To handle TCP connection failure, catch the
-``AMQPConnection`` exception.
+``Humus\Amqp\Exception\ConnectionException`` exception.
 
 Authentication Failures
 -----------------------
@@ -48,7 +38,7 @@ Handling authentication failure is very similar to handling initial TCP
 connection failure.
 
 When you try to access RabbitMQ with invalid credentials, you'll get an
-``\Humus\Amqp\ConnectionException`` with message ``Library error: a socket error occurred - Potential login failure.``.
+``\Humus\Amqp\Exception\ConnectionException`` with message ``Library error: a socket error occurred - Potential login failure.``.
 
 In case you are wondering why the exception name has "potential" in it:
 `AMQP 0.9.1

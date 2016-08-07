@@ -59,10 +59,6 @@ depends on the persistence mode of the message itself.
     like with data stores, durability comes at a certain cost to
     performance).
 
-Pass the ``:persistent => true`` argument to the
-``AMQPExchange#publish`` method to publish your message as
-persistent.
-
 Clustering and High Availability
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

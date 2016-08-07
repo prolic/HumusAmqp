@@ -63,7 +63,7 @@ b) Select a driver to use, currently only php-amqplib and php-amqp (PHP extensio
 
 Configure your container to return the DriverFactory for the Driver class. If your container supports configuration by
 array like Zend\ServiceManager f.e., this should look similar to this.
-For integration with the Symfony Framework use the `Symfony container-interop bundle <https://github.com/proophsoftware/prooph-interop-bundle>`_.
+For integration with the Symfony Framework you can use the `Symfony container-interop bundle <https://github.com/proophsoftware/prooph-interop-bundle>`_.
 
 .. code-block:: php
 
@@ -197,9 +197,14 @@ A sample configuration might look like this, more details an explanation will be
                     ],
                     'info-queue' => [
                         'name' => 'info-queue',
-                        'exchange' => 'topic-exchange',
-                        'routingKeys' => [
-                            '#.err',
+                        'exchanges' => [
+                            'topic-exchange' => [
+                                [
+                                    'routing_keys' => [
+                                        '#.err',
+                                    ],
+                                ]
+                            ],
                         ],
                         'connection' => 'default-amqp-connection',
                     ],

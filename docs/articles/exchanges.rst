@@ -132,8 +132,9 @@ Using configuration and factory
         ]
     );
 
-When `auto_setup_fabric` is set to true, the exchange factory will automatically declare the configured exchanged.
-It's recommended for production to disable it, and declare all needed exchanges and queues upfront.
+When `auto_setup_fabric` is set to true, the exchange factory will automatically declare the
+configured exchanged. For durable exchanges and queues it's recommended for production to disable
+it, and declare all needed exchanges and queues upfront.
 
 Fanout exchanges
 ----------------
@@ -1204,7 +1205,7 @@ Deleting Exchanges
 Explicitly deleting an Exchange
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Exchanges are deleted using the ``HumusAmqp\Exchange#delete``:
+Exchanges are deleted using the ``Humus\Amqp\Exchange#delete``:
 
 .. code-block:: php
 
