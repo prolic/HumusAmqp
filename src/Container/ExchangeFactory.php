@@ -139,14 +139,23 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             if (isset($options['arguments']['alternate-exchange'])) {
                 // auto setup fabric alternate exchange
                 $exchangeName = $options['arguments']['alternate-exchange'];
-                ExchangeFactory::$exchangeName($container, null, true);
+                ExchangeFactory::$exchangeName($container, $this->channel, true);
             }
 
             $exchange->declareExchange();
 
             // rabbitmq extension: exchange to exchange bindings
-            foreach ($options['exchange_bindings'] as $exchangeName => $config) {
-                $this->bindExchange($container, $exchange, $exchangeName, $config);
+            foreach ($options['exchange_bindings'] as $exchangeName => $bindOptions) {
+                ExchangeFactory::$exchangeName($container, $this->channel, true);
+                if (empty($bindOptions)) {
+                    $this->bindExchange($exchange, $exchangeName, [], []);
+                } else {
+                    foreach ($bindOptions as $bindOption) {
+                        $routingKeys = $bindOption['routing_keys'] ?? [];
+                        $bindArguments = $bindOption['arguments'] ?? [];
+                        $this->bindExchange($exchange, $exchangeName, $routingKeys, $bindArguments);
+                    }
+                }
             }
         }
 
@@ -206,22 +215,22 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     }
 
     /**
-     * @param ContainerInterface $container
      * @param Exchange $exchange
      * @param string $exchangeName
-     * @param array $config
+     * @param array $routingKeys
+     * @param array $bindArguments
      */
-    private function bindExchange(ContainerInterface $container, Exchange $exchange, string $exchangeName, array $config)
-    {
-        $factory = new self($exchangeName, $this->channel);
-        $otherExchange = $factory($container);
-        $otherExchange->declareExchange();
-
-        if (empty($config)) {
-            $exchange->bind($exchangeName);
+    private function bindExchange(
+        Exchange $exchange,
+        string $exchangeName,
+        array $routingKeys,
+        array $bindArguments
+    ) {
+        if (empty($routingKeys)) {
+            $exchange->bind($exchangeName, '', $bindArguments);
         } else {
-            foreach ($config as $routingKey => $bindOptions) {
-                $exchange->bind($exchangeName, $routingKey, $bindOptions);
+            foreach ($routingKeys as $routingKey) {
+                $exchange->bind($exchangeName, $routingKey, $bindArguments);
             }
         }
     }

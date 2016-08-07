@@ -262,16 +262,29 @@ class ExchangeFactoryTest extends TestCase
                             'auto_setup_fabric' => true,
                             'exchange_bindings' => [
                                 'base_exchange_one' => [
-                                    'routing_key_one' => [
-                                        'my first argument' => 'my first value',
+                                    [
+                                        'routing_keys' => [
+                                            'routing_key_one',
+                                        ],
+                                        'arguments' => [
+                                            'my first argument' => 'my first value',
+                                        ],
                                     ],
-                                    'routing_key_two' => [
-                                        'my second argument' => 'my second value',
+                                    [
+                                        'routing_keys' => [
+                                            'routing_key_two'
+                                        ],
+                                        'arguments' => [
+                                            'my second argument' => 'my second value',
+                                        ],
                                     ],
                                 ],
                                 'base_exchange_two' => [
-                                    '' => [],
-                                    'routing_key_three' => [],
+                                    [
+                                        'routing_keys' => [
+                                            'routing_key_three'
+                                        ],
+                                    ]
                                 ],
                                 'base_exchange_three' => [],
                             ],
@@ -322,9 +335,8 @@ class ExchangeFactoryTest extends TestCase
         $exchange->declareExchange()->shouldBeCalled();
         $exchange->bind('base_exchange_one', 'routing_key_one', ['my first argument' => 'my first value'])->shouldBeCalled();
         $exchange->bind('base_exchange_one', 'routing_key_two', ['my second argument' => 'my second value'])->shouldBeCalled();
-        $exchange->bind('base_exchange_two', '', [])->shouldBeCalled();
         $exchange->bind('base_exchange_two', 'routing_key_three', [])->shouldBeCalled();
-        $exchange->bind('base_exchange_three')->shouldBeCalled();
+        $exchange->bind('base_exchange_three', '', [])->shouldBeCalled();
 
         $exchange = $exchange->reveal();
 
