@@ -404,26 +404,50 @@ the queue name, see: :ref:`Exchanges and Publishing <exchanges>` guide for more 
     <?php
 
     return [
-        'humus_amqp_module' => [
-            'exchange' => [
-                'demo-exchange' => [
-                    'name' => 'demo-exchange',
-                    'type' => 'direct'
-                ],
+        'dependencies' => [
+            'factories' => [
+                Driver::class => Humus\Amqp\Container\DriverFactory::class,
+                'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
             ],
-            'queue' => [
-                'my-queue' => [
-                    'name' => 'demo-queue',
-                    'exchanges' => [
-                        'demo-exchange' => [
-                            [
-                                'routing_keys => [
-                                    'v1.0.*',
-                                    'v1.1.0',
-                                    'v2.0.0'
+        ],
+        'humus' => [
+            'amqp' => [
+                'driver' => 'php-amqplib',
+                'connection' => [
+                    'default' => [
+                        'type' => 'socket',
+                        'host' => 'localhost',
+                        'port' => 5672,
+                        'login' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                        'persistent' => false,
+                        'read_timeout' => 3, //sec, float allowed
+                        'write_timeout' => 1, //sec, float allowed
+                    ],
+                ],
+                'exchange' => [
+                    'demo-exchange' => [
+                        'name' => 'demo-exchange',
+                        'type' => 'direct'
+                        'connection' => 'default-amqp-connection',
+                    ],
+                ],
+                'queue' => [
+                    'my-queue' => [
+                        'name' => 'demo-queue',
+                        'exchanges' => [
+                            'demo-exchange' => [
+                                [
+                                    'routing_keys => [
+                                        'v1.0.*',
+                                        'v1.1.0',
+                                        'v2.0.0'
+                                    ],
                                 ],
                             ],
                         ],
+                        'connection' => 'default-amqp-connection',
                     ],
                 ],
             ],

@@ -1,0 +1,16 @@
+- [x] bindings
+- [x] cli
+- [x] connection
+- [x] consumers
+- [x] deployment
+- [x] durability
+- [x] error_handling
+- [x] exchanges
+- [x] extensions
+- [x] getting_started
+- [x] guides
+- [x] producers
+- [x] queues
+- [x] trouble shooting
+- [ ] check: block size and prefetch count (ack after prefetch count or block size) ?? -> update consumers.rst (QoS — Prefetching messages, timeouts and factory example accordingly !!
+- [ ] update Constants class php-doc
