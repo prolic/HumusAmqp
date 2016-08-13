@@ -71,4 +71,3 @@ final class LazySocketConnection extends AbstractConnection
         return parent::newChannel();
     }
 }
-
