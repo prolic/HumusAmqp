@@ -57,7 +57,7 @@ a) You can use composer to install HumusAmqp
 
 .. code-block:: bash
 
-    $ php composer.phar require prolic/humus-amqp dev-master
+    $ php composer.phar require prolic/humus-amqp ^1.0
 
 b) Select a driver to use, currently only php-amqplib and php-amqp (PHP extension) are supported.
 

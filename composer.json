@@ -39,7 +39,7 @@
     "suggest": {
         "ext-pcntl": "For process control management",
         "ext-amqp": ">= 1.7.1 For usage together with php amqp extension",
-        "php-amqplib/php-amqplib": "For usage together with php-amqplib",
+        "php-amqplib/php-amqplib": ">= 2.6.3 For usage together with php-amqplib",
         "symfony/console": "For usage of the provided console tool",
         "container-interop/container-interop": "For usage of provided factories",
         "sandrokeil/interop-config": "For usage of provided factories"
