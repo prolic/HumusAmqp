@@ -24,6 +24,7 @@ namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
 use Humus\Amqp\CallbackConsumer;
+use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
@@ -91,6 +92,10 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
 
         $queueName = $options['queue'];
         $queue = QueueFactory::$queueName($container);
+        /* @var Queue $queue */
+
+        $channel = $queue->getChannel();
+        $channel->qos($options['qos']['prefetch_size'], $options['qos']['prefetch_count']);
 
         if (null === $options['logger']) {
             $logger = new NullLogger();

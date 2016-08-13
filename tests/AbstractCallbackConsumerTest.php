@@ -346,8 +346,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             },
             null,
             null,
-            null,
-            3
+            ''
         );
 
         $consumer->consume(5);
@@ -433,8 +432,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 return FlushDeferredResult::MSG_REJECT_REQUEUE();
             },
             null,
-            null,
-            3
+            ''
         );
 
         $consumer->consume(3);
@@ -522,8 +520,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 return FlushDeferredResult::MSG_REJECT();
             },
             null,
-            null,
-            3
+            ''
         );
 
         $consumer->consume(7);
@@ -631,8 +628,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 return FlushDeferredResult::MSG_ACK();
             },
             null,
-            null,
-            3
+            ''
         );
 
         $consumer->consume(9);
@@ -998,10 +994,10 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             $exchange->publish('message #' . $i);
         }
 
+        // $idleTimeout, $target, $prefetchSize, $prefetchCount
         $exchange->publish(
             json_encode([
                 1,
-                5,
                 8,
                 0,
                 1
@@ -1073,7 +1069,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $this->assertEquals('debug', $loggerResult[6]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
-        $this->assertEquals('[1,5,8,0,1]', $loggerResult[6]['context']['body']);
+        $this->assertEquals('[1,8,0,1]', $loggerResult[6]['context']['body']);
         $this->assertEquals('reconfigure', $loggerResult[6]['context']['type']);
 
         $this->assertEquals('info', $loggerResult[7]['level']);

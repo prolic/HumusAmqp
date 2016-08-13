@@ -73,7 +73,9 @@ class CallbackConsumerFactoryTest extends TestCase
                             'queue' => 'my_queue',
                             'idle_timeout' => 1.5,
                             'delivery_callback' => 'my_callback',
-                            'block_size' => 100,
+                            'qos' => [
+                                'prefetch_count' => 100,
+                            ],
                         ],
                     ],
                 ],
@@ -81,12 +83,14 @@ class CallbackConsumerFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        //$channel->qos(0, 100)->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
@@ -146,6 +150,7 @@ class CallbackConsumerFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();

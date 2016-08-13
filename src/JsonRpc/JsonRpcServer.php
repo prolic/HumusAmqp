@@ -65,7 +65,7 @@ final class JsonRpcServer extends AbstractConsumer
         string $consumerTag = '',
         string $appId = ''
     ) {
-        if (null === $consumerTag) {
+        if ('' === $consumerTag) {
             $consumerTag = bin2hex(random_bytes(24));
         }
 

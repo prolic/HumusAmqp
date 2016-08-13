@@ -104,7 +104,7 @@ count to 50, a block size of 50 messages will be used.
 Timeouts
 --------
 
-The idle timeout takes effect, when there are no more messages coming in and you expect a block size > 1.
+The idle timeout takes effect, when there are no more messages coming in and you expect a block size > 1 (prefetch count).
 The wait timeout applies every time the consumer tries to fetch a message from the queue but doesn't receive any.
 
 Set up the consumer
@@ -120,6 +120,8 @@ Set up the consumer
     $connection->connect();
 
     $channel = $connection->newChannel();
+    // handle 20 messages or wait for timeout until flush deferred callback is executed
+    $channel->setPrefetchCount(20);
 
     $queue = $channel->newQueue();
     $queue->setName('test-queue');
@@ -136,8 +138,7 @@ Set up the consumer
             return \Humus\Amqp\FlushDeferredResult::MSG_ACK();
         },
         null, // no custom error callback
-        'demo-consumer-tag',
-        20 // handle 20 messages or wait for timeout until flush deferred callback is executed
+        'demo-consumer-tag'
     );
 
     $consumer->consume(2000); // consume 2000 messages
@@ -219,9 +220,11 @@ Set up the consumer using config and factory
                         'flush_callback' => \My\FlushDeferredCallback::class,
                         'logger' => \Psr\Log\NullLogger::class,
                         'idle_timeout' => 12.5,
-                        'block_size' => 50,
                         'consumer_tag' => 'demo-consumer-tag',
-                    ]
+                        'qos' => [
+                            'prefetch_count' => 50,
+                        ],
+                    ],
                 ],
             ],
         ],
