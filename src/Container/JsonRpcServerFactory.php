@@ -125,7 +125,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
     public function defaultOptions() : array
     {
         return [
-            'consumer_tag' => null,
+            'consumer_tag' => '',
             'app_id' => '',
             'return_trace' => false,
             'logger' => null,

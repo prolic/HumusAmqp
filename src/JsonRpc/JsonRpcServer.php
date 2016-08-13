@@ -54,15 +54,15 @@ final class JsonRpcServer extends AbstractConsumer
      * @param callable(JsonRpcRequest):JsonRpcResponse $deliveryCallback
      * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
-     * @param string|null $consumerTag
-     * @param string|null $appId
+     * @param string $consumerTag
+     * @param string $appId
      */
     public function __construct(
         Queue $queue,
         callable $deliveryCallback,
         LoggerInterface $logger,
         float $idleTimeout,
-        string $consumerTag = null,
+        string $consumerTag = '',
         string $appId = ''
     ) {
         if (null === $consumerTag) {

@@ -101,4 +101,24 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
 
         $this->assertInstanceOf(Queue::class, $queue);
     }
+
+    /**
+     * @test
+     */
+    public function it_changes_qos()
+    {
+        $channel = $this->connection->newChannel();
+        $channel->qos(0, 5);
+
+        $this->assertEquals(0, $channel->getPrefetchSize());
+        $this->assertEquals(5, $channel->getPrefetchCount());
+
+        $channel->setPrefetchSize(0);
+
+        $this->assertEquals(0, $channel->getPrefetchSize());
+
+        $channel->setPrefetchCount(20);
+
+        $this->assertEquals(20, $channel->getPrefetchCount());
+    }
 }

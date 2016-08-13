@@ -50,6 +50,16 @@ final class Channel implements ChannelInterface
     private $channel;
 
     /**
+     * @var int
+     */
+    private $prefetchCount;
+
+    /**
+     * @var int
+     */
+    private $prefechSize;
+
+    /**
      * Create an instance of an AMQPChannel object.
      *
      * @param AbstractConnection $connection  An instance of AbstractConnection with an active connection to a broker.
@@ -100,6 +110,7 @@ final class Channel implements ChannelInterface
     public function setPrefetchSize(int $size)
     {
         $this->channel->basic_qos($size, 0, false);
+        $this->prefechSize = $size;
     }
 
     /**
@@ -107,7 +118,7 @@ final class Channel implements ChannelInterface
      */
     public function getPrefetchSize() : int
     {
-        throw new BadMethodCallException();
+        return $this->prefechSize;
     }
 
     /**
@@ -116,6 +127,7 @@ final class Channel implements ChannelInterface
     public function setPrefetchCount(int $count)
     {
         $this->channel->basic_qos(0, $count, false);
+        $this->prefetchCount = $count;
     }
 
     /**
@@ -123,7 +135,7 @@ final class Channel implements ChannelInterface
      */
     public function getPrefetchCount() : int
     {
-        throw new BadMethodCallException();
+        return $this->prefetchCount;
     }
 
     /**

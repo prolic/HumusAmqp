@@ -119,8 +119,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
             $deliveryCallback,
             $flushCallback,
             $errorCallback,
-            $options['consumer_tag'],
-            $options['block_size']
+            $options['consumer_tag']
         );
     }
 
@@ -146,8 +145,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
                 'prefetch_size' => 0,
             ],
             'idle_timeout' => 5.0,
-            'block_size' => 50,
-            'consumer_tag' => null,
+            'consumer_tag' => '',
         ];
     }
 

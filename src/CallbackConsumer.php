@@ -22,7 +22,6 @@ declare (strict_types=1);
 
 namespace Humus\Amqp;
 
-use Assert\Assertion;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -44,8 +43,7 @@ final class CallbackConsumer extends AbstractConsumer
      * @param callable $deliveryCallback,
      * @param callable|null $flushCallback,
      * @param callable|null $errorCallback
-     * @param string|null $consumerTag
-     * @param int $blockSize
+     * @param string $consumerTag
      * @throws Exception\InvalidArgumentException
      *
      * Callback functions with all arguments have the following signature:
@@ -61,12 +59,9 @@ final class CallbackConsumer extends AbstractConsumer
         callable $deliveryCallback,
         callable $flushCallback = null,
         callable $errorCallback = null,
-        string $consumerTag = null,
-        int $blockSize = 50
+        string $consumerTag = ''
     ) {
-        Assertion::min($blockSize, 1);
-
-        if (null === $consumerTag) {
+        if ('' === $consumerTag) {
             $consumerTag = bin2hex(random_bytes(24));
         }
 
@@ -87,6 +82,5 @@ final class CallbackConsumer extends AbstractConsumer
         $this->flushCallback = $flushCallback;
         $this->errorCallback = $errorCallback;
         $this->consumerTag = $consumerTag;
-        $this->blockSize = $blockSize;
     }
 }

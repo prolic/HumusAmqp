@@ -135,6 +135,8 @@ abstract class AbstractConsumer implements Consumer
 
         $this->target = $msgAmount;
 
+        $this->blockSize = $this->queue->getChannel()->getPrefetchCount();
+
         if (!$this->timestampLastAck) {
             $this->timestampLastAck = microtime(true);
         }
@@ -383,13 +385,12 @@ abstract class AbstractConsumer implements Consumer
         } elseif ('reconfigure' === $envelope->getType()) {
             $this->logger->info('Reconfigure message received');
             try {
-                list($idleTimeout, $blockSize, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
+                list($idleTimeout, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
 
                 if (is_numeric($idleTimeout)) {
                     $idleTimeout = (float) $idleTimeout;
                 }
                 Assertion::float($idleTimeout);
-                Assertion::min($blockSize, 1);
                 Assertion::min($target, 0);
                 Assertion::min($prefetchSize, 0);
                 Assertion::min($prefetchCount, 0);
@@ -399,9 +400,9 @@ abstract class AbstractConsumer implements Consumer
             }
 
             $this->idleTimeout = $idleTimeout;
-            $this->blockSize = $blockSize;
             $this->target = $target;
             $this->queue->getChannel()->qos($prefetchSize, $prefetchCount);
+            $this->blockSize = $prefetchCount;
 
             $result = DeliveryResult::MSG_ACK();
         } elseif ('ping' === $envelope->getType()) {

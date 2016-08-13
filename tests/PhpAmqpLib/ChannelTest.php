@@ -37,45 +37,11 @@ final class ChannelTest extends AbstractChannelTest
     /**
      * @test
      */
-    public function it_changes_qos()
-    {
-        $channel = $this->connection->newChannel();
-
-        $channel->qos(0, 5);
-        $channel->setPrefetchSize(0);
-        $channel->setPrefetchCount(20);
-    }
-
-    /**
-     * @test
-     */
     public function it_throws_exception_on_isConnected()
     {
         $this->expectException(BadMethodCallException::class);
 
         $channel = $this->connection->newChannel();
         $channel->isConnected();
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_on_getPrefetchSize()
-    {
-        $this->expectException(BadMethodCallException::class);
-
-        $channel = $this->connection->newChannel();
-        $channel->getPrefetchSize();
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_on_getPrefetchCount()
-    {
-        $this->expectException(BadMethodCallException::class);
-
-        $channel = $this->connection->newChannel();
-        $channel->getPrefetchCount();
     }
 }
