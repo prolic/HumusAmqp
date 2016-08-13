@@ -114,6 +114,11 @@ You can simply configure as many connection as needed and simply give them a nam
         ]
     );
 
+.. note:: When using php-amqplib as driver, you have five different connection classes available:
+    `LazyConnection`, `LazySocketConnection`, `SocketConnection`, `SslConnection` and `StreamConnection`.
+    Which connection type should be used, can be configured with the `type` option and the settings:
+    `lazy`, `lazy_socket`, `socket`, `ssl` or `stream`.
+
 Getting a connection
 --------------------
 
