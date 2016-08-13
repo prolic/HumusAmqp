@@ -25,6 +25,7 @@ namespace Humus\Amqp\Container;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Driver\Driver;
 use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
+use Humus\Amqp\Driver\PhpAmqpLib\LazySocketConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SslConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
@@ -114,6 +115,10 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                     case 'lazy':
                     case LazyConnection::class:
                         $connection = new LazyConnection($options);
+                        break;
+                    case 'lazy_socket':
+                    case LazySocketConnection::class:
+                        $connection = new LazySocketConnection($options);
                         break;
                     case 'socket':
                     case SocketConnection::class:
