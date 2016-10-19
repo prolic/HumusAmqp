@@ -18,7 +18,7 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
@@ -100,7 +100,8 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {});
+        $container->get('my_callback')->willReturn(function () {
+        });
 
         $factory = new JsonRpcServerFactory('my_server');
         $jsonRpcServer = $factory($container->reveal());
@@ -172,7 +173,8 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {});
+        $container->get('my_callback')->willReturn(function () {
+        });
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 
         $serverName = 'my_server';

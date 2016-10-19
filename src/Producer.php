@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -26,24 +25,22 @@ use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exception\QueueException;
 
 /**
- * Interface Producer
- * @package Humus\Amqp
+ * Interface Producer.
  */
 interface Producer
 {
     /**
-     * Publish a message
+     * Publish a message.
      *
-     * @param string  $message     The message to publish.
-     * @param string  $routingKey  The optional routing key to which to
-     *                             publish to.
-     * @param integer $flags       One or more of Constants::AMQP_MANDATORY and
-     *                             Constants::AMQP_IMMEDIATE.
-     * @param array   $attributes  One of content_type, content_encoding,
-     *                             correlation_id, reply_to, headers,
-     *                             message_id, user_id, app_id, delivery_mode,
-     *                             priority, timestamp, expiration or type.
-     * @return void
+     * @param string $message    The message to publish
+     * @param string $routingKey The optional routing key to which to
+     *                           publish to
+     * @param int    $flags      One or more of Constants::AMQP_MANDATORY and
+     *                           Constants::AMQP_IMMEDIATE
+     * @param array  $attributes One of content_type, content_encoding,
+     *                           correlation_id, reply_to, headers,
+     *                           message_id, user_id, app_id, delivery_mode,
+     *                           priority, timestamp, expiration or type
      */
     public function publish(
         $message,
@@ -57,15 +54,11 @@ interface Producer
      *
      * This method must be called on the given channel prior to calling
      * Producer::commitTransaction() or Producer::rollbackTransaction().
-     *
-     * @return void
      */
     public function startTransaction();
 
     /**
      * Commit a pending transaction.
-     *
-     * @return void
      */
     public function commitTransaction();
 
@@ -74,15 +67,11 @@ interface Producer
      *
      * Rollback an existing transaction. Producer::startTransaction() must
      * be called prior to this.
-     *
-     * @return void
      */
     public function rollbackTransaction();
 
     /**
      * Set the channel to use publisher acknowledgements. This can only used on a non-transactional channel.
-     *
-     * @return void
      */
     public function confirmSelect();
 
@@ -100,9 +89,7 @@ interface Producer
      * and should return boolean false when wait loop should be canceled.
      *
      * Note, basic.nack server method will only be delivered if an internal error occurs in the Erlang process
-     * responsible for a queue (see https://www.rabbitmq.com/confirms.html for details).
-     *
-     * @return void
+     * responsible for a queue (see https://www.rabbitmq.com/confirms.html for details)
      */
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null);
 
@@ -111,38 +98,25 @@ interface Producer
      *
      * Note, this method also catch all basic.return message from server.
      *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
+     * @param float $timeout Timeout in seconds. May be fractional
+     *
      * @throws ChannelException
      * @throws QueueException
      */
     public function waitForConfirm(float $timeout = 0.0);
 
     /**
-     * Set callback to process basic.return AMQP server method
+     * Set callback to process basic.return AMQP server method.
      *
      * @param callable|null $returnCallback
-     * @return void
-     *
-     * Callback function with all arguments has the following signature:
-     *
-     *      function callback(int $replyCode,
-     *                        string $replyText,
-     *                        string $exchange,
-     *                        string $routingKey,
-     *                        Envelope $envelope,
-     *                        string $body) : bool;
-     *
-     * and should return boolean false when wait loop should be canceled.
-     *
      */
     public function setReturnCallback(callable $returnCallback = null);
 
     /**
-     * Start wait loop for basic.return AMQP server methods
+     * Start wait loop for basic.return AMQP server methods.
      *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
+     * @param float $timeout Timeout in seconds. May be fractional
+     *
      * @throws ChannelException
      * @throws QueueException
      */

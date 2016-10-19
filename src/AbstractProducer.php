@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,16 +17,14 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
 use Humus\Amqp\Exception\ChannelException;
 
 /**
- * Class AbstractProducer
- * @package Humus\Amqp
+ * Class AbstractProducer.
  */
 abstract class AbstractProducer implements Producer
 {
@@ -41,10 +39,11 @@ abstract class AbstractProducer implements Producer
     protected $defaultAttributes;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Exchange $exchange
+     * @param Exchange   $exchange
      * @param array|null $defaultAttributes
+     *
      * @throws ChannelException
      */
     public function __construct(Exchange $exchange, array $defaultAttributes = null)
@@ -57,7 +56,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function startTransaction()
     {
@@ -65,7 +64,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function commitTransaction()
     {
@@ -73,7 +72,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rollbackTransaction()
     {
@@ -81,7 +80,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function confirmSelect()
     {
@@ -89,7 +88,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
     {
@@ -97,7 +96,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
@@ -105,7 +104,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setReturnCallback(callable $returnCallback = null)
     {
@@ -113,7 +112,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function waitForBasicReturn(float $timeout = 0.0)
     {

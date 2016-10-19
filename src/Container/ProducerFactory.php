@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -33,8 +32,7 @@ use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
 
 /**
- * Class ProducerFactory
- * @package Humus\Amqp\Container
+ * Class ProducerFactory.
  */
 final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
@@ -59,8 +57,10 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * </code>
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return Producer
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments) : Producer
@@ -70,6 +70,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
@@ -83,6 +84,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
     /**
      * @param ContainerInterface $container
+     *
      * @return Producer
      */
     public function __invoke(ContainerInterface $container) : Producer
@@ -105,7 +107,6 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
                 ));
         }
     }
-
 
     /**
      * @return array

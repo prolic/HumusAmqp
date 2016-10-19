@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -34,8 +33,7 @@ use Interop\Container\ContainerInterface;
 use Traversable;
 
 /**
- * Class JsonRpcClientFactory
- * @package Humus\Amqp\Container
+ * Class JsonRpcClientFactory.
  */
 final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
@@ -60,8 +58,10 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      * </code>
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return Client
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments) : JsonRpcClient
@@ -71,11 +71,13 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
     /**
      * JsonRpcClientFactory constructor.
+     *
      * @param string $clientName
      */
     public function __construct(string $clientName)
@@ -85,6 +87,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
 
     /**
      * @param ContainerInterface $container
+     *
      * @return JsonRpcClient
      */
     public function __invoke(ContainerInterface $container) : JsonRpcClient
@@ -99,7 +102,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
             $options['exchanges'] = iterator_to_array($options['exchanges']);
         }
 
-        if (! is_array($options['exchanges']) || empty($options['exchanges'])) {
+        if (!is_array($options['exchanges']) || empty($options['exchanges'])) {
             throw new Exception\InvalidArgumentException(
                 'Option "exchanges" must be a not empty array or an instance of Traversable'
             );
@@ -129,7 +132,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     {
         return [
             'wait_micros' => 1000,
-            'app_id' => ''
+            'app_id' => '',
         ];
     }
 

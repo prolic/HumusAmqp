@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,16 +17,14 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception;
 
 /**
- * Class JsonRpcError
- * @package Humus\Amqp\JsonRpc
+ * Class JsonRpcError.
  */
 final class JsonRpcError implements Error
 {
@@ -63,12 +61,13 @@ final class JsonRpcError implements Error
 
     /**
      * JsonRpcError constructor.
-     * @param int $code
+     *
+     * @param int         $code
      * @param string|null $message
      */
     public function __construct(int $code, string $message = null)
     {
-        if (! defined(JsonRpcError::class . '::ERROR_CODE_' . -$code)) {
+        if (!defined(self::class.'::ERROR_CODE_'.-$code)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid status code provided: %s',
                 $code

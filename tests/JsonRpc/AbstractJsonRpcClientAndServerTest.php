@@ -18,7 +18,7 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace HumusTest\Amqp\JsonRpc;
 
@@ -174,7 +174,8 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {};
+        $callback = function (Request $request) {
+        };
 
         $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
 

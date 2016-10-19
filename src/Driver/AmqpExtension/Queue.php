@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
@@ -30,8 +29,7 @@ use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Queue as AmqpQueueInterface;
 
 /**
- * Class Queue
- * @package Humus\Amqp\Driver\AmqpExtension
+ * Class Queue.
  */
 final class Queue implements AmqpQueueInterface
 {
@@ -48,7 +46,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * Create an instance of an Queue object.
      *
-     * @param Channel $channel The amqp channel to use.
+     * @param Channel $channel The amqp channel to use
      */
     public function __construct(Channel $channel)
     {
@@ -57,7 +55,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getName() : string
     {
@@ -65,7 +63,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setName(string $queueName)
     {
@@ -73,7 +71,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getFlags() : int
     {
@@ -81,7 +79,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setFlags(int $flags)
     {
@@ -89,7 +87,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArgument(string $key)
     {
@@ -97,7 +95,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArguments() : array
     {
@@ -105,7 +103,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArgument(string $key, $value)
     {
@@ -113,7 +111,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArguments(array $arguments)
     {
@@ -121,7 +119,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function declareQueue() : int
     {
@@ -135,7 +133,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
@@ -143,7 +141,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get(int $flags = Constants::AMQP_NOPARAM)
     {
@@ -157,13 +155,14 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = '')
     {
         if (null !== $callback) {
             $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
                 $envelope = new Envelope($envelope, $envelope->getBody() ?: '');
+
                 return $callback($envelope, $this);
             };
         } else {
@@ -182,7 +181,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -190,7 +189,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -198,7 +197,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -206,7 +205,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function purge()
     {
@@ -214,7 +213,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function cancel(string $consumerTag = '')
     {
@@ -222,7 +221,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
@@ -230,7 +229,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
@@ -238,7 +237,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getChannel() : ChannelInterface
     {
@@ -246,7 +245,7 @@ final class Queue implements AmqpQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConnection() : ConnectionInterface
     {

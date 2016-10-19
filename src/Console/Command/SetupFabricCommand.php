@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
@@ -28,8 +27,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SetupFabricCommand
- * @package Humus\Amqp\Console\Command
+ * Class SetupFabricCommand.
  */
 class SetupFabricCommand extends AbstractCommand
 {
@@ -58,21 +56,21 @@ class SetupFabricCommand extends AbstractCommand
 
         $config = $config['humus']['amqp'] ?? [];
 
-        if (! isset($config['exchange']) || empty($config['exchange'])) {
+        if (!isset($config['exchange']) || empty($config['exchange'])) {
             $output->writeln('No exchanges to configure');
         } else {
             foreach ($config['exchange'] as $exchange => $spec) {
                 ExchangeFactory::$exchange($this->getContainer(), null, true);
-                $output->writeln('Exchange ' . $exchange . ' declared');
+                $output->writeln('Exchange '.$exchange.' declared');
             }
         }
 
-        if (! isset($config['queue']) || empty($config['queue'])) {
+        if (!isset($config['queue']) || empty($config['queue'])) {
             $output->writeln('No queues to configure');
         } else {
             foreach ($config['queue'] as $queue => $spec) {
                 QueueFactory::$queue($this->getContainer(), null, true);
-                $output->writeln('Queue ' . $queue . ' declared');
+                $output->writeln('Queue '.$queue.' declared');
             }
         }
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
@@ -26,8 +25,7 @@ use Countable;
 use IteratorAggregate;
 
 /**
- * Class JsonRpcResponseCollection
- * @package Humus\Amqp\JsonRpc
+ * Class JsonRpcResponseCollection.
  */
 interface ResponseCollection extends Countable, IteratorAggregate
 {
@@ -38,12 +36,14 @@ interface ResponseCollection extends Countable, IteratorAggregate
 
     /**
      * @param string $id
+     *
      * @return Response|null
      */
     public function getResponse(string $id);
 
     /**
      * @param string $id
+     *
      * @return bool
      */
     public function hasResponse(string $id);

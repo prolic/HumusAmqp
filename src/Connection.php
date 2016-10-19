@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace  Humus\Amqp;
 
@@ -26,7 +25,6 @@ namespace  Humus\Amqp;
  * Represents a AMQP connection between PHP and a AMQP server.
  *
  * Interface Connection
- * @package Humus\Amqp
  */
 interface Connection
 {
@@ -35,7 +33,7 @@ interface Connection
      *
      * It does so by checking the return status of the last connect-command.
      *
-     * @return bool True if connected, false otherwise.
+     * @return bool True if connected, false otherwise
      */
     public function isConnected() : bool;
 
@@ -44,7 +42,7 @@ interface Connection
      *
      * This method will initiate a connection with the AMQP broker.
      *
-     * @return bool TRUE on success or throw an exception on failure.
+     * @return bool TRUE on success or throw an exception on failure
      */
     public function connect();
 
@@ -53,14 +51,14 @@ interface Connection
      *
      * This method will close an open connection with the AMQP broker.
      *
-     * @return bool true if connection was successfully closed, false otherwise.
+     * @return bool true if connection was successfully closed, false otherwise
      */
     public function disconnect();
 
     /**
      * Close any open transient connections and initiate a new one with the AMQP broker.
      *
-     * @return bool TRUE on success or FALSE on failure.
+     * @return bool TRUE on success or FALSE on failure
      */
     public function reconnect() : bool;
 

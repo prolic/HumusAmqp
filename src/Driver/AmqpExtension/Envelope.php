@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
@@ -26,8 +25,7 @@ use Humus\Amqp\Envelope as EnvelopeInterface;
 use Humus\Amqp\Exception;
 
 /**
- * Class Envelope
- * @package Humus\Amqp\Driver\AmqpExtension
+ * Class Envelope.
  */
 final class Envelope implements EnvelopeInterface
 {
@@ -42,8 +40,10 @@ final class Envelope implements EnvelopeInterface
 
     /**
      * Envelope constructor.
+     *
      * @param \AMQPBasicProperties|\AMQPEnvelope $envelope
-     * @param string $body
+     * @param string                             $body
+     *
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($envelope, string $body)
@@ -57,7 +57,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getBody() : string
     {
@@ -65,7 +65,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getRoutingKey() : string
     {
@@ -73,15 +73,15 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDeliveryTag() : int
     {
-        return (int)$this->envelope->getDeliveryTag();
+        return (int) $this->envelope->getDeliveryTag();
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDeliveryMode() : int
     {
@@ -89,7 +89,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getExchangeName() : string
     {
@@ -97,7 +97,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isRedelivery() : bool
     {
@@ -105,7 +105,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getContentType() : string
     {
@@ -113,7 +113,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getContentEncoding() : string
     {
@@ -121,7 +121,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getType() : string
     {
@@ -129,15 +129,15 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getTimestamp() : int
     {
-        return (int)$this->envelope->getTimeStamp();
+        return (int) $this->envelope->getTimeStamp();
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getPriority() : int
     {
@@ -145,7 +145,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getExpiration() : int
     {
@@ -153,7 +153,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getUserId() : string
     {
@@ -161,7 +161,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getAppId() : string
     {
@@ -169,7 +169,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getMessageId() : string
     {
@@ -177,7 +177,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getReplyTo() : string
     {
@@ -185,7 +185,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCorrelationId() : string
     {
@@ -193,7 +193,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getHeaders() : array
     {
@@ -201,7 +201,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getHeader(string $header)
     {
@@ -209,7 +209,7 @@ final class Envelope implements EnvelopeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function hasHeader(string $header) : bool
     {

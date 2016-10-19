@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -33,8 +32,7 @@ use Interop\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Class CallbackConsumerFactory
- * @package Humus\Amqp\Container
+ * Class CallbackConsumerFactory.
  */
 class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
@@ -59,8 +57,10 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
      * </code>
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return CallbackConsumer
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments) : CallbackConsumer
@@ -70,11 +70,13 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
     /**
      * CallbackConsumerFactory constructor.
+     *
      * @param string $consumerName
      */
     public function __construct(string $consumerName)
@@ -84,6 +86,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
 
     /**
      * @param ContainerInterface $container
+     *
      * @return CallbackConsumer
      */
     public function __invoke(ContainerInterface $container) : CallbackConsumer

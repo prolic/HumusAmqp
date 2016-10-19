@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -26,26 +25,23 @@ use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exception\QueueException;
 
 /**
- * Represents a AMQP queue
+ * Represents a AMQP queue.
  *
  * Interface Queue
- * @package Humus\Amqp
  */
 interface Queue
 {
     /**
      * Get the configured name.
      *
-     * @return string The configured name as a string.
+     * @return string The configured name as a string
      */
     public function getName() : string;
 
     /**
      * Set the queue name.
      *
-     * @param string $queueName The name of the queue.
-     *
-     * @return void
+     * @param string $queueName The name of the queue
      */
     public function setName(string $queueName);
 
@@ -53,43 +49,42 @@ interface Queue
      * Get all the flags currently set on the given queue.
      *
      * @return int An integer bitmask of all the flags currently set on this
-     *             exchange object.
+     *             exchange object
      */
     public function getFlags() : int;
 
     /**
      * Set the flags on the queue.
      *
-     * @param integer $flags A bitmask of flags:
-     *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE,
-     *                       Constants::AMQP_EXCLUSIVE, Constants::AMQP_AUTODELETE.
-     * @return void
+     * @param int $flags A bitmask of flags:
+     *                   Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE,
+     *                   Constants::AMQP_EXCLUSIVE, Constants::AMQP_AUTODELETE
      */
     public function setFlags(int $flags);
 
     /**
      * Get the argument associated with the given key.
      *
-     * @param string $key The key to look up.
-     * @return string|integer|bool The string or integer value associated
-     *                                with the given key, or false if the key
-     *                                is not set.
+     * @param string $key The key to look up
+     *
+     * @return string|int|bool The string or integer value associated
+     *                         with the given key, or false if the key
+     *                         is not set
      */
     public function getArgument(string $key);
 
     /**
      * Get all set arguments as an array of key/value pairs.
      *
-     * @return array An array containing all of the set key/value pairs.
+     * @return array An array containing all of the set key/value pairs
      */
     public function getArguments() : array;
 
     /**
      * Set a queue argument.
      *
-     * @param string $key   The key to set.
-     * @param mixed  $value The value to set.
-     * @return void
+     * @param string $key   The key to set
+     * @param mixed  $value The value to set
      */
     public function setArgument(string $key, $value);
 
@@ -98,15 +93,15 @@ interface Queue
      *
      * All other argument settings will be wiped.
      *
-     * @param array $arguments An array of key/value pairs of arguments.
-     * @return void
+     * @param array $arguments An array of key/value pairs of arguments
      */
     public function setArguments(array $arguments);
 
     /**
      * Declare a new queue on the broker.
      *
-     * @return integer the message count.
+     * @return int the message count
+     *
      * @throws QueueException
      * @throws ChannelException
      */
@@ -115,11 +110,9 @@ interface Queue
     /**
      * Bind the given queue to a routing key on an exchange.
      *
-     * @param string $exchangeName Name of the exchange to bind to.
-     * @param string $routingKey   Pattern or routing key to bind with.
-     * @param array  $arguments     Additional binding arguments.
-     *
-     * @return void
+     * @param string $exchangeName Name of the exchange to bind to
+     * @param string $routingKey   Pattern or routing key to bind with
+     * @param array  $arguments    Additional binding arguments
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = []);
 
@@ -134,11 +127,11 @@ interface Queue
      * automatically be marked as acknowledged by the broker as soon as the
      * frames are sent to the client.
      *
-     * @param integer $flags A bitmask of supported flags for the
-     *                       method call. Currently, the only the
-     *                       supported flag is Constants::AMQP_AUTOACK. If this
-     *                       value is not provided, it will use the
-     *                       value of ini-setting amqp.auto_ack.
+     * @param int $flags A bitmask of supported flags for the
+     *                   method call. Currently, the only the
+     *                   supported flag is Constants::AMQP_AUTOACK. If this
+     *                   value is not provided, it will use the
+     *                   value of ini-setting amqp.auto_ack
      *
      * @return Envelope|false
      */
@@ -151,24 +144,24 @@ interface Queue
      * it becomes available and will pass it off to the callback.
      *
      * @param callable | null $callback    A callback function to which the
-     *                              consumed message will be passed. The
-     *                              function must accept at a minimum
-     *                              one parameter, an Envelope object,
-     *                              and an optional second parameter
-     *                              the Queue object from which callback
-     *                              was invoked. The Queue::consume() will
-     *                              not return the processing thread back to
-     *                              the PHP script until the callback
-     *                              function returns FALSE.
-     *                              If the callback is omitted or null is passed,
-     *                              then the messages delivered to this client will
-     *                              be made available to the first real callback
-     *                              registered. That allows one to have a single
-     *                              callback consuming from multiple queues.
-     * @param integer  $flags       A bitmask of any of the flags: Constants::AMQP_AUTOACK.
-     * @param string   $consumerTag A string describing this consumer. Used
-     *                              for canceling subscriptions with cancel().
-     * @return void
+     *                                     consumed message will be passed. The
+     *                                     function must accept at a minimum
+     *                                     one parameter, an Envelope object,
+     *                                     and an optional second parameter
+     *                                     the Queue object from which callback
+     *                                     was invoked. The Queue::consume() will
+     *                                     not return the processing thread back to
+     *                                     the PHP script until the callback
+     *                                     function returns FALSE.
+     *                                     If the callback is omitted or null is passed,
+     *                                     then the messages delivered to this client will
+     *                                     be made available to the first real callback
+     *                                     registered. That allows one to have a single
+     *                                     callback consuming from multiple queues
+     * @param int             $flags       A bitmask of any of the flags: Constants::AMQP_AUTOACK
+     * @param string          $consumerTag A string describing this consumer. Used
+     *                                     for canceling subscriptions with cancel()
+     *
      * @throws Exception\QueueException
      *
      * Callback function with all arguments have the following signature:
@@ -184,11 +177,10 @@ interface Queue
      * without the Constants::AMQP_AUTOACK flag through Queue::get() or
      * Queue::consume()
      *
-     * @param int  $deliveryTag The message delivery tag of which to
-     *                              acknowledge receipt.
-     * @param integer $flags        The only valid flag that can be passed is
-     *                              Constants::AMQP_MULTIPLE.
-     * @return void
+     * @param int $deliveryTag The message delivery tag of which to
+     *                         acknowledge receipt
+     * @param int $flags       The only valid flag that can be passed is
+     *                         Constants::AMQP_MULTIPLE
      */
     public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
 
@@ -205,11 +197,10 @@ interface Queue
      * behavior of calling this method while connected to any other broker is
      * undefined.
      *
-     * @param int     $deliveryTag Delivery tag of last message to reject.
-     * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s),
-     *                              Constants::AMQP_MULTIPLE to nack all previous
-     *                              unacked messages as well.
-     * @return void
+     * @param int $deliveryTag Delivery tag of last message to reject
+     * @param int $flags       Constants::AMQP_REQUEUE to requeue the message(s),
+     *                         Constants::AMQP_MULTIPLE to nack all previous
+     *                         unacked messages as well
      */
     public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
 
@@ -222,16 +213,13 @@ interface Queue
      * Queue::consume() and Queue::get() and using the Constants::AMQP_AUTOACK
      * flag are not eligible.
      *
-     * @param int     $deliveryTag Delivery tag of the message to reject.
-     * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s).
-     * @return void
+     * @param int $deliveryTag Delivery tag of the message to reject
+     * @param int $flags       Constants::AMQP_REQUEUE to requeue the message(s)
      */
     public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
 
     /**
      * Purge the contents of a queue.
-     *
-     * @return void
      */
     public function purge();
 
@@ -239,9 +227,8 @@ interface Queue
      * Cancel a queue that is already bound to an exchange and routing key.
      *
      * @param string $consumerTag The queue name to cancel, if the queue
-     *                             object is not already representative of
-     *                             a queue.
-     * @return void;
+     *                            object is not already representative of
+     *                            a queue
      */
     public function cancel(string $consumerTag = '');
 
@@ -249,11 +236,10 @@ interface Queue
      * Remove a routing key binding on an exchange from the given queue.
      *
      * @param string $exchangeName The name of the exchange on which the
-     *                              queue is bound.
+     *                             queue is bound
      * @param string $routingKey   The binding routing key used by the
-     *                              queue.
-     * @param array  $arguments     Additional binding arguments.
-     * @return void
+     *                             queue
+     * @param array  $arguments    Additional binding arguments
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []);
 
@@ -262,23 +248,22 @@ interface Queue
      *
      * This includes its entire contents of unread or unacknowledged messages.
      *
-     * @param integer $flags        Optionally Constants::AMQP_IFUNUSED can be specified
-     *                              to indicate the queue should not be
-     *                              deleted until no clients are connected to
-     *                              it.
-     * @return void
+     * @param int $flags Optionally Constants::AMQP_IFUNUSED can be specified
+     *                   to indicate the queue should not be
+     *                   deleted until no clients are connected to
+     *                   it
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM);
 
     /**
-     * Get the Channel object in use
+     * Get the Channel object in use.
      *
      * @return Channel
      */
     public function getChannel() : Channel;
 
     /**
-     * Get the Connection object in use
+     * Get the Connection object in use.
      *
      * @return Connection
      */

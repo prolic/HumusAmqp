@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
@@ -26,12 +25,11 @@ use Assert\Assertion;
 use Humus\Amqp\Exception;
 
 /**
- * Class JsonRpcRequest
- * @package Humus\Amqp\JsonRpc
+ * Class JsonRpcRequest.
  */
 final class JsonRpcRequest implements Request
 {
-    const JSONRPC_VERSION = "2.0";
+    const JSONRPC_VERSION = '2.0';
 
     /**
      * @var string
@@ -43,7 +41,7 @@ final class JsonRpcRequest implements Request
      */
     private $method;
     /**
-     * @var array|string|integer|float|bool
+     * @var array|string|int|float|bool
      */
     private $params;
 
@@ -70,13 +68,13 @@ final class JsonRpcRequest implements Request
     /**
      * JsonRpcRequest constructor.
      *
-     * @param string $server
-     * @param string $method
-     * @param array|string|integer|float|bool $params
-     * @param string $routingKey
-     * @param int $expiration in milliseconds
-     * @param string|null $id
-     * @param int $timestamp
+     * @param string                      $server
+     * @param string                      $method
+     * @param array|string|int|float|bool $params
+     * @param string                      $routingKey
+     * @param int                         $expiration in milliseconds
+     * @param string|null                 $id
+     * @param int                         $timestamp
      */
     public function __construct(
         string $server,
@@ -99,7 +97,7 @@ final class JsonRpcRequest implements Request
         $this->id = $id;
         $this->routingKey = $routingKey;
         $this->expiration = $expiration;
-        $this->timestamp = (0 === $timestamp) ? $timestamp: time();
+        $this->timestamp = (0 === $timestamp) ? $timestamp : time();
     }
 
     /**
@@ -127,7 +125,8 @@ final class JsonRpcRequest implements Request
     }
 
     /**
-     * Expiration in milliseconds
+     * Expiration in milliseconds.
+     *
      * @return int
      */
     public function expiration() : int

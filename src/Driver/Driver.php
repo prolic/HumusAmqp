@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver;
 
@@ -26,9 +25,8 @@ use MabeEnum\Enum;
 use MabeEnum\EnumSerializableTrait;
 
 /**
- * Class Driver
- * @package Humus\Amqp\Driver
- * 
+ * Class Driver.
+ *
  * @method static Driver AMQP_EXTENSION()
  * @method static Driver PHP_AMQP_LIB()
  */
@@ -37,5 +35,5 @@ final class Driver extends Enum
     use EnumSerializableTrait;
 
     const AMQP_EXTENSION = 'amqp-extension';
-    const PHP_AMQP_LIB   = 'php-amqplib';
+    const PHP_AMQP_LIB = 'php-amqplib';
 }

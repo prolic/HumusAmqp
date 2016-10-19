@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
@@ -29,8 +28,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class PurgeQueueCommand
- * @package Humus\Amqp\Console\Command
+ * Class PurgeQueueCommand.
  */
 class PurgeQueueCommand extends AbstractCommand
 {
@@ -49,7 +47,7 @@ class PurgeQueueCommand extends AbstractCommand
                     'p',
                     InputOption::VALUE_REQUIRED,
                     'name of the queue to purge'
-                )
+                ),
             ])
             ->setHelp('Purges a queue');
     }
@@ -61,8 +59,9 @@ class PurgeQueueCommand extends AbstractCommand
     {
         $queueName = $input->getOption('name');
 
-        if (! $queueName) {
+        if (!$queueName) {
             $output->writeln('No queue name given');
+
             return 1;
         }
 
@@ -71,7 +70,8 @@ class PurgeQueueCommand extends AbstractCommand
         try {
             $queue = QueueFactory::$queueName($container);
         } catch (\Interop\Config\Exception\OptionNotFoundException $e) {
-            $output->writeln('Queue with name ' . $queueName .' not found');
+            $output->writeln('Queue with name '.$queueName.' not found');
+
             return 1;
         }
 
@@ -79,6 +79,6 @@ class PurgeQueueCommand extends AbstractCommand
 
         $queue->purge();
 
-        $output->writeln('Queue ' . $queueName . ' purged');
+        $output->writeln('Queue '.$queueName.' purged');
     }
 }

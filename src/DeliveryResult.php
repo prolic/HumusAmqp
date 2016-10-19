@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -26,8 +25,7 @@ use MabeEnum\Enum;
 use MabeEnum\EnumSerializableTrait;
 
 /**
- * Class DeliveryResult
- * @package Humus\Amqp
+ * Class DeliveryResult.
  *
  * @method static DeliveryResult MSG_ACK()
  * @method static DeliveryResult MSG_DEFER()
@@ -39,22 +37,22 @@ final class DeliveryResult extends Enum
     use EnumSerializableTrait;
 
     /**
-     * Flag for message ack
+     * Flag for message ack.
      */
     const MSG_ACK = 0;
 
     /**
-     * Flag for message defer
+     * Flag for message defer.
      */
     const MSG_DEFER = 1;
 
     /**
-     * Flag for reject and drop
+     * Flag for reject and drop.
      */
     const MSG_REJECT = 2;
 
     /**
-     * Flag for reject and requeue
+     * Flag for reject and requeue.
      */
     const MSG_REJECT_REQUEUE = 3;
 }

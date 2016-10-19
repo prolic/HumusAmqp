@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Console;
 
@@ -28,31 +27,29 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**
- * Class ConsoleRunner
- * @package Humus\Amqp\Console
+ * Class ConsoleRunner.
  */
 class ConsoleRunner
 {
     /**
-     * Create a Symfony Console HelperSet
+     * Create a Symfony Console HelperSet.
      *
      * @param ContainerInterface $container
+     *
      * @return HelperSet
      */
     public static function createHelperSet(ContainerInterface $container)
     {
         return new HelperSet([
-            'container' => new ContainerHelper($container)
+            'container' => new ContainerHelper($container),
         ]);
     }
 
     /**
      * Runs console with the given helperset.
      *
-     * @param HelperSet  $helperSet
+     * @param HelperSet                                    $helperSet
      * @param \Symfony\Component\Console\Command\Command[] $commands
-     *
-     * @return void
      */
     public static function run(HelperSet $helperSet, array $commands = [])
     {
@@ -64,7 +61,7 @@ class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param HelperSet $helperSet
+     * @param HelperSet                                    $helperSet
      * @param \Symfony\Component\Console\Command\Command[] $commands
      *
      * @return Application
@@ -85,8 +82,6 @@ class ConsoleRunner
 
     /**
      * @param Application $cli
-     *
-     * @return void
      */
     public static function addCommands(Application $cli)
     {
@@ -96,13 +91,10 @@ class ConsoleRunner
             new Command\SetupFabricCommand(),
             new Command\ShowCommand(),
             new Command\StartCallbackConsumerCommand(),
-            new Command\StartJsonRpcServerCommand()
+            new Command\StartJsonRpcServerCommand(),
         ]);
     }
 
-    /**
-     * @return void
-     */
     public static function printCliConfigTemplate()
     {
         echo <<<'HELP'
