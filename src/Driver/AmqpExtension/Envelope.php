@@ -31,15 +31,15 @@ use Humus\Amqp\Envelope as EnvelopeInterface;
 final class Envelope implements EnvelopeInterface
 {
     /**
-     * @var \AMQPBasicProperties
+     * @var \AMQPEnvelope
      */
     private $envelope;
 
     /**
      * Envelope constructor.
-     * @param \AMQPBasicProperties $envelope
+     * @param \AMQPEnvelope $envelope
      */
-    public function __construct(\AMQPBasicProperties $envelope)
+    public function __construct(\AMQPEnvelope $envelope)
     {
         $this->envelope = $envelope;
     }
@@ -65,7 +65,7 @@ final class Envelope implements EnvelopeInterface
      */
     public function getDeliveryTag() : int
     {
-        return $this->envelope->getDeliveryTag();
+        return (int)$this->envelope->getDeliveryTag();
     }
 
     /**
@@ -121,7 +121,7 @@ final class Envelope implements EnvelopeInterface
      */
     public function getTimestamp() : int
     {
-        return $this->envelope->getTimeStamp();
+        return (int)$this->envelope->getTimeStamp();
     }
 
     /**
@@ -201,6 +201,6 @@ final class Envelope implements EnvelopeInterface
      */
     public function hasHeader(string $header) : bool
     {
-        return $this->envelope->hasHeader($header);
+        return array_key_exists($header, $this->envelope->getHeaders());
     }
 }
