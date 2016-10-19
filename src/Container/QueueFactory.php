@@ -24,6 +24,7 @@ namespace Humus\Amqp\Container;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
@@ -159,20 +160,24 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
             }
 
+            /** @var Exchange[] $exchangeObjects */
+            $exchangeObjects = [];
             foreach ($exchanges as $exchange => $exchangeOptions) {
-                ExchangeFactory::$exchange($container, $this->channel, true);
+                $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, true);
             }
 
             $queue->declareQueue();
 
             foreach ($exchanges as $exchange => $exchangeOptions) {
+                $exchangeObject = $exchangeObjects[$exchange];
+                $exchangeName = $exchangeObject->getName();
                 if (empty($exchangeOptions)) {
-                    $this->bindQueue($queue, $exchange, [], []);
+                    $this->bindQueue($queue, $exchangeName, [], []);
                 } else {
                     foreach ($exchangeOptions as $exchangeOption) {
                         $routingKeys = $exchangeOption['routing_keys'] ?? [];
                         $bindArguments = $exchangeOption['bind_arguments'] ?? [];
-                        $this->bindQueue($queue, $exchange, $routingKeys, $bindArguments);
+                        $this->bindQueue($queue, $exchangeName, $routingKeys, $bindArguments);
                     }
                 }
             }

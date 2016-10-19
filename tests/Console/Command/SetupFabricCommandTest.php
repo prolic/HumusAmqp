@@ -97,6 +97,7 @@ class SetupFabricCommandTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setArguments([])->shouldBeCalled();
         $exchange->declareExchange()->shouldBeCalled();
+        $exchange->getName()->willReturn('demo');
 
         $queue = $this->prophesize(Queue::class);
         $queue->setName('foo')->shouldBeCalled();
