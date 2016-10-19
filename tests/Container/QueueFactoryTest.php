@@ -30,6 +30,7 @@ use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Prophecy\Argument;
 
 /**
  * Class QueueFactoryTest
@@ -232,6 +233,12 @@ class QueueFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName(Argument::any())->shouldBeCalled();
+        $exchange->setFlags(Argument::any())->shouldBeCalled();
+        $exchange->setType(Argument::any())->shouldBeCalled();
+        $exchange->setArguments(Argument::any())->shouldBeCalled();
+        $exchange->getName()->willReturn('my_exchange');
+        $exchange->declareExchange()->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);
         $queue->setName('my_queue')->shouldBeCalled();
@@ -292,6 +299,12 @@ class QueueFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName(Argument::any())->shouldBeCalled();
+        $exchange->setFlags(Argument::any())->shouldBeCalled();
+        $exchange->setType(Argument::any())->shouldBeCalled();
+        $exchange->setArguments(Argument::any())->shouldBeCalled();
+        $exchange->getName()->willReturn('my_exchange');
+        $exchange->declareExchange()->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);
         $queue->setName('my_queue')->shouldBeCalled();
@@ -418,6 +431,12 @@ class QueueFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName(Argument::any())->shouldBeCalled();
+        $exchange->setFlags(Argument::any())->shouldBeCalled();
+        $exchange->setType(Argument::any())->shouldBeCalled();
+        $exchange->setArguments(Argument::any())->shouldBeCalled();
+        $exchange->getName()->willReturn('my_exchange');
+        $exchange->declareExchange()->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);
         $queue->setName('my_queue')->shouldBeCalled();
@@ -497,6 +516,7 @@ class QueueFactoryTest extends TestCase
         $exchange->setFlags(2)->shouldBeCalled();
         $exchange->setArguments([])->shouldBeCalled();
         $exchange->declareExchange()->shouldBeCalled();
+        $exchange->getName()->willReturn('my_exchange');
 
         $queue = $this->prophesize(Queue::class);
         $queue->setName('my_queue')->shouldBeCalled();
