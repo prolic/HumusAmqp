@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
@@ -30,8 +29,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class PublishMessageCommand
- * @package Humus\Amqp\Console\Command
+ * Class PublishMessageCommand.
  */
 class PublishMessageCommand extends AbstractCommand
 {
@@ -90,7 +88,7 @@ class PublishMessageCommand extends AbstractCommand
                     InputOption::VALUE_REQUIRED,
                     'One or more of Constants::AMQP_MANDATORY (1024) and Constants::AMQP_IMMEDIATE (2048).',
                     Constants::AMQP_NOPARAM
-                )
+                ),
             ])
             ->setHelp('Purges a queue');
     }
@@ -102,15 +100,17 @@ class PublishMessageCommand extends AbstractCommand
     {
         $producerName = $input->getOption('producer');
 
-        if (! $producerName) {
+        if (!$producerName) {
             $output->writeln('No producer name given');
+
             return 1;
         }
 
         $container = $this->getContainer();
 
-        if (! $container->has($producerName)) {
-            $output->writeln('Producer with name ' . $producerName . ' not found');
+        if (!$container->has($producerName)) {
+            $output->writeln('Producer with name '.$producerName.' not found');
+
             return 1;
         }
 
@@ -132,6 +132,7 @@ class PublishMessageCommand extends AbstractCommand
 
         if ($confirmSelect && $transactional) {
             $output->writeln('Can only use one of transactional or confirm select');
+
             return 1;
         }
 
@@ -141,6 +142,7 @@ class PublishMessageCommand extends AbstractCommand
 
         if (json_last_error() != 0) {
             $output->writeln('Cannot decode arguments');
+
             return 1;
         }
 
@@ -180,7 +182,8 @@ class PublishMessageCommand extends AbstractCommand
             try {
                 $producer->waitForConfirm(2.0);
             } catch (\Throwable $e) {
-                echo get_class($e) . ': ' . $e->getMessage();
+                echo get_class($e).': '.$e->getMessage();
+
                 return 1;
             }
         }

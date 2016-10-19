@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,19 +17,18 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
 /**
- * Interface AmqpException
- * @package Humus\Amqp\Exception
+ * Interface AmqpException.
  */
 class AmqpException extends \Exception
 {
     /**
      * @param \AMQPException $e
+     *
      * @return AmqpException
      */
     public static function fromAmqpExtension(\AMQPException $e)
@@ -38,11 +37,13 @@ class AmqpException extends \Exception
         $matches = [];
         preg_match('/^.+: (\d+), message:.+/', $e->getMessage(), $matches);
         $code = $matches[1] ?? 0;
+
         return new static($e->getMessage(), (int) $code, $e);
     }
 
     /**
      * @param \Exception $e
+     *
      * @return AmqpException
      */
     public static function fromPhpAmqpLib(\Exception $e)

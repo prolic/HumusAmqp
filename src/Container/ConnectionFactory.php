@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -36,8 +35,7 @@ use Interop\Config\RequiresConfigId;
 use Interop\Container\ContainerInterface;
 
 /**
- * Class ConnectionFactory
- * @package Humus\Amqp\Container
+ * Class ConnectionFactory.
  */
 final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigId
 {
@@ -62,8 +60,10 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
      * </code>
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return Connection
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments) : Connection
@@ -73,11 +73,13 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
     /**
      * ConnectionFactory constructor.
+     *
      * @param string $connectionName
      */
     public function __construct(string $connectionName)
@@ -87,11 +89,12 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
 
     /**
      * @param ContainerInterface $container
+     *
      * @return Connection
      */
     public function __invoke(ContainerInterface $container) : Connection
     {
-        if (! $container->has(Driver::class)) {
+        if (!$container->has(Driver::class)) {
             throw new Exception\RuntimeException('No driver factory registered in container');
         }
 

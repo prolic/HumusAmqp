@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
@@ -32,8 +31,7 @@ use Humus\Amqp\Queue;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class JsonRpcServer
- * @package Humus\Amqp\JsonRpc
+ * Class JsonRpcServer.
  */
 final class JsonRpcServer extends AbstractConsumer
 {
@@ -48,14 +46,14 @@ final class JsonRpcServer extends AbstractConsumer
     private $appId;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Queue $queue
+     * @param Queue                                    $queue
      * @param callable(JsonRpcRequest):JsonRpcResponse $deliveryCallback
-     * @param LoggerInterface $logger
-     * @param float $idleTimeout in seconds
-     * @param string $consumerTag
-     * @param string $appId
+     * @param LoggerInterface                          $logger
+     * @param float                                    $idleTimeout      in seconds
+     * @param string                                   $consumerTag
+     * @param string                                   $appId
      */
     public function __construct(
         Queue $queue,
@@ -70,7 +68,7 @@ final class JsonRpcServer extends AbstractConsumer
         }
 
         if (extension_loaded('pcntl')) {
-            declare (ticks = 1);
+            declare(ticks=1);
 
             $this->usePcntlSignalDispatch = true;
 
@@ -91,13 +89,14 @@ final class JsonRpcServer extends AbstractConsumer
 
     /**
      * @param Envelope $envelope
-     * @param Queue $queue
+     * @param Queue    $queue
+     *
      * @return DeliveryResult
      */
     protected function handleDelivery(Envelope $envelope, Queue $queue) : DeliveryResult
     {
-        $this->countMessagesConsumed++;
-        $this->countMessagesUnacked++;
+        ++$this->countMessagesConsumed;
+        ++$this->countMessagesUnacked;
         $this->lastDeliveryTag = $envelope->getDeliveryTag();
         $this->timestampLastMessage = microtime(true);
         $this->ack();
@@ -106,6 +105,7 @@ final class JsonRpcServer extends AbstractConsumer
 
         if ($envelope->getAppId() === 'Humus\Amqp') {
             $this->handleInternalMessage($envelope);
+
             return DeliveryResult::MSG_ACK();
         }
 
@@ -119,7 +119,7 @@ final class JsonRpcServer extends AbstractConsumer
                 return DeliveryResult::MSG_ACK();
             }
 
-            if (! $response instanceof JsonRpcResponse) {
+            if (!$response instanceof JsonRpcResponse) {
                 $response = JsonRpcResponse::withResult($envelope->getCorrelationId(), $response);
             }
         } catch (Exception\InvalidJsonRpcVersion $e) {
@@ -146,7 +146,7 @@ final class JsonRpcServer extends AbstractConsumer
     }
 
     /**
-     * Send reply to rpc client
+     * Send reply to rpc client.
      *
      * @param Response $response
      * @param Envelope $envelope
@@ -161,7 +161,7 @@ final class JsonRpcServer extends AbstractConsumer
             'app_id' => $this->appId,
             'headers' => [
                 'jsonrpc' => JsonRpcResponse::JSONRPC_VERSION,
-            ]
+            ],
         ];
 
         if ($response->isError()) {
@@ -182,11 +182,10 @@ final class JsonRpcServer extends AbstractConsumer
     }
 
     /**
-     * Handle process flag
+     * Handle process flag.
      *
-     * @param Envelope $envelope
+     * @param Envelope       $envelope
      * @param DeliveryResult $flag
-     * @return void
      */
     protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
     {
@@ -195,7 +194,9 @@ final class JsonRpcServer extends AbstractConsumer
 
     /**
      * @param Envelope $envelope
+     *
      * @return Request
+     *
      * @throws Exception\InvalidJsonRpcVersion
      * @throws Exception\JsonParseError
      */

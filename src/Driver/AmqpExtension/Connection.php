@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
@@ -28,8 +27,7 @@ use Humus\Amqp\ConnectionOptions;
 use Traversable;
 
 /**
- * Class Connection
- * @package Humus\Amqp\Driver\AmqpExtension
+ * Class Connection.
  */
 final class Connection implements ConnectionInterface
 {
@@ -45,11 +43,12 @@ final class Connection implements ConnectionInterface
 
     /**
      * Connection constructor.
+     *
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)
     {
-        if (! $options instanceof ConnectionOptions) {
+        if (!$options instanceof ConnectionOptions) {
             $options = new ConnectionOptions($options);
         }
 
@@ -66,7 +65,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isConnected() : bool
     {
@@ -74,7 +73,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function connect()
     {
@@ -86,7 +85,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function disconnect()
     {
@@ -98,7 +97,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function reconnect() : bool
     {
@@ -110,7 +109,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getOptions() : ConnectionOptions
     {

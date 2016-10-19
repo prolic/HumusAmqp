@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -33,8 +32,7 @@ use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
 
 /**
- * Class ExchangeFactory
- * @package Humus\Amqp\Container
+ * Class ExchangeFactory.
  */
 final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
@@ -69,19 +67,21 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * </code>
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return Exchange
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments) : Exchange
     {
-        if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
+        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
 
-        if (! isset($arguments[1])) {
+        if (!isset($arguments[1])) {
             $arguments[1] = null;
         } elseif (!$arguments[1] instanceof Channel) {
             throw new Exception\InvalidArgumentException(
@@ -89,11 +89,11 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             );
         }
 
-        if (! isset($arguments[2])) {
+        if (!isset($arguments[2])) {
             $arguments[2] = false;
         }
 
-        if (! is_bool($arguments[2])) {
+        if (!is_bool($arguments[2])) {
             throw new Exception\InvalidArgumentException('The third argument must be a boolean');
         }
 
@@ -102,9 +102,10 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
     /**
      * QueueFactory constructor.
-     * @param string $exchangeName
+     *
+     * @param string       $exchangeName
      * @param Channel|null $channel
-     * @param bool $autoSetupFabric
+     * @param bool         $autoSetupFabric
      */
     public function __construct(string $exchangeName, Channel $channel = null, bool $autoSetupFabric = false)
     {
@@ -115,7 +116,9 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
     /**
      * @param ContainerInterface $container
+     *
      * @return Exchange
+     *
      * @throws Exception\InvalidArgumentException
      */
     public function __invoke(ContainerInterface $container) : Exchange
@@ -139,14 +142,14 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             if (isset($options['arguments']['alternate-exchange'])) {
                 // auto setup fabric alternate exchange
                 $exchangeName = $options['arguments']['alternate-exchange'];
-                ExchangeFactory::$exchangeName($container, $this->channel, true);
+                self::$exchangeName($container, $this->channel, true);
             }
 
             $exchange->declareExchange();
 
             // rabbitmq extension: exchange to exchange bindings
             foreach ($options['exchange_bindings'] as $exchangeName => $bindOptions) {
-                ExchangeFactory::$exchangeName($container, $this->channel, true);
+                self::$exchangeName($container, $this->channel, true);
                 if (empty($bindOptions)) {
                     $this->bindExchange($exchange, $exchangeName, [], []);
                 } else {
@@ -189,7 +192,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     }
 
     /**
-     * return array
+     * return array.
      */
     public function mandatoryOptions() : array
     {
@@ -201,6 +204,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
     /**
      * @param array|ArrayAccess
+     *
      * @return int
      */
     private function getFlags($options) : int
@@ -216,9 +220,9 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
     /**
      * @param Exchange $exchange
-     * @param string $exchangeName
-     * @param array $routingKeys
-     * @param array $bindArguments
+     * @param string   $exchangeName
+     * @param array    $routingKeys
+     * @param array    $bindArguments
      */
     private function bindExchange(
         Exchange $exchange,

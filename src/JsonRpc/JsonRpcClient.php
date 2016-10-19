@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
@@ -30,8 +29,7 @@ use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 
 /**
- * Class JsonRpcClient
- * @package Humus\Amqp\JsonRpc
+ * Class JsonRpcClient.
  */
 final class JsonRpcClient implements Client
 {
@@ -51,7 +49,7 @@ final class JsonRpcClient implements Client
     private $responseCollection;
 
     /**
-     * Milliseconds to wait between two tries when reply is not yet there
+     * Milliseconds to wait between two tries when reply is not yet there.
      *
      * @var int
      */
@@ -73,12 +71,12 @@ final class JsonRpcClient implements Client
     private $timeout = 0;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Queue $queue
+     * @param Queue      $queue
      * @param Exchange[] $exchanges
-     * @param int $waitMillis
-     * @param string $appId
+     * @param int        $waitMillis
+     * @param string     $appId
      */
     public function __construct(Queue $queue, array $exchanges, int $waitMillis = 100, string $appId = '')
     {
@@ -93,9 +91,10 @@ final class JsonRpcClient implements Client
     }
 
     /**
-     * Add a request to rpc client
+     * Add a request to rpc client.
      *
      * @param Request $request
+     *
      * @throws Exception\InvalidArgumentException
      */
     public function addRequest(Request $request)
@@ -115,9 +114,10 @@ final class JsonRpcClient implements Client
     }
 
     /**
-     * Get response collection
+     * Get response collection.
      *
      * @param float $timeout in seconds
+     *
      * @return ResponseCollection
      */
     public function getResponseCollection(float $timeout = 0) : ResponseCollection
@@ -151,11 +151,12 @@ final class JsonRpcClient implements Client
 
     /**
      * @param string $server
+     *
      * @return Exchange
      */
     private function getExchange(string $server)
     {
-        if (! isset($this->exchanges[$server])) {
+        if (!isset($this->exchanges[$server])) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid server given, no related exchange "%s" found.',
                 $server
@@ -167,6 +168,7 @@ final class JsonRpcClient implements Client
 
     /**
      * @param Request $request
+     *
      * @return array
      */
     private function createAttributes(Request $request) : array
@@ -198,6 +200,7 @@ final class JsonRpcClient implements Client
 
     /**
      * @param Envelope $envelope
+     *
      * @return Response
      */
     private function responseFromEnvelope(Envelope $envelope) : Response
@@ -214,7 +217,7 @@ final class JsonRpcClient implements Client
 
         $payload = json_decode($envelope->getBody(), true);
 
-        if (! in_array($envelope->getCorrelationId(), $this->requestIds)) {
+        if (!in_array($envelope->getCorrelationId(), $this->requestIds)) {
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
                 new JsonRpcError(JsonRpcError::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')
@@ -224,10 +227,10 @@ final class JsonRpcClient implements Client
                 $envelope->getCorrelationId(),
                 $payload['result']
             );
-        } elseif (! isset($payload['error']['code'])
-            || ! isset($payload['error']['message'])
-            || ! is_int($payload['error']['code'])
-            || ! is_string($payload['error']['message'])
+        } elseif (!isset($payload['error']['code'])
+            || !isset($payload['error']['message'])
+            || !is_int($payload['error']['code'])
+            || !is_string($payload['error']['message'])
         ) {
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),

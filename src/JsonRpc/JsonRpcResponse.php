@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,23 +17,21 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception;
 
 /**
- * Class JsonRpcResponse
- * @package Humus\Amqp\JsonRpc
+ * Class JsonRpcResponse.
  */
 final class JsonRpcResponse implements Response
 {
-    const JSONRPC_VERSION = "2.0";
+    const JSONRPC_VERSION = '2.0';
 
     /**
-     * @var array|string|integer|float|bool|null
+     * @var array|string|int|float|bool|null
      */
     private $result;
 
@@ -48,13 +46,14 @@ final class JsonRpcResponse implements Response
     private $id;
 
     /**
-     * @var array|string|integer|float|bool|null
+     * @var array|string|int|float|bool|null
      */
     private $data;
 
     /**
-     * @param string $id
-     * @param array|string|integer|float|bool|null $result
+     * @param string                           $id
+     * @param array|string|int|float|bool|null $result
+     *
      * @return Response
      */
     public static function withResult(string $id, $result)
@@ -70,9 +69,10 @@ final class JsonRpcResponse implements Response
     }
 
     /**
-     * @param string $id
-     * @param Error $error
-     * @param array|string|integer|float|bool|null $data
+     * @param string                           $id
+     * @param Error                            $error
+     * @param array|string|int|float|bool|null $data
+     *
      * @return Response
      */
     public static function withError(string $id, Error $error, $data = null)
@@ -133,7 +133,7 @@ final class JsonRpcResponse implements Response
     }
 
     /**
-     * @param mixed $payload
+     * @param mixed  $payload
      * @param string $name
      */
     private static function assertPayload($payload, string $name)
@@ -142,11 +142,12 @@ final class JsonRpcResponse implements Response
             foreach ($payload as $subPayload) {
                 self::assertPayload($subPayload, $name);
             }
+
             return;
         }
 
-        if (! is_scalar($payload) && null !== $payload) {
-            throw new Exception\InvalidArgumentException($name . ' must only contain arrays and scalar values');
+        if (!is_scalar($payload) && null !== $payload) {
+            throw new Exception\InvalidArgumentException($name.' must only contain arrays and scalar values');
         }
     }
 }

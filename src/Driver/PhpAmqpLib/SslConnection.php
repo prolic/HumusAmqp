@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
@@ -28,26 +27,26 @@ use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 use Traversable;
 
 /**
- * Class SslConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
+ * Class SslConnection.
  */
 final class SslConnection extends AbstractConnection
 {
     /**
      * SslConnection constructor.
+     *
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)
     {
-        if (! $options instanceof ConnectionOptions) {
+        if (!$options instanceof ConnectionOptions) {
             $options = new ConnectionOptions($options);
         }
 
-        if (! $options->getCACert()) {
+        if (!$options->getCACert()) {
             throw new Exception\InvalidArgumentException('Ca cert file missing in connection options');
         }
 
-        if (! $options->getCert()) {
+        if (!$options->getCert()) {
             throw new Exception\InvalidArgumentException('Cert file missing in connection options');
         }
 
@@ -59,7 +58,7 @@ final class SslConnection extends AbstractConnection
             'cafile' => $options->getCACert(),
             'local_cert' => $options->getCert(),
             'verify_peer' => $options->getVerify(),
-            'verify_peer_name' => $options->getVerify()
+            'verify_peer_name' => $options->getVerify(),
         ];
 
         if ($key = $options->getKey()) {
@@ -77,7 +76,7 @@ final class SslConnection extends AbstractConnection
             [
                 'connection_timeout' => $options->getReadTimeout(),
                 'read_write_timeout' => $options->getWriteTimeout(),
-                'heartbeat'          => $options->getHeartbeat(),
+                'heartbeat' => $options->getHeartbeat(),
             ]
         );
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
@@ -28,8 +27,7 @@ use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exchange as ExchangeInterface;
 
 /**
- * Class Exchange
- * @package Humus\Amqp\Driver\AmqpExtension
+ * Class Exchange.
  */
 final class Exchange implements ExchangeInterface
 {
@@ -49,7 +47,7 @@ final class Exchange implements ExchangeInterface
      * Returns a new instance of an AMQPExchange object, associated with the
      * given Channel object.
      *
-     * @param Channel $channel A valid Channel object, connected to a broker.
+     * @param Channel $channel A valid Channel object, connected to a broker
      */
     public function __construct(Channel $channel)
     {
@@ -58,7 +56,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getName() : string
     {
@@ -66,7 +64,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setName(string $exchangeName)
     {
@@ -74,7 +72,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getType() : string
     {
@@ -82,7 +80,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setType(string $exchangeType)
     {
@@ -90,7 +88,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getFlags() : int
     {
@@ -98,7 +96,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setFlags(int $flags)
     {
@@ -106,7 +104,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArgument(string $key)
     {
@@ -114,7 +112,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArguments() : array
     {
@@ -122,7 +120,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArgument(string $key, $value)
     {
@@ -130,7 +128,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArguments(array $arguments)
     {
@@ -138,7 +136,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function declareExchange()
     {
@@ -146,7 +144,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM)
     {
@@ -154,7 +152,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
@@ -162,7 +160,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
@@ -170,7 +168,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function publish(
         string $message,
@@ -182,7 +180,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getChannel() : ChannelInterface
     {
@@ -190,7 +188,7 @@ final class Exchange implements ExchangeInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConnection() : ConnectionInterface
     {

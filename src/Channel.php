@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -29,12 +28,11 @@ use Humus\Amqp\Exception\QueueException;
  * Represents a AMQP channel between PHP and a AMQP server.
  *
  * Interface Channel
- * @package Humus\Amqp
  */
 interface Channel
 {
     /**
-     * Return the internal channel implementation based on the used driver
+     * Return the internal channel implementation based on the used driver.
      *
      * @return object
      */
@@ -43,14 +41,14 @@ interface Channel
     /**
      * Check the channel connection.
      *
-     * @return bool Indicates whether the channel is connected.
+     * @return bool Indicates whether the channel is connected
      */
     public function isConnected() : bool;
 
     /**
-     * Return internal channel ID
+     * Return internal channel ID.
      *
-     * @return integer
+     * @return int
      */
     public function getChannelId() : int;
 
@@ -64,15 +62,14 @@ interface Channel
      * Queue::consume() or Queue::get() is done with the Constants::AMQP_AUTOACK
      * flag set, this setting will be ignored.
      *
-     * @param integer $size The window size, in octets, to prefetch.
-     * @return void
+     * @param int $size The window size, in octets, to prefetch
      */
     public function setPrefetchSize(int $size);
 
     /**
      * Get the window size to prefetch from the broker.
      *
-     * @return integer
+     * @return int
      */
     public function getPrefetchSize() : int;
 
@@ -84,15 +81,14 @@ interface Channel
      * automatically set the prefetch window size to 0, meaning that the
      * prefetch window size setting will be ignored.
      *
-     * @param integer $count The number of messages to prefetch.
-     * @return void
+     * @param int $count The number of messages to prefetch
      */
     public function setPrefetchCount(int $count);
 
     /**
      * Get the number of messages to prefetch from the broker.
      *
-     * @return integer
+     * @return int
      */
     public function getPrefetchCount() : int;
 
@@ -111,9 +107,8 @@ interface Channel
      * flag set, the client will not do any prefetching of data, regardless of
      * the QOS settings.
      *
-     * @param integer $size  The window size, in octets, to prefetch.
-     * @param integer $count The number of messages to prefetch.
-     * @return void
+     * @param int $size  The window size, in octets, to prefetch
+     * @param int $count The number of messages to prefetch
      */
     public function qos(int $size, int $count);
 
@@ -122,15 +117,11 @@ interface Channel
      *
      * This method must be called on the given channel prior to calling
      * Channel::commitTransaction() or Channel::rollbackTransaction().
-     *
-     * @return void
      */
     public function startTransaction();
 
     /**
      * Commit a pending transaction.
-     *
-     * @return void
      */
     public function commitTransaction();
 
@@ -139,13 +130,11 @@ interface Channel
      *
      * Rollback an existing transaction. Channel::startTransaction() must
      * be called prior to this.
-     *
-     * @return void
      */
     public function rollbackTransaction();
 
     /**
-     * Get the Connection object in use
+     * Get the Connection object in use.
      *
      * @return Connection
      */
@@ -155,14 +144,11 @@ interface Channel
      * Redeliver unacknowledged messages.
      *
      * @param bool $requeue
-     * @return void
      */
     public function basicRecover(bool $requeue = true);
 
     /**
      * Set the channel to use publisher acknowledgements. This can only used on a non-transactional channel.
-     *
-     * @return void
      */
     public function confirmSelect();
 
@@ -180,9 +166,7 @@ interface Channel
      * and should return boolean false when wait loop should be canceled.
      *
      * Note, basic.nack server method will only be delivered if an internal error occurs in the Erlang process
-     * responsible for a queue (see https://www.rabbitmq.com/confirms.html for details).
-     *
-     * @return void
+     * responsible for a queue (see https://www.rabbitmq.com/confirms.html for details)
      */
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null);
 
@@ -191,38 +175,25 @@ interface Channel
      *
      * Note, this method also catch all basic.return message from server.
      *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
+     * @param float $timeout Timeout in seconds. May be fractional
+     *
      * @throws ChannelException
      * @throws QueueException
      */
     public function waitForConfirm(float $timeout = 0.0);
 
     /**
-     * Set callback to process basic.return AMQP server method
+     * Set callback to process basic.return AMQP server method.
      *
      * @param callable|null $returnCallback
-     * @return void
-     *
-     * Callback function with all arguments has the following signature:
-     *
-     *      function callback(int $replyCode,
-     *                        string $replyText,
-     *                        string $exchange,
-     *                        string $routingKey,
-     *                        Envelope $envelope,
-     *                        string $body) : bool;
-     *
-     * and should return boolean false when wait loop should be canceled.
-     *
      */
     public function setReturnCallback(callable $returnCallback = null);
 
     /**
-     * Start wait loop for basic.return AMQP server methods
+     * Start wait loop for basic.return AMQP server methods.
      *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
+     * @param float $timeout Timeout in seconds. May be fractional
+     *
      * @throws ChannelException
      * @throws QueueException
      */

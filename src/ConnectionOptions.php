@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,14 +17,12 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
 /**
- * Class ConnectionOptions
- * @package Humus\Amqp
+ * Class ConnectionOptions.
  */
 class ConnectionOptions extends AbstractOptions
 {
@@ -330,7 +328,8 @@ class ConnectionOptions extends AbstractOptions
         $array = [];
         $transform = function ($letters) {
             $letter = array_shift($letters);
-            return '_' . strtolower($letter);
+
+            return '_'.strtolower($letter);
         };
         foreach ($this as $key => $value) {
             if ($key === '__strictMode__'
@@ -341,6 +340,7 @@ class ConnectionOptions extends AbstractOptions
             $normalizedKey = preg_replace_callback('/([A-Z])/', $transform, $key);
             $array[$normalizedKey] = $value;
         }
+
         return $array;
     }
 }

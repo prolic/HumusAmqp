@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,14 +17,14 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
@@ -33,8 +33,7 @@ use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
 
 /**
- * Class QueueFactory
- * @package Humus\Amqp\Container
+ * Class QueueFactory.
  */
 final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
@@ -69,8 +68,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * </code>
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return Queue
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments) : Queue
@@ -81,7 +82,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             );
         }
 
-        if (! isset($arguments[1])) {
+        if (!isset($arguments[1])) {
             $arguments[1] = null;
         } elseif (!$arguments[1] instanceof Channel) {
             throw new Exception\InvalidArgumentException(
@@ -89,11 +90,11 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             );
         }
 
-        if (! isset($arguments[2])) {
+        if (!isset($arguments[2])) {
             $arguments[2] = false;
         }
 
-        if (! is_bool($arguments[2])) {
+        if (!is_bool($arguments[2])) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The third argument must be a boolean')
             );
@@ -104,9 +105,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
     /**
      * QueueFactory constructor.
-     * @param string $queueName
+     *
+     * @param string       $queueName
      * @param Channel|null $channel
-     * @param bool $autoSetupFabric
+     * @param bool         $autoSetupFabric
      */
     public function __construct(string $queueName, Channel $channel = null, bool $autoSetupFabric = false)
     {
@@ -117,7 +119,9 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
     /**
      * @param ContainerInterface $container
+     *
      * @return Queue
+     *
      * @throws Exception\InvalidArgumentException
      */
     public function __invoke(ContainerInterface $container) : Queue
@@ -152,24 +156,28 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 $exchanges = iterator_to_array($exchanges);
             }
 
-            if (! is_array($exchanges) || empty($exchanges)) {
+            if (!is_array($exchanges) || empty($exchanges)) {
                 throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
             }
 
+            /** @var Exchange[] $exchangeObjects */
+            $exchangeObjects = [];
             foreach ($exchanges as $exchange => $exchangeOptions) {
-                ExchangeFactory::$exchange($container, $this->channel, true);
+                $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, true);
             }
 
             $queue->declareQueue();
 
             foreach ($exchanges as $exchange => $exchangeOptions) {
+                $exchangeObject = $exchangeObjects[$exchange];
+                $exchangeName = $exchangeObject->getName();
                 if (empty($exchangeOptions)) {
-                    $this->bindQueue($queue, $exchange, [], []);
+                    $this->bindQueue($queue, $exchangeName, [], []);
                 } else {
                     foreach ($exchangeOptions as $exchangeOption) {
                         $routingKeys = $exchangeOption['routing_keys'] ?? [];
                         $bindArguments = $exchangeOption['bind_arguments'] ?? [];
-                        $this->bindQueue($queue, $exchange, $routingKeys, $bindArguments);
+                        $this->bindQueue($queue, $exchangeName, $routingKeys, $bindArguments);
                     }
                 }
             }
@@ -199,12 +207,12 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             'exclusive' => false,
             'auto_delete' => false,
             // factory configs
-            'auto_setup_fabric' => false
+            'auto_setup_fabric' => false,
         ];
     }
 
     /**
-     * return array
+     * return array.
      */
     public function mandatoryOptions() : array
     {
@@ -216,6 +224,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
     /**
      * @param array|ArrayAccess
+     *
      * @return int
      */
     private function getFlags($options) : int
@@ -230,10 +239,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     }
 
     /**
-     * @param Queue $queue
+     * @param Queue  $queue
      * @param string $exchange
-     * @param array $routingKeys
-     * @param array $bindArguments
+     * @param array  $routingKeys
+     * @param array  $bindArguments
      */
     private function bindQueue(Queue $queue, string $exchange, array $routingKeys, array $bindArguments)
     {

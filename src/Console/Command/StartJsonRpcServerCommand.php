@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
@@ -28,8 +27,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class StartJsonRpcServerCommand
- * @package Humus\Amqp\Console\Command
+ * Class StartJsonRpcServerCommand.
  */
 class StartJsonRpcServerCommand extends AbstractCommand
 {
@@ -55,7 +53,7 @@ class StartJsonRpcServerCommand extends AbstractCommand
                     InputOption::VALUE_OPTIONAL,
                     'amount of messages to consume',
                     0
-                )
+                ),
             ])
             ->setHelp('Start a JSON-RPC server');
     }
@@ -67,15 +65,17 @@ class StartJsonRpcServerCommand extends AbstractCommand
     {
         $serverName = $input->getOption('name');
 
-        if (! $serverName) {
+        if (!$serverName) {
             $output->writeln('No JSON-RPC server given');
+
             return 1;
         }
 
         $container = $this->getContainer();
 
-        if (! $container->has($serverName)) {
-            $output->writeln('No JSON-RPC server with name ' . $serverName . ' found');
+        if (!$container->has($serverName)) {
+            $output->writeln('No JSON-RPC server with name '.$serverName.' found');
+
             return 1;
         }
 

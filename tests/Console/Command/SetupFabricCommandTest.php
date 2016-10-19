@@ -18,7 +18,7 @@
  *  and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace HumusTest\Amqp\Console\Command;
 
@@ -97,6 +97,7 @@ class SetupFabricCommandTest extends TestCase
         $exchange->setType('direct')->shouldBeCalled();
         $exchange->setArguments([])->shouldBeCalled();
         $exchange->declareExchange()->shouldBeCalled();
+        $exchange->getName()->willReturn('demo');
 
         $queue = $this->prophesize(Queue::class);
         $queue->setName('foo')->shouldBeCalled();

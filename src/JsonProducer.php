@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,14 +17,12 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
 /**
- * Class JsonProducer
- * @package Humus\Amqp
+ * Class JsonProducer.
  */
 final class JsonProducer extends AbstractProducer
 {
@@ -34,11 +32,11 @@ final class JsonProducer extends AbstractProducer
     protected $defaultAttributes = [
         'content_type' => 'application/json',
         'content_encoding' => 'UTF-8',
-        'delivery_mode' => 2 // persistent
+        'delivery_mode' => 2, // persistent
     ];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function publish(
         $message,

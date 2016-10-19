@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,28 +17,24 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
 /**
- * Interface Consumer
- * @package Humus\Amqp
+ * Interface Consumer.
  */
 interface Consumer
 {
     /**
-     * Start consumer
+     * Start consumer.
      *
      * @param int $msgAmount
      */
     public function consume(int $msgAmount = 0);
 
     /**
-     * Shutdown consumer
-     * 
-     * @return void
+     * Shutdown consumer.
      */
     public function shutdown();
 }

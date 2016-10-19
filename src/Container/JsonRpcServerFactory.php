@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -32,10 +31,9 @@ use Interop\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Class JsonRpcServerFactory
- * @package Humus\Amqp\Container
+ * Class JsonRpcServerFactory.
  */
-final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
+final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
@@ -58,8 +56,10 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
      * </code>
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return JsonRpcServer
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments) : JsonRpcServer
@@ -69,11 +69,13 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
     /**
      * JsonRpcClientFactory constructor.
+     *
      * @param string $serverName
      */
     public function __construct(string $serverName)
@@ -83,6 +85,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
 
     /**
      * @param ContainerInterface $container
+     *
      * @return JsonRpcServer
      */
     public function __invoke(ContainerInterface $container) : JsonRpcServer
@@ -140,7 +143,7 @@ final class JsonRpcServerFactory implements  ProvidesDefaultOptions, RequiresCon
         return [
             'queue',
             'delivery_callback',
-            'idle_timeout'
+            'idle_timeout',
         ];
     }
 }

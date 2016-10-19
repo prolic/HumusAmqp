@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
@@ -35,8 +34,7 @@ use PhpAmqpLib\Wire\AMQPArray;
 use PhpAmqpLib\Wire\AMQPTable;
 
 /**
- * Class Queue
- * @package Humus\Amqp\Driver\AmqpExtension
+ * Class Queue.
  */
 final class Queue implements QueueInterface
 {
@@ -63,7 +61,7 @@ final class Queue implements QueueInterface
     /**
      * Create an instance of an Queue object.
      *
-     * @param Channel $channel The amqp channel to use.
+     * @param Channel $channel The amqp channel to use
      */
     public function __construct(Channel $channel)
     {
@@ -71,7 +69,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getName() : string
     {
@@ -79,7 +77,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setName(string $exchangeName)
     {
@@ -87,7 +85,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getFlags() : int
     {
@@ -95,7 +93,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setFlags(int $flags)
     {
@@ -103,7 +101,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArgument(string $key)
     {
@@ -111,7 +109,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArguments() : array
     {
@@ -119,7 +117,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArgument(string $key, $value)
     {
@@ -127,7 +125,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArguments(array $arguments)
     {
@@ -135,7 +133,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function declareQueue() : int
     {
@@ -155,7 +153,7 @@ final class Queue implements QueueInterface
             } elseif (is_string($v)) {
                 $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
             } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+                throw new Exception\InvalidArgumentException('Unknown argument type '.gettype($v));
             }
         }
 
@@ -176,14 +174,13 @@ final class Queue implements QueueInterface
             throw Exception\ChannelException::fromPhpAmqpLib($e);
         }
 
-
         $this->name = $result[0];
 
         return $result[1];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function bind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
@@ -207,7 +204,7 @@ final class Queue implements QueueInterface
             } elseif (is_string($v)) {
                 $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
             } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+                throw new Exception\InvalidArgumentException('Unknown argument type '.gettype($v));
             }
         }
 
@@ -222,7 +219,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get(int $flags = Constants::AMQP_NOPARAM)
     {
@@ -240,7 +237,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function consume(
         callable $callback = null,
@@ -253,6 +250,7 @@ final class Queue implements QueueInterface
                 if (false === $result) {
                     $this->cancel($envelope->delivery_info['consumer_tag']);
                 }
+
                 return $result;
             };
         } else {
@@ -279,7 +277,7 @@ final class Queue implements QueueInterface
             } elseif (is_string($v)) {
                 $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
             } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+                throw new Exception\InvalidArgumentException('Unknown argument type '.gettype($v));
             }
         }
 
@@ -307,7 +305,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -318,7 +316,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -330,7 +328,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -341,7 +339,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function purge()
     {
@@ -353,7 +351,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function cancel(string $consumerTag = '')
     {
@@ -365,7 +363,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
@@ -385,7 +383,7 @@ final class Queue implements QueueInterface
             } elseif (is_string($v)) {
                 $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
             } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
+                throw new Exception\InvalidArgumentException('Unknown argument type '.gettype($v));
             }
         }
 
@@ -399,7 +397,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
@@ -413,7 +411,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getChannel() : ChannelInterface
     {
@@ -421,7 +419,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConnection() : ConnectionInterface
     {

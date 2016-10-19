@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
@@ -27,8 +26,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ShowCommand
- * @package Humus\Amqp\Console\Command
+ * Class ShowCommand.
  */
 class ShowCommand extends AbstractCommand
 {
@@ -43,7 +41,7 @@ class ShowCommand extends AbstractCommand
         'producers',
         'json_rpc_clients',
         'json_rpc_servers',
-        'all'
+        'all',
     ];
 
     /**
@@ -54,22 +52,22 @@ class ShowCommand extends AbstractCommand
         $this
             ->setName('show')
             ->setAliases(['show'])
-            ->setDescription('Show all AMQP ' . implode(', ', $this->knownTypes))
+            ->setDescription('Show all AMQP '.implode(', ', $this->knownTypes))
             ->setDefinition([
                 new InputOption(
                     'type',
                     't',
                     InputOption::VALUE_REQUIRED,
-                    'one of ' . implode(', ', $this->knownTypes)
+                    'one of '.implode(', ', $this->knownTypes)
                 ),
                 new InputOption(
                     'details',
                     'd',
                     InputOption::VALUE_NONE,
                     'show details to given type'
-                )
+                ),
             ])
-            ->setHelp('Show all AMQP ' . implode(', ', $this->knownTypes));
+            ->setHelp('Show all AMQP '.implode(', ', $this->knownTypes));
     }
 
     /**
@@ -79,15 +77,17 @@ class ShowCommand extends AbstractCommand
     {
         $type = $input->getOption('type');
 
-        if (! $type) {
+        if (!$type) {
             $output->writeln('No type given');
+
             return 1;
         }
 
-        if (! in_array($type, $this->knownTypes)) {
+        if (!in_array($type, $this->knownTypes)) {
             $output->writeln(
-                'Invalid type given, use one of ' . implode(', ', $this->knownTypes)
+                'Invalid type given, use one of '.implode(', ', $this->knownTypes)
             );
+
             return 1;
         }
 
@@ -121,24 +121,23 @@ class ShowCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
-     * @param array $config
-     * @param string $type
-     * @return void
+     * @param array           $config
+     * @param string          $type
      */
     protected function listType(InputInterface $input, OutputInterface $output, array $config, string $type)
     {
         $type = substr($type, 0, -1);
 
-        if (! isset($config[$type]) || empty($config[$type])) {
-            $output->writeln('No ' . $type . 's found');
+        if (!isset($config[$type]) || empty($config[$type])) {
+            $output->writeln('No '.$type.'s found');
         } else {
             foreach ($config[$type] as $name => $spec) {
-                $output->writeln(ucfirst($type) . ': ' . $name);
+                $output->writeln(ucfirst($type).': '.$name);
 
                 if ($input->getOption('details')) {
-                    $output->writeln('Specs: ' . json_encode($spec, JSON_PRETTY_PRINT));
+                    $output->writeln('Specs: '.json_encode($spec, JSON_PRETTY_PRINT));
                     $output->writeln('');
                 }
             }

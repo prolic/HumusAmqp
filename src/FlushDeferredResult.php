@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,8 +17,7 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -26,8 +25,7 @@ use MabeEnum\Enum;
 use MabeEnum\EnumSerializableTrait;
 
 /**
- * Class FlushDeferredResult
- * @package Humus\Amqp
+ * Class FlushDeferredResult.
  *
  * @method static FlushDeferredResult MSG_ACK()
  * @method static FlushDeferredResult MSG_REJECT()
@@ -38,17 +36,17 @@ final class FlushDeferredResult extends Enum
     use EnumSerializableTrait;
 
     /**
-     * Flag for message ack all deferred messages
+     * Flag for message ack all deferred messages.
      */
     const MSG_ACK = 0;
 
     /**
-     * Flag for reject and drop all deferred messages
+     * Flag for reject and drop all deferred messages.
      */
     const MSG_REJECT = 1;
 
     /**
-     * Flag for reject and requeue all deferred messages
+     * Flag for reject and requeue all deferred messages.
      */
     const MSG_REJECT_REQUEUE = 2;
 }

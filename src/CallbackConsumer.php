@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * Copyright (c) 2016. Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,33 +17,32 @@
  *  This software consists of voluntary contributions made by many individuals
  *  and is licensed under the MIT license.
  */
-
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
 use Psr\Log\LoggerInterface;
 
 /**
- * The consumer attaches to a single queue
+ * The consumer attaches to a single queue.
  *
  * The used block size is the configured prefetch size of the queue's channel
  *
  * Class CallbackConsumer
- * @package Humus\Amqp
  */
 final class CallbackConsumer extends AbstractConsumer
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Queue $queue
+     * @param Queue           $queue
      * @param LoggerInterface $logger
-     * @param float $idleTimeout in seconds
-     * @param callable $deliveryCallback,
-     * @param callable|null $flushCallback,
-     * @param callable|null $errorCallback
-     * @param string $consumerTag
+     * @param float           $idleTimeout       in seconds
+     * @param callable        $deliveryCallback,
+     * @param callable|null   $flushCallback,
+     * @param callable|null   $errorCallback
+     * @param string          $consumerTag
+     *
      * @throws Exception\InvalidArgumentException
      *
      * Callback functions with all arguments have the following signature:
@@ -66,7 +65,7 @@ final class CallbackConsumer extends AbstractConsumer
         }
 
         if (extension_loaded('pcntl')) {
-            declare (ticks = 1);
+            declare(ticks=1);
 
             $this->usePcntlSignalDispatch = true;
 
