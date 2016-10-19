@@ -202,7 +202,8 @@ final class Channel implements ChannelInterface
                 \AMQPEnvelope $properties,
                 string $body
             ) use ($returnCallback) {
-                return $returnCallback($replyCode, $replyText, $exchange, $routingKey, new Envelope($properties), $body);
+                $envelope = new Envelope($properties, is_string($body) ? $body : '');
+                return $returnCallback($replyCode, $replyText, $exchange, $routingKey, $envelope, $body);
             };
         }
 

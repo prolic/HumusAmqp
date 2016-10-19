@@ -23,6 +23,7 @@ declare (strict_types=1);
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use Humus\Amqp\Envelope as EnvelopeInterface;
+use Humus\Amqp\Exception;
 
 /**
  * Class Envelope
@@ -31,17 +32,28 @@ use Humus\Amqp\Envelope as EnvelopeInterface;
 final class Envelope implements EnvelopeInterface
 {
     /**
-     * @var \AMQPEnvelope
+     * @var \AMQPEnvelope|\AMQPBasicProperties
      */
     private $envelope;
+    /**
+     * @var string
+     */
+    private $body;
 
     /**
      * Envelope constructor.
-     * @param \AMQPEnvelope $envelope
+     * @param \AMQPBasicProperties|\AMQPEnvelope $envelope
+     * @param string $body
+     * @throws Exception\InvalidArgumentException
      */
-    public function __construct(\AMQPEnvelope $envelope)
+    public function __construct($envelope, string $body)
     {
+        if (!$envelope instanceof \AMQPBasicProperties && !$envelope instanceof \AMQPEnvelope) {
+            throw new Exception\InvalidArgumentException('Invalid envelope type');
+        }
+
         $this->envelope = $envelope;
+        $this->body = $body;
     }
 
     /**
@@ -49,7 +61,7 @@ final class Envelope implements EnvelopeInterface
      */
     public function getBody() : string
     {
-        return (string) $this->envelope->getBody();
+        return (string) $this->body;
     }
 
     /**
