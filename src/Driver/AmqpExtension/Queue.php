@@ -150,7 +150,7 @@ final class Queue implements AmqpQueueInterface
         $envelope = $this->queue->get($flags);
 
         if ($envelope instanceof \AMQPEnvelope) {
-            $envelope = new Envelope($envelope, $envelope->getBody());
+            $envelope = new Envelope($envelope, $envelope->getBody() ?: '');
         }
 
         return $envelope;
@@ -163,7 +163,7 @@ final class Queue implements AmqpQueueInterface
     {
         if (null !== $callback) {
             $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
-                $envelope = new Envelope($envelope, $envelope->getBody());
+                $envelope = new Envelope($envelope, $envelope->getBody() ?: '');
                 return $callback($envelope, $this);
             };
         } else {
