@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -65,7 +65,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      */
     public static function __callStatic(string $name, array $arguments) : Producer
     {
-        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
+        if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );

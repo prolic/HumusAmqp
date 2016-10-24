@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -68,7 +68,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
      */
     public static function __callStatic(string $name, array $arguments) : Connection
     {
-        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
+        if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
@@ -104,7 +104,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                 break;
             case Driver::PHP_AMQP_LIB():
             default:
-                if (!isset($options['type'])) {
+                if (! isset($options['type'])) {
                     throw new Exception\InvalidArgumentException(
                         'For php-amqplib driver a connection type is required'
                     );

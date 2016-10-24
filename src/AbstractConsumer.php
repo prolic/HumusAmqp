@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -137,7 +137,7 @@ abstract class AbstractConsumer implements Consumer
 
         $this->blockSize = $this->queue->getChannel()->getPrefetchCount();
 
-        if (!$this->timestampLastAck) {
+        if (! $this->timestampLastAck) {
             $this->timestampLastAck = microtime(true);
         }
 
@@ -166,7 +166,7 @@ abstract class AbstractConsumer implements Consumer
                 pcntl_signal_dispatch();
             }
 
-            if (!$this->keepAlive || (0 !== $this->target && $this->countMessagesConsumed >= $this->target)) {
+            if (! $this->keepAlive || (0 !== $this->target && $this->countMessagesConsumed >= $this->target)) {
                 $this->ackOrNackBlock();
                 $this->queue->cancel($this->consumerTag);
                 $this->shutdown();

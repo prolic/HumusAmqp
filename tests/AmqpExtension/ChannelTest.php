@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension;
 
@@ -37,7 +37,7 @@ final class ChannelTest extends AbstractChannelTest
 
     protected function setUp()
     {
-        if (!extension_loaded('amqp')) {
+        if (! extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
         }
 

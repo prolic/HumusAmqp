@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -66,7 +66,7 @@ final class CallbackConsumer extends AbstractConsumer
         }
 
         if (extension_loaded('pcntl')) {
-            declare (ticks = 1);
+            declare(ticks=1);
 
             $this->usePcntlSignalDispatch = true;
 

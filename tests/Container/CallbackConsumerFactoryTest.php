@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
@@ -95,7 +95,8 @@ class CallbackConsumerFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {})->shouldBeCalled();
+        $container->get('my_callback')->willReturn(function () {
+        })->shouldBeCalled();
 
         $factory = new CallbackConsumerFactory('my_consumer');
         $callbackConsumer = $factory($container->reveal());
@@ -161,9 +162,12 @@ class CallbackConsumerFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {})->shouldBeCalled();
-        $container->get('my_flush')->willReturn(function () {})->shouldBeCalled();
-        $container->get('my_error')->willReturn(function () {})->shouldBeCalled();
+        $container->get('my_callback')->willReturn(function () {
+        })->shouldBeCalled();
+        $container->get('my_flush')->willReturn(function () {
+        })->shouldBeCalled();
+        $container->get('my_error')->willReturn(function () {
+        })->shouldBeCalled();
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 
         $consumerName = 'my_consumer';

@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
@@ -75,7 +75,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      */
     public static function __callStatic(string $name, array $arguments) : Queue
     {
-        if (!isset($arguments[0]) || !$arguments[0] instanceof ContainerInterface) {
+        if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
@@ -83,7 +83,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
         if (! isset($arguments[1])) {
             $arguments[1] = null;
-        } elseif (!$arguments[1] instanceof Channel) {
+        } elseif (! $arguments[1] instanceof Channel) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The second argument must be a type of %s or null', Channel::class)
             );

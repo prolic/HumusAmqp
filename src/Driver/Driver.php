@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\Driver;
 
@@ -28,7 +28,7 @@ use MabeEnum\EnumSerializableTrait;
 /**
  * Class Driver
  * @package Humus\Amqp\Driver
- * 
+ *
  * @method static Driver AMQP_EXTENSION()
  * @method static Driver PHP_AMQP_LIB()
  */

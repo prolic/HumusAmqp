@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -63,7 +63,7 @@ abstract class AbstractOptions
             $options = $options->toArray();
         }
 
-        if (!is_array($options) && !$options instanceof Traversable) {
+        if (! is_array($options) && ! $options instanceof Traversable) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'Parameter provided to %s must be an %s, %s or %s',

@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
@@ -87,7 +87,7 @@ final class JsonRpcRequest implements Request
         int $expiration = 0, // in milliseconds
         int $timestamp = 0
     ) {
-        if (!is_array($params) && !is_scalar($params) && null !== $params) {
+        if (! is_array($params) && ! is_scalar($params) && null !== $params) {
             throw new Exception\InvalidArgumentException('Params must be of type array, scalar or null');
         }
 

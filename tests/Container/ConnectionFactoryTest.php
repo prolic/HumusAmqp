@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
@@ -42,7 +42,7 @@ class ConnectionFactoryTest extends TestCase
      */
     public function it_creates_amqp_extension_connection()
     {
-        if (!extension_loaded('amqp')) {
+        if (! extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
         }
 
@@ -73,7 +73,7 @@ class ConnectionFactoryTest extends TestCase
      */
     public function it_creates_amqp_extension_connection_with_call_static()
     {
-        if (!extension_loaded('amqp')) {
+        if (! extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
         }
 

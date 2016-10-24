@@ -18,7 +18,7 @@
  * and is licensed under the MIT license.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Humus\Amqp;
 
@@ -37,7 +37,7 @@ interface Consumer
 
     /**
      * Shutdown consumer
-     * 
+     *
      * @return void
      */
     public function shutdown();
