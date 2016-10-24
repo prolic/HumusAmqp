@@ -54,7 +54,7 @@ interface Envelope
     /**
      * Get the delivery mode of the message.
      *
-     * @return integer The delivery mode of the message.
+     * @return int The delivery mode of the message.
      */
     public function getDeliveryMode() : int;
 

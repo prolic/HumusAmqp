@@ -50,7 +50,7 @@ interface Channel
     /**
      * Return internal channel ID
      *
-     * @return integer
+     * @return int
      */
     public function getChannelId() : int;
 
@@ -64,7 +64,7 @@ interface Channel
      * Queue::consume() or Queue::get() is done with the Constants::AMQP_AUTOACK
      * flag set, this setting will be ignored.
      *
-     * @param integer $size The window size, in octets, to prefetch.
+     * @param int $size The window size, in octets, to prefetch.
      * @return void
      */
     public function setPrefetchSize(int $size);
@@ -72,7 +72,7 @@ interface Channel
     /**
      * Get the window size to prefetch from the broker.
      *
-     * @return integer
+     * @return int
      */
     public function getPrefetchSize() : int;
 
@@ -84,7 +84,7 @@ interface Channel
      * automatically set the prefetch window size to 0, meaning that the
      * prefetch window size setting will be ignored.
      *
-     * @param integer $count The number of messages to prefetch.
+     * @param int $count The number of messages to prefetch.
      * @return void
      */
     public function setPrefetchCount(int $count);
@@ -92,7 +92,7 @@ interface Channel
     /**
      * Get the number of messages to prefetch from the broker.
      *
-     * @return integer
+     * @return int
      */
     public function getPrefetchCount() : int;
 
@@ -111,8 +111,8 @@ interface Channel
      * flag set, the client will not do any prefetching of data, regardless of
      * the QOS settings.
      *
-     * @param integer $size  The window size, in octets, to prefetch.
-     * @param integer $count The number of messages to prefetch.
+     * @param int $size  The window size, in octets, to prefetch.
+     * @param int $count The number of messages to prefetch.
      * @return void
      */
     public function qos(int $size, int $count);

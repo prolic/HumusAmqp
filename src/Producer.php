@@ -37,7 +37,7 @@ interface Producer
      * @param string  $message     The message to publish.
      * @param string  $routingKey  The optional routing key to which to
      *                             publish to.
-     * @param integer $flags       One or more of Constants::AMQP_MANDATORY and
+     * @param int     $flags       One or more of Constants::AMQP_MANDATORY and
      *                             Constants::AMQP_IMMEDIATE.
      * @param array   $attributes  One of content_type, content_encoding,
      *                             correlation_id, reply_to, headers,

@@ -72,7 +72,7 @@ interface Exchange
     /**
      * Set the flags on an exchange.
      *
-     * @param integer $flags A bitmask of flags. This call currently only
+     * @param int $flags     A bitmask of flags. This call currently only
      *                       considers the following flags:
      *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE
      *                       and Constants::AMQP_DURABLE (needs librabbitmq version >= 0.5.3 when using with ext-amqp)
@@ -84,7 +84,7 @@ interface Exchange
      * Get the argument associated with the given key.
      *
      * @param string $key The key to look up.
-     * @return string|integer|bool The string or integer value associated
+     * @return string|int|bool The string or integer value associated
      *                                with the given key, or FALSE if the key
      *                                is not set.
      */

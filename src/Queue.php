@@ -60,7 +60,7 @@ interface Queue
     /**
      * Set the flags on the queue.
      *
-     * @param integer $flags A bitmask of flags:
+     * @param int $flags A bitmask of flags:
      *                       Constants::AMQP_DURABLE, Constants::AMQP_PASSIVE,
      *                       Constants::AMQP_EXCLUSIVE, Constants::AMQP_AUTODELETE.
      * @return void
@@ -71,7 +71,7 @@ interface Queue
      * Get the argument associated with the given key.
      *
      * @param string $key The key to look up.
-     * @return string|integer|bool The string or integer value associated
+     * @return string|int|bool The string or integer value associated
      *                                with the given key, or false if the key
      *                                is not set.
      */
@@ -106,7 +106,7 @@ interface Queue
     /**
      * Declare a new queue on the broker.
      *
-     * @return integer the message count.
+     * @return int the message count.
      * @throws QueueException
      * @throws ChannelException
      */
@@ -134,7 +134,7 @@ interface Queue
      * automatically be marked as acknowledged by the broker as soon as the
      * frames are sent to the client.
      *
-     * @param integer $flags A bitmask of supported flags for the
+     * @param int $flags A bitmask of supported flags for the
      *                       method call. Currently, the only the
      *                       supported flag is Constants::AMQP_AUTOACK. If this
      *                       value is not provided, it will use the
@@ -165,7 +165,7 @@ interface Queue
      *                              be made available to the first real callback
      *                              registered. That allows one to have a single
      *                              callback consuming from multiple queues.
-     * @param integer  $flags       A bitmask of any of the flags: Constants::AMQP_AUTOACK.
+     * @param int  $flags       A bitmask of any of the flags: Constants::AMQP_AUTOACK.
      * @param string   $consumerTag A string describing this consumer. Used
      *                              for canceling subscriptions with cancel().
      * @return void
@@ -186,7 +186,7 @@ interface Queue
      *
      * @param int  $deliveryTag The message delivery tag of which to
      *                              acknowledge receipt.
-     * @param integer $flags        The only valid flag that can be passed is
+     * @param int $flags        The only valid flag that can be passed is
      *                              Constants::AMQP_MULTIPLE.
      * @return void
      */
@@ -206,7 +206,7 @@ interface Queue
      * undefined.
      *
      * @param int     $deliveryTag Delivery tag of last message to reject.
-     * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s),
+     * @param int $flags        Constants::AMQP_REQUEUE to requeue the message(s),
      *                              Constants::AMQP_MULTIPLE to nack all previous
      *                              unacked messages as well.
      * @return void
@@ -223,7 +223,7 @@ interface Queue
      * flag are not eligible.
      *
      * @param int     $deliveryTag Delivery tag of the message to reject.
-     * @param integer $flags        Constants::AMQP_REQUEUE to requeue the message(s).
+     * @param int $flags        Constants::AMQP_REQUEUE to requeue the message(s).
      * @return void
      */
     public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM);
@@ -262,7 +262,7 @@ interface Queue
      *
      * This includes its entire contents of unread or unacknowledged messages.
      *
-     * @param integer $flags        Optionally Constants::AMQP_IFUNUSED can be specified
+     * @param int $flags            Optionally Constants::AMQP_IFUNUSED can be specified
      *                              to indicate the queue should not be
      *                              deleted until no clients are connected to
      *                              it.

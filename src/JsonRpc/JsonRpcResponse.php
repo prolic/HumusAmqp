@@ -33,7 +33,7 @@ final class JsonRpcResponse implements Response
     const JSONRPC_VERSION = "2.0";
 
     /**
-     * @var array|string|integer|float|bool|null
+     * @var array|string|int|float|bool|null
      */
     private $result;
 
@@ -48,13 +48,13 @@ final class JsonRpcResponse implements Response
     private $id;
 
     /**
-     * @var array|string|integer|float|bool|null
+     * @var array|string|int|float|bool|null
      */
     private $data;
 
     /**
      * @param string $id
-     * @param array|string|integer|float|bool|null $result
+     * @param array|string|int|float|bool|null $result
      * @return Response
      */
     public static function withResult(string $id, $result)
@@ -72,7 +72,7 @@ final class JsonRpcResponse implements Response
     /**
      * @param string $id
      * @param Error $error
-     * @param array|string|integer|float|bool|null $data
+     * @param array|string|int|float|bool|null $data
      * @return Response
      */
     public static function withError(string $id, Error $error, $data = null)

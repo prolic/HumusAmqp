@@ -43,7 +43,7 @@ final class JsonRpcRequest implements Request
      */
     private $method;
     /**
-     * @var array|string|integer|float|bool
+     * @var array|string|int|float|bool
      */
     private $params;
 
@@ -72,7 +72,7 @@ final class JsonRpcRequest implements Request
      *
      * @param string $server
      * @param string $method
-     * @param array|string|integer|float|bool $params
+     * @param array|string|int|float|bool $params
      * @param string $routingKey
      * @param int $expiration in milliseconds
      * @param string|null $id
