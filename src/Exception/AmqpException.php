@@ -34,11 +34,7 @@ class AmqpException extends \Exception
      */
     public static function fromAmqpExtension(\AMQPException $e)
     {
-        // parse error code, see: https://github.com/pdezwart/php-amqp/issues/243
-        $matches = [];
-        preg_match('/^.+: (\d+), message:.+/', $e->getMessage(), $matches);
-        $code = $matches[1] ?? 0;
-        return new static($e->getMessage(), (int) $code, $e);
+        return new static($e->getMessage(), $e->getCode(), $e);
     }
 
     /**
