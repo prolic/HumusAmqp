@@ -23,7 +23,7 @@ This library ships with `container-interop` factories that help you setting up e
 
 ## Installation
 
-You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "^1.0"` as requirement to your composer.json.
+You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "^1.1"` as requirement to your composer.json.
 
 ## Usage
 
