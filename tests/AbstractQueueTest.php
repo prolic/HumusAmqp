@@ -91,9 +91,24 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_sets_name_flags_type_and_arguments()
+    public function it_sets_argument()
     {
-        $this->assertEquals('test-queue', $this->queue->getName());
+        $this->queue->setArgument('key', 'value');
+
+        $this->assertEquals('value', $this->queue->getArgument('key'));
+
+        $this->queue->setArguments([
+            'foo' => 'bar',
+            'baz' => 1,
+            'bam' => true,
+            'table' => [
+                'foo' => 'bar',
+            ],
+            'array' => [
+                'baz',
+            ],
+        ]);
+
         $this->assertEquals(
             [
                 'foo' => 'bar',
@@ -109,6 +124,16 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
             $this->queue->getArguments()
         );
 
+        $this->assertFalse($this->queue->getArgument('invalid key'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_name_flags_and_type()
+    {
+        $this->assertEquals('test-queue', $this->queue->getName());
+
         $this->queue->setName('test');
 
         $this->assertEquals('test', $this->queue->getName());
@@ -120,24 +145,6 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $this->queue->setFlags(Constants::AMQP_PASSIVE | Constants::AMQP_DURABLE);
 
         $this->assertEquals(6, $this->queue->getFlags());
-
-        $this->queue->setArgument('key', 'value');
-
-        $this->assertEquals('value', $this->queue->getArgument('key'));
-        $this->assertFalse($this->queue->getArgument('invalid key'));
-
-        $this->queue->setArguments([
-            'foo' => 'bar',
-            'baz' => 'bam'
-        ]);
-
-        $this->assertEquals(
-            [
-                'foo' => 'bar',
-                'baz' => 'bam'
-            ],
-            $this->queue->getArguments()
-        );
     }
 
     /**

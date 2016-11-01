@@ -3,7 +3,8 @@ sudo: required
 language: php
 
 php:
-  - 7
+  - 7.0
+  - 7.1
 
 services:
   - rabbitmq
@@ -18,7 +19,7 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - phpenv config-rm xdebug.ini
+  - if [ $TRAVIS_PHP_VERSION = "7.0" ]; then phpenv config-rm xdebug.ini; fi
   - sudo cp $TRAVIS_BUILD_DIR/provision/rabbitmq.config /etc/rabbitmq/
   - sudo service rabbitmq-server restart
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
