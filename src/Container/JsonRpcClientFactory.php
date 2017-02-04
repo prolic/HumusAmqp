@@ -108,7 +108,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         $exchanges = [];
 
         foreach ($options['exchanges'] as $exchange) {
-            $exchanges[] = ExchangeFactory::$exchange($container, $channel);
+            $exchanges[$exchange] = ExchangeFactory::$exchange($container, $channel);
         }
 
         return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id']);
