@@ -30,6 +30,7 @@ Contents
    articles/consumers
    articles/cli
    articles/durability
+   articles/rpc
    articles/extensions
    articles/error_handling
    articles/troubleshooting
