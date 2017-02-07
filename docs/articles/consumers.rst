@@ -273,6 +273,7 @@ this order:
 
 -  :ref:`CLI <cli>`
 -  :ref:`Durability and Related Matters <durability>`
+-  :ref:`JSON RPC Server & Client <rpc>`
 -  :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
 -  :ref:`Error Handling and Recovery <error_handling>`
 -  :ref:`Troubleshooting <troubleshooting>`

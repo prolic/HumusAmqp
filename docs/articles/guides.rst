@@ -116,6 +116,13 @@ This guide covers:
 -  Topics related to durability of exchanges and queues
 -  Durability of messages
 
+:ref:`JSON RPC Server & Client <rpc>`
+
+This guide covers:
+
+- How to set up a JSON RPC Server
+- How to set up a JSON RPC Client
+
 :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

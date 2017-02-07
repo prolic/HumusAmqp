@@ -11,6 +11,31 @@ You can run cli commands like this:
 
     $ ./vendor/bin/humus-amqp
 
+Setting up the CLI
+------------------
+
+When you run the humus-amqp cli you may encounter this error on first run:
+
+.. code-block:: bash
+
+    You are missing a "humus-amqp-config.php" or "config/humus-amqp-config.php" file in your
+    project, which is required to get the Humus Amqp Console working. You can use the
+    following sample as a template:
+
+    <?php
+
+    use Humus\Amqp\Console\ConsoleRunner;
+
+    // replace with file to your own project bootstrap
+    require_once 'bootstrap.php';
+
+    // replace with mechanism to retrieve the container in your app
+    $container = GetContainer();
+
+    return ConsoleRunner::createHelperSet($container);
+
+To solve this, simply add a file `config/humus-amqp-config.php` file and use the template to setup the cli config.
+
 Setup-Fabric
 ------------
 
