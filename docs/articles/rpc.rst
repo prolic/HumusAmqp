@@ -3,12 +3,12 @@
 JSON RPC Server & Client
 ========================
 
-Setup JSON RPC Server
----------------------
+Setup the JSON RPC Server
+-------------------------
 
 Assuming you want to use the provided interop-factories, let's start with a sample configuration:
 
-A sample configuration might look like this, more details an explanation will be in the coming chapters.
+A sample configuration might look like this, more details and explanation will be in the coming chapters.
 
 .. code-block:: php
 
@@ -69,8 +69,8 @@ A sample configuration might look like this, more details an explanation will be
     ];
 
 So what's important here? The JSON RPC Server needs an exchange and a queue. All messages routed to the exchange, will
-get routed to the server queue. In this example we use a direct exchange and a single queue for the server. This is the
-pretty much simplest setup we can have.
+get routed to the server queue. In this example we use a direct exchange and a single queue for the server. This is
+pretty much the simplest setup we can have.
 
 The second this is, the server needs a callback, we use `timestwo` here. As you can see in the dependencies setup, the
 callback is simply turning a Request into a Response like this:
@@ -114,10 +114,10 @@ To start a JSON-RPC server
 
     $ ./vendor/bin/humus-amqp json_rpc_server -n demo-rpc-server -a 100
 
-This will start the `demo-rpc-server` and consume 100 messages until if stops or times out.
+This will start the `demo-rpc-server` and consume 100 messages until it stops or times out.
 
-Set up JSON RPC Client
-----------------------
+Setup the JSON RPC Client
+-------------------------
 
 Again, let's start with a sample configuration first (and skip the server config part, to make it easier to read):
 
@@ -176,7 +176,7 @@ Again, let's start with a sample configuration first (and skip the server config
         ],
     ];
 
-So what's important here: The RPC client needs also an exchange and a queue. But the important thing to note is, that
+So what's important here: The RPC client also needs an exchange and a queue. But the important thing to note is, that
 the queue has no name, an empty string is given as queue name. This will automatically create a queue with a unique name
 that will get destroyed, when the client is no longer in use. Also the client needs an array of exchanges, where the client
 can send messages to. In this example we use a single exchange `demo-rpc-server`.
@@ -184,7 +184,7 @@ can send messages to. In this example we use a single exchange `demo-rpc-server`
 Using the JSON RPC client
 -------------------------
 
-As an excercise, let's send two requests to our JSON RPC server and see what results we get:
+As an exercise, let's send two requests to our JSON RPC server and see what results we get:
 
 .. code-block:: php
 

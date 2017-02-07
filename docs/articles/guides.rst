@@ -120,8 +120,8 @@ This guide covers:
 
 This guide covers:
 
-- How to set up JSON RPC Server
-- How to set up JSON RPC Client
+- How to set up a JSON RPC Server
+- How to set up a JSON RPC Client
 
 :ref:`RabbitMQ Extensions to AMQP 0.9.1 <extensions>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
