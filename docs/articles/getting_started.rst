@@ -211,7 +211,6 @@ A sample configuration might look like this, more details an explanation will be
                 ],
                 'connection' => [
                     'default-amqp-connection' => [
-                        'type' => 'socket',
                         'host' => 'localhost',
                         'port' => 5672,
                         'login' => 'guest',

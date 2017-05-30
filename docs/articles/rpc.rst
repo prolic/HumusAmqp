@@ -46,7 +46,6 @@ A sample configuration might look like this, more details and explanation will b
                 ],
                 'connection' => [
                     'default-amqp-connection' => [
-                        'type' => 'socket',
                         'host' => 'localhost',
                         'port' => 5672,
                         'login' => 'guest',
@@ -152,7 +151,6 @@ Again, let's start with a sample configuration first (and skip the server config
                 ],
                 'connection' => [
                     'default-amqp-connection' => [
-                        'type' => 'socket',
                         'host' => 'localhost',
                         'port' => 5672,
                         'login' => 'guest',
