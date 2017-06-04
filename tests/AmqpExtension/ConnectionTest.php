@@ -146,4 +146,23 @@ final class ConnectionTest extends AbstractConnectionTest
 
         $this->assertFalse($connection->isConnected());
     }
+
+    /**
+     * @test
+     * @group ssl
+     */
+    public function it_connects_with_only_cacert()
+    {
+        $options = new ConnectionOptions();
+
+        $options->setVhost('/humus-amqp-test');
+        $options->setPort(5671);
+        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+
+        $connection = new Connection($options);
+
+        $connection->connect();
+
+        $this->assertTrue($connection->isConnected());
+    }
 }
