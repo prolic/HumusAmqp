@@ -38,10 +38,11 @@ before_script:
   - sed -i '/$message = $this->get_and_unset_message($delivery_tag);/a \ \ \ \ \ \ \ \ \ \ \ \ $message->delivery_info["delivery_tag"] = $delivery_tag;' vendor/php-amqplib/php-amqplib/PhpAmqpLib/Channel/AMQPChannel.php
 
 script:
-  - php -dzend_extension=xdebug.so -dxdebug.auto_trace=ON -dxdebug.trace_output_dir=/tmp consumer.php ./vendor/bin/phpunit --debug --group=by --coverage-text --coverage-clover ./build/logs/clover.xml
+  - mkdir /tmp/xdebug-test
+  - php -dzend_extension=xdebug.so -dxdebug.auto_trace=ON -dxdebug.trace_output_dir=/tmp/xdebug-test ./vendor/bin/phpunit --debug --group=by --coverage-text --coverage-clover ./build/logs/clover.xml
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
   - ./vendor/bin/docheader check src/ tests/
-  - cat /tmp/consumer.php
+  - find /tmp/xdebug-test/* | xargs cat
 
 after_success:
   - php vendor/bin/coveralls -v
