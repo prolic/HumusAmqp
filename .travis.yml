@@ -39,7 +39,7 @@ before_script:
 
 script:
   - mkdir /tmp/xdebug-test
-  - php -dzend_extension=xdebug.so -dxdebug.auto_trace=ON -dxdebug.trace_output_dir=/tmp/xdebug-test ./vendor/bin/phpunit --debug --exclude-group=ssl --coverage-text --coverage-clover ./build/logs/clover.xml
+  - php ./vendor/bin/phpunit --debug --exclude-group=ssl --coverage-text --coverage-clover ./build/logs/clover.xml
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
   - ./vendor/bin/docheader check src/ tests/
   - find /tmp/xdebug-test/* | xargs cat
