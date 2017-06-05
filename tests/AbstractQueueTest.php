@@ -129,6 +129,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
     /**
      * @test
+     * @group by
      */
     public function it_sets_name_flags_and_type()
     {
