@@ -1,5 +1,7 @@
 # Humus Amqp
 
+[![Join the chat at https://gitter.im/prolic/HumusAmqp](https://badges.gitter.im/prolic/HumusAmqp.svg)](https://gitter.im/prolic/HumusAmqp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 PHP 7 AMQP library
 
 [![Build Status](https://travis-ci.org/prolic/HumusAmqp.svg?branch=master)](https://travis-ci.org/prolic/HumusAmqp)
