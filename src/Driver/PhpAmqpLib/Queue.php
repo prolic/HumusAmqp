@@ -30,8 +30,6 @@ use Humus\Amqp\Queue as QueueInterface;
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Message\AMQPMessage;
-use PhpAmqpLib\Wire\AMQPAbstractCollection;
-use PhpAmqpLib\Wire\AMQPArray;
 use PhpAmqpLib\Wire\AMQPTable;
 
 /**
@@ -139,25 +137,7 @@ final class Queue implements QueueInterface
      */
     public function declareQueue() : int
     {
-        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
-        $supportedDataTypes = AMQPAbstractCollection::getSupportedDataTypes();
-        foreach ($this->arguments as $k => $v) {
-            if (is_array($v)) {
-                if (empty($v) || (array_keys($v) === range(0, count($v) - 1))) {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_ARRAY], new AMQPArray($v)];
-                } else {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_TABLE], new AMQPTable($v)];
-                }
-            } elseif (is_int($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_INT_LONG], $v];
-            } elseif (is_bool($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_BOOL], $v];
-            } elseif (is_string($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
-            } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
-            }
-        }
+        $args = new AMQPTable($this->arguments);
 
         try {
             $result = $this->channel->getResource()->queue_declare(
@@ -191,25 +171,7 @@ final class Queue implements QueueInterface
             $routingKey = '';
         }
 
-        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
-        $supportedDataTypes = AMQPAbstractCollection::getSupportedDataTypes();
-        foreach ($arguments as $k => $v) {
-            if (is_array($v)) {
-                if (empty($v) || (array_keys($v) === range(0, count($v) - 1))) {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_ARRAY], new AMQPArray($v)];
-                } else {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_TABLE], new AMQPTable($v)];
-                }
-            } elseif (is_int($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_INT_LONG], $v];
-            } elseif (is_bool($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_BOOL], $v];
-            } elseif (is_string($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
-            } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
-            }
-        }
+        $args = empty($arguments) ? null : new AMQPTable($arguments);
 
         $this->channel->getResource()->queue_bind(
             $this->name,
@@ -263,25 +225,7 @@ final class Queue implements QueueInterface
             $consumerTag = bin2hex(random_bytes(24));
         }
 
-        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
-        $supportedDataTypes = AMQPAbstractCollection::getSupportedDataTypes();
-        foreach ($this->arguments as $k => $v) {
-            if (is_array($v)) {
-                if (empty($v) || (array_keys($v) === range(0, count($v) - 1))) {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_ARRAY], new AMQPArray($v)];
-                } else {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_TABLE], new AMQPTable($v)];
-                }
-            } elseif (is_int($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_INT_LONG], $v];
-            } elseif (is_bool($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_BOOL], $v];
-            } elseif (is_string($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
-            } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
-            }
-        }
+        $args = new AMQPTable($this->arguments);
 
         try {
             $this->channel->getResource()->basic_consume(
@@ -369,25 +313,7 @@ final class Queue implements QueueInterface
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
-        $args = []; // see: https://github.com/php-amqplib/php-amqplib/issues/405
-        $supportedDataTypes = AMQPAbstractCollection::getSupportedDataTypes();
-        foreach ($arguments as $k => $v) {
-            if (is_array($v)) {
-                if (empty($v) || (array_keys($v) === range(0, count($v) - 1))) {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_ARRAY], new AMQPArray($v)];
-                } else {
-                    $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_TABLE], new AMQPTable($v)];
-                }
-            } elseif (is_int($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_INT_LONG], $v];
-            } elseif (is_bool($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_BOOL], $v];
-            } elseif (is_string($v)) {
-                $args[$k] = [$supportedDataTypes[AMQPAbstractCollection::T_STRING_LONG], $v];
-            } else {
-                throw new Exception\InvalidArgumentException('Unknown argument type ' . gettype($v));
-            }
-        }
+        $args = empty($arguments) ? null : new AMQPTable($arguments);
 
         $this->channel->getResource()->queue_unbind(
             $this->name,
