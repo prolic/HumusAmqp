@@ -48,7 +48,7 @@ final class SslConnection extends AbstractConnection
             $sslOptions['cafile'] = $caCert;
         }
 
-        if ($cert = $options->getCACert()) {
+        if ($cert = $options->getCert()) {
             $sslOptions['local_cert'] = $cert;
         }
 
