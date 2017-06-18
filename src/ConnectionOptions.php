@@ -94,7 +94,7 @@ class ConnectionOptions extends AbstractOptions
     protected $key = null;
 
     /**
-     * @var bool
+     * @var bool|null
      */
     protected $verify = null;
 
@@ -259,7 +259,7 @@ class ConnectionOptions extends AbstractOptions
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCACert()
     {
@@ -275,7 +275,7 @@ class ConnectionOptions extends AbstractOptions
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCert()
     {
@@ -291,7 +291,7 @@ class ConnectionOptions extends AbstractOptions
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKey()
     {
@@ -307,7 +307,7 @@ class ConnectionOptions extends AbstractOptions
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function getVerify()
     {

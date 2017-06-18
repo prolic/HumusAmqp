@@ -24,6 +24,7 @@ namespace HumusTest\Amqp\AmqpExtension;
 
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\AmqpExtension\Connection;
+use Humus\Amqp\Exception\InvalidArgumentException;
 use HumusTest\Amqp\AbstractConnectionTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
@@ -145,5 +146,43 @@ final class ConnectionTest extends AbstractConnectionTest
         $connection->disconnect();
 
         $this->assertFalse($connection->isConnected());
+    }
+
+    /**
+     * @test
+     * @group ssl
+     */
+    public function it_connects_with_only_cacert()
+    {
+        $options = new ConnectionOptions();
+
+        $options->setVhost('/humus-amqp-test');
+        $options->setPort(5671);
+        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setVerify(false);
+
+        $connection = new Connection($options);
+
+        $connection->connect();
+
+        $this->assertTrue($connection->isConnected());
+    }
+
+    /**
+     * @test
+     * @group ssl
+     */
+    public function it_throws_if_cacert_not_set_but_verify_is_set_to_true()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('CA cert not set, so it can\'t be verified.');
+
+        $options = new ConnectionOptions();
+
+        $options->setVhost('/humus-amqp-test');
+        $options->setPort(5671);
+        $options->setVerify(true);
+
+        new Connection($options);
     }
 }

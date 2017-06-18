@@ -17,7 +17,7 @@ The JSON-RPC part implements [JSON-RPC 2.0 Specification](http://www.jsonrpc.org
 
 Current supported drivers are: [php-amqp](https://github.com/pdezwart/php-amqp) and [PhpAmqpLib](https://github.com/php-amqplib/php-amqplib).
 
-php-amqp needs at least to be v1.9.0
+php-amqp needs at least to be v1.9.1
 php-amqplib needs at least to be v2.7.0-rc1
 
 This library ships with `container-interop` factories that help you setting up everything.

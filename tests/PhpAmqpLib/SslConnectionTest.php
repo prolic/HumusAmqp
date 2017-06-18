@@ -25,6 +25,7 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\PhpAmqpLib\SslConnection;
 use Humus\Amqp\Exception\BadMethodCallException;
+use Humus\Amqp\Exception\InvalidArgumentException;
 use HumusTest\Amqp\AbstractConnectionTest;
 
 /**
@@ -51,6 +52,23 @@ final class SslConnectionTest extends AbstractConnectionTest
         $options->setVerify(false);
 
         new SslConnection($options);
+    }
+
+    /**
+     * @test
+     */
+    public function it_connects_with_only_cacert()
+    {
+        $options = new ConnectionOptions();
+
+        $options->setVhost('/humus-amqp-test');
+        $options->setPort(5671);
+        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setVerify(false);
+
+        $connection = new SslConnection($options);
+
+        $this->assertTrue($connection->isConnected());
     }
 
     /**
@@ -105,6 +123,23 @@ final class SslConnectionTest extends AbstractConnectionTest
     }
 
     /**
+     * @group
+     */
+    public function it_throws_if_cacert_not_set_but_verify_is_set_to_true()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('CA cert not set, so it can\'t be verified.');
+
+        $options = new ConnectionOptions();
+
+        $options->setVhost('/humus-amqp-test');
+        $options->setPort(5671);
+        $options->setVerify(true);
+
+        new SslConnection($options);
+    }
+
+    /**
      * @param ConnectionOptions|null $options
      * @return \Humus\Amqp\Connection
      */
@@ -122,65 +157,5 @@ final class SslConnectionTest extends AbstractConnectionTest
         $options->setVerify(false);
 
         return new SslConnection($options);
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_cacert_missing()
-    {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Ca cert file missing in connection options');
-
-        $options = new ConnectionOptions();
-        $options->setVhost('/humus-amqp-test');
-        $options->setPort(5671);
-        $options->setCert(__DIR__ . '/../../provision/test_certs/cert.pem');
-        $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
-        $options->setVerify(false);
-
-        $connection = new SslConnection($options);
-
-        $this->assertTrue($connection->isConnected());
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_cert_missing()
-    {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cert file missing in connection options');
-
-        $options = new ConnectionOptions();
-        $options->setVhost('/humus-amqp-test');
-        $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
-        $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
-        $options->setVerify(false);
-
-        $connection = new SslConnection($options);
-
-        $this->assertTrue($connection->isConnected());
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_verify_missing()
-    {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('SSL verification option is missing connection options');
-
-        $options = new ConnectionOptions();
-        $options->setVhost('/humus-amqp-test');
-        $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
-        $options->setCert(__DIR__ . '/../../provision/test_certs/cert.pem');
-        $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
-
-        $connection = new SslConnection($options);
-
-        $this->assertTrue($connection->isConnected());
     }
 }

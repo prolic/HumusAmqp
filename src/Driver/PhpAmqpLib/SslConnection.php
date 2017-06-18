@@ -23,7 +23,7 @@ declare(strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\ConnectionOptions;
-use Humus\Amqp\Exception;
+use Humus\Amqp\Exception\InvalidArgumentException;
 use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 use Traversable;
 
@@ -43,24 +43,24 @@ final class SslConnection extends AbstractConnection
             $options = new ConnectionOptions($options);
         }
 
-        if (! $options->getCACert()) {
-            throw new Exception\InvalidArgumentException('Ca cert file missing in connection options');
+        if (true === $options->getVerify() && null === $options->getCACert()) {
+            throw new InvalidArgumentException('CA cert not set, so it can\'t be verified.');
         }
 
-        if (! $options->getCert()) {
-            throw new Exception\InvalidArgumentException('Cert file missing in connection options');
+        $sslOptions = [];
+
+        if ($caCert = $options->getCACert()) {
+            $sslOptions['cafile'] = $caCert;
         }
 
-        if (null === $options->getVerify()) {
-            throw new Exception\InvalidArgumentException('SSL verification option is missing connection options');
+        if ($cert = $options->getCert()) {
+            $sslOptions['local_cert'] = $cert;
         }
 
-        $sslOptions = [
-            'cafile' => $options->getCACert(),
-            'local_cert' => $options->getCert(),
-            'verify_peer' => $options->getVerify(),
-            'verify_peer_name' => $options->getVerify()
-        ];
+        if (null !== ($verify = $options->getVerify())) {
+            $sslOptions['verify_peer'] = $verify;
+            $sslOptions['verify_peer_name'] = $verify;
+        }
 
         if ($key = $options->getKey()) {
             $sslOptions['local_pk'] = $key;
