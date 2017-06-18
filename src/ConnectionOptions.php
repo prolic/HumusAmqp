@@ -94,9 +94,9 @@ class ConnectionOptions extends AbstractOptions
     protected $key = null;
 
     /**
-     * @var bool
+     * @var bool|null
      */
-    protected $verify = false;
+    protected $verify = null;
 
     /**
      * @param string $host
