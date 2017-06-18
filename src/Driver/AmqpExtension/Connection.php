@@ -25,6 +25,7 @@ namespace Humus\Amqp\Driver\AmqpExtension;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\ConnectionOptions;
+use Humus\Amqp\Exception\InvalidArgumentException;
 use Traversable;
 
 /**
@@ -51,6 +52,10 @@ final class Connection implements ConnectionInterface
     {
         if (! $options instanceof ConnectionOptions) {
             $options = new ConnectionOptions($options);
+        }
+
+        if (true === $options->getVerify() && null === $options->getCACert()) {
+            throw new InvalidArgumentException('CA cert not set, so it can\'t be verified.');
         }
 
         $this->options = $options;

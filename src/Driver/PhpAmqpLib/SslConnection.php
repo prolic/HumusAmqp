@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
 use Humus\Amqp\ConnectionOptions;
+use Humus\Amqp\Exception\InvalidArgumentException;
 use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 use Traversable;
 
@@ -40,6 +41,10 @@ final class SslConnection extends AbstractConnection
     {
         if (! $options instanceof ConnectionOptions) {
             $options = new ConnectionOptions($options);
+        }
+
+        if (true === $options->getVerify() && null === $options->getCACert()) {
+            throw new InvalidArgumentException('CA cert not set, so it can\'t be verified.');
         }
 
         $sslOptions = [];
