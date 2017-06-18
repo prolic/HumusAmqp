@@ -18,6 +18,7 @@ The JSON-RPC part implements [JSON-RPC 2.0 Specification](http://www.jsonrpc.org
 Current supported drivers are: [php-amqp](https://github.com/pdezwart/php-amqp) and [PhpAmqpLib](https://github.com/php-amqplib/php-amqplib).
 
 php-amqp needs at least to be v1.9.1
+php-amqplib needs at least to be v2.7.0-rc1
 
 This library ships with `container-interop` factories that help you setting up everything.
 
@@ -78,24 +79,17 @@ The ext-amqp driver is the most performant. Benchmarks are added soon.
 
 ### PhpAmqpLib
 
-1) There is currently a bug in PhpAmqpLib, see: https://github.com/php-amqplib/php-amqplib/pull/399
-As long as this is not merged and release, you have to manually apply the patch, sorry!
-
-You can do this from the command-line with:
-
-`sed -i '/$message = $this->get_and_unset_message($delivery_tag);/a \ \ \ \ \ \ \ \ \ \ \ \ $message->delivery_info["delivery_tag"] = $delivery_tag;' vendor/php-amqplib/php-amqplib/PhpAmqpLib/Channel/AMQPChannel.php`
-
-2) When using php-amqplib as driver, it's worth point out, that a StreamConnection (same goes for SSLConnection) does not
+1) When using php-amqplib as driver, it's worth point out, that a StreamConnection (same goes for SSLConnection) does not
 have the possibility to timeout. If you want to let the consumer timeout, when no more messages are received, you should
 use the SocketConnection instead (assuming you don't need an SSL connection).
 
-3) When using php-amqplib as driver and you're using the LazyConnection, you should not create the channel yourself, call
+2) When using php-amqplib as driver and you're using the LazyConnection, you should not create the channel yourself, call
 instead `$channel = $connection->newChannel()`
 
 ## Support
 
-- File issues at [https://github.com/prolic/HumusAmqp/issues](https://github.com/prooph/event-store/issues).
-- Say hello in the [HumusAmqp gitter](https://gitter.im/prolic/improoph) chat.
+- File issues at [https://github.com/prolic/HumusAmqp/issues](https://github.com/prolic/HumusAmqp/issues).
+- Say hello in the [HumusAmqp gitter](https://gitter.im/prolic/HumusAmqp) chat.
 
 ## Contribute
 
