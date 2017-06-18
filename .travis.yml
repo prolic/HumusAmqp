@@ -23,19 +23,10 @@ before_script:
   - sudo cp $TRAVIS_BUILD_DIR/provision/rabbitmq.config /etc/rabbitmq/
   - sudo service rabbitmq-server restart
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - git clone https://github.com/pdezwart/php-amqp.git
-  - cd php-amqp
-  - phpize
-  - ./configure
-  - make
-  - sudo make install
-  - cd ..
   - composer self-update
   - composer update --prefer-dist $DEPENDENCIES
   - sudo rabbitmqctl add_vhost /humus-amqp-test
   - sudo rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
-  # patching php-amqplib, see: https://github.com/php-amqplib/php-amqplib/pull/399
-  - sed -i '/$message = $this->get_and_unset_message($delivery_tag);/a \ \ \ \ \ \ \ \ \ \ \ \ $message->delivery_info["delivery_tag"] = $delivery_tag;' vendor/php-amqplib/php-amqplib/PhpAmqpLib/Channel/AMQPChannel.php
 
 script:
   - php -dzend_extension=xdebug.so ./vendor/bin/phpunit --exclude-group=ssl --coverage-text --coverage-clover ./build/logs/clover.xml

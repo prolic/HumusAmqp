@@ -31,7 +31,7 @@
         "phpspec/prophecy": "^1.6",
         "friendsofphp/php-cs-fixer": "^1.12.2",
         "satooshi/php-coveralls": "^1.0",
-        "php-amqplib/php-amqplib": "^2.6.3",
+        "php-amqplib/php-amqplib": "^v2.7.0-rc1",
         "malukenho/docheader": "^0.1.4"
     },
     "conflict": {
@@ -39,8 +39,8 @@
     },
     "suggest": {
         "ext-pcntl": "For process control management",
-        "ext-amqp": ">= 1.7.1 For usage together with php amqp extension",
-        "php-amqplib/php-amqplib": ">= 2.6.3 For usage together with php-amqplib",
+        "ext-amqp": ">= 1.9.1 For usage together with php amqp extension",
+        "php-amqplib/php-amqplib": ">= v2.7.0-rc1 For usage together with php-amqplib",
         "symfony/console": "For usage of the provided console tool",
         "container-interop/container-interop": "For usage of provided factories",
         "sandrokeil/interop-config": "For usage of provided factories"
