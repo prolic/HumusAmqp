@@ -76,7 +76,7 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -92,7 +92,7 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }
@@ -108,7 +108,7 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getFlags() : int
+    public function getFlags(): int
     {
         return $this->flags;
     }
@@ -132,7 +132,7 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getArguments() : array
+    public function getArguments(): array
     {
         return $this->arguments;
     }
@@ -247,7 +247,7 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getChannel() : ChannelInterface
+    public function getChannel(): ChannelInterface
     {
         return $this->channel;
     }
@@ -255,7 +255,7 @@ final class Exchange implements ExchangeInterface
     /**
      * @inheritdoc
      */
-    public function getConnection() : ConnectionInterface
+    public function getConnection(): ConnectionInterface
     {
         return $this->channel->getConnection();
     }

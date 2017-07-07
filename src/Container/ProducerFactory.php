@@ -63,7 +63,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @return Producer
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : Producer
+    public static function __callStatic(string $name, array $arguments): Producer
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -85,7 +85,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @param ContainerInterface $container
      * @return Producer
      */
-    public function __invoke(ContainerInterface $container) : Producer
+    public function __invoke(ContainerInterface $container): Producer
     {
         $options = $this->options($container->get('config'), $this->producerName);
 
@@ -110,7 +110,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): iterable
     {
         return ['humus', 'amqp', 'producer'];
     }
@@ -118,7 +118,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function defaultOptions() : array
+    public function defaultOptions(): iterable
     {
         return [
             'attributes' => null,
@@ -130,7 +130,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function mandatoryOptions() : array
+    public function mandatoryOptions(): iterable
     {
         return [
             'exchange',

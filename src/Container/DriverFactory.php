@@ -40,7 +40,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
      * @param ContainerInterface $container
      * @return Driver
      */
-    public function __invoke(ContainerInterface $container) : Driver
+    public function __invoke(ContainerInterface $container): Driver
     {
         $options = $this->options($container->get('config'));
 
@@ -50,7 +50,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): iterable
     {
         return ['humus', 'amqp'];
     }
@@ -58,7 +58,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
     /**
      * @return array
      */
-    public function mandatoryOptions() : array
+    public function mandatoryOptions(): iterable
     {
         return [
             'driver'

@@ -94,8 +94,8 @@ interface Producer
      *
      * Callback functions with all arguments have the following signature:
      *
-     *      function ackCallback(int $deliveryTag, bool $multiple) : bool;
-     *      function nackCallback(int $deliveryTag, bool $multiple, bool $requeue) : bool;
+     *      function ackCallback(int $deliveryTag, bool $multiple): bool;
+     *      function nackCallback(int $deliveryTag, bool $multiple, bool $requeue): bool;
      *
      * and should return boolean false when wait loop should be canceled.
      *
@@ -131,7 +131,7 @@ interface Producer
      *                        string $exchange,
      *                        string $routingKey,
      *                        Envelope $envelope,
-     *                        string $body) : bool;
+     *                        string $body): bool;
      *
      * and should return boolean false when wait loop should be canceled.
      *

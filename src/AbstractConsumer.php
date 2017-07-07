@@ -195,7 +195,7 @@ abstract class AbstractConsumer implements Consumer
      * @param Queue $queue
      * @return DeliveryResult
      */
-    protected function handleDelivery(Envelope $envelope, Queue $queue) : DeliveryResult
+    protected function handleDelivery(Envelope $envelope, Queue $queue): DeliveryResult
     {
         $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
 
@@ -242,7 +242,7 @@ abstract class AbstractConsumer implements Consumer
      *
      * @return FlushDeferredResult
      */
-    protected function flushDeferred() : FlushDeferredResult
+    protected function flushDeferred(): FlushDeferredResult
     {
         $callback = $this->flushCallback;
 
@@ -375,7 +375,7 @@ abstract class AbstractConsumer implements Consumer
      * @param Envelope $envelope
      * @return DeliveryResult
      */
-    protected function handleInternalMessage(Envelope $envelope) : DeliveryResult
+    protected function handleInternalMessage(Envelope $envelope): DeliveryResult
     {
         if ('shutdown' === $envelope->getType()) {
             $this->logger->info('Shutdown message received');
@@ -420,7 +420,7 @@ abstract class AbstractConsumer implements Consumer
      * @param Envelope $envelope
      * @return array
      */
-    protected function extractMessageInformation(Envelope $envelope) : array
+    protected function extractMessageInformation(Envelope $envelope): array
     {
         return [
             'body' => $envelope->getBody(),

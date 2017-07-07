@@ -39,7 +39,7 @@ abstract class AbstractCommand extends Command
     /**
      * @return ContainerInterface
      */
-    public function getContainer() : ContainerInterface
+    public function getContainer(): ContainerInterface
     {
         if (null === $this->container) {
             $this->container = $this->getHelper('container')->getContainer();

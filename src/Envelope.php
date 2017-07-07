@@ -35,35 +35,35 @@ interface Envelope
      *
      * @return string The contents of the message body.
      */
-    public function getBody() : string;
+    public function getBody(): string;
 
     /**
      * Get the routing key of the message.
      *
      * @return string The message routing key.
      */
-    public function getRoutingKey() : string;
+    public function getRoutingKey(): string;
 
     /**
      * Get the delivery tag of the message.
      *
      * @return int The delivery tag of the message.
      */
-    public function getDeliveryTag() : int;
+    public function getDeliveryTag(): int;
 
     /**
      * Get the delivery mode of the message.
      *
      * @return int The delivery mode of the message.
      */
-    public function getDeliveryMode() : int;
+    public function getDeliveryMode(): int;
 
     /**
      * Get the exchange name on which the message was published.
      *
      * @return string The exchange name on which the message was published.
      */
-    public function getExchangeName() : string;
+    public function getExchangeName(): string;
 
     /**
      * Whether this is a redelivery of the message.
@@ -75,91 +75,91 @@ interface Envelope
      *
      * @return bool TRUE if this is a redelivery, FALSE otherwise.
      */
-    public function isRedelivery() : bool;
+    public function isRedelivery(): bool;
 
     /**
      * Get the message content type.
      *
      * @return string The content type of the message.
      */
-    public function getContentType() : string;
+    public function getContentType(): string;
 
     /**
      * Get the content encoding of the message.
      *
      * @return string The content encoding of the message.
      */
-    public function getContentEncoding() : string;
+    public function getContentEncoding(): string;
 
     /**
      * Get the message type.
      *
      * @return string The message type.
      */
-    public function getType() : string;
+    public function getType(): string;
 
     /**
      * Get the timestamp of the message.
      *
      * @return int The message timestamp.
      */
-    public function getTimestamp() : int;
+    public function getTimestamp(): int;
 
     /**
      * Get the priority of the message.
      *
      * @return int The message priority.
      */
-    public function getPriority() : int;
+    public function getPriority(): int;
 
     /**
      * Get the expiration of the message in milliseconds.
      *
      * @return int The message expiration.
      */
-    public function getExpiration() : int;
+    public function getExpiration(): int;
 
     /**
      * Get the message user id.
      *
      * @return string The message user id.
      */
-    public function getUserId() : string;
+    public function getUserId(): string;
 
     /**
      * Get the application id of the message.
      *
      * @return string The application id of the message.
      */
-    public function getAppId() : string;
+    public function getAppId(): string;
 
     /**
      * Get the message id of the message.
      *
      * @return string The message id
      */
-    public function getMessageId() : string;
+    public function getMessageId(): string;
 
     /**
      * Get the reply-to address of the message.
      *
      * @return string The contents of the reply to field.
      */
-    public function getReplyTo() : string;
+    public function getReplyTo(): string;
 
     /**
      * Get the message correlation id.
      *
      * @return string The correlation id of the message.
      */
-    public function getCorrelationId() : string;
+    public function getCorrelationId(): string;
 
     /**
      * Get the headers of the message.
      *
      * @return array An array of key value pairs associated with the message.
      */
-    public function getHeaders() : array;
+    public function getHeaders(): array;
 
     /**
      * Get a specific message header.
@@ -176,5 +176,5 @@ interface Envelope
      * @param string $key
      * @return bool
      */
-    public function hasHeader(string $header) : bool;
+    public function hasHeader(string $header): bool;
 }

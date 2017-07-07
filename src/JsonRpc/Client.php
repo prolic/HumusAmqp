@@ -44,5 +44,5 @@ interface Client
      * @param float $timeout in seconds
      * @return ResponseCollection
      */
-    public function getResponseCollection(float $timeout = 0) : ResponseCollection;
+    public function getResponseCollection(float $timeout = 0): ResponseCollection;
 }

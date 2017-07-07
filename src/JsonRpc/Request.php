@@ -36,18 +36,18 @@ interface Request
     /**
      * @return string
      */
-    public function server() : string;
+    public function server(): string;
 
     /**
      * @return string
      */
-    public function routingKey() : string;
+    public function routingKey(): string;
 
     /**
      * Expiration in milliseconds
      * @return int
      */
-    public function expiration() : int;
+    public function expiration(): int;
 
     /**
      * @return null|string
@@ -57,10 +57,10 @@ interface Request
     /**
      * @return int
      */
-    public function timestamp() : int;
+    public function timestamp(): int;
 
     /**
      * @return string
      */
-    public function method() : string;
+    public function method(): string;
 }

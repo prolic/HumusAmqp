@@ -62,7 +62,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
      * @return JsonRpcServer
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : JsonRpcServer
+    public static function __callStatic(string $name, array $arguments): JsonRpcServer
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -85,7 +85,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
      * @param ContainerInterface $container
      * @return JsonRpcServer
      */
-    public function __invoke(ContainerInterface $container) : JsonRpcServer
+    public function __invoke(ContainerInterface $container): JsonRpcServer
     {
         $options = $this->options($container->get('config'), $this->serverName);
 
@@ -114,7 +114,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): iterable
     {
         return ['humus', 'amqp', 'json_rpc_server'];
     }
@@ -122,7 +122,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function defaultOptions() : array
+    public function defaultOptions(): iterable
     {
         return [
             'consumer_tag' => '',
@@ -135,7 +135,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function mandatoryOptions() : array
+    public function mandatoryOptions(): iterable
     {
         return [
             'queue',

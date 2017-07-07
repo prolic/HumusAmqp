@@ -49,7 +49,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getBody() : string
+    public function getBody(): string
     {
         return $this->envelope->body;
     }
@@ -57,7 +57,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getRoutingKey() : string
+    public function getRoutingKey(): string
     {
         return $this->envelope->get('routing_key');
     }
@@ -65,7 +65,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getDeliveryTag() : int
+    public function getDeliveryTag(): int
     {
         return (int) $this->envelope->get('delivery_tag');
     }
@@ -73,7 +73,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getDeliveryMode() : int
+    public function getDeliveryMode(): int
     {
         if ($this->envelope->has('delivery_mode')) {
             return $this->envelope->get('delivery_mode');
@@ -85,7 +85,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getExchangeName() : string
+    public function getExchangeName(): string
     {
         return $this->getFromEnvelope('exchange');
     }
@@ -93,7 +93,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function isRedelivery() : bool
+    public function isRedelivery(): bool
     {
         return $this->envelope->get('redelivered');
     }
@@ -101,7 +101,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getContentType() : string
+    public function getContentType(): string
     {
         return $this->getFromEnvelope('content_type');
     }
@@ -109,7 +109,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getContentEncoding() : string
+    public function getContentEncoding(): string
     {
         return $this->getFromEnvelope('content_encoding');
     }
@@ -117,7 +117,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getType() : string
+    public function getType(): string
     {
         return $this->getFromEnvelope('type');
     }
@@ -125,7 +125,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getTimestamp() : int
+    public function getTimestamp(): int
     {
         return (int) $this->getFromEnvelope('timestamp');
     }
@@ -133,7 +133,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getPriority() : int
+    public function getPriority(): int
     {
         if ($this->envelope->has('priority')) {
             return $this->envelope->get('priority');
@@ -145,7 +145,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getExpiration() : int
+    public function getExpiration(): int
     {
         return (int) $this->getFromEnvelope('expiration');
     }
@@ -153,7 +153,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getUserId() : string
+    public function getUserId(): string
     {
         return $this->getFromEnvelope('user_id');
     }
@@ -161,7 +161,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getAppId() : string
+    public function getAppId(): string
     {
         return $this->getFromEnvelope('app_id');
     }
@@ -169,7 +169,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getMessageId() : string
+    public function getMessageId(): string
     {
         return $this->getFromEnvelope('message_id');
     }
@@ -177,7 +177,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getReplyTo() : string
+    public function getReplyTo(): string
     {
         return $this->getFromEnvelope('reply_to');
     }
@@ -185,7 +185,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getCorrelationId() : string
+    public function getCorrelationId(): string
     {
         return $this->getFromEnvelope('correlation_id');
     }
@@ -193,7 +193,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function getHeaders() : array
+    public function getHeaders(): array
     {
         try {
             $headers = $this->envelope->get('application_headers');
@@ -224,7 +224,7 @@ final class Envelope implements EnvelopeInterface
     /**
      * @inheritdoc
      */
-    public function hasHeader(string $header) : bool
+    public function hasHeader(string $header): bool
     {
         $headers = $this->getHeaders();
 
@@ -235,7 +235,7 @@ final class Envelope implements EnvelopeInterface
      * @param string $name
      * @return string
      */
-    private function getFromEnvelope(string $name) : string
+    private function getFromEnvelope(string $name): string
     {
         if ($this->envelope->has($name)) {
             return $this->envelope->get($name);

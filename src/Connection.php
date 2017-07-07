@@ -37,7 +37,7 @@ interface Connection
      *
      * @return bool True if connected, false otherwise.
      */
-    public function isConnected() : bool;
+    public function isConnected(): bool;
 
     /**
      * Establish a transient connection with the AMQP broker.
@@ -62,12 +62,12 @@ interface Connection
      *
      * @return bool TRUE on success or FALSE on failure.
      */
-    public function reconnect() : bool;
+    public function reconnect(): bool;
 
     /**
      * @return ConnectionOptions
      */
-    public function getOptions() : ConnectionOptions;
+    public function getOptions(): ConnectionOptions;
 
     /**
      * @return mixed
@@ -77,5 +77,5 @@ interface Connection
     /**
      * @return Channel
      */
-    public function newChannel() : Channel;
+    public function newChannel(): Channel;
 }

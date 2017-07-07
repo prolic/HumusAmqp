@@ -38,7 +38,7 @@ interface Queue
      *
      * @return string The configured name as a string.
      */
-    public function getName() : string;
+    public function getName(): string;
 
     /**
      * Set the queue name.
@@ -55,7 +55,7 @@ interface Queue
      * @return int An integer bitmask of all the flags currently set on this
      *             exchange object.
      */
-    public function getFlags() : int;
+    public function getFlags(): int;
 
     /**
      * Set the flags on the queue.
@@ -82,7 +82,7 @@ interface Queue
      *
      * @return array An array containing all of the set key/value pairs.
      */
-    public function getArguments() : array;
+    public function getArguments(): array;
 
     /**
      * Set a queue argument.
@@ -110,7 +110,7 @@ interface Queue
      * @throws QueueException
      * @throws ChannelException
      */
-    public function declareQueue() : int;
+    public function declareQueue(): int;
 
     /**
      * Bind the given queue to a routing key on an exchange.
@@ -173,7 +173,7 @@ interface Queue
      *
      * Callback function with all arguments have the following signature:
      *
-     *      function callback(Envelope $envelope, Queue $queue = null) : bool;
+     *      function callback(Envelope $envelope, Queue $queue = null): bool;
      */
     public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = '');
 
@@ -275,12 +275,12 @@ interface Queue
      *
      * @return Channel
      */
-    public function getChannel() : Channel;
+    public function getChannel(): Channel;
 
     /**
      * Get the Connection object in use
      *
      * @return Connection
      */
-    public function getConnection() : Connection;
+    public function getConnection(): Connection;
 }

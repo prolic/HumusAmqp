@@ -63,7 +63,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
      * @return CallbackConsumer
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : CallbackConsumer
+    public static function __callStatic(string $name, array $arguments): CallbackConsumer
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -86,7 +86,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
      * @param ContainerInterface $container
      * @return CallbackConsumer
      */
-    public function __invoke(ContainerInterface $container) : CallbackConsumer
+    public function __invoke(ContainerInterface $container): CallbackConsumer
     {
         $options = $this->options($container->get('config'), $this->consumerName);
 
@@ -131,7 +131,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): iterable
     {
         return ['humus', 'amqp', 'callback_consumer'];
     }
@@ -139,7 +139,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function defaultOptions() : array
+    public function defaultOptions(): iterable
     {
         return [
             'logger' => null,
@@ -157,7 +157,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function mandatoryOptions() : array
+    public function mandatoryOptions(): iterable
     {
         return [
             'queue',

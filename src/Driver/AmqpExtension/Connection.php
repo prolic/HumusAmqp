@@ -65,7 +65,7 @@ final class Connection implements ConnectionInterface
     /**
      * @return \AMQPConnection
      */
-    public function getResource() : \AMQPConnection
+    public function getResource(): \AMQPConnection
     {
         return $this->connection;
     }
@@ -73,7 +73,7 @@ final class Connection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function isConnected() : bool
+    public function isConnected(): bool
     {
         return $this->connection->isConnected();
     }
@@ -105,7 +105,7 @@ final class Connection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function reconnect() : bool
+    public function reconnect(): bool
     {
         if ($this->options->getPersistent()) {
             return $this->connection->preconnect();
@@ -117,7 +117,7 @@ final class Connection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function getOptions() : ConnectionOptions
+    public function getOptions(): ConnectionOptions
     {
         return $this->options;
     }
@@ -125,7 +125,7 @@ final class Connection implements ConnectionInterface
     /**
      * @return ChannelInterface
      */
-    public function newChannel() : ChannelInterface
+    public function newChannel(): ChannelInterface
     {
         return new Channel($this);
     }

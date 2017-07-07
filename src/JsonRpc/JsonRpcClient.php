@@ -120,7 +120,7 @@ final class JsonRpcClient implements Client
      * @param float $timeout in seconds
      * @return ResponseCollection
      */
-    public function getResponseCollection(float $timeout = 0) : ResponseCollection
+    public function getResponseCollection(float $timeout = 0): ResponseCollection
     {
         if ($timeout < $this->timeout) {
             $timeout = $this->timeout;
@@ -169,7 +169,7 @@ final class JsonRpcClient implements Client
      * @param Request $request
      * @return array
      */
-    private function createAttributes(Request $request) : array
+    private function createAttributes(Request $request): array
     {
         $attributes = [
             'content_type' => 'application/json',
@@ -200,7 +200,7 @@ final class JsonRpcClient implements Client
      * @param Envelope $envelope
      * @return Response
      */
-    private function responseFromEnvelope(Envelope $envelope) : Response
+    private function responseFromEnvelope(Envelope $envelope): Response
     {
         if ($envelope->getHeader('jsonrpc') !== JsonRpcResponse::JSONRPC_VERSION
             || $envelope->getContentEncoding() !== 'UTF-8'

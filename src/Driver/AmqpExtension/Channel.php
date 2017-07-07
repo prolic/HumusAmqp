@@ -56,7 +56,7 @@ final class Channel implements ChannelInterface
     /**
      * @return \AMQPChannel
      */
-    public function getResource() : \AMQPChannel
+    public function getResource(): \AMQPChannel
     {
         return $this->channel;
     }
@@ -64,7 +64,7 @@ final class Channel implements ChannelInterface
     /**
      * @inheritdoc
      */
-    public function isConnected() : bool
+    public function isConnected(): bool
     {
         return $this->channel->isConnected();
     }
@@ -72,7 +72,7 @@ final class Channel implements ChannelInterface
     /**
      * @inheritdoc
      */
-    public function getChannelId() : int
+    public function getChannelId(): int
     {
         return $this->channel->getChannelId();
     }
@@ -88,7 +88,7 @@ final class Channel implements ChannelInterface
     /**
      * @inheritdoc
      */
-    public function getPrefetchSize() : int
+    public function getPrefetchSize(): int
     {
         return $this->channel->getPrefetchSize();
     }
@@ -104,7 +104,7 @@ final class Channel implements ChannelInterface
     /**
      * @inheritdoc
      */
-    public function getPrefetchCount() : int
+    public function getPrefetchCount(): int
     {
         return $this->channel->getPrefetchCount();
     }
@@ -144,7 +144,7 @@ final class Channel implements ChannelInterface
     /**
      * @inheritdoc
      */
-    public function getConnection() : ConnectionInterface
+    public function getConnection(): ConnectionInterface
     {
         return $this->connection;
     }
@@ -226,7 +226,7 @@ final class Channel implements ChannelInterface
     /**
      * @return ExchangeInterface
      */
-    public function newExchange() : ExchangeInterface
+    public function newExchange(): ExchangeInterface
     {
         return new Exchange($this);
     }
@@ -234,7 +234,7 @@ final class Channel implements ChannelInterface
     /**
      * @return QueueInterface
      */
-    public function newQueue() : QueueInterface
+    public function newQueue(): QueueInterface
     {
         return new Queue($this);
     }
