@@ -46,11 +46,6 @@ final class JsonRpcClient implements Client
     private $requestIds = [];
 
     /**
-     * @var ResponseCollection
-     */
-    private $responseCollection;
-
-    /**
      * Milliseconds to wait between two tries when reply is not yet there
      *
      * @var int
@@ -103,13 +98,21 @@ final class JsonRpcClient implements Client
         $attributes = $this->createAttributes($request);
 
         $exchange = $this->getExchange($request->server());
-        $exchange->publish(json_encode($request->params()), $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
+
+        $message = json_encode($request->params());
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception\InvalidArgumentException('Error during json encoding');
+        }
+
+        $exchange->publish($message, $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
+
 
         if (null !== $request->id()) {
             $this->requestIds[] = $request->id();
         }
 
-        if (0 != $request->expiration() && ceil($request->expiration() / 1000) > $this->timeout) {
+        if (0 !== $request->expiration() && ceil($request->expiration() / 1000) > $this->timeout) {
             $this->timeout = ceil($request->expiration() / 1000);
         }
     }
@@ -127,26 +130,26 @@ final class JsonRpcClient implements Client
         }
 
         $now = microtime(true);
-        $this->responseCollection = new JsonRpcResponseCollection();
+        $responseCollection = new JsonRpcResponseCollection();
 
         do {
             $message = $this->queue->get(Constants::AMQP_AUTOACK);
 
             if ($message instanceof Envelope) {
-                $this->responseCollection->addResponse($this->responseFromEnvelope($message));
+                $responseCollection->addResponse($this->responseFromEnvelope($message));
             } else {
                 usleep($this->waitMillis * 1000);
             }
             $time = microtime(true);
         } while (
-            $this->responseCollection->count() < count($this->requestIds)
+            $responseCollection->count() < count($this->requestIds)
             && (0 == $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
         );
 
         $this->requestIds = [];
         $this->timeout = 0;
 
-        return $this->responseCollection;
+        return $responseCollection;
     }
 
     /**

@@ -22,14 +22,19 @@ declare(strict_types=1);
 
 namespace HumusTest\Amqp\JsonRpc;
 
+use Humus\Amqp\Connection;
+use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
+use Humus\Amqp\Exception\InvalidArgumentException;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\JsonRpc\JsonRpcError;
 use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use Humus\Amqp\JsonRpc\Request;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
 use Humus\Amqp\JsonRpc\JsonRpcRequest;
+use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use HumusTest\Amqp\TestAsset\ArrayLogger;
@@ -635,5 +640,96 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $this->assertTrue($response6->isError());
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response9->error()->code());
         $this->assertEquals('Invalid JSON-RPC response', $response9->error()->message());
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_client_when_data_could_not_be_encoded_to_json()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Error during json encoding');
+
+        $options = $this->prophesize(ConnectionOptions::class);
+        $options->getLogin()->willReturn('user123')->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->getOptions()->willReturn($options->reveal())->shouldBeCalled();
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->getName()->willReturn('test-queue')->shouldBeCalled();
+        $queue->getConnection()->willReturn($connection->reveal())->shouldBeCalled();
+
+        $exchane = $this->prophesize(Exchange::class);
+
+        $client = new JsonRpcClient($queue->reveal(), ['rpc-server' => $exchane->reveal()]);
+
+        $client->addRequest(new JsonRpcRequest(
+            'rpc-server',
+            'something',
+            "\xB1\x31"
+        ));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_error_on_server_when_data_could_not_be_encoded_to_json()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $channel->newExchange();
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $channel2->newExchange();
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $channel->newQueue();
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $channel2->newQueue();
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $request1 = new JsonRpcRequest('rpc-server', 'first', 1, 'request-1');
+
+        $client->addRequest($request1);
+
+        $callback = function (Request $request) {
+            return JsonRpcResponse::withResult($request->id(), "\xB1\x31");
+        };
+
+        $logger = new NullLogger();
+        $server = new JsonRpcServer($serverQueue, $callback, $logger, 1.0);
+
+        $server->consume(1);
+
+        $responses = $client->getResponseCollection(2);
+
+        $this->assertCount(1, $responses);
+
+        $response1 = $responses->getResponse('request-1');
+        $this->assertTrue($response1->isError());
+        $this->assertSame(JsonRpcError::ERROR_CODE_32603, $response1->error()->code());
+        $this->assertSame('Internal error', $response1->error()->message());
     }
 }
