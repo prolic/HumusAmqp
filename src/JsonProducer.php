@@ -22,6 +22,8 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
+use Humus\Amqp\Exception\InvalidArgumentException;
+
 /**
  * Class JsonProducer
  * @package Humus\Amqp
@@ -48,6 +50,16 @@ final class JsonProducer extends AbstractProducer
     ) {
         $attributes = array_merge_recursive($this->defaultAttributes, $attributes);
 
-        $this->exchange->publish(json_encode($message), $routingKey, $flags, $attributes);
+        try {
+            $message = json_encode($message);
+        } catch (\Throwable $e) {
+            throw new InvalidArgumentException('Exception during json encoding', 0, $e);
+        }
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidArgumentException('Error during json encoding');
+        }
+
+        $this->exchange->publish($message, $routingKey, $flags, $attributes);
     }
 }
