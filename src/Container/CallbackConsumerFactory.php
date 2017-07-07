@@ -131,7 +131,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function dimensions(): iterable
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'callback_consumer'];
     }
@@ -139,7 +139,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function defaultOptions(): iterable
+    public function defaultOptions(): array
     {
         return [
             'logger' => null,
@@ -157,7 +157,7 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function mandatoryOptions(): iterable
+    public function mandatoryOptions(): array
     {
         return [
             'queue',

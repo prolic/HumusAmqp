@@ -110,7 +110,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function dimensions(): iterable
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'producer'];
     }
@@ -118,7 +118,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function defaultOptions(): iterable
+    public function defaultOptions(): array
     {
         return [
             'attributes' => null,
@@ -130,7 +130,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function mandatoryOptions(): iterable
+    public function mandatoryOptions(): array
     {
         return [
             'exchange',

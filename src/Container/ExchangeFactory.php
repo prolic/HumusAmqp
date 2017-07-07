@@ -165,7 +165,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function dimensions(): iterable
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'exchange'];
     }
@@ -173,7 +173,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function defaultOptions(): iterable
+    public function defaultOptions(): array
     {
         return [
             'arguments' => [],
@@ -191,7 +191,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * return array
      */
-    public function mandatoryOptions(): iterable
+    public function mandatoryOptions(): array
     {
         return [
             'connection',

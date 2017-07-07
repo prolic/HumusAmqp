@@ -117,7 +117,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function dimensions(): iterable
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'json_rpc_client'];
     }
@@ -125,7 +125,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function defaultOptions(): iterable
+    public function defaultOptions(): array
     {
         return [
             'wait_micros' => 1000,
@@ -136,7 +136,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function mandatoryOptions(): iterable
+    public function mandatoryOptions(): array
     {
         return [
             'queue',
