@@ -62,7 +62,7 @@ final class LazySocketConnection extends AbstractConnection
     /**
      * @return ChannelInterface
      */
-    public function newChannel() : ChannelInterface
+    public function newChannel(): ChannelInterface
     {
         $method = new \ReflectionMethod($this->connection, 'connect');
         $method->setAccessible(true);

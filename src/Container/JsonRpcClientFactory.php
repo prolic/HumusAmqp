@@ -64,7 +64,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      * @return Client
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : JsonRpcClient
+    public static function __callStatic(string $name, array $arguments): JsonRpcClient
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -87,7 +87,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      * @param ContainerInterface $container
      * @return JsonRpcClient
      */
-    public function __invoke(ContainerInterface $container) : JsonRpcClient
+    public function __invoke(ContainerInterface $container): JsonRpcClient
     {
         $options = $this->options($container->get('config'), $this->clientName);
 
@@ -117,7 +117,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'json_rpc_client'];
     }
@@ -125,7 +125,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function defaultOptions() : array
+    public function defaultOptions(): array
     {
         return [
             'wait_micros' => 1000,
@@ -136,7 +136,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     /**
      * @return array
      */
-    public function mandatoryOptions() : array
+    public function mandatoryOptions(): array
     {
         return [
             'queue',

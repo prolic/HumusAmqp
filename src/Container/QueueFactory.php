@@ -74,7 +74,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @return Queue
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : Queue
+    public static function __callStatic(string $name, array $arguments): Queue
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -121,7 +121,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @return Queue
      * @throws Exception\InvalidArgumentException
      */
-    public function __invoke(ContainerInterface $container) : Queue
+    public function __invoke(ContainerInterface $container): Queue
     {
         $options = $this->options($container->get('config'), $this->queueName);
 
@@ -186,7 +186,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'queue'];
     }
@@ -194,7 +194,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * @return array
      */
-    public function defaultOptions() : array
+    public function defaultOptions(): array
     {
         return [
             'name' => '',
@@ -211,7 +211,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * return array
      */
-    public function mandatoryOptions() : array
+    public function mandatoryOptions(): array
     {
         return [
             'connection',
@@ -223,7 +223,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @param array|ArrayAccess
      * @return int
      */
-    private function getFlags($options) : int
+    private function getFlags($options): int
     {
         $flags = 0;
         $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;

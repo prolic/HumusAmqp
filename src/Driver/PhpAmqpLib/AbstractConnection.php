@@ -47,7 +47,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * @return PhpAmqplibAbstractConnection
      */
-    public function getResource() : PhpAmqplibAbstractConnection
+    public function getResource(): PhpAmqplibAbstractConnection
     {
         return $this->connection;
     }
@@ -55,7 +55,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function isConnected() : bool
+    public function isConnected(): bool
     {
         return $this->connection->isConnected();
     }
@@ -79,7 +79,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function reconnect() : bool
+    public function reconnect(): bool
     {
         $this->connection->reconnect();
 
@@ -89,7 +89,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function getOptions() : ConnectionOptions
+    public function getOptions(): ConnectionOptions
     {
         return $this->options;
     }
@@ -97,7 +97,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * @return ChannelInterface
      */
-    public function newChannel() : ChannelInterface
+    public function newChannel(): ChannelInterface
     {
         $channel = new Channel($this, $this->getResource()->channel());
         $channel->setPrefetchCount(3);

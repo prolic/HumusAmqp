@@ -109,7 +109,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getHost() : string
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -125,7 +125,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getPassword() : string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -141,7 +141,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return bool
      */
-    public function getPersistent() : bool
+    public function getPersistent(): bool
     {
         return $this->persistent;
     }
@@ -157,7 +157,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return int
      */
-    public function getPort() : int
+    public function getPort(): int
     {
         return $this->port;
     }
@@ -165,7 +165,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return float
      */
-    public function getConnectTimeout() : float
+    public function getConnectTimeout(): float
     {
         return $this->connectTimeout;
     }
@@ -189,7 +189,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return float
      */
-    public function getReadTimeout() : float
+    public function getReadTimeout(): float
     {
         return $this->readTimeout;
     }
@@ -205,7 +205,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getLogin() : string
+    public function getLogin(): string
     {
         return $this->login;
     }
@@ -221,7 +221,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return string
      */
-    public function getVhost() : string
+    public function getVhost(): string
     {
         return $this->vhost;
     }
@@ -237,7 +237,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return float
      */
-    public function getWriteTimeout() : float
+    public function getWriteTimeout(): float
     {
         return $this->writeTimeout;
     }
@@ -245,7 +245,7 @@ class ConnectionOptions extends AbstractOptions
     /**
      * @return int
      */
-    public function getHeartbeat() : int
+    public function getHeartbeat(): int
     {
         return $this->heartbeat;
     }

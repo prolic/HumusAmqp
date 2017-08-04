@@ -73,7 +73,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @return Exchange
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : Exchange
+    public static function __callStatic(string $name, array $arguments): Exchange
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -118,7 +118,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @return Exchange
      * @throws Exception\InvalidArgumentException
      */
-    public function __invoke(ContainerInterface $container) : Exchange
+    public function __invoke(ContainerInterface $container): Exchange
     {
         $config = $container->get('config');
         $options = $this->options($config, $this->exchangeName);
@@ -165,7 +165,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'exchange'];
     }
@@ -173,7 +173,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * @return array
      */
-    public function defaultOptions() : array
+    public function defaultOptions(): array
     {
         return [
             'arguments' => [],
@@ -191,7 +191,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     /**
      * return array
      */
-    public function mandatoryOptions() : array
+    public function mandatoryOptions(): array
     {
         return [
             'connection',
@@ -203,7 +203,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      * @param array|ArrayAccess
      * @return int
      */
-    private function getFlags($options) : int
+    private function getFlags($options): int
     {
         $flags = 0;
         $flags |= $options['passive'] ? Constants::AMQP_PASSIVE : 0;

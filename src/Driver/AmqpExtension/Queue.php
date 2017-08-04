@@ -59,7 +59,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->queue->getName();
     }
@@ -75,7 +75,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function getFlags() : int
+    public function getFlags(): int
     {
         return $this->queue->getFlags();
     }
@@ -99,7 +99,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function getArguments() : array
+    public function getArguments(): array
     {
         return $this->queue->getArguments();
     }
@@ -123,7 +123,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function declareQueue() : int
+    public function declareQueue(): int
     {
         try {
             return $this->queue->declareQueue();
@@ -244,7 +244,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function getChannel() : ChannelInterface
+    public function getChannel(): ChannelInterface
     {
         return $this->channel;
     }
@@ -252,7 +252,7 @@ final class Queue implements AmqpQueueInterface
     /**
      * @inheritdoc
      */
-    public function getConnection() : ConnectionInterface
+    public function getConnection(): ConnectionInterface
     {
         return $this->channel->getConnection();
     }

@@ -94,7 +94,7 @@ final class JsonRpcServer extends AbstractConsumer
      * @param Queue $queue
      * @return DeliveryResult
      */
-    protected function handleDelivery(Envelope $envelope, Queue $queue) : DeliveryResult
+    protected function handleDelivery(Envelope $envelope, Queue $queue): DeliveryResult
     {
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
@@ -210,7 +210,7 @@ final class JsonRpcServer extends AbstractConsumer
      * @throws Exception\InvalidJsonRpcVersion
      * @throws Exception\JsonParseError
      */
-    protected function requestFromEnvelope(Envelope $envelope) : Request
+    protected function requestFromEnvelope(Envelope $envelope): Request
     {
         if ($envelope->getHeader('jsonrpc') !== JsonRpcRequest::JSONRPC_VERSION) {
             throw new Exception\InvalidJsonRpcVersion();

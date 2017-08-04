@@ -45,14 +45,14 @@ interface Channel
      *
      * @return bool Indicates whether the channel is connected.
      */
-    public function isConnected() : bool;
+    public function isConnected(): bool;
 
     /**
      * Return internal channel ID
      *
      * @return int
      */
-    public function getChannelId() : int;
+    public function getChannelId(): int;
 
     /**
      * Set the window size to prefetch from the broker.
@@ -74,7 +74,7 @@ interface Channel
      *
      * @return int
      */
-    public function getPrefetchSize() : int;
+    public function getPrefetchSize(): int;
 
     /**
      * Set the number of messages to prefetch from the broker.
@@ -94,7 +94,7 @@ interface Channel
      *
      * @return int
      */
-    public function getPrefetchCount() : int;
+    public function getPrefetchCount(): int;
 
     /**
      * Set the Quality Of Service settings for the given channel.
@@ -149,7 +149,7 @@ interface Channel
      *
      * @return Connection
      */
-    public function getConnection() : Connection;
+    public function getConnection(): Connection;
 
     /**
      * Redeliver unacknowledged messages.
@@ -174,8 +174,8 @@ interface Channel
      *
      * Callback functions with all arguments have the following signature:
      *
-     *      function ackCallback(int $delivery_tag, bool $multiple) : bool;
-     *      function nackCallback(int $delivery_tag, bool $multiple, bool $requeue) : bool;
+     *      function ackCallback(int $delivery_tag, bool $multiple): bool;
+     *      function nackCallback(int $delivery_tag, bool $multiple, bool $requeue): bool;
      *
      * and should return boolean false when wait loop should be canceled.
      *
@@ -211,7 +211,7 @@ interface Channel
      *                        string $exchange,
      *                        string $routingKey,
      *                        Envelope $envelope,
-     *                        string $body) : bool;
+     *                        string $body): bool;
      *
      * and should return boolean false when wait loop should be canceled.
      *
@@ -231,10 +231,10 @@ interface Channel
     /**
      * @return Exchange
      */
-    public function newExchange() : Exchange;
+    public function newExchange(): Exchange;
 
     /**
      * @return Queue
      */
-    public function newQueue() : Queue;
+    public function newQueue(): Queue;
 }

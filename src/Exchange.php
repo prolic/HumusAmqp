@@ -35,7 +35,7 @@ interface Exchange
      *
      * @return string The configured name as a string.
      */
-    public function getName() : string;
+    public function getName(): string;
 
     /**
      * Set the name of the exchange.
@@ -51,7 +51,7 @@ interface Exchange
      *
      * @return string The configured type as a string.
      */
-    public function getType() : string;
+    public function getType(): string;
 
     /**
      * Set the type of the exchange.
@@ -67,7 +67,7 @@ interface Exchange
      * @return int An integer bitmask of all the flags currently set on this
      *             exchange object.
      */
-    public function getFlags() : int;
+    public function getFlags(): int;
 
     /**
      * Set the flags on an exchange.
@@ -95,7 +95,7 @@ interface Exchange
      *
      * @return array An array containing all of the set key/value pairs.
      */
-    public function getArguments() : array;
+    public function getArguments(): array;
 
     /**
      * Set the value for the given key.
@@ -183,12 +183,12 @@ interface Exchange
      *
      * @return Channel
      */
-    public function getChannel() : Channel;
+    public function getChannel(): Channel;
 
     /**
      * Get the Connection object in use
      *
      * @return Connection
      */
-    public function getConnection() : Connection;
+    public function getConnection(): Connection;
 }

@@ -95,7 +95,7 @@ final class JsonRpcResponse implements Response
     /**
      * @return string
      */
-    public function id() : string
+    public function id(): string
     {
         return $this->id;
     }

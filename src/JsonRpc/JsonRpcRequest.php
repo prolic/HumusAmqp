@@ -113,7 +113,7 @@ final class JsonRpcRequest implements Request
     /**
      * @return string
      */
-    public function server() : string
+    public function server(): string
     {
         return $this->server;
     }
@@ -121,7 +121,7 @@ final class JsonRpcRequest implements Request
     /**
      * @return string
      */
-    public function routingKey() : string
+    public function routingKey(): string
     {
         return $this->routingKey;
     }
@@ -130,7 +130,7 @@ final class JsonRpcRequest implements Request
      * Expiration in milliseconds
      * @return int
      */
-    public function expiration() : int
+    public function expiration(): int
     {
         return $this->expiration;
     }
@@ -146,7 +146,7 @@ final class JsonRpcRequest implements Request
     /**
      * @return int
      */
-    public function timestamp() : int
+    public function timestamp(): int
     {
         return $this->timestamp;
     }
@@ -154,7 +154,7 @@ final class JsonRpcRequest implements Request
     /**
      * @return string
      */
-    public function method() : string
+    public function method(): string
     {
         return $this->method;
     }

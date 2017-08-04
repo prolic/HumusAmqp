@@ -31,7 +31,7 @@ interface Response
     /**
      * @return string
      */
-    public function id() : string;
+    public function id(): string;
 
     /**
      * @return array|bool|float|int|string|null

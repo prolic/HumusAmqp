@@ -66,7 +66,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
      * @return Connection
      * @throws Exception\InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments) : Connection
+    public static function __callStatic(string $name, array $arguments): Connection
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new Exception\InvalidArgumentException(
@@ -89,7 +89,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
      * @param ContainerInterface $container
      * @return Connection
      */
-    public function __invoke(ContainerInterface $container) : Connection
+    public function __invoke(ContainerInterface $container): Connection
     {
         if (! $container->has(Driver::class)) {
             throw new Exception\RuntimeException('No driver factory registered in container');
@@ -145,7 +145,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function dimensions() : array
+    public function dimensions(): array
     {
         return ['humus', 'amqp', 'connection'];
     }
@@ -153,7 +153,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
     /**
      * @return array
      */
-    public function defaultOptions() : array
+    public function defaultOptions(): array
     {
         return [
             'host' => 'localhost',
