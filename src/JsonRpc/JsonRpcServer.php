@@ -178,7 +178,18 @@ final class JsonRpcServer extends AbstractConsumer
             ];
         }
 
-        $this->exchange->publish(json_encode($payload), $envelope->getReplyTo(), Constants::AMQP_NOPARAM, $attributes);
+        $message = json_encode($payload);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $message = json_encode([
+                'error' => [
+                    'code' => JsonRpcError::ERROR_CODE_32603,
+                    'message' => 'Internal error',
+                ],
+            ]);
+        }
+
+        $this->exchange->publish($message, $envelope->getReplyTo(), Constants::AMQP_NOPARAM, $attributes);
     }
 
     /**

@@ -147,7 +147,11 @@ final class Queue implements AmqpQueueInterface
      */
     public function get(int $flags = Constants::AMQP_NOPARAM)
     {
-        $envelope = $this->queue->get($flags);
+        try {
+            $envelope = $this->queue->get($flags);
+        } catch (\AMQPChannelException $e) {
+            throw new ChannelException($e->getMessage());
+        }
 
         if ($envelope instanceof \AMQPEnvelope) {
             $envelope = new Envelope($envelope);

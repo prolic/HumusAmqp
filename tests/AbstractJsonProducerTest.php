@@ -24,6 +24,7 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Envelope;
+use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Humus\Amqp\Constants;
@@ -31,6 +32,7 @@ use Humus\Amqp\JsonProducer;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
+use Prophecy\Argument;
 
 /**
  * Class AbstractJsonProducerTest
@@ -398,5 +400,46 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $this->assertEquals('', $result[1][3]);
         $this->assertInstanceOf(Envelope::class, $result[1][4]);
         $this->assertEquals(['foo' => 'bar'], json_decode($result[1][5], true));
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_data_could_not_be_encoded_to_json()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Error during json encoding');
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->publish(Argument::any(), Argument::any(), Argument::any(), Argument::any())->shouldNotBeCalled();
+
+        $producer = new JsonProducer($exchange->reveal());
+
+        $text = "\xB1\x31";
+
+        $producer->publish($text);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_data_could_not_be_encoded_to_json_2()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Exception during json encoding');
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->publish(Argument::any(), Argument::any(), Argument::any(), Argument::any())->shouldNotBeCalled();
+
+        $producer = new JsonProducer($exchange->reveal());
+
+        $message = new class() implements \JsonSerializable {
+            public function jsonSerialize()
+            {
+                throw new \Exception('foo');
+            }
+        };
+
+        $producer->publish($message);
     }
 }
