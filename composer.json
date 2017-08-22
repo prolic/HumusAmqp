@@ -35,7 +35,8 @@
         "malukenho/docheader": "^0.1.4"
     },
     "conflict": {
-        "sandrokeil/interop-config": "<1.0"
+        "sandrokeil/interop-config": "<1.0",
+        "container-interop/container-interop": "<1.2"
     },
     "suggest": {
         "ext-pcntl": "For process control management",
