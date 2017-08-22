@@ -28,7 +28,7 @@ use Humus\Amqp\Container\JsonRpcClientFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\Queue;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -179,7 +179,7 @@ class JsonRpcClientFactoryTest extends TestCase
     public function it_throws_exception_with_invalid_call_static_container_param()
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
+        $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
 
         $clientName = 'my_client';
         JsonRpcClientFactory::$clientName('invalid');

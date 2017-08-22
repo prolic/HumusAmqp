@@ -25,7 +25,7 @@ namespace HumusTest\Amqp\Console\Command;
 use Humus\Amqp\Console\Command\StartJsonRpcServerCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Consumer;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;

@@ -27,7 +27,7 @@ use Humus\Amqp\Container\ExchangeFactory;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -167,7 +167,7 @@ class ExchangeFactoryTest extends TestCase
     public function it_throws_exception_with_invalid_call_static_container_param()
     {
         $this->expectException(Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
+        $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
 
         $exchangeName = 'my_exchange';
         ExchangeFactory::$exchangeName('invalid');

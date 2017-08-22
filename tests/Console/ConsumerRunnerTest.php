@@ -24,7 +24,7 @@ namespace HumusTest\Amqp\Console;
 
 use Humus\Amqp\Console\ConsoleRunner;
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\ApplicationTester;

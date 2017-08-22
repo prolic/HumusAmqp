@@ -28,7 +28,7 @@ use Humus\Amqp\Console\Command\SetupFabricCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;

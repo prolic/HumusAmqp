@@ -23,7 +23,7 @@ declare(strict_types=1);
 namespace Humus\Amqp\Console;
 
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 

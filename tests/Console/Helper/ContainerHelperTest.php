@@ -23,7 +23,7 @@ declare(strict_types=1);
 namespace HumusTest\Amqp\Console\Helper;
 
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**

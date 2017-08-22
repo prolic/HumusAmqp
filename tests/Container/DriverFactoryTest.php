@@ -24,7 +24,7 @@ namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Container\DriverFactory;
 use Humus\Amqp\Driver\Driver;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**

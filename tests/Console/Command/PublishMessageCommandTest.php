@@ -26,7 +26,7 @@ use Humus\Amqp\Console\Command\PublishMessageCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Producer;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Helper\HelperSet;
