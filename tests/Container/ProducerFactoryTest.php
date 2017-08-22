@@ -28,8 +28,8 @@ use Humus\Amqp\Container\ProducerFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\PlainProducer;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class ProducerFactoryTest
@@ -109,7 +109,7 @@ class ProducerFactoryTest extends TestCase
                     'producer' => [
                         'my_producer' => [
                             'exchange' => 'my_exchange',
-                            'type' => JsonProducer::class
+                            'type' => JsonProducer::class,
                         ],
                     ],
                 ],
@@ -156,7 +156,7 @@ class ProducerFactoryTest extends TestCase
                     'producer' => [
                         'my_producer' => [
                             'exchange' => 'my_exchange',
-                            'type' => JsonProducer::class
+                            'type' => JsonProducer::class,
                         ],
                     ],
                 ],
@@ -184,7 +184,7 @@ class ProducerFactoryTest extends TestCase
     public function it_throws_exception_with_invalid_call_static_container_param()
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
+        $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
 
         $producerName = 'my_producer';
         ProducerFactory::$producerName('invalid');
@@ -218,7 +218,7 @@ class ProducerFactoryTest extends TestCase
                     'producer' => [
                         'my_producer' => [
                             'exchange' => 'my_exchange',
-                            'type' => 'invalid'
+                            'type' => 'invalid',
                         ],
                     ],
                 ],

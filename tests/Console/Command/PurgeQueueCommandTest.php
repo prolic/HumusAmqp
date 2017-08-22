@@ -27,8 +27,8 @@ use Humus\Amqp\Connection;
 use Humus\Amqp\Console\Command\PurgeQueueCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Queue;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -69,8 +69,8 @@ class PurgeQueueCommandTest extends TestCase
                                 'vhost' => '/humus-amqp-test',
                             ],
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ]
         )->shouldBeCalled();
 
@@ -126,8 +126,8 @@ class PurgeQueueCommandTest extends TestCase
                                 'vhost' => '/humus-amqp-test',
                             ],
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ]
         )->shouldBeCalled();
 
@@ -163,9 +163,10 @@ class PurgeQueueCommandTest extends TestCase
         $command = new PurgeQueueCommand();
         $command->setHelperSet(
             new HelperSet([
-                'container' => new ContainerHelper($container)
+                'container' => new ContainerHelper($container),
             ])
         );
+
         return new CommandTester($command);
     }
 }

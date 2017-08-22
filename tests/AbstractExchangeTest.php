@@ -25,10 +25,10 @@ namespace HumusTest\Amqp;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\ConnectionOptions;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exchange;
-use Humus\Amqp\Constants;
 use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
@@ -333,6 +333,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
                 bool $multiple = false
             ) use (&$cnt, &$result) {
                 $result[] = 'Message acked';
+
                 return --$cnt > 0;
             },
             function (
@@ -341,6 +342,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
                 bool $requeue
             ) use (&$result) {
                 $result[] = 'Message nacked';
+
                 return false;
             }
         );
@@ -475,6 +477,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
             ) use (&$result) {
                 $result[] = 'Message returned';
                 $result[] = func_get_args();
+
                 return false;
             }
         );

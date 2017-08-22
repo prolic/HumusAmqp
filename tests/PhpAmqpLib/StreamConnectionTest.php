@@ -99,7 +99,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      * @param ConnectionOptions|null $options
      * @return Connection
      */
-    public function createConnection(ConnectionOptions $options = null) : Connection
+    public function createConnection(ConnectionOptions $options = null): Connection
     {
         if (null === $options) {
             $options = new ConnectionOptions();

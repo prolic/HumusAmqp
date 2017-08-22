@@ -92,6 +92,7 @@ abstract class AbstractOptions
         $array = [];
         $transform = function ($letters) {
             $letter = array_shift($letters);
+
             return '_' . strtolower($letter);
         };
         foreach ($this as $key => $value) {
@@ -101,6 +102,7 @@ abstract class AbstractOptions
             $normalizedKey = preg_replace_callback('/([A-Z])/', $transform, $key);
             $array[$normalizedKey] = $value;
         }
+
         return $array;
     }
 

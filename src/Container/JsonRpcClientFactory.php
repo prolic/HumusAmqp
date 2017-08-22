@@ -22,15 +22,14 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Container;
 
+use Humus\Amqp\Exception;
 use Humus\Amqp\JsonRpc\Client;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
-use Humus\Amqp\Exception;
-use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Traversable;
 
 /**
@@ -71,6 +70,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
@@ -129,7 +129,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
     {
         return [
             'wait_micros' => 1000,
-            'app_id' => ''
+            'app_id' => '',
         ];
     }
 

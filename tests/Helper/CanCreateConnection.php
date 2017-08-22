@@ -34,5 +34,5 @@ interface CanCreateConnection
      * @param ConnectionOptions|null $options
      * @return \Humus\Amqp\Connection
      */
-    public function createConnection(ConnectionOptions $options = null) : \Humus\Amqp\Connection;
+    public function createConnection(ConnectionOptions $options = null): \Humus\Amqp\Connection;
 }

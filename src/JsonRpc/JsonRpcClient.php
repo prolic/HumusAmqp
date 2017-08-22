@@ -107,7 +107,6 @@ final class JsonRpcClient implements Client
 
         $exchange->publish($message, $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
-
         if (null !== $request->id()) {
             $this->requestIds[] = $request->id();
         }

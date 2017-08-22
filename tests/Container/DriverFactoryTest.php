@@ -24,8 +24,8 @@ namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Container\DriverFactory;
 use Humus\Amqp\Driver\Driver;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class DriverFactoryTest
@@ -43,9 +43,9 @@ class DriverFactoryTest extends TestCase
         $container->get('config')->willReturn([
             'humus' => [
                 'amqp' => [
-                    'driver' => 'amqp-extension'
-                ]
-            ]
+                    'driver' => 'amqp-extension',
+                ],
+            ],
         ])->shouldBeCalled();
 
         $factory = new DriverFactory();
@@ -65,9 +65,9 @@ class DriverFactoryTest extends TestCase
         $container->get('config')->willReturn([
             'humus' => [
                 'amqp' => [
-                    'driver' => 'php-amqplib'
-                ]
-            ]
+                    'driver' => 'php-amqplib',
+                ],
+            ],
         ])->shouldBeCalled();
 
         $factory = new DriverFactory();

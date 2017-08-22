@@ -90,7 +90,7 @@ class PublishMessageCommand extends AbstractCommand
                     InputOption::VALUE_REQUIRED,
                     'One or more of Constants::AMQP_MANDATORY (1024) and Constants::AMQP_IMMEDIATE (2048).',
                     Constants::AMQP_NOPARAM
-                )
+                ),
             ])
             ->setHelp('Purges a queue');
     }
@@ -104,6 +104,7 @@ class PublishMessageCommand extends AbstractCommand
 
         if (! $producerName) {
             $output->writeln('No producer name given');
+
             return 1;
         }
 
@@ -111,6 +112,7 @@ class PublishMessageCommand extends AbstractCommand
 
         if (! $container->has($producerName)) {
             $output->writeln('Producer with name ' . $producerName . ' not found');
+
             return 1;
         }
 
@@ -132,6 +134,7 @@ class PublishMessageCommand extends AbstractCommand
 
         if ($confirmSelect && $transactional) {
             $output->writeln('Can only use one of transactional or confirm select');
+
             return 1;
         }
 
@@ -139,8 +142,9 @@ class PublishMessageCommand extends AbstractCommand
 
         $arguments = json_decode($arguments, true);
 
-        if (json_last_error() != 0) {
+        if (json_last_error() !== 0) {
             $output->writeln('Cannot decode arguments');
+
             return 1;
         }
 
@@ -181,6 +185,7 @@ class PublishMessageCommand extends AbstractCommand
                 $producer->waitForConfirm(2.0);
             } catch (\Throwable $e) {
                 echo get_class($e) . ': ' . $e->getMessage();
+
                 return 1;
             }
         }

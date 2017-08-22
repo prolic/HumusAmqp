@@ -18,12 +18,14 @@
  *  and is licensed under the MIT license.
  */
 
+declare(strict_types=1);
+
 use Humus\Amqp\Console\ConsoleRunner;
 use Symfony\Component\Console\Helper\HelperSet;
 
 $autoloadFiles = [
     __DIR__ . '/../vendor/autoload.php',
-    __DIR__ . '/../../../autoload.php'
+    __DIR__ . '/../../../autoload.php',
 ];
 
 foreach ($autoloadFiles as $autoloadFile) {

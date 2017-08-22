@@ -5,3 +5,4 @@
 .idea
 nbproject
 composer.lock
+.php_cs.cache

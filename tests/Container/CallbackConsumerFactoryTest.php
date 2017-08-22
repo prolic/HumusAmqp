@@ -27,8 +27,8 @@ use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Container\CallbackConsumerFactory;
 use Humus\Amqp\Queue;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -182,7 +182,7 @@ class CallbackConsumerFactoryTest extends TestCase
     public function it_throws_exception_with_invalid_call_static_container_param()
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The first argument must be of type Interop\Container\ContainerInterface');
+        $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
 
         $consumerName = 'my_consumer';
         CallbackConsumerFactory::$consumerName('invalid');

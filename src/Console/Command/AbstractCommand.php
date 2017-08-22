@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Console\Command;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 
 /**

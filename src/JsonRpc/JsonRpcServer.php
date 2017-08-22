@@ -106,6 +106,7 @@ final class JsonRpcServer extends AbstractConsumer
 
         if ($envelope->getAppId() === 'Humus\Amqp') {
             $this->handleInternalMessage($envelope);
+
             return DeliveryResult::MSG_ACK();
         }
 
@@ -161,7 +162,7 @@ final class JsonRpcServer extends AbstractConsumer
             'app_id' => $this->appId,
             'headers' => [
                 'jsonrpc' => JsonRpcResponse::JSONRPC_VERSION,
-            ]
+            ],
         ];
 
         if ($response->isError()) {
@@ -224,7 +225,7 @@ final class JsonRpcServer extends AbstractConsumer
 
         $payload = json_decode($envelope->getBody(), true);
 
-        if (0 != json_last_error()) {
+        if (0 !== json_last_error()) {
             throw new Exception\JsonParseError();
         }
 

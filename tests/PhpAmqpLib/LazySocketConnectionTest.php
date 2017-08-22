@@ -78,7 +78,7 @@ final class LazySocketConnectionTest extends AbstractConnectionTest
      * @param ConnectionOptions|null $options
      * @return \Humus\Amqp\Connection
      */
-    public function createConnection(ConnectionOptions $options = null) : \Humus\Amqp\Connection
+    public function createConnection(ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         return new LazySocketConnection($options);
     }

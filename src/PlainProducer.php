@@ -38,7 +38,7 @@ final class PlainProducer extends AbstractProducer
     ];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function publish(
         $message,

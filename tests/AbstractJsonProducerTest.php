@@ -23,12 +23,12 @@ declare(strict_types=1);
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\Exchange;
-use Humus\Amqp\Queue;
-use Humus\Amqp\Constants;
 use Humus\Amqp\JsonProducer;
+use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -147,7 +147,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $count = 2;
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function (int $delivery_tag, bool $multiple) use (& $count) {
+            function (int $delivery_tag, bool $multiple) use (&$count) {
                 return $delivery_tag !== $count;
             },
             function (int $delivery_tag, bool $multiple, bool $requeue) {
@@ -190,7 +190,8 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $this->exchange->getChannel()->setConfirmCallback(
             function (int $delivery_tag, bool $multiple) use (&$count) {
                 var_dump(__LINE__, $delivery_tag, $count);
-                return ($delivery_tag !== $count);
+
+                return $delivery_tag !== $count;
             },
             function (int $delivery_tag, bool $multiple, bool $requeue) {
                 throw new \Exception('Could not confirm message publishing');
@@ -214,7 +215,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
         $this->exchange->getChannel()->setConfirmCallback(
             function (int $delivery_tag, bool $multiple) use (&$count) {
-                return ($delivery_tag !== $count);
+                return $delivery_tag !== $count;
             },
             function (int $delivery_tag, bool $multiple, bool $requeue) {
                 throw new \Exception('Could not confirm message publishing');
@@ -285,10 +286,12 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
                 if ($multiple) {
                     $multipleAcks = $multiple;
                 }
+
                 return 3 !== $deliveryTag;
             },
             function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result) {
                 $result[] = 'nacked' . (string) $deliveryTag;
+
                 return false;
             }
         );
@@ -304,11 +307,11 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         } elseif ($multipleAcks && 2 === count($result)) {
             $possibilityOne = [
                 'acked 1',
-                'acked 3'
+                'acked 3',
             ];
             $possibilityTwo = [
                 'acked 2',
-                'acked 3'
+                'acked 3',
             ];
             $this->assertTrue($result === $possibilityOne || $result === $possibilityTwo);
         } else {
@@ -341,10 +344,12 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $producer->setConfirmCallback(
             function ($deliveryTag, bool $multiple) use (&$result, &$cnt) {
                 $result[] = 'acked ' . (string) $deliveryTag;
+
                 return --$cnt > 0;
             },
             function ($deliveryTag, bool $multiple, bool $requeue) use (&$result) {
                 $result = 'nacked' . (string) $deliveryTag;
+
                 return false;
             }
         );
@@ -384,6 +389,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         ) use (&$result) {
             $result[] = 'Message returned';
             $result[] = func_get_args();
+
             return false;
         });
 

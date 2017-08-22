@@ -55,7 +55,7 @@ class StartCallbackConsumerCommand extends AbstractCommand
                     InputOption::VALUE_OPTIONAL,
                     'amount of messages to consume',
                     0
-                )
+                ),
             ])
             ->setHelp('Start a consumer');
     }
@@ -69,6 +69,7 @@ class StartCallbackConsumerCommand extends AbstractCommand
 
         if (! $consumerName) {
             $output->writeln('No consumer given');
+
             return 1;
         }
 
@@ -76,6 +77,7 @@ class StartCallbackConsumerCommand extends AbstractCommand
 
         if (! $container->has($consumerName)) {
             $output->writeln('No consumer with name ' . $consumerName . ' found');
+
             return 1;
         }
 

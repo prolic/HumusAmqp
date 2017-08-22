@@ -30,7 +30,7 @@ use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class ProducerFactory
@@ -70,6 +70,7 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
@@ -105,7 +106,6 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
                 ));
         }
     }
-
 
     /**
      * @return array

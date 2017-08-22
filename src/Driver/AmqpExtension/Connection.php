@@ -71,7 +71,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isConnected(): bool
     {
@@ -79,7 +79,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function connect()
     {
@@ -91,7 +91,7 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function disconnect()
     {
@@ -103,19 +103,19 @@ final class Connection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function reconnect(): bool
     {
         if ($this->options->getPersistent()) {
             return $this->connection->preconnect();
-        } else {
-            return $this->connection->reconnect();
         }
+
+        return $this->connection->reconnect();
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getOptions(): ConnectionOptions
     {

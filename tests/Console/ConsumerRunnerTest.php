@@ -24,8 +24,8 @@ namespace HumusTest\Amqp\Console;
 
 use Humus\Amqp\Console\ConsoleRunner;
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\ApplicationTester;
 
@@ -71,7 +71,7 @@ class ConsumerRunnerTest extends TestCase
 
         $app = ConsoleRunner::createApplication(
             new HelperSet([
-                'container' => new ContainerHelper($container->reveal())
+                'container' => new ContainerHelper($container->reveal()),
             ])
         );
         $app->setAutoExit(false);

@@ -36,7 +36,7 @@ abstract class AbstractConnectionTest extends TestCase implements CanCreateConne
     /**
      * @return ConnectionOptions
      */
-    protected function invalidCredentials() : ConnectionOptions
+    protected function invalidCredentials(): ConnectionOptions
     {
         return new ConnectionOptions([
             'vhost' => '/humus-amqp-test',

@@ -22,8 +22,8 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Channel as ChannelInterface;
+use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception\BadMethodCallException;
 use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exchange as ExchangeInterface;
@@ -88,7 +88,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isConnected(): bool
     {
@@ -96,7 +96,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getChannelId(): int
     {
@@ -104,7 +104,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setPrefetchSize(int $size)
     {
@@ -113,7 +113,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getPrefetchSize(): int
     {
@@ -121,7 +121,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setPrefetchCount(int $count)
     {
@@ -130,7 +130,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getPrefetchCount(): int
     {
@@ -138,7 +138,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function qos(int $size, int $count)
     {
@@ -148,7 +148,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function startTransaction()
     {
@@ -156,7 +156,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function commitTransaction()
     {
@@ -164,7 +164,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rollbackTransaction()
     {
@@ -172,7 +172,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConnection(): ConnectionInterface
     {
@@ -180,7 +180,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function basicRecover(bool $requeue = true)
     {
@@ -188,7 +188,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function confirmSelect()
     {
@@ -196,7 +196,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
     {
@@ -216,7 +216,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
@@ -236,7 +236,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setReturnCallback(callable $returnCallback = null)
     {
@@ -252,6 +252,7 @@ final class Channel implements ChannelInterface
             $message
         ) use ($returnCallback) {
             $envelope = new Envelope($message);
+
             return $returnCallback($replyCode, $replyText, $exchange, $routingKey, $envelope, $envelope->getBody());
         };
 
@@ -259,7 +260,7 @@ final class Channel implements ChannelInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function waitForBasicReturn(float $timeout = 0.0)
     {

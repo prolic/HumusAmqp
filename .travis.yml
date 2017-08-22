@@ -17,8 +17,11 @@ env:
 cache:
   directories:
     - $HOME/.composer/cache
+    - $HOME/.php-cs-fixer
+    - $HOME/.local
 
 before_script:
+  - mkdir -p "$HOME/.php-cs-fixer"
   - if [ $TRAVIS_PHP_VERSION = "7.0" ]; then phpenv config-rm xdebug.ini; fi
   - sudo cp $TRAVIS_BUILD_DIR/provision/rabbitmq.config /etc/rabbitmq/
   - sudo service rabbitmq-server restart

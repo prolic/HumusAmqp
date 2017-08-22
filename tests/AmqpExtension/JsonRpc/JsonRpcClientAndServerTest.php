@@ -22,14 +22,14 @@ declare(strict_types=1);
 
 namespace HumusTest\Amqp\AmqpExtension\JsonRpc;
 
-use HumusTest\Amqp\JsonRpc\AbstractJsonRpcClientAndServerTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
+use HumusTest\Amqp\JsonRpc\AbstractJsonRpcClientAndServerTest;
 
 /**
  * Class JsonRpcJsonRpcClientAndServerTest
  * @package HumusTest\Amqp\AmqpExtension\JsonRpc
  */
-class JsonRpcJsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
+class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
 {
     use CreateConnectionTrait;
 }

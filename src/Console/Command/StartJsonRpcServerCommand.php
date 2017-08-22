@@ -55,7 +55,7 @@ class StartJsonRpcServerCommand extends AbstractCommand
                     InputOption::VALUE_OPTIONAL,
                     'amount of messages to consume',
                     0
-                )
+                ),
             ])
             ->setHelp('Start a JSON-RPC server');
     }
@@ -69,6 +69,7 @@ class StartJsonRpcServerCommand extends AbstractCommand
 
         if (! $serverName) {
             $output->writeln('No JSON-RPC server given');
+
             return 1;
         }
 
@@ -76,6 +77,7 @@ class StartJsonRpcServerCommand extends AbstractCommand
 
         if (! $container->has($serverName)) {
             $output->writeln('No JSON-RPC server with name ' . $serverName . ' found');
+
             return 1;
         }
 

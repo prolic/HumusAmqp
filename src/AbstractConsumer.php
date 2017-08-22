@@ -170,6 +170,7 @@ abstract class AbstractConsumer implements Consumer
                 $this->ackOrNackBlock();
                 $this->queue->cancel($this->consumerTag);
                 $this->shutdown();
+
                 return false;
             }
         };
@@ -204,6 +205,7 @@ abstract class AbstractConsumer implements Consumer
         }
 
         $callback = $this->deliveryCallback;
+
         return $callback($envelope, $queue);
     }
 
@@ -396,6 +398,7 @@ abstract class AbstractConsumer implements Consumer
                 Assertion::min($prefetchCount, 0);
             } catch (\Throwable $e) {
                 $this->logger->error('Exception during reconfiguration: ' . $e->getMessage());
+
                 return DeliveryResult::MSG_REJECT();
             }
 

@@ -28,8 +28,8 @@ use Humus\Amqp\Console\Command\SetupFabricCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -86,8 +86,8 @@ class SetupFabricCommandTest extends TestCase
                         'connection' => [
                             'default' => [],
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ]
         )->shouldBeCalled();
 
@@ -133,9 +133,10 @@ class SetupFabricCommandTest extends TestCase
         $command = new SetupFabricCommand();
         $command->setHelperSet(
             new HelperSet([
-                'container' => new ContainerHelper($container)
+                'container' => new ContainerHelper($container),
             ])
         );
+
         return new CommandTester($command);
     }
 }

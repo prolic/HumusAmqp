@@ -30,10 +30,10 @@ use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\JsonRpc\JsonRpcError;
-use Humus\Amqp\JsonRpc\JsonRpcResponse;
-use Humus\Amqp\JsonRpc\Request;
-use Humus\Amqp\JsonRpc\JsonRpcServer;
 use Humus\Amqp\JsonRpc\JsonRpcRequest;
+use Humus\Amqp\JsonRpc\JsonRpcResponse;
+use Humus\Amqp\JsonRpc\JsonRpcServer;
+use Humus\Amqp\JsonRpc\Request;
 use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
@@ -241,6 +241,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             if (1 == $params) {
                 throw new \Exception('invalid body');
             }
+
             return $params * 2; // return no response but the result instead
         };
 
@@ -552,15 +553,15 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'request-6',
             'request-7',
             'request-8',
-            'request-9'
+            'request-9',
         ]);
 
         $callback = function (Request $request) {
             if ('time2' === $request->method()) {
                 return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
-            } else {
-                return JsonRpcResponse::withError($request->id(), new JsonRpcError(JsonRpcError::ERROR_CODE_32601));
             }
+
+            return JsonRpcResponse::withError($request->id(), new JsonRpcError(JsonRpcError::ERROR_CODE_32601));
         };
 
         $logger = new ArrayLogger();
@@ -575,12 +576,12 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'content_encoding' => 'UTF-8',
             'headers' => [
                 'jsonrpc' => JsonRpcResponse::JSONRPC_VERSION,
-            ]
+            ],
         ]);
 
         $clientExchange->publish('invalid response', '', Constants::AMQP_NOPARAM, [
             'reply_to' => $clientQueue->getName(),
-            'correlation_id' => 'request-8'
+            'correlation_id' => 'request-8',
         ]);
 
         $clientExchange->publish('{"foo":"bar"}', '', Constants::AMQP_NOPARAM, [
@@ -590,7 +591,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'content_encoding' => 'UTF-8',
             'headers' => [
                 'jsonrpc' => JsonRpcResponse::JSONRPC_VERSION,
-            ]
+            ],
         ]);
 
         $responses = $client->getResponseCollection();

@@ -31,7 +31,7 @@ use Humus\Amqp\Exception;
  */
 final class JsonRpcRequest implements Request
 {
-    const JSONRPC_VERSION = "2.0";
+    const JSONRPC_VERSION = '2.0';
 
     /**
      * @var string
@@ -99,7 +99,7 @@ final class JsonRpcRequest implements Request
         $this->id = $id;
         $this->routingKey = $routingKey;
         $this->expiration = $expiration;
-        $this->timestamp = (0 === $timestamp) ? $timestamp: time();
+        $this->timestamp = (0 === $timestamp) ? $timestamp : time();
     }
 
     /**

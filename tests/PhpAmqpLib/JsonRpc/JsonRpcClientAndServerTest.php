@@ -29,7 +29,7 @@ use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
  * Class JsonRpcJsonRpcClientAndServerTest
  * @package HumusTest\Amqp\PhpAmqpLib\JsonRpc
  */
-class JsonRpcJsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
+class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
 {
     use CreateConnectionTrait;
 }

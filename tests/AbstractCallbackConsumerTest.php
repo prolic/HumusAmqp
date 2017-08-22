@@ -22,9 +22,9 @@ declare(strict_types=1);
 
 namespace HumusTest\Amqp;
 
+use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Constants;
-use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\DeliveryResult;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\FlushDeferredResult;
@@ -77,6 +77,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_ACK();
             }
         );
@@ -184,6 +185,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_REJECT();
             }
         );
@@ -294,11 +296,12 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 $i++;
                 if ((int) $envelope->getBody() % 2 === 0 && ! $envelope->isRedelivery()) {
                     $result[] = $envelope->getBody();
+
                     return DeliveryResult::MSG_REJECT_REQUEUE();
-                } else {
-                    $result[] = $envelope->getBody();
-                    return DeliveryResult::MSG_ACK();
                 }
+                $result[] = $envelope->getBody();
+
+                return DeliveryResult::MSG_ACK();
             }
         );
 
@@ -342,6 +345,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_DEFER();
             },
             null,
@@ -426,6 +430,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_DEFER();
             },
             function (Queue $queue) {
@@ -513,10 +518,12 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_DEFER();
             },
             function () use (&$result) {
                 $result[] = 'flushed';
+
                 return FlushDeferredResult::MSG_REJECT();
             },
             null,
@@ -536,7 +543,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 'message #6',
                 'flushed',
                 'message #7',
-                'flushed'
+                'flushed',
             ],
             $result
         );
@@ -617,6 +624,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_DEFER();
             },
             function () use (&$result, &$flushes) {
@@ -625,6 +633,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 if (1 === $flushes) {
                     return FlushDeferredResult::MSG_REJECT_REQUEUE();
                 }
+
                 return FlushDeferredResult::MSG_ACK();
             },
             null,
@@ -685,7 +694,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             [
                 'foo',
                 'foo',
-                'foo'
+                'foo',
             ],
             $result
         );
@@ -763,6 +772,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_DEFER();
             },
             function () {
@@ -852,6 +862,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_ACK();
             }
         );
@@ -945,6 +956,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_ACK();
             }
         );
@@ -1000,7 +1012,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
                 1,
                 8,
                 0,
-                1
+                1,
             ]),
             '',
             Constants::AMQP_NOPARAM,
@@ -1023,6 +1035,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_ACK();
             }
         );
@@ -1131,7 +1144,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
 
         $exchange->publish(
             json_encode([
-                'invalid'
+                'invalid',
             ]),
             '',
             Constants::AMQP_NOPARAM,
@@ -1150,6 +1163,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_ACK();
             }
         );
@@ -1216,6 +1230,7 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
             3,
             function (Envelope $envelope, Queue $queue) use (&$result) {
                 $result[] = $envelope->getBody();
+
                 return DeliveryResult::MSG_ACK();
             }
         );

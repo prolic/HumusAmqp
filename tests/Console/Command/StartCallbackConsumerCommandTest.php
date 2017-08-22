@@ -25,8 +25,8 @@ namespace HumusTest\Amqp\Console\Command;
 use Humus\Amqp\Console\Command\StartCallbackConsumerCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Consumer;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -91,9 +91,10 @@ class StartCallbackConsumerCommandTest extends TestCase
         $command = new StartCallbackConsumerCommand();
         $command->setHelperSet(
             new HelperSet([
-                'container' => new ContainerHelper($container)
+                'container' => new ContainerHelper($container),
             ])
         );
+
         return new CommandTester($command);
     }
 }
