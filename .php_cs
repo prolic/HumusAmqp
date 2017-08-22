@@ -92,7 +92,6 @@ class Prooph extends Config
             'single_line_after_imports' => true,
             'single_quote' => true,
             'standardize_not_equals' => true,
-            'strict_comparison' => true,
             'switch_case_semicolon_to_colon' => true,
             'switch_case_space' => true,
             'ternary_operator_spaces' => true,
@@ -105,7 +104,7 @@ class Prooph extends Config
     }
 }
 
-$config = new Prooph\CS\Config\Prooph();
+$config = new Prooph();
 $config->getFinder()->in(__DIR__);
 
 $cacheDir = getenv('TRAVIS') ? getenv('HOME') . '/.php-cs-fixer' : __DIR__;

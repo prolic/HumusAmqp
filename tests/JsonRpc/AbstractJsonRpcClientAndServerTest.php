@@ -238,7 +238,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $callback = function (Request $request) {
             $params = $request->params();
-            if (1 === $params) {
+            if (1 == $params) {
                 throw new \Exception('invalid body');
             }
 
