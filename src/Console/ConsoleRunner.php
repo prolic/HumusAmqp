@@ -42,7 +42,7 @@ class ConsoleRunner
     public static function createHelperSet(ContainerInterface $container)
     {
         return new HelperSet([
-            'container' => new ContainerHelper($container)
+            'container' => new ContainerHelper($container),
         ]);
     }
 
@@ -96,7 +96,7 @@ class ConsoleRunner
             new Command\SetupFabricCommand(),
             new Command\ShowCommand(),
             new Command\StartCallbackConsumerCommand(),
-            new Command\StartJsonRpcServerCommand()
+            new Command\StartJsonRpcServerCommand(),
         ]);
     }
 

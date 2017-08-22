@@ -22,9 +22,9 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use Humus\Amqp\Constants;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Queue as QueueInterface;
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
@@ -69,7 +69,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getName(): string
     {
@@ -77,7 +77,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setName(string $exchangeName)
     {
@@ -85,7 +85,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getFlags(): int
     {
@@ -93,7 +93,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setFlags(int $flags)
     {
@@ -101,7 +101,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArgument(string $key)
     {
@@ -109,7 +109,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getArguments(): array
     {
@@ -117,7 +117,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArgument(string $key, $value)
     {
@@ -125,7 +125,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setArguments(array $arguments)
     {
@@ -133,7 +133,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function declareQueue(): int
     {
@@ -156,14 +156,13 @@ final class Queue implements QueueInterface
             throw Exception\ChannelException::fromPhpAmqpLib($e);
         }
 
-
         $this->name = $result[0];
 
         return $result[1];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function bind(string $exchangeName, string $routingKey = null, array $arguments = [])
     {
@@ -184,7 +183,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get(int $flags = Constants::AMQP_NOPARAM)
     {
@@ -202,7 +201,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function consume(
         callable $callback = null,
@@ -215,6 +214,7 @@ final class Queue implements QueueInterface
                 if (false === $result) {
                     $this->cancel($envelope->delivery_info['consumer_tag']);
                 }
+
                 return $result;
             };
         } else {
@@ -251,7 +251,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -262,7 +262,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -274,7 +274,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
     {
@@ -285,7 +285,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function purge()
     {
@@ -297,7 +297,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function cancel(string $consumerTag = '')
     {
@@ -309,7 +309,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
     {
@@ -325,7 +325,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function delete(int $flags = Constants::AMQP_NOPARAM)
     {
@@ -339,7 +339,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getChannel(): ChannelInterface
     {
@@ -347,7 +347,7 @@ final class Queue implements QueueInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConnection(): ConnectionInterface
     {

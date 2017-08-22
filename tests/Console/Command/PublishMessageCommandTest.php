@@ -26,9 +26,9 @@ use Humus\Amqp\Console\Command\PublishMessageCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Producer;
-use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Prophecy\Argument;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -106,12 +106,12 @@ class PublishMessageCommandTest extends TestCase
             'bool' => true,
             'null' => null,
             'array' => [
-                'baz', 'bam'
+                'baz', 'bam',
             ],
             'table' => [
                 'one' => 'two',
-                'three' => 'four'
-            ]
+                'three' => 'four',
+            ],
         ])->shouldBeCalled();
 
         $container = $this->prophesize(ContainerInterface::class);
@@ -124,7 +124,7 @@ class PublishMessageCommandTest extends TestCase
             '-m' => 'test-message',
             '-r' => 'test',
             '-f' => Constants::AMQP_IMMEDIATE,
-            '--arguments' => '{"foo":"bar","bool":true,"null":null,"array":["baz","bam"],"table":{"one":"two","three":"four"}}'
+            '--arguments' => '{"foo":"bar","bool":true,"null":null,"array":["baz","bam"],"table":{"one":"two","three":"four"}}',
         ]);
 
         $this->assertEquals(0, $tester->getStatusCode());
@@ -183,9 +183,10 @@ class PublishMessageCommandTest extends TestCase
         $command = new PublishMessageCommand();
         $command->setHelperSet(
             new HelperSet([
-                'container' => new ContainerHelper($container)
+                'container' => new ContainerHelper($container),
             ])
         );
+
         return new CommandTester($command);
     }
 }

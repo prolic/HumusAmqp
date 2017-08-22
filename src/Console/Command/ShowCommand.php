@@ -43,7 +43,7 @@ class ShowCommand extends AbstractCommand
         'producers',
         'json_rpc_clients',
         'json_rpc_servers',
-        'all'
+        'all',
     ];
 
     /**
@@ -67,7 +67,7 @@ class ShowCommand extends AbstractCommand
                     'd',
                     InputOption::VALUE_NONE,
                     'show details to given type'
-                )
+                ),
             ])
             ->setHelp('Show all AMQP ' . implode(', ', $this->knownTypes));
     }
@@ -81,6 +81,7 @@ class ShowCommand extends AbstractCommand
 
         if (! $type) {
             $output->writeln('No type given');
+
             return 1;
         }
 
@@ -88,6 +89,7 @@ class ShowCommand extends AbstractCommand
             $output->writeln(
                 'Invalid type given, use one of ' . implode(', ', $this->knownTypes)
             );
+
             return 1;
         }
 

@@ -24,12 +24,12 @@ namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use Humus\Amqp\Constants;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -207,7 +207,8 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
             $result[] = $envelope->getBody();
             $result[] = $queue->getName();
             $cnt--;
-            return ($cnt > 0);
+
+            return $cnt > 0;
         });
 
         $this->assertEquals(
@@ -344,8 +345,8 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
             'type' => 'message type',
             'headers' => [
                 'header1' => 'value1',
-                'header2' => 'value2'
-            ]
+                'header2' => 'value2',
+            ],
         ]);
 
         $msg = $this->queue->get(Constants::AMQP_AUTOACK);
@@ -367,7 +368,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $this->assertEquals(
             [
                 'header1' => 'value1',
-                'header2' => 'value2'
+                'header2' => 'value2',
             ],
             $msg->getHeaders()
         );

@@ -61,7 +61,7 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
     public function mandatoryOptions(): array
     {
         return [
-            'driver'
+            'driver',
         ];
     }
 }

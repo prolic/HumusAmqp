@@ -22,15 +22,15 @@ declare(strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Container\QueueFactory;
-use Humus\Amqp\Channel;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Prophecy\Argument;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class QueueFactoryTest
@@ -61,10 +61,10 @@ class QueueFactoryTest extends TestCase
                             'exchanges' => [
                                 'test_exchange' => [],
                             ],
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);
@@ -108,10 +108,10 @@ class QueueFactoryTest extends TestCase
                             'exchanges' => [
                                 'test_exchange' => [],
                             ],
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $queue = $this->prophesize(Queue::class);
@@ -158,10 +158,10 @@ class QueueFactoryTest extends TestCase
                             'exchanges' => [
                                 'test_exchange' => [],
                             ],
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $queueName = 'my_queue';
@@ -420,7 +420,7 @@ class QueueFactoryTest extends TestCase
                                         'bind_arguments' => [
                                             'foo' => 'bar',
                                         ],
-                                    ]
+                                    ],
                                 ],
                             ],
                             'auto_setup_fabric' => true,
@@ -494,7 +494,7 @@ class QueueFactoryTest extends TestCase
                                 'my_exchange' => [],
                             ],
                             'arguments' => [
-                                'x-dead-letter-exchange' => 'error_exchange'
+                                'x-dead-letter-exchange' => 'error_exchange',
                             ],
                             'auto_setup_fabric' => true,
                         ],

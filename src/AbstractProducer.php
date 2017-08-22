@@ -57,7 +57,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function startTransaction()
     {
@@ -65,7 +65,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function commitTransaction()
     {
@@ -73,7 +73,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rollbackTransaction()
     {
@@ -81,7 +81,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function confirmSelect()
     {
@@ -89,7 +89,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
     {
@@ -97,7 +97,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function waitForConfirm(float $timeout = 0.0)
     {
@@ -105,7 +105,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setReturnCallback(callable $returnCallback = null)
     {
@@ -113,7 +113,7 @@ abstract class AbstractProducer implements Producer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function waitForBasicReturn(float $timeout = 0.0)
     {

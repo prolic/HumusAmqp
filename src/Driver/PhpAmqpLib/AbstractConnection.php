@@ -53,7 +53,7 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isConnected(): bool
     {
@@ -61,7 +61,7 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function connect()
     {
@@ -69,7 +69,7 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function disconnect()
     {
@@ -77,7 +77,7 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function reconnect(): bool
     {
@@ -87,7 +87,7 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getOptions(): ConnectionOptions
     {

@@ -49,7 +49,7 @@ class PurgeQueueCommand extends AbstractCommand
                     'p',
                     InputOption::VALUE_REQUIRED,
                     'name of the queue to purge'
-                )
+                ),
             ])
             ->setHelp('Purges a queue');
     }
@@ -63,6 +63,7 @@ class PurgeQueueCommand extends AbstractCommand
 
         if (! $queueName) {
             $output->writeln('No queue name given');
+
             return 1;
         }
 
@@ -72,6 +73,7 @@ class PurgeQueueCommand extends AbstractCommand
             $queue = QueueFactory::$queueName($container);
         } catch (\Interop\Config\Exception\OptionNotFoundException $e) {
             $output->writeln('Queue with name ' . $queueName .' not found');
+
             return 1;
         }
 

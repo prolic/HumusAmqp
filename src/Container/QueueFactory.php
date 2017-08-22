@@ -204,7 +204,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             'exclusive' => false,
             'auto_delete' => false,
             // factory configs
-            'auto_setup_fabric' => false
+            'auto_setup_fabric' => false,
         ];
     }
 

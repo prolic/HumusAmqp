@@ -169,7 +169,6 @@ interface Envelope
      */
     public function getHeader(string $header);
 
-
     /**
      * Check whether a specific message header is set.
      *

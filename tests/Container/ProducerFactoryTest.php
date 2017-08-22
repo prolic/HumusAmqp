@@ -28,8 +28,8 @@ use Humus\Amqp\Container\ProducerFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\PlainProducer;
-use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class ProducerFactoryTest
@@ -109,7 +109,7 @@ class ProducerFactoryTest extends TestCase
                     'producer' => [
                         'my_producer' => [
                             'exchange' => 'my_exchange',
-                            'type' => JsonProducer::class
+                            'type' => JsonProducer::class,
                         ],
                     ],
                 ],
@@ -156,7 +156,7 @@ class ProducerFactoryTest extends TestCase
                     'producer' => [
                         'my_producer' => [
                             'exchange' => 'my_exchange',
-                            'type' => JsonProducer::class
+                            'type' => JsonProducer::class,
                         ],
                     ],
                 ],
@@ -218,7 +218,7 @@ class ProducerFactoryTest extends TestCase
                     'producer' => [
                         'my_producer' => [
                             'exchange' => 'my_exchange',
-                            'type' => 'invalid'
+                            'type' => 'invalid',
                         ],
                     ],
                 ],

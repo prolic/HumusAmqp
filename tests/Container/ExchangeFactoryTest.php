@@ -22,13 +22,13 @@ declare(strict_types=1);
 
 namespace HumusTest\Amqp\Container;
 
+use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Container\ExchangeFactory;
-use Humus\Amqp\Channel;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
-use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class ExchangeFactoryTest
@@ -56,10 +56,10 @@ class ExchangeFactoryTest extends TestCase
                         'my_exchange' => [
                             'connection' => 'my_connection',
                             'name' => 'test_exchange',
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
@@ -101,10 +101,10 @@ class ExchangeFactoryTest extends TestCase
                         'my_exchange' => [
                             'connection' => 'my_connection',
                             'name' => 'test_exchange',
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
@@ -140,10 +140,10 @@ class ExchangeFactoryTest extends TestCase
                         'my_exchange' => [
                             'connection' => 'my_connection',
                             'name' => 'test_exchange',
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
@@ -208,10 +208,10 @@ class ExchangeFactoryTest extends TestCase
                             'connection' => 'my_connection',
                             'name' => 'test_exchange',
                             'auto_setup_fabric' => true,
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
@@ -272,7 +272,7 @@ class ExchangeFactoryTest extends TestCase
                                     ],
                                     [
                                         'routing_keys' => [
-                                            'routing_key_two'
+                                            'routing_key_two',
                                         ],
                                         'arguments' => [
                                             'my second argument' => 'my second value',
@@ -282,9 +282,9 @@ class ExchangeFactoryTest extends TestCase
                                 'base_exchange_two' => [
                                     [
                                         'routing_keys' => [
-                                            'routing_key_three'
+                                            'routing_key_three',
                                         ],
-                                    ]
+                                    ],
                                 ],
                                 'base_exchange_three' => [],
                             ],
@@ -298,9 +298,9 @@ class ExchangeFactoryTest extends TestCase
                             'connection' => 'my_connection',
                             'name' => 'base_exchange_three',
                         ],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $baseExchangeOne = $this->prophesize(Exchange::class);
@@ -382,9 +382,9 @@ class ExchangeFactoryTest extends TestCase
                                 'alternate-exchange' => 'alternate-exchange',
                             ],
                         ],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $alternateExchange = $this->prophesize(Exchange::class);

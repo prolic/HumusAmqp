@@ -36,11 +36,11 @@ final class JsonProducer extends AbstractProducer
     protected $defaultAttributes = [
         'content_type' => 'application/json',
         'content_encoding' => 'UTF-8',
-        'delivery_mode' => 2 // persistent
+        'delivery_mode' => 2, // persistent
     ];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function publish(
         $message,

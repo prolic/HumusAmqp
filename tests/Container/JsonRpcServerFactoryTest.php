@@ -28,8 +28,8 @@ use Humus\Amqp\Container\JsonRpcServerFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
 use Humus\Amqp\Queue;
-use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 /**

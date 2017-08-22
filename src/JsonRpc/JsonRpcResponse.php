@@ -30,7 +30,7 @@ use Humus\Amqp\Exception;
  */
 final class JsonRpcResponse implements Response
 {
-    const JSONRPC_VERSION = "2.0";
+    const JSONRPC_VERSION = '2.0';
 
     /**
      * @var array|string|int|float|bool|null
@@ -142,6 +142,7 @@ final class JsonRpcResponse implements Response
             foreach ($payload as $subPayload) {
                 self::assertPayload($subPayload, $name);
             }
+
             return;
         }
 

@@ -28,8 +28,8 @@ use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SslConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
-use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class ConnectionFactoryTest
@@ -53,10 +53,10 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
@@ -84,10 +84,10 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
@@ -111,11 +111,11 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
-                            'type' => 'lazy'
-                        ]
-                    ]
-                ]
-            ]
+                            'type' => 'lazy',
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
@@ -139,11 +139,11 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
-                            'type' => 'socket'
-                        ]
-                    ]
-                ]
-            ]
+                            'type' => 'socket',
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
@@ -167,11 +167,11 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
-                            'type' => 'stream'
-                        ]
-                    ]
-                ]
-            ]
+                            'type' => 'stream',
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
@@ -203,10 +203,10 @@ class ConnectionFactoryTest extends TestCase
                             'cert' => __DIR__ . '/../../provision/test_certs/cert.pem',
                             'key' => __DIR__ . '/../../provision/test_certs/key.pem',
                             'verify' => false,
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
@@ -233,10 +233,10 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
@@ -261,11 +261,11 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
-                            'type' => 'invalid'
-                        ]
-                    ]
-                ]
-            ]
+                            'type' => 'invalid',
+                        ],
+                    ],
+                ],
+            ],
         ])->shouldBeCalled();
 
         $container->has(Driver::class)->willReturn(true)->shouldBeCalled();

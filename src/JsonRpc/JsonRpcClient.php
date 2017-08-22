@@ -107,7 +107,6 @@ final class JsonRpcClient implements Client
 
         $exchange->publish($message, $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
-
         if (null !== $request->id()) {
             $this->requestIds[] = $request->id();
         }
@@ -143,7 +142,7 @@ final class JsonRpcClient implements Client
             $time = microtime(true);
         } while (
             $responseCollection->count() < count($this->requestIds)
-            && (0 == $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
+            && (0 === $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
         );
 
         $this->requestIds = [];

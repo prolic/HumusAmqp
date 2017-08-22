@@ -24,8 +24,8 @@ namespace HumusTest\Amqp\Console\Command;
 
 use Humus\Amqp\Console\Command\ShowCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Psr\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -111,7 +111,7 @@ class ShowCommandTest extends TestCase
                                 'exchange' => 'demo',
                                 'qos' => [
                                     'prefetch_size' => 0,
-                                    'prefetch_count' => 10
+                                    'prefetch_count' => 10,
                                 ],
                             ],
                         ],
@@ -120,11 +120,11 @@ class ShowCommandTest extends TestCase
                                 'queue' => 'foo',
                                 'callback' => 'echo',
                                 'idle_timeout' => 10,
-                                'delivery_callback' => 'my_callback'
+                                'delivery_callback' => 'my_callback',
                             ],
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ]
         )->shouldBeCalled();
 
@@ -150,9 +150,10 @@ class ShowCommandTest extends TestCase
         $command = new ShowCommand();
         $command->setHelperSet(
             new HelperSet([
-                'container' => new ContainerHelper($container)
+                'container' => new ContainerHelper($container),
             ])
         );
+
         return new CommandTester($command);
     }
 

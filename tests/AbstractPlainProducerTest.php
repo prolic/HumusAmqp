@@ -23,11 +23,11 @@ declare(strict_types=1);
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\Channel;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exchange;
-use Humus\Amqp\Queue;
-use Humus\Amqp\Constants;
 use Humus\Amqp\PlainProducer;
+use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit_Framework_TestCase as TestCase;

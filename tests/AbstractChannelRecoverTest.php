@@ -23,11 +23,11 @@ declare(strict_types=1);
 namespace HumusTest\Amqp;
 
 use Humus\Amqp\ConnectionOptions;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use Humus\Amqp\Constants;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -93,7 +93,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
                 . ($envelope->isRedelivery() ? '(redelivered)' : '(original)');
             $queue->ack($envelope->getDeliveryTag());
 
-            return (--$consume > 0);
+            return --$consume > 0;
         });
 
         $queue1->cancel(); // we have to do that to prevent redelivering to the same consumer
@@ -109,11 +109,11 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
 
         try {
             $queue2->consume(function (Envelope $envelope, Queue $queue) use (&$consume, &$result) {
-                $result[] =  'consumed ' . $envelope->getBody() . ' '
+                $result[] = 'consumed ' . $envelope->getBody() . ' '
                     . ($envelope->isRedelivery() ? '(redelivered)' : '(original)');
                 $queue->ack($envelope->getDeliveryTag());
 
-                return (--$consume > 0);
+                return --$consume > 0;
             });
         } catch (\Exception $e) {
             $result[] = get_class($e);
@@ -134,7 +134,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
                 $result[] = 'consumed ' . $e->getBody() . ' ' . ($e->isRedelivery() ? '(redelivered)' : '(original)');
                 $q->ack($e->getDeliveryTag());
 
-                return (--$consume > 0);
+                return --$consume > 0;
             });
         } catch (\Exception $e) {
             $result[] = get_class($e);

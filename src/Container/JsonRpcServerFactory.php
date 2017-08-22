@@ -69,6 +69,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
                 sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
+
         return (new static($name))->__invoke($arguments[0]);
     }
 
@@ -140,7 +141,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
         return [
             'queue',
             'delivery_callback',
-            'idle_timeout'
+            'idle_timeout',
         ];
     }
 }
