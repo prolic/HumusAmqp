@@ -146,8 +146,11 @@ abstract class AbstractConsumer implements Consumer
                 $processFlag = $this->handleDelivery($envelope, $this->queue);
             } catch (\Throwable $e) {
                 $this->logger->error('Exception during handleDelivery: ' . $e->getMessage());
-                $this->handleException($e);
-                $processFlag = DeliveryResult::MSG_REJECT_REQUEUE();
+                if ($this->handleException($e)) {
+                    $processFlag = DeliveryResult::MSG_REJECT_REQUEUE();
+                } else {
+                    $processFlag = DeliveryResult::MSG_REJECT();
+                }
             }
 
             $this->handleProcessFlag($envelope, $processFlag);
@@ -222,18 +225,33 @@ abstract class AbstractConsumer implements Consumer
     /**
      * Handle exception
      *
+     * Returns true when a message should be requeued; otherwise false.
+     *
      * @param \Throwable $e
-     * @return void
+     * @return bool
      */
     protected function handleException(\Throwable $e)
     {
         if (null === $this->errorCallback) {
-            return;
+            return true;
         }
 
         $callback = $this->errorCallback;
 
-        $callback($e, $this);
+        if (null === $requeue = $callback($e, $this)) {
+            return true;
+        }
+
+        if (! is_bool($requeue)) {
+            $this->logger->error(sprintf(
+                'The error callback must returns boolean or null, given "%s".',
+                is_object($requeue) ? get_class($requeue) : gettype($requeue)
+            ));
+
+            return true;
+        }
+
+        return $requeue;
     }
 
     /**
@@ -256,8 +274,11 @@ abstract class AbstractConsumer implements Consumer
             $result = $callback($this->queue);
         } catch (\Throwable $e) {
             $this->logger->error('Exception during flushDeferred: ' . $e->getMessage());
-            $result = FlushDeferredResult::MSG_REJECT();
-            $this->handleException($e);
+            if ($this->handleException($e)) {
+                $result = FlushDeferredResult::MSG_REJECT_REQUEUE();
+            } else {
+                $result = FlushDeferredResult::MSG_REJECT();
+            }
         }
 
         return $result;

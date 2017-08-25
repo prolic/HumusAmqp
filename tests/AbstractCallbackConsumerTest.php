@@ -740,6 +740,192 @@ abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase 
     /**
      * @test
      */
+    public function it_handles_delivery_exception_when_error_callback_returns_true()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $exchange = $channel->newExchange();
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $channel->newQueue();
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 4; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+        $logger = new ArrayLogger();
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            $logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                throw new \Exception('foo');
+            },
+            null,
+            function (\Exception $e) use (&$result) {
+                $result[] = $e->getMessage();
+
+                return true;
+            }
+        );
+
+        $consumer->consume(3);
+
+        $this->assertEquals(
+            [
+                'foo',
+                'foo',
+                'foo',
+            ],
+            $result
+        );
+
+        $loggerResult = $logger->loggerResult();
+
+        $this->assertCount(9, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[1]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[1]['message']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Rejected and requeued message', $loggerResult[2]['message']);
+        $this->assertEquals('message #1', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[3]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
+        $this->assertEquals('message #2', $loggerResult[3]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[4]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[4]['message']);
+
+        $this->assertEquals('debug', $loggerResult[5]['level']);
+        $this->assertEquals('Rejected and requeued message', $loggerResult[5]['message']);
+        $this->assertEquals('message #2', $loggerResult[5]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('message #3', $loggerResult[6]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[7]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[7]['message']);
+
+        $this->assertEquals('debug', $loggerResult[8]['level']);
+        $this->assertEquals('Rejected and requeued message', $loggerResult[8]['message']);
+        $this->assertEquals('message #3', $loggerResult[8]['context']['body']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_delivery_exception_when_error_callback_returns_false()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+
+        $exchange = $channel->newExchange();
+        $exchange->setName('test-exchange');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+
+        $this->addToCleanUp($exchange);
+
+        $queue = $channel->newQueue();
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange');
+
+        $this->addToCleanUp($queue);
+
+        for ($i = 1; $i < 4; $i++) {
+            $exchange->publish('message #' . $i);
+        }
+
+        $result = [];
+        $logger = new ArrayLogger();
+
+        $consumer = new CallbackConsumer(
+            $queue,
+            $logger,
+            3,
+            function (Envelope $envelope, Queue $queue) use (&$result) {
+                throw new \Exception('foo');
+            },
+            null,
+            function (\Exception $e) use (&$result) {
+                $result[] = $e->getMessage();
+
+                return false;
+            }
+        );
+
+        $consumer->consume(3);
+
+        $this->assertEquals(
+            [
+                'foo',
+                'foo',
+                'foo',
+            ],
+            $result
+        );
+
+        $loggerResult = $logger->loggerResult();
+
+        $this->assertCount(9, $loggerResult);
+
+        $this->assertEquals('debug', $loggerResult[0]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[0]['message']);
+        $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[1]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[1]['message']);
+
+        $this->assertEquals('debug', $loggerResult[2]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[2]['message']);
+        $this->assertEquals('message #1', $loggerResult[2]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[3]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
+        $this->assertEquals('message #2', $loggerResult[3]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[4]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[4]['message']);
+
+        $this->assertEquals('debug', $loggerResult[5]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[5]['message']);
+        $this->assertEquals('message #2', $loggerResult[5]['context']['body']);
+
+        $this->assertEquals('debug', $loggerResult[6]['level']);
+        $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
+        $this->assertEquals('message #3', $loggerResult[6]['context']['body']);
+
+        $this->assertEquals('error', $loggerResult[7]['level']);
+        $this->assertEquals('Exception during handleDelivery: foo', $loggerResult[7]['message']);
+
+        $this->assertEquals('debug', $loggerResult[8]['level']);
+        $this->assertEquals('Rejected message', $loggerResult[8]['message']);
+        $this->assertEquals('message #3', $loggerResult[8]['context']['body']);
+    }
+
+    /**
+     * @test
+     */
     public function it_handles_flush_deferred_exception()
     {
         $connection = $this->createConnection();
