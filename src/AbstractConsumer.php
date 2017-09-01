@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace Humus\Amqp;
 
 use Assert\Assertion;
+use Humus\Amqp\Exception\RuntimeException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -243,12 +244,10 @@ abstract class AbstractConsumer implements Consumer
         }
 
         if (! is_bool($requeue)) {
-            $this->logger->error(sprintf(
+            throw new RuntimeException(sprintf(
                 'The error callback must returns boolean or null, given "%s".',
                 is_object($requeue) ? get_class($requeue) : gettype($requeue)
             ));
-
-            return true;
         }
 
         return $requeue;
