@@ -46,6 +46,8 @@ before_script:
 
 script:
   - php -dzend_extension=xdebug.so ./vendor/bin/phpunit --exclude-group=ssl --coverage-text --coverage-clover ./build/logs/clover.xml
+  - rm -rf rabbitmq-c
+  - rm -rf php-amqp
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
   - ./vendor/bin/docheader check src/ tests/
 
