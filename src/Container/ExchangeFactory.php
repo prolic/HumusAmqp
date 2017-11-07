@@ -139,14 +139,14 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             if (isset($options['arguments']['alternate-exchange'])) {
                 // auto setup fabric alternate exchange
                 $exchangeName = $options['arguments']['alternate-exchange'];
-                ExchangeFactory::$exchangeName($container, $this->channel, true);
+                ExchangeFactory::$exchangeName($container, $this->channel);
             }
 
             $exchange->declareExchange();
 
             // rabbitmq extension: exchange to exchange bindings
             foreach ($options['exchange_bindings'] as $exchangeName => $bindOptions) {
-                ExchangeFactory::$exchangeName($container, $this->channel, true);
+                ExchangeFactory::$exchangeName($container, $this->channel);
                 if (empty($bindOptions)) {
                     $this->bindExchange($exchange, $exchangeName, [], []);
                 } else {

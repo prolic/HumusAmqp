@@ -254,7 +254,7 @@ class ExchangeFactoryTest extends TestCase
                         'base_exchange_one' => [
                             'connection' => 'my_connection',
                             'name' => 'base_exchange_one',
-                            'auto_setup_fabric' => false,
+                            'auto_setup_fabric' => true,
                         ],
                         'my_exchange' => [
                             'connection' => 'my_connection',
@@ -297,6 +297,7 @@ class ExchangeFactoryTest extends TestCase
                         'base_exchange_three' => [
                             'connection' => 'my_connection',
                             'name' => 'base_exchange_three',
+                            'auto_setup_fabric' => true,
                         ],
                     ],
                 ],
@@ -372,7 +373,7 @@ class ExchangeFactoryTest extends TestCase
                         'alternate-exchange' => [
                             'connection' => 'my_connection',
                             'name' => 'alternate-exchange',
-                            'auto_setup_fabric' => false,
+                            'auto_setup_fabric' => true,
                         ],
                         'my_exchange' => [
                             'connection' => 'my_connection',

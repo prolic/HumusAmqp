@@ -144,7 +144,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             if (isset($options['arguments']['x-dead-letter-exchange'])) {
                 // auto setup fabric dead letter exchange
                 $exchangeName = $options['arguments']['x-dead-letter-exchange'];
-                ExchangeFactory::$exchangeName($container, $this->channel, true);
+                ExchangeFactory::$exchangeName($container, $this->channel);
             }
 
             $exchanges = $options['exchanges'];
@@ -160,7 +160,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             /** @var Exchange[] $exchangeObjects */
             $exchangeObjects = [];
             foreach ($exchanges as $exchange => $exchangeOptions) {
-                $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, true);
+                $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel);
             }
 
             $queue->declareQueue();
