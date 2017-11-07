@@ -58,7 +58,8 @@ A sample configuration might look like this, more details and explanation will b
                 ],
                 'json_rpc_server' => [
                     'demo-rpc-server' => [
-                        'callback' => 'timestwo',
+                        'delivery_callback' => 'timestwo',
+                        'idle_timeout' => 10,
                         'queue' => 'demo-rpc-server',
                         'auto_setup_fabric' => true,
                     ],
