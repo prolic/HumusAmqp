@@ -172,7 +172,6 @@ abstract class AbstractConsumer implements Consumer
 
             if (! $this->keepAlive || (0 !== $this->target && $this->countMessagesConsumed >= $this->target)) {
                 $this->ackOrNackBlock();
-                $this->queue->cancel($this->consumerTag);
                 $this->shutdown();
 
                 return false;
@@ -221,6 +220,7 @@ abstract class AbstractConsumer implements Consumer
     public function shutdown()
     {
         $this->keepAlive = false;
+        $this->queue->cancel($this->consumerTag);
     }
 
     /**
