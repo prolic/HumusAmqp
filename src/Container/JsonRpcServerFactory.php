@@ -107,8 +107,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
             $logger,
             $options['idle_timeout'],
             $options['consumer_tag'],
-            $options['app_id'],
-            $options['return_trace']
+            $options['app_id']
         );
     }
 
@@ -128,7 +127,6 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
         return [
             'consumer_tag' => '',
             'app_id' => '',
-            'return_trace' => false,
             'logger' => null,
         ];
     }
