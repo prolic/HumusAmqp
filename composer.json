@@ -14,7 +14,7 @@
     "require": {
         "php": "~7.0",
         "beberlei/assert": "^2.4",
-        "marc-mabe/php-enum": "^2.2",
+        "marc-mabe/php-enum": "^2.2 || ^3.0",
         "psr/log": "^1.0"
     },
     "extra": {
