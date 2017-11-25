@@ -62,11 +62,17 @@ final class JsonRpcError implements Error
     private $message;
 
     /**
+     * @var null|string
+     */
+    private $traceAsString;
+
+    /**
      * JsonRpcError constructor.
      * @param int $code
      * @param string|null $message
+     * @param string|null $traceAsString
      */
-    public function __construct(int $code, string $message = null)
+    public function __construct(int $code, string $message = null, string $traceAsString = null)
     {
         if (! defined(JsonRpcError::class . '::ERROR_CODE_' . -$code)) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -81,6 +87,7 @@ final class JsonRpcError implements Error
 
         $this->code = $code;
         $this->message = $message;
+        $this->traceAsString = $traceAsString;
     }
 
     /**
@@ -97,5 +104,13 @@ final class JsonRpcError implements Error
     public function message()
     {
         return $this->message;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function traceAsString()
+    {
+        return $this->traceAsString;
     }
 }

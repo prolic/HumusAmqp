@@ -733,4 +733,67 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $this->assertSame(JsonRpcError::ERROR_CODE_32603, $response1->error()->code());
         $this->assertSame('Internal error', $response1->error()->message());
     }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_returns_trace_when_enabled()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $channel->newExchange();
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $channel2->newExchange();
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $channel->newQueue();
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $channel2->newQueue();
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
+
+        $request1 = new JsonRpcRequest('rpc-server', 'first', 1, 'request-1');
+
+        $client->addRequest($request1);
+
+        $callback = function (Request $request) {
+            throw new \Exception('foo');
+        };
+
+        $logger = new NullLogger();
+        $server = new JsonRpcServer($serverQueue, $callback, $logger, 1.0, '', '', true);
+
+        $server->consume(1);
+
+        $responses = $client->getResponseCollection(2);
+
+        $this->assertCount(1, $responses);
+
+        $response1 = $responses->getResponse('request-1');
+        $this->assertTrue($response1->isError());
+        $this->assertTrue(is_string($response1->error()->traceAsString()));
+        $this->assertNotEmpty($response1->error()->traceAsString());
+    }
 }
