@@ -171,9 +171,9 @@ final class JsonRpcServer extends AbstractConsumer
                 $envelope->getCorrelationId(),
                 new JsonRpcError(
                     JsonRpcError::ERROR_CODE_32603,
-                    null,
-                    $this->returnTrace ? $e->getTraceAsString() : null
-                )
+                    null
+                ),
+                $this->returnTrace ? $e->getTraceAsString() : null
             );
         }
 
@@ -206,7 +206,6 @@ final class JsonRpcServer extends AbstractConsumer
                 'error' => [
                     'code' => $response->error()->code(),
                     'message' => $response->error()->message(),
-                    'trace_as_string' => $this->returnTrace ? $response->error()->traceAsString() : null,
                 ],
                 'data' => $response->data(),
             ];
@@ -223,7 +222,6 @@ final class JsonRpcServer extends AbstractConsumer
                 'error' => [
                     'code' => JsonRpcError::ERROR_CODE_32603,
                     'message' => 'Internal error',
-                    'trace_as_string' => null,
                 ],
             ]);
         }

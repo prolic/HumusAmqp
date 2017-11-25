@@ -37,9 +37,4 @@ interface Error
      * @return string
      */
     public function message();
-
-    /**
-     * @return string|null
-     */
-    public function traceAsString();
 }
