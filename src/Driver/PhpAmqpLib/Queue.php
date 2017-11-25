@@ -304,7 +304,7 @@ final class Queue implements QueueInterface
         $this->channel->getResource()->basic_cancel(
             $consumerTag,
             (bool) ($this->flags & Constants::AMQP_NOWAIT),
-            false
+            true
         );
     }
 
