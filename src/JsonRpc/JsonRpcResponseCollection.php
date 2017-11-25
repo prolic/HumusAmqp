@@ -33,7 +33,7 @@ final class JsonRpcResponseCollection implements ResponseCollection
     /**
      * @var Response[]
      */
-    private $responses;
+    private $responses = [];
 
     /**
      * @param Response $response
