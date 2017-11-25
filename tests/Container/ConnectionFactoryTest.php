@@ -28,7 +28,7 @@ use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SslConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
 /**

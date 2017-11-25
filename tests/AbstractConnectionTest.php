@@ -25,7 +25,7 @@ namespace HumusTest\Amqp;
 use Humus\Amqp\Channel;
 use Humus\Amqp\ConnectionOptions;
 use HumusTest\Amqp\Helper\CanCreateConnection;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class AbstractConnectionTest

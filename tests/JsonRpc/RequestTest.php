@@ -24,7 +24,7 @@ namespace HumusTest\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\JsonRpc\JsonRpcRequest;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class RequestTest

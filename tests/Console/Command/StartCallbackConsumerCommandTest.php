@@ -25,7 +25,7 @@ namespace HumusTest\Amqp\Console\Command;
 use Humus\Amqp\Console\Command\StartCallbackConsumerCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Consumer;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;

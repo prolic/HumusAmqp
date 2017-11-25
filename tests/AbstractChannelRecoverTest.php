@@ -29,7 +29,7 @@ use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class AbstractChannelRecoverTest
