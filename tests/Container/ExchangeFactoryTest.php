@@ -27,7 +27,7 @@ use Humus\Amqp\Connection;
 use Humus\Amqp\Container\ExchangeFactory;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
 /**

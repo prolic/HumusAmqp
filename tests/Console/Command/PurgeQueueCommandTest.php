@@ -27,7 +27,7 @@ use Humus\Amqp\Connection;
 use Humus\Amqp\Console\Command\PurgeQueueCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Queue;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;

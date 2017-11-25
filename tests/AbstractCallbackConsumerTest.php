@@ -32,13 +32,14 @@ use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use HumusTest\Amqp\TestAsset\ArrayLogger;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 /**
  * Class AbstractCallbackConsumer
  * @package HumusTest\Amqp
  */
-abstract class AbstractCallbackConsumerTest extends \PHPUnit_Framework_TestCase implements CanCreateConnection
+abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 

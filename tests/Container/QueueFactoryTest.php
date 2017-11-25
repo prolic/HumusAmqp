@@ -28,7 +28,7 @@ use Humus\Amqp\Container\QueueFactory;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Container\ContainerInterface;
 

@@ -27,12 +27,12 @@
         "psr/container": "^1.0",
         "sandrokeil/interop-config": "^1.0",
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
-        "phpunit/phpunit": "^5.6",
+        "phpunit/phpunit": "^6.4",
         "phpspec/prophecy": "^1.6",
         "satooshi/php-coveralls": "^1.0",
         "php-amqplib/php-amqplib": "^2.7-rc1",
         "malukenho/docheader": "^0.1.4",
-        "friendsofphp/php-cs-fixer": "2.0.0"
+        "friendsofphp/php-cs-fixer": "2.8.1"
     },
     "conflict": {
         "sandrokeil/interop-config": "<1.0",

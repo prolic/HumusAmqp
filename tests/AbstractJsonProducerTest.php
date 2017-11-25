@@ -31,7 +31,7 @@ use Humus\Amqp\JsonProducer;
 use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
 /**

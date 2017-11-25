@@ -28,7 +28,7 @@ use Humus\Amqp\Container\ProducerFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\PlainProducer;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
 /**

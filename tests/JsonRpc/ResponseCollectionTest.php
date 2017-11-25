@@ -24,7 +24,7 @@ namespace HumusTest\Amqp\JsonRpc;
 
 use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use Humus\Amqp\JsonRpc\JsonRpcResponseCollection;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ResponseCollectionTest

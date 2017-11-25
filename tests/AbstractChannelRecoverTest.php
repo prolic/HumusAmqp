@@ -29,7 +29,7 @@ use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class AbstractChannelRecoverTest
@@ -85,8 +85,9 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
             $exchange1->publish('test message #' . $messagesCount, 'test');
         }
 
-        $consume = 2;   // NOTE: by default prefetch-count=3, so in consumer below we will ignore prefetched messages 3-5,
-                        //       and they will not seen by other consumers until we redeliver it.
+        $consume = 2;
+        // NOTE: by default prefetch-count=3, so in consumer below we will ignore prefetched messages 3-5,
+        //       and they will not seen by other consumers until we redeliver it.
 
         $queue1->consume(function (Envelope $envelope, Queue $queue) use (&$consume, &$result) {
             $result[] = 'consumed ' . $envelope->getBody() . ' '
