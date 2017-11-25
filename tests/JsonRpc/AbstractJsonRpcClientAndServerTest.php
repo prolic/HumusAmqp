@@ -794,5 +794,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $this->assertTrue($response1->isError());
         $this->assertInternalType('string', $response1->data());
         $this->assertNotEmpty($response1->data());
+        $this->assertInternalType('string', $response1->error()->data());
+        $this->assertNotEmpty($response1->error()->data());
     }
 }

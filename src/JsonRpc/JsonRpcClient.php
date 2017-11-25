@@ -238,7 +238,7 @@ final class JsonRpcClient implements Client
         } else {
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
-                new JsonRpcError($payload['error']['code'], $payload['error']['message']),
+                new JsonRpcError($payload['error']['code'], $payload['error']['message'], $payload['data'] ?? null),
                 $payload['data'] ?? null
             );
         }
