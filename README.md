@@ -18,7 +18,7 @@ The JSON-RPC part implements [JSON-RPC 2.0 Specification](http://www.jsonrpc.org
 Current supported drivers are: [php-amqp](https://github.com/pdezwart/php-amqp) and [PhpAmqpLib](https://github.com/php-amqplib/php-amqplib).
 
 php-amqp needs at least to be v1.9.1
-php-amqplib needs at least to be v2.7.0-rc1
+php-amqplib needs at least to be v2.7.0
 
 This library ships with `container-interop` factories that help you setting up everything.
 
@@ -71,7 +71,7 @@ You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "
 
 ### AMQP-Extension
 
-1) We recommend using php-amqp >=v1.7.1 or compiling it from master, if you encounter any problems with the amqp extension, check
+1) We recommend using php-amqp >=v1.9.1 or compiling it from master, if you encounter any problems with the amqp extension, check
 their issue tracker, first. 
 
 The ext-amqp driver is the most performant. Benchmarks are added soon. 
