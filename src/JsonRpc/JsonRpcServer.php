@@ -48,6 +48,11 @@ final class JsonRpcServer extends AbstractConsumer
     private $appId;
 
     /**
+     * @var bool
+     */
+    private $returnTrace;
+
+    /**
      * Constructor
      *
      * @param Queue $queue
@@ -56,6 +61,7 @@ final class JsonRpcServer extends AbstractConsumer
      * @param float $idleTimeout in seconds
      * @param string $consumerTag
      * @param string $appId
+     * @praram bool $returnTrace
      */
     public function __construct(
         Queue $queue,
@@ -63,7 +69,8 @@ final class JsonRpcServer extends AbstractConsumer
         LoggerInterface $logger,
         float $idleTimeout,
         string $consumerTag = '',
-        string $appId = ''
+        string $appId = '',
+        bool $returnTrace = false
     ) {
         if ('' === $consumerTag) {
             $consumerTag = bin2hex(random_bytes(24));
@@ -87,6 +94,7 @@ final class JsonRpcServer extends AbstractConsumer
         $this->idleTimeout = $idleTimeout;
         $this->consumerTag = $consumerTag;
         $this->appId = $appId;
+        $this->returnTrace = $returnTrace;
     }
 
     /**
@@ -125,20 +133,52 @@ final class JsonRpcServer extends AbstractConsumer
             }
         } catch (Exception\InvalidJsonRpcVersion $e) {
             $this->logger->error('Invalid json rpc version', $this->extractMessageInformation($envelope));
-            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32600));
+            $response = JsonRpcResponse::withError(
+                $envelope->getCorrelationId(),
+                new JsonRpcError(
+                    JsonRpcError::ERROR_CODE_32600,
+                    null,
+                    $this->returnTrace ? $e->getTraceAsString() : null
+                ),
+                $this->returnTrace ? $e->getTraceAsString() : null
+            );
         } catch (Exception\InvalidJsonRpcRequest $e) {
             $this->logger->error('Invalid json rpc request', $this->extractMessageInformation($envelope));
-            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32600));
+            $response = JsonRpcResponse::withError(
+                $envelope->getCorrelationId(),
+                new JsonRpcError(
+                    JsonRpcError::ERROR_CODE_32600,
+                    null,
+                    $this->returnTrace ? $e->getTraceAsString() : null
+                ),
+                $this->returnTrace ? $e->getTraceAsString() : null
+            );
         } catch (Exception\JsonParseError $e) {
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
-            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32700));
+            $response = JsonRpcResponse::withError(
+                $envelope->getCorrelationId(),
+                new JsonRpcError(
+                    JsonRpcError::ERROR_CODE_32700,
+                    null,
+                    $this->returnTrace ? $e->getTraceAsString() : null
+                ),
+                $this->returnTrace ? $e->getTraceAsString() : null
+            );
         } catch (\Throwable $e) {
             $extra = $this->extractMessageInformation($envelope);
             $extra['exception_class'] = get_class($e);
             $extra['exception_message'] = $e->getMessage();
             $extra['exception_trace'] = $e->getTraceAsString();
             $this->logger->error('Exception occurred', $extra);
-            $response = JsonRpcResponse::withError($envelope->getCorrelationId(), new JsonRpcError(JsonRpcError::ERROR_CODE_32603));
+            $response = JsonRpcResponse::withError(
+                $envelope->getCorrelationId(),
+                new JsonRpcError(
+                    JsonRpcError::ERROR_CODE_32603,
+                    null,
+                    $this->returnTrace ? $e->getTraceAsString() : null
+                ),
+                $this->returnTrace ? $e->getTraceAsString() : null
+            );
         }
 
         $this->sendReply($response, $envelope);

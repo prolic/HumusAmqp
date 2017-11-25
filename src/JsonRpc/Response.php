@@ -50,6 +50,7 @@ interface Response
 
     /**
      * @return array|bool|float|int|null|string
+     * @deprecated will be moved to Error in 2.0
      */
     public function data();
 }

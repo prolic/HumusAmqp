@@ -62,11 +62,17 @@ final class JsonRpcError implements Error
     private $message;
 
     /**
+     * @var array|bool|float|int|null|string
+     */
+    private $data;
+
+    /**
      * JsonRpcError constructor.
      * @param int $code
      * @param string|null $message
+     * @param string|null $traceAsString
      */
-    public function __construct(int $code, string $message = null)
+    public function __construct(int $code, string $message = null, $data = null)
     {
         if (! defined(JsonRpcError::class . '::ERROR_CODE_' . -$code)) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -81,6 +87,7 @@ final class JsonRpcError implements Error
 
         $this->code = $code;
         $this->message = $message;
+        $this->data = $data;
     }
 
     /**
@@ -97,5 +104,16 @@ final class JsonRpcError implements Error
     public function message()
     {
         return $this->message;
+    }
+
+    /**
+     * @return array|bool|float|int|null|string
+     *
+     * see: https://github.com/prolic/HumusAmqp/issues/64
+     * will be added to interface with 2.0
+     */
+    public function data()
+    {
+        return $this->data;
     }
 }
