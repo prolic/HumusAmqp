@@ -223,6 +223,7 @@ final class JsonRpcServer extends AbstractConsumer
                 'error' => [
                     'code' => JsonRpcError::ERROR_CODE_32603,
                     'message' => 'Internal error',
+                    'trace_as_string' => null,
                 ],
             ]);
         }

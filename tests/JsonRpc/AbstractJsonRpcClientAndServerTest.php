@@ -736,7 +736,6 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
     /**
      * @test
-     * @group by
      */
     public function it_returns_trace_when_enabled()
     {
