@@ -71,6 +71,7 @@ class QueueFactoryTest extends TestCase
         $queue->setName('test_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
@@ -118,6 +119,7 @@ class QueueFactoryTest extends TestCase
         $queue->setName('test_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
@@ -143,6 +145,7 @@ class QueueFactoryTest extends TestCase
         $queue->setName('test_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
         $queue = $queue->reveal();
 
         $channel = $this->prophesize(Channel::class);

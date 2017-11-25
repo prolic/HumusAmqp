@@ -123,7 +123,7 @@ final class SslConnectionTest extends AbstractConnectionTest
     }
 
     /**
-     * @group
+     * @test
      */
     public function it_throws_if_cacert_not_set_but_verify_is_set_to_true()
     {

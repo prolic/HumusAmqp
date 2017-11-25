@@ -91,6 +91,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
         $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
@@ -164,6 +165,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
         $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);

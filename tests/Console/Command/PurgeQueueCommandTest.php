@@ -135,6 +135,7 @@ class PurgeQueueCommandTest extends TestCase
         $queue->setName('foo')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
         $queue->purge()->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
