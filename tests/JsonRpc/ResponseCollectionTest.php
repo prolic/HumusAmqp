@@ -58,4 +58,20 @@ class ResponseCollectionTest extends TestCase
 
         $this->assertNull($responseCollection->getResponse('unknown id'));
     }
+
+    /**
+     * @test
+     */
+    public function it_iterates_and_accesses_correctly_without_results()
+    {
+        $responseCollection = new JsonRpcResponseCollection();
+
+        $this->assertCount(0, $responseCollection);
+        $this->assertFalse($responseCollection->hasResponse('unknown id'));
+        $this->assertNull($responseCollection->getResponse('unknown id'));
+
+        foreach ($responseCollection as $response) {
+            $this->assertFalse(true);
+        }
+    }
 }
