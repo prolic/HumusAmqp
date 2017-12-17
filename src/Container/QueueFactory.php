@@ -163,6 +163,8 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, true);
             }
 
+            $queue->declareQueue();
+
             foreach ($exchanges as $exchange => $exchangeOptions) {
                 $exchangeObject = $exchangeObjects[$exchange];
                 $exchangeName = $exchangeObject->getName();
@@ -176,9 +178,9 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                     }
                 }
             }
+        } else {
+            $queue->declareQueue();
         }
-
-        $queue->declareQueue();
 
         return $queue;
     }
