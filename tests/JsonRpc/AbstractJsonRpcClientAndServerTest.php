@@ -136,8 +136,9 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
     /**
      * @test
+     * @group by
      */
-    public function it_sends_notifications()
+    public function it_sends_shutdown_notifications()
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -171,10 +172,71 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $this->addToCleanUp($clientQueue);
         $this->addToCleanUp($serverQueue);
 
-        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange]);
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange], 100, 'Humus\Amqp');
 
-        $request1 = new JsonRpcRequest('rpc-server', 'time2', 1);
-        $request2 = new JsonRpcRequest('rpc-server', 'time2', 2);
+        $request1 = new JsonRpcRequest('rpc-server', 'shutdown', 1);
+        $request2 = new JsonRpcRequest('rpc-server', 'shutdown', 2);
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $callback = function (Request $request) {
+        };
+
+        $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
+
+        $server->consume(2);
+
+        $responses = $client->getResponseCollection(0.2);
+
+        // we should have only one message, because we shutdown after first one
+        $this->assertCount(1, $responses);
+        $response = $responses->getIterator()->current();
+        $this->assertNull($response->id());
+        $this->assertSame('OK', $response->result());
+    }
+
+    /**
+     * @test
+     */
+    public function it_responds_to_invalid_notifications()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $channel->newExchange();
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $channel2->newExchange();
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $channel->newQueue();
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $channel2->newQueue();
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange], 100, 'Humus\Amqp');
+
+        $request1 = new JsonRpcRequest('rpc-server', 'what', 1);
+        $request2 = new JsonRpcRequest('rpc-server', 'up', 2);
 
         $client->addRequest($request1);
         $client->addRequest($request2);
@@ -188,7 +250,74 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $responses = $client->getResponseCollection();
 
-        $this->assertCount(0, $responses);
+        // we should have only one message, because we shutdown after first one
+        $this->assertCount(2, $responses);
+
+        foreach ($responses as $response) {
+            $this->assertTrue($response->isError());
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function it_responds_to_request_without_id_with_error()
+    {
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $channel2 = $connection->newChannel();
+
+        $clientExchange = $channel->newExchange();
+        $clientExchange->setType('direct');
+        $clientExchange->setName('rpc-client');
+        $clientExchange->delete();
+        $clientExchange->declareExchange();
+
+        $serverExchange = $channel2->newExchange();
+        $serverExchange->setType('direct');
+        $serverExchange->setName('rpc-server');
+        $serverExchange->delete();
+        $serverExchange->declareExchange();
+
+        $clientQueue = $channel->newQueue();
+        $clientQueue->setFlags(Constants::AMQP_AUTODELETE | Constants::AMQP_EXCLUSIVE);
+        $clientQueue->declareQueue();
+        $clientQueue->bind($clientExchange->getName());
+
+        $serverQueue = $channel2->newQueue();
+        $serverQueue->setName('rpc-server-queue');
+        $serverQueue->delete();
+        $serverQueue->declareQueue();
+        $serverQueue->bind($serverExchange->getName());
+
+        $this->addToCleanUp($clientExchange);
+        $this->addToCleanUp($serverExchange);
+        $this->addToCleanUp($clientQueue);
+        $this->addToCleanUp($serverQueue);
+
+        $client = new JsonRpcClient($clientQueue, ['rpc-server' => $serverExchange], 100);
+
+        $request1 = new JsonRpcRequest('rpc-server', 'unknown', 1);
+        $request2 = new JsonRpcRequest('rpc-server', 'stuff', 2);
+
+        $client->addRequest($request1);
+        $client->addRequest($request2);
+
+        $callback = function (Request $request) {
+        };
+
+        $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
+
+        $server->consume(2);
+
+        $responses = $client->getResponseCollection();
+
+        // we should have only one message, because we shutdown after first one
+        $this->assertCount(2, $responses);
+
+        foreach ($responses as $response) {
+            $this->assertTrue($response->isError());
+        }
     }
 
     /**
@@ -555,6 +684,10 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'request-8',
             'request-9',
         ]);
+
+        $reflectionProperty2 = new \ReflectionProperty(get_class($client), 'countRequests');
+        $reflectionProperty2->setAccessible(true);
+        $reflectionProperty2->setValue($client, 9);
 
         $callback = function (Request $request) {
             if ('time2' === $request->method()) {

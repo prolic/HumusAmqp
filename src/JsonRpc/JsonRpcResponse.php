@@ -53,11 +53,11 @@ final class JsonRpcResponse implements Response
     private $data;
 
     /**
-     * @param string $id
+     * @param string|null $id
      * @param array|string|int|float|bool|null $result
      * @return Response
      */
-    public static function withResult(string $id, $result)
+    public static function withResult(string $id = null, $result)
     {
         $self = new self();
 
@@ -70,12 +70,12 @@ final class JsonRpcResponse implements Response
     }
 
     /**
-     * @param string $id
+     * @param string|null $id
      * @param Error $error
      * @param array|string|int|float|bool|null $data
      * @return Response
      */
-    public static function withError(string $id, Error $error, $data = null)
+    public static function withError(string $id = null, Error $error, $data = null)
     {
         $self = new self();
 
@@ -93,9 +93,9 @@ final class JsonRpcResponse implements Response
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function id(): string
+    public function id()
     {
         return $this->id;
     }
@@ -119,7 +119,7 @@ final class JsonRpcResponse implements Response
     /**
      * @return bool
      */
-    public function isError()
+    public function isError(): bool
     {
         return null !== $this->error;
     }
