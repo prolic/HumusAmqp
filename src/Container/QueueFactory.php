@@ -139,6 +139,19 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $queue->setFlags($this->getFlags($options));
         $queue->setArguments($options['arguments']);
 
+        $exchanges = $options['exchanges'];
+
+        if ($exchanges instanceof \Traversable) {
+            $exchanges = iterator_to_array($exchanges);
+        }
+
+        if (! is_array($exchanges) || empty($exchanges)) {
+            throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
+        }
+
+        /** @var Exchange[] $exchangeObjects */
+        $exchangeObjects = [];
+
         if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
             // auto setup fabric depended exchange
             if (isset($options['arguments']['x-dead-letter-exchange'])) {
@@ -147,39 +160,29 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 ExchangeFactory::$exchangeName($container, $this->channel, true);
             }
 
-            $exchanges = $options['exchanges'];
-
-            if ($exchanges instanceof \Traversable) {
-                $exchanges = iterator_to_array($exchanges);
-            }
-
-            if (! is_array($exchanges) || empty($exchanges)) {
-                throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
-            }
-
-            /** @var Exchange[] $exchangeObjects */
-            $exchangeObjects = [];
             foreach ($exchanges as $exchange => $exchangeOptions) {
                 $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, true);
             }
-
-            $queue->declareQueue();
-
+        } else {
             foreach ($exchanges as $exchange => $exchangeOptions) {
-                $exchangeObject = $exchangeObjects[$exchange];
-                $exchangeName = $exchangeObject->getName();
-                if (empty($exchangeOptions)) {
-                    $this->bindQueue($queue, $exchangeName, [], []);
-                } else {
-                    foreach ($exchangeOptions as $exchangeOption) {
-                        $routingKeys = $exchangeOption['routing_keys'] ?? [];
-                        $bindArguments = $exchangeOption['bind_arguments'] ?? [];
-                        $this->bindQueue($queue, $exchangeName, $routingKeys, $bindArguments);
-                    }
+                $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, false);
+            }
+        }
+
+        $queue->declareQueue();
+
+        foreach ($exchanges as $exchange => $exchangeOptions) {
+            $exchangeObject = $exchangeObjects[$exchange];
+            $exchangeName = $exchangeObject->getName();
+            if (empty($exchangeOptions)) {
+                $this->bindQueue($queue, $exchangeName, [], []);
+            } else {
+                foreach ($exchangeOptions as $exchangeOption) {
+                    $routingKeys = $exchangeOption['routing_keys'] ?? [];
+                    $bindArguments = $exchangeOption['bind_arguments'] ?? [];
+                    $this->bindQueue($queue, $exchangeName, $routingKeys, $bindArguments);
                 }
             }
-        } else {
-            $queue->declareQueue();
         }
 
         return $queue;
