@@ -24,6 +24,7 @@ namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Container\QueueFactory;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
@@ -63,6 +64,12 @@ class QueueFactoryTest extends TestCase
                             ],
                         ],
                     ],
+                    'exchange' => [
+                        'test_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
+                        ],
+                    ],
                 ],
             ],
         ])->shouldBeCalled();
@@ -72,9 +79,18 @@ class QueueFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
@@ -111,6 +127,12 @@ class QueueFactoryTest extends TestCase
                             ],
                         ],
                     ],
+                    'exchange' => [
+                        'test_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
+                        ],
+                    ],
                 ],
             ],
         ])->shouldBeCalled();
@@ -120,9 +142,18 @@ class QueueFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
@@ -146,10 +177,19 @@ class QueueFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
         $queue = $queue->reveal();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue)->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $container->get('config')->willReturn([
             'humus' => [
@@ -161,6 +201,12 @@ class QueueFactoryTest extends TestCase
                             'exchanges' => [
                                 'test_exchange' => [],
                             ],
+                        ],
+                    ],
+                    'exchange' => [
+                        'test_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
                         ],
                     ],
                 ],

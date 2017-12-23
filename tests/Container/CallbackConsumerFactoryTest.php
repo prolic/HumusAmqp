@@ -25,7 +25,9 @@ namespace HumusTest\Amqp\Container;
 use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Container\CallbackConsumerFactory;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -88,10 +90,18 @@ class CallbackConsumerFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
-        //$channel->qos(0, 100)->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
@@ -157,9 +167,18 @@ class CallbackConsumerFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();

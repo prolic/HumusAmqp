@@ -24,6 +24,7 @@ namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
+use Humus\Amqp\Constants;
 use Humus\Amqp\Container\JsonRpcClientFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
@@ -80,16 +81,24 @@ class JsonRpcClientFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $exchange = $this->prophesize(Exchange::class);
-
         $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $channel2 = $this->prophesize(Channel::class);
         $channel2->newExchange()->willReturn($exchange->reveal());
@@ -149,16 +158,24 @@ class JsonRpcClientFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $exchange = $this->prophesize(Exchange::class);
-
         $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $channel2 = $this->prophesize(Channel::class);
         $channel2->newExchange()->willReturn($exchange->reveal());
@@ -237,9 +254,18 @@ class JsonRpcClientFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setName('test_exchange')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();

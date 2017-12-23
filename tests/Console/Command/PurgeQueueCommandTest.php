@@ -26,6 +26,8 @@ use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Console\Command\PurgeQueueCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
+use Humus\Amqp\Constants;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -136,10 +138,19 @@ class PurgeQueueCommandTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
+        $queue->bind('demo', '', [])->shouldBeCalled();
         $queue->purge()->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+        $exchange->setName('demo')->shouldBeCalled();
+        $exchange->setArguments([])->shouldBeCalled();
+        $exchange->setType('direct')->shouldBeCalled();
+        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
+        $exchange->getName()->willReturn('demo')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+        $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
