@@ -113,19 +113,41 @@ final class JsonRpcServer extends AbstractConsumer
         $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
 
         if ($envelope->getAppId() === 'Humus\Amqp') {
-            $this->handleInternalMessage($envelope);
+            $result = $this->handleInternalMessage($envelope);
 
-            return DeliveryResult::MSG_ACK();
+            if ($result->is(DeliveryResult::MSG_ACK)) {
+                $response = JsonRpcResponse::withResult(
+                    $envelope->getCorrelationId(),
+                    'OK'
+                );
+            } else {
+                $response = JsonRpcResponse::withError(
+                    $envelope->getCorrelationId(),
+                    new JsonRpcError(
+                        JsonRpcError::ERROR_CODE_32601
+                    )
+                );
+            }
+
+            $this->sendReply($response, $envelope);
+
+            return $result;
         }
 
         try {
             $request = $this->requestFromEnvelope($envelope);
-            $callback = $this->deliveryCallback;
-            $response = $callback($request);
 
-            if ('' === $request->id()) {
-                // notifications have no reply
-                return DeliveryResult::MSG_ACK();
+            if (null === $request->id()) {
+                $response = JsonRpcResponse::withError(
+                    $envelope->getCorrelationId(),
+                    new JsonRpcError(
+                        JsonRpcError::ERROR_CODE_32600,
+                        'There was an error in detecting the id in the Request object'
+                    )
+                );
+            } else {
+                $callback = $this->deliveryCallback;
+                $response = $callback($request);
             }
 
             if (! $response instanceof JsonRpcResponse) {

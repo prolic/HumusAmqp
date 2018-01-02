@@ -40,7 +40,7 @@ final class JsonRpcResponseCollection implements ResponseCollection
      */
     public function addResponse(Response $response)
     {
-        $this->responses[$response->id()] = $response;
+        $this->responses[] = $response;
     }
 
     /**
@@ -49,8 +49,10 @@ final class JsonRpcResponseCollection implements ResponseCollection
      */
     public function getResponse(string $id)
     {
-        if ($this->hasResponse($id)) {
-            return $this->responses[$id];
+        foreach ($this->responses as $response) {
+            if ($response->id() === $id) {
+                return $response;
+            }
         }
     }
 
@@ -60,7 +62,13 @@ final class JsonRpcResponseCollection implements ResponseCollection
      */
     public function hasResponse(string $id)
     {
-        return isset($this->responses[$id]);
+        foreach ($this->responses as $response) {
+            if ($response->id() === $id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

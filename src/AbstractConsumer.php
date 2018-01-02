@@ -428,9 +428,6 @@ abstract class AbstractConsumer implements Consumer
             $this->blockSize = $prefetchCount;
 
             $result = DeliveryResult::MSG_ACK();
-        } elseif ('ping' === $envelope->getType()) {
-            $this->logger->info('Ping message received');
-            $result = DeliveryResult::MSG_ACK();
         } else {
             $this->logger->error('Invalid internal message: ' . $envelope->getType());
             $result = DeliveryResult::MSG_REJECT();

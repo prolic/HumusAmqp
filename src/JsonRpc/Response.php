@@ -29,9 +29,9 @@ namespace Humus\Amqp\JsonRpc;
 interface Response
 {
     /**
-     * @return string
+     * @return string|null
      */
-    public function id(): string;
+    public function id();
 
     /**
      * @return array|bool|float|int|string|null
@@ -46,7 +46,7 @@ interface Response
     /**
      * @return bool
      */
-    public function isError();
+    public function isError(): bool;
 
     /**
      * @return array|bool|float|int|null|string
