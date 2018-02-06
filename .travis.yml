@@ -40,8 +40,6 @@ before_script:
   - sudo make install
   - cd ..
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - php -i
-  - php -m
   - composer self-update
   - composer update --prefer-dist $DEPENDENCIES
   - sudo rabbitmqctl add_vhost /humus-amqp-test
@@ -52,7 +50,7 @@ script:
   - rm -rf rabbitmq-c
   - rm -rf php-amqp
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
-  - ./vendor/bin/docheader check bin/ src/ tests/
+  - ./vendor/bin/docheader check bin/ config/ src/ tests/
 
 after_success:
   - php vendor/bin/coveralls -v
