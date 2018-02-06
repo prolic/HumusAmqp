@@ -72,7 +72,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @param string $name
      * @param array $arguments
      * @return Queue
-     * @throws Exception\InvalidArgumentException
+     * @throws Exception\ChannelException
+     * @throws Exception\QueueException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public static function __callStatic(string $name, array $arguments): Queue
     {
@@ -119,7 +122,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * @param ContainerInterface $container
      * @return Queue
-     * @throws Exception\InvalidArgumentException
+     * @throws Exception\ChannelException
+     * @throws Exception\QueueException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container): Queue
     {
@@ -139,20 +145,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $queue->setFlags($this->getFlags($options));
         $queue->setArguments($options['arguments']);
 
-        $exchanges = $options['exchanges'];
-
-        if ($exchanges instanceof \Traversable) {
-            $exchanges = iterator_to_array($exchanges);
-        }
-
-        if (! is_array($exchanges) || empty($exchanges)) {
-            throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
-        }
-
-        /** @var Exchange[] $exchangeObjects */
-        $exchangeObjects = [];
-
-        if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
+        if ($queue->getName() === '' || $options['auto_setup_exchanges']) {
             // auto setup fabric depended exchange
             if (isset($options['arguments']['x-dead-letter-exchange'])) {
                 // auto setup fabric dead letter exchange
@@ -160,30 +153,54 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 ExchangeFactory::$exchangeName($container, $this->channel, true);
             }
 
+            $exchanges = $options['exchanges'];
+
+            if ($exchanges instanceof \Traversable) {
+                $exchanges = iterator_to_array($exchanges);
+            }
+
+            if (! is_array($exchanges) || empty($exchanges)) {
+                throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
+            }
+
             foreach ($exchanges as $exchange => $exchangeOptions) {
                 $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, true);
             }
-        } else {
+        }
+
+        if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
+            if (! isset($exchangeObjects)) {
+                $exchanges = $options['exchanges'];
+
+                if ($exchanges instanceof \Traversable) {
+                    $exchanges = iterator_to_array($exchanges);
+                }
+
+                if (! is_array($exchanges) || empty($exchanges)) {
+                    throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
+                }
+
+                foreach ($exchanges as $exchange => $exchangeOptions) {
+                    $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, false);
+                }
+            }
+
             foreach ($exchanges as $exchange => $exchangeOptions) {
-                $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, false);
+                $exchangeObject = $exchangeObjects[$exchange];
+                $exchangeName = $exchangeObject->getName();
+                if (empty($exchangeOptions)) {
+                    $this->bindQueue($queue, $exchangeName, [], []);
+                } else {
+                    foreach ($exchangeOptions as $exchangeOption) {
+                        $routingKeys = $exchangeOption['routing_keys'] ?? [];
+                        $bindArguments = $exchangeOption['bind_arguments'] ?? [];
+                        $this->bindQueue($queue, $exchangeName, $routingKeys, $bindArguments);
+                    }
+                }
             }
         }
 
         $queue->declareQueue();
-
-        foreach ($exchanges as $exchange => $exchangeOptions) {
-            $exchangeObject = $exchangeObjects[$exchange];
-            $exchangeName = $exchangeObject->getName();
-            if (empty($exchangeOptions)) {
-                $this->bindQueue($queue, $exchangeName, [], []);
-            } else {
-                foreach ($exchangeOptions as $exchangeOption) {
-                    $routingKeys = $exchangeOption['routing_keys'] ?? [];
-                    $bindArguments = $exchangeOption['bind_arguments'] ?? [];
-                    $this->bindQueue($queue, $exchangeName, $routingKeys, $bindArguments);
-                }
-            }
-        }
 
         return $queue;
     }
@@ -210,6 +227,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             'auto_delete' => false,
             // factory configs
             'auto_setup_fabric' => false,
+            'auto_setup_exchanges' => false,
         ];
     }
 
@@ -225,7 +243,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     }
 
     /**
-     * @param array|ArrayAccess
+     * @param array|\ArrayAccess
      * @return int
      */
     private function getFlags($options): int

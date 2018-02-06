@@ -105,6 +105,7 @@ class SetupFabricCommandTest extends TestCase
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
         $queue->bind('demo', '', [])->shouldBeCalled();
+        $queue->getName()->willReturn('foo')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();

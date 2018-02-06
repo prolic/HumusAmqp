@@ -24,7 +24,6 @@ namespace HumusTest\Amqp\Container;
 
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
-use Humus\Amqp\Constants;
 use Humus\Amqp\Container\JsonRpcServerFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
@@ -83,11 +82,6 @@ class JsonRpcServerFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
-        $exchange->setName('test_exchange')->shouldBeCalled();
-        $exchange->setArguments([])->shouldBeCalled();
-        $exchange->setType('direct')->shouldBeCalled();
-        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
-        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel2 = $this->prophesize(Channel::class);
         $channel2->newExchange()->willReturn($exchange->reveal());
@@ -97,12 +91,11 @@ class JsonRpcServerFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
-        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
         $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal());
-        $channel->newExchange()->willReturn($exchange->reveal());
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal());
@@ -163,11 +156,6 @@ class JsonRpcServerFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
-        $exchange->setName('test_exchange')->shouldBeCalled();
-        $exchange->setArguments([])->shouldBeCalled();
-        $exchange->setType('direct')->shouldBeCalled();
-        $exchange->setFlags(Constants::AMQP_DURABLE)->shouldBeCalled();
-        $exchange->getName()->willReturn('test_exchange')->shouldBeCalled();
 
         $channel2 = $this->prophesize(Channel::class);
         $channel2->newExchange()->willReturn($exchange->reveal());
@@ -177,12 +165,11 @@ class JsonRpcServerFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->declareQueue()->shouldBeCalled();
-        $queue->bind('test_exchange', '', [])->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
         $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal());
-        $channel->newExchange()->willReturn($exchange->reveal());
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal());
