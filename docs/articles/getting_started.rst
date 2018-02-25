@@ -114,7 +114,7 @@ A sample configuration might look like this, more details an explanation will be
         'dependencies' => [
             'factories' => [
                 Driver::class => Container\DriverFactory::class,
-                'default-amqp-connection' => [Container\ConnectionFactory::class, 'default'],
+                'default-amqp-connection' => [Container\ConnectionFactory::class, 'default-amqp-connection'],
                 'demo-producer' => [Container\ProducerFactory::class, 'demo-producer'],
                 'topic-producer' => [Container\ProducerFactory::class, 'topic-producer'],
                 'demo-consumer' => [Container\CallbackConsumerFactory::class, 'demo-consumer'],
