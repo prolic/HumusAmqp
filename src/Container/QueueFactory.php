@@ -144,6 +144,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
         $queue->setFlags($this->getFlags($options));
         $queue->setArguments($options['arguments']);
+        $queue->declareQueue();
 
         if ($queue->getName() === '' || $options['auto_setup_exchanges']) {
             // auto setup fabric depended exchange
@@ -199,8 +200,6 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 }
             }
         }
-
-        $queue->declareQueue();
 
         return $queue;
     }

@@ -399,6 +399,7 @@ class QueueFactoryTest extends TestCase
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
         $queue->getName()->willReturn('my_queue')->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
