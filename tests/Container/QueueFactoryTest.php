@@ -511,10 +511,12 @@ class QueueFactoryTest extends TestCase
                         'error_exchange' => [
                             'connection' => 'my_connection',
                             'name' => 'error_exchange',
+                            'auto_setup_fabric' => true,
                         ],
                         'my_exchange' => [
                             'connection' => 'my_connection',
                             'name' => 'my_exchange',
+                            'auto_setup_fabric' => true,
                         ],
                     ],
                     'queue' => [
