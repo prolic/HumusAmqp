@@ -22,7 +22,7 @@
         "psr/container": "^1.0",
         "sandrokeil/interop-config": "^1.0",
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
-        "phpunit/phpunit": "^7",
+        "phpunit/phpunit": "^6.5.7",
         "phpspec/prophecy": "^1.7",
         "satooshi/php-coveralls": "^2.0",
         "php-amqplib/php-amqplib": "^2.7.1",
