@@ -17,8 +17,8 @@ The JSON-RPC part implements [JSON-RPC 2.0 Specification](http://www.jsonrpc.org
 
 Current supported drivers are: [php-amqp](https://github.com/pdezwart/php-amqp) and [PhpAmqpLib](https://github.com/php-amqplib/php-amqplib).
 
-php-amqp needs at least to be v1.9.1
-php-amqplib needs at least to be v2.7.0
+php-amqp needs at least to be v1.9.3
+php-amqplib needs at least to be v2.7.1
 
 This library ships with `container-interop` factories that help you setting up everything.
 
@@ -69,9 +69,17 @@ You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "
 
 ## Notes
 
+### Upgrade from 1.x to 1.4
+
+Before: If `auto_setup_fabric` was enabled, the queue and exchange binding was done automatically. The exchanges would also get created. Anonymous queues required to have `auto_setup_fabric` set to true.
+
+New: If `auto_setup_fabric` is enabled or the queue is anonymous (has no name), the queue gets created and binding is done, but no exchanges are created. If you want to enable creating of depending exchanges (including exchange binding), set the new argument `auto_setup_exchanges` to true.
+
+This is a slight BC break, but the old behaviour was so problematic, that I had to make this change either way.
+
 ### AMQP-Extension
 
-1) We recommend using php-amqp >=v1.9.1 or compiling it from master, if you encounter any problems with the amqp extension, check
+1) We recommend using php-amqp >=v1.9.3 or compiling it from master, if you encounter any problems with the amqp extension, check
 their issue tracker, first. 
 
 The ext-amqp driver is the most performant. Benchmarks are added soon. 

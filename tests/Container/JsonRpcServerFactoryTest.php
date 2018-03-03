@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
+ * Copyright (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -82,7 +82,6 @@ class JsonRpcServerFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
-        $exchange->setName('test_exchange');
 
         $channel2 = $this->prophesize(Channel::class);
         $channel2->newExchange()->willReturn($exchange->reveal());
@@ -91,6 +90,8 @@ class JsonRpcServerFactoryTest extends TestCase
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
         $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
@@ -155,7 +156,6 @@ class JsonRpcServerFactoryTest extends TestCase
         ])->shouldBeCalled();
 
         $exchange = $this->prophesize(Exchange::class);
-        $exchange->setName('test_exchange');
 
         $channel2 = $this->prophesize(Channel::class);
         $channel2->newExchange()->willReturn($exchange->reveal());
@@ -164,6 +164,8 @@ class JsonRpcServerFactoryTest extends TestCase
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
         $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);

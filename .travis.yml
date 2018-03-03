@@ -26,10 +26,9 @@ before_script:
   - if [ $TRAVIS_PHP_VERSION = "7.0" ]; then phpenv config-rm xdebug.ini; fi
   - sudo cp $TRAVIS_BUILD_DIR/provision/rabbitmq.config /etc/rabbitmq/
   - sudo service rabbitmq-server restart
-  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - git clone https://github.com/alanxz/rabbitmq-c.git
   - cd rabbitmq-c
-  - git checkout v0.7.1
+  - git checkout v0.8.0
   - git submodule init && git submodule update
   - autoreconf -i && ./configure --prefix=$HOME/rabbitmq-c && make && make install
   - cd ..
@@ -40,6 +39,7 @@ before_script:
   - make
   - sudo make install
   - cd ..
+  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer self-update
   - composer update --prefer-dist $DEPENDENCIES
   - sudo rabbitmqctl add_vhost /humus-amqp-test
@@ -50,7 +50,7 @@ script:
   - rm -rf rabbitmq-c
   - rm -rf php-amqp
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
-  - ./vendor/bin/docheader check src/ tests/
+  - ./vendor/bin/docheader check bin/ config/ src/ tests/
 
 after_success:
   - php vendor/bin/coveralls -v

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
+ * Copyright (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -80,12 +80,15 @@ class JsonRpcClientFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $exchange = $this->prophesize(Exchange::class);
-
         $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
@@ -148,18 +151,21 @@ class JsonRpcClientFactoryTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $exchange = $this->prophesize(Exchange::class);
-
         $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
 
         $channel2 = $this->prophesize(Channel::class);
-        $channel2->newExchange()->willReturn($exchange->reveal());
+        $channel2->newExchange()->willReturn($exchange->reveal())->shouldBeCalled();
 
         $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
 
@@ -183,66 +189,5 @@ class JsonRpcClientFactoryTest extends TestCase
 
         $clientName = 'my_client';
         JsonRpcClientFactory::$clientName('invalid');
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_empty_exchanges_given()
-    {
-        $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Option "exchanges" must be a not empty array or an instance of Traversable');
-
-        $container = $this->prophesize(ContainerInterface::class);
-
-        $container->get('config')->willReturn([
-            'humus' => [
-                'amqp' => [
-                    'connection' => [
-                        'my_connection' => [
-                            'vhost' => '/humus-amqp-test',
-                            'type' => 'stream',
-                        ],
-                    ],
-                    'exchange' => [
-                        'my_exchange' => [
-                            'connection' => 'my_connection',
-                            'name' => 'test_exchange',
-                        ],
-                    ],
-                    'queue' => [
-                        'my_queue' => [
-                            'connection' => 'my_connection',
-                            'name' => 'my_queue',
-                            'exchanges' => [
-                                'my_exchange' => [],
-                            ],
-                        ],
-                    ],
-                    'json_rpc_client' => [
-                        'my_client' => [
-                            'exchanges' => [],
-                            'queue' => 'my_queue',
-                        ],
-                    ],
-                ],
-            ],
-        ])->shouldBeCalled();
-
-        $queue = $this->prophesize(Queue::class);
-        $queue->getChannel()->shouldBeCalled();
-        $queue->setName('my_queue')->shouldBeCalled();
-        $queue->setFlags(2)->shouldBeCalled();
-        $queue->setArguments([])->shouldBeCalled();
-
-        $channel = $this->prophesize(Channel::class);
-        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
-
-        $connection = $this->prophesize(Connection::class);
-        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
-        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-
-        $factory = new JsonRpcClientFactory('my_client');
-        $factory($container->reveal());
     }
 }

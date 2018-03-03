@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
+ * Copyright (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -123,7 +123,7 @@ final class SslConnectionTest extends AbstractConnectionTest
     }
 
     /**
-     * @group
+     * @test
      */
     public function it_throws_if_cacert_not_set_but_verify_is_set_to_true()
     {

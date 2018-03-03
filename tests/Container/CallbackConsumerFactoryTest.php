@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
+ * Copyright (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,6 +26,7 @@ use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Container\CallbackConsumerFactory;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -87,10 +88,11 @@ class CallbackConsumerFactoryTest extends TestCase
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
-        //$channel->qos(0, 100)->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
@@ -155,6 +157,8 @@ class CallbackConsumerFactoryTest extends TestCase
         $queue->setName('my_queue')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();

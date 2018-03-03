@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
+ * Copyright (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,6 +26,7 @@ use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Console\Command\PurgeQueueCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
+use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -135,7 +136,9 @@ class PurgeQueueCommandTest extends TestCase
         $queue->setName('foo')->shouldBeCalled();
         $queue->setFlags(2)->shouldBeCalled();
         $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
         $queue->purge()->shouldBeCalled();
+        $queue->getName()->willReturn('foo')->shouldBeCalled();
 
         $channel = $this->prophesize(Channel::class);
         $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
+ * Copyright (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -72,7 +72,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      * @param string $name
      * @param array $arguments
      * @return Queue
-     * @throws Exception\InvalidArgumentException
+     * @throws Exception\ChannelException
+     * @throws Exception\QueueException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public static function __callStatic(string $name, array $arguments): Queue
     {
@@ -119,7 +122,10 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     /**
      * @param ContainerInterface $container
      * @return Queue
-     * @throws Exception\InvalidArgumentException
+     * @throws Exception\ChannelException
+     * @throws Exception\QueueException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container): Queue
     {
@@ -138,8 +144,9 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
         $queue->setFlags($this->getFlags($options));
         $queue->setArguments($options['arguments']);
+        $queue->declareQueue();
 
-        if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
+        if ($queue->getName() === '' || $options['auto_setup_exchanges']) {
             // auto setup fabric depended exchange
             if (isset($options['arguments']['x-dead-letter-exchange'])) {
                 // auto setup fabric dead letter exchange
@@ -157,13 +164,27 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
             }
 
-            /** @var Exchange[] $exchangeObjects */
-            $exchangeObjects = [];
             foreach ($exchanges as $exchange => $exchangeOptions) {
                 $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, true);
             }
+        }
 
-            $queue->declareQueue();
+        if ($this->autoSetupFabric || $options['auto_setup_fabric']) {
+            if (! isset($exchangeObjects)) {
+                $exchanges = $options['exchanges'];
+
+                if ($exchanges instanceof \Traversable) {
+                    $exchanges = iterator_to_array($exchanges);
+                }
+
+                if (! is_array($exchanges) || empty($exchanges)) {
+                    throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
+                }
+
+                foreach ($exchanges as $exchange => $exchangeOptions) {
+                    $exchangeObjects[$exchange] = ExchangeFactory::$exchange($container, $this->channel, false);
+                }
+            }
 
             foreach ($exchanges as $exchange => $exchangeOptions) {
                 $exchangeObject = $exchangeObjects[$exchange];
@@ -205,6 +226,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             'auto_delete' => false,
             // factory configs
             'auto_setup_fabric' => false,
+            'auto_setup_exchanges' => false,
         ];
     }
 
@@ -220,7 +242,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     }
 
     /**
-     * @param array|ArrayAccess
+     * @param array|\ArrayAccess
      * @return int
      */
     private function getFlags($options): int
