@@ -17,19 +17,14 @@
         "marc-mabe/php-enum": "^2.2 || ^3.0",
         "psr/log": "^1.0"
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        }
-    },
     "require-dev": {
         "symfony/console": "^2.5|^3.0",
         "psr/container": "^1.0",
         "sandrokeil/interop-config": "^1.0",
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
-        "phpunit/phpunit": "^6.4",
-        "phpspec/prophecy": "^1.6",
-        "satooshi/php-coveralls": "^1.0",
+        "phpunit/phpunit": "^7",
+        "phpspec/prophecy": "^1.7",
+        "satooshi/php-coveralls": "^2.0",
         "php-amqplib/php-amqplib": "^2.7.1",
         "malukenho/docheader": "^0.1.4",
         "friendsofphp/php-cs-fixer": "^2.8.1"
@@ -43,7 +38,7 @@
         "ext-amqp": ">= 1.9.3 For usage together with php amqp extension",
         "php-amqplib/php-amqplib": ">= 2.7.1 For usage together with php-amqplib",
         "symfony/console": "For usage of the provided console tool",
-        "container-interop/container-interop": "For usage of provided factories",
+        "psr/container": "For usage of provided factories",
         "sandrokeil/interop-config": "For usage of provided factories"
     },
     "autoload": {
