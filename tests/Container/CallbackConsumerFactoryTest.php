@@ -26,7 +26,6 @@ use Humus\Amqp\CallbackConsumer;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Container\CallbackConsumerFactory;
-use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;

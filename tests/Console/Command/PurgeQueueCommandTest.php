@@ -26,7 +26,6 @@ use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Console\Command\PurgeQueueCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
-use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
