@@ -183,14 +183,7 @@ abstract class AbstractConsumer implements Consumer
         } catch (Exception\QueueException $e) {
             $this->logger->error('Exception: ' . $e->getMessage());
             $this->ackOrNackBlock();
-
-            // hack for different drivers
-            $channel = $this->queue->getChannel();
-            if ($channel instanceof Driver\PhpAmqpLib\Channel) {
-                $channel->getResource()->close(); // preferred, but not present in amqp-extension
-            } elseif ($channel instanceof Driver\AmqpExtension\Channel) {
-                $channel->getConnection()->reconnect(); // needed in order to destroy (and close) the channel
-            }
+            $this->queue->getChannel()->getResource()->close();
         }
     }
 
