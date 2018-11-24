@@ -1,7 +1,21 @@
 # Change Log
 
-## [v1.4.0](https://github.com/prolic/HumusAmqp/tree/v1.4.0)
+## [v1.4.2](https://github.com/prolic/HumusAmqp/tree/v1.4.2)
 
+[Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.4.1...v1.4.2)
+
+**Implemented enhancements:**
+
+- Use AMQPChannel::close\(\) in AbstractConsumer [\#72](https://github.com/prolic/HumusAmqp/pull/72) ([genhoi](https://github.com/genhoi))
+
+## [v1.4.1](https://github.com/prolic/HumusAmqp/tree/v1.4.1) (2018-11-02)
+[Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.4.0...v1.4.1)
+
+**Merged pull requests:**
+
+- allow beberlei/assert v3 [\#71](https://github.com/prolic/HumusAmqp/pull/71) ([basz](https://github.com/basz))
+
+## [v1.4.0](https://github.com/prolic/HumusAmqp/tree/v1.4.0) (2018-03-03)
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.3.0...v1.4.0)
 
 **Implemented enhancements:**
