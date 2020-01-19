@@ -11,6 +11,11 @@ php:
 services:
   - rabbitmq
 
+addons:
+  apt:
+    packages:
+      - rabbitmq-server
+
 env:
   matrix:
     - DEPENDENCIES=""
