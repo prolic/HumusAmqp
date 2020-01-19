@@ -66,9 +66,7 @@ final class CallbackConsumer extends AbstractConsumer
         }
 
         if (extension_loaded('pcntl')) {
-            declare(ticks=1);
-
-            $this->usePcntlSignalDispatch = true;
+            pcntl_async_signals(true);
 
             pcntl_signal(SIGTERM, [$this, 'shutdown']);
             pcntl_signal(SIGINT, [$this, 'shutdown']);
