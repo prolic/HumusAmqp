@@ -120,11 +120,6 @@ abstract class AbstractConsumer implements Consumer
     protected $errorCallback;
 
     /**
-     * @var bool
-     */
-    protected $usePcntlSignalDispatch = false;
-
-    /**
      * Start consumer
      *
      * @param int $msgAmount
@@ -163,11 +158,6 @@ abstract class AbstractConsumer implements Consumer
                     || ($now - $this->timestampLastAck) > $this->idleTimeout
                 )) {
                 $this->ackOrNackBlock();
-            }
-
-            if ($this->usePcntlSignalDispatch) {
-                // Check for signals
-                pcntl_signal_dispatch();
             }
 
             if (! $this->keepAlive || (0 !== $this->target && $this->countMessagesConsumed >= $this->target)) {
