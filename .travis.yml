@@ -56,7 +56,7 @@ script:
   - rm -rf rabbitmq-c
   - rm -rf php-amqp
   - ./vendor/bin/php-cs-fixer fix -v --diff --dry-run
-#  - ./vendor/bin/docheader check bin/ config/ src/ tests/
+  - ./vendor/bin/docheader check bin/ config/ src/ tests/
 
 after_success:
   - php vendor/bin/coveralls -v
