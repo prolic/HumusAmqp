@@ -27,7 +27,7 @@
         "satooshi/php-coveralls": "^2.0",
         "php-amqplib/php-amqplib": "^2.7.1,<2.9.0",
         "malukenho/docheader": "^0.1.4",
-        "friendsofphp/php-cs-fixer": "^2.8.1"
+        "friendsofphp/php-cs-fixer": "^2.16.1"
     },
     "conflict": {
         "sandrokeil/interop-config": "<1.0",
