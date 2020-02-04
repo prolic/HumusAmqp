@@ -3,7 +3,6 @@ sudo: required
 language: php
 
 php:
-  - 7.0
   - 7.1
   - 7.2
   - 7.3
@@ -30,7 +29,6 @@ cache:
 
 before_script:
   - mkdir -p "$HOME/.php-cs-fixer"
-  - if [ $TRAVIS_PHP_VERSION = "7.0" ]; then phpenv config-rm xdebug.ini; fi
   - sudo cp $TRAVIS_BUILD_DIR/provision/rabbitmq.config /etc/rabbitmq/
   - sudo service rabbitmq-server restart
   - git clone https://github.com/alanxz/rabbitmq-c.git
