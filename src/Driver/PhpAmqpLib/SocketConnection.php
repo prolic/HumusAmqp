@@ -53,8 +53,10 @@ final class SocketConnection extends AbstractConnection
             'AMQPLAIN',
             null,
             'en_US',
-            $options->getReadTimeout() ?: $options->getWriteTimeout(),
-            $options->getHeartbeat() > 0
+            $options->getReadTimeout(),
+            $options->getHeartbeat() > 0,
+            $options->getWriteTimeout(),
+            $options->getHeartbeat()
         );
     }
 }
