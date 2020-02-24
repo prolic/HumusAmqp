@@ -399,7 +399,6 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
 
     /**
      * @test
-     * @group failing_test
      */
     public function it_handles_flush_deferred_after_timeout()
     {
