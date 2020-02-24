@@ -116,7 +116,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
 
                 return --$consume > 0;
             });
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $result[] = get_class($e);
         }
 
@@ -125,7 +125,6 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
         // yes, we do it repeatedly, basic.recover works in a slightly different way than it looks like. As it said,
         // it "asks the server to redeliver all unacknowledged messages on a specified channel.
         // ZERO OR MORE messages MAY BE redelivered"
-
         $channel1->basicRecover();
         $result[] = 'redelivered';
 

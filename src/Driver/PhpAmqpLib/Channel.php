@@ -100,7 +100,7 @@ final class Channel implements ChannelInterface
      */
     public function getChannelId(): int
     {
-        return $this->channel->getChannelId();
+        return (int) $this->channel->getChannelId();
     }
 
     /**

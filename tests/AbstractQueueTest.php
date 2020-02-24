@@ -149,6 +149,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_binds_with_arguments()
     {
@@ -178,6 +179,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_unbinds_queue()
     {
@@ -224,6 +226,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_consumes_without_callback()
     {

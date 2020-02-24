@@ -1,6 +1,6 @@
 # Humus Amqp
 
-PHP 7 AMQP library
+PHP 7.1 AMQP library
 
 [![Build Status](https://travis-ci.org/prolic/HumusAmqp.svg?branch=master)](https://travis-ci.org/prolic/HumusAmqp)
 [![Coverage Status](https://coveralls.io/repos/github/prolic/HumusAmqp/badge.svg?branch=master)](https://coveralls.io/github/prolic/HumusAmqp?branch=master)
@@ -11,7 +11,7 @@ PHP 7 AMQP library
 
 ## Overview
 
-PHP 7 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.
+PHP 7.1 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.
 
 The JSON-RPC part implements [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification).
 
@@ -24,7 +24,7 @@ This library ships with `container-interop` factories that help you setting up e
 
 ## Installation
 
-You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "^1.1"` as requirement to your composer.json.
+You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "^1.5"` as requirement to your composer.json.
 
 ## Usage
 

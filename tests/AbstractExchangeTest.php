@@ -110,6 +110,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_declares_and_deletes_exchange()
     {
@@ -121,6 +122,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_declares_exchange_with_arguments()
     {
@@ -152,6 +154,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_binds_and_unbinds_to_exchange()
     {
@@ -176,6 +179,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_binds_and_unbinds_to_exchange_with_routing_key()
     {
@@ -200,6 +204,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_binds_and_unbinds_to_exchange_with_arguments()
     {
@@ -244,6 +249,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_binds_and_unbinds_to_exchange_with_routing_key_and_arguments()
     {

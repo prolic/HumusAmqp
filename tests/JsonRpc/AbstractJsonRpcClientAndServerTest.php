@@ -136,7 +136,6 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
     /**
      * @test
-     * @group by
      */
     public function it_sends_shutdown_notifications()
     {
