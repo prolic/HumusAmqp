@@ -85,5 +85,7 @@ class StartCallbackConsumerCommand extends AbstractCommand
         /* @var Consumer $callbackConsumer */
 
         $callbackConsumer->consume((int) $input->getOption('amount'));
+
+        return 0;
     }
 }
