@@ -82,5 +82,7 @@ class PurgeQueueCommand extends AbstractCommand
         $queue->purge();
 
         $output->writeln('Queue ' . $queueName . ' purged');
+
+        return 0;
     }
 }

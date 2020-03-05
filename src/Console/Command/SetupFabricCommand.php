@@ -75,5 +75,7 @@ class SetupFabricCommand extends AbstractCommand
                 $output->writeln('Queue ' . $queue . ' declared');
             }
         }
+
+        return 0;
     }
 }

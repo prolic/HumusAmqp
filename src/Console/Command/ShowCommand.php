@@ -120,6 +120,8 @@ class ShowCommand extends AbstractCommand
                 }
                 break;
         }
+
+        return 0;
     }
 
     /**
