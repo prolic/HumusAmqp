@@ -57,7 +57,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
      */
     protected $queue;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $connection = $this->createConnection();
         $this->channel = $connection->newChannel();

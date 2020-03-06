@@ -57,7 +57,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
      */
     protected $channel;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $connection = $this->createConnection();
         $this->channel = $connection->newChannel();

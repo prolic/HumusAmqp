@@ -70,7 +70,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
      */
     protected $results = [];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->callback = function (Envelope $envelope) {
             $this->results[] = $envelope->getBody();

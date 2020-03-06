@@ -191,5 +191,7 @@ class PublishMessageCommand extends AbstractCommand
         }
 
         $output->writeln('Message published');
+
+        return 0;
     }
 }

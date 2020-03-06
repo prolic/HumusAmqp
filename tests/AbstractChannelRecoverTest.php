@@ -47,7 +47,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
      */
     private $queue;
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->queue->delete();
         $this->exchange->delete();
