@@ -70,7 +70,7 @@ abstract class AbstractOptions
                     __METHOD__,
                     'array',
                     'Traversable',
-                    'Zend\Stdlib\AbstractOptions'
+                    'Laminas\Stdlib\AbstractOptions'
                 )
             );
         }
