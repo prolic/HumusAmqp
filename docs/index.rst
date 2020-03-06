@@ -6,7 +6,7 @@ Documentation for `HumusAMQP <http://www.github.com/prolic/HumusAmqp/>`_
 Overview
 --------
 
-PHP 7.1 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.
+PHP 7.2 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.
 
 The JSON-RPC part implements `JSON-RPC 2.0 Specification <http://www.jsonrpc.org/specification>`_.
 
