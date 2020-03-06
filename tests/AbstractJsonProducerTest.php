@@ -67,7 +67,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
      */
     protected $results = [];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();

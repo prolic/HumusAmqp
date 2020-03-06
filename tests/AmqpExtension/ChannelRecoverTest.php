@@ -33,7 +33,7 @@ final class ChannelRecoverTest extends AbstractChannelRecoverTest
 {
     use CreateConnectionTrait;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (! extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');

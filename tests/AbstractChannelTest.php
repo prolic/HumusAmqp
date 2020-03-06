@@ -45,7 +45,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
      */
     protected $channel;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->connection = $this->createConnection();
         $this->channel = $this->connection->newChannel();
