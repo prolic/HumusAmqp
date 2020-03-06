@@ -239,7 +239,7 @@ final class Envelope implements EnvelopeInterface
     private function getFromEnvelope(string $name): string
     {
         if ($this->envelope->has($name)) {
-            return $this->envelope->get($name);
+            return (string) $this->envelope->get($name);
         }
 
         return '';

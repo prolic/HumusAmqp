@@ -72,6 +72,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_creates_multiple_channels()
     {

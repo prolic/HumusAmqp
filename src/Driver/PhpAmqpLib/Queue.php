@@ -211,6 +211,7 @@ final class Queue implements QueueInterface
         if (null !== $callback) {
             $innerCallback = function (AMQPMessage $envelope) use ($callback) {
                 $result = $callback(new Envelope($envelope), $this);
+
                 if (false === $result) {
                     $this->cancel($envelope->delivery_info['consumer_tag']);
                 }
@@ -240,10 +241,10 @@ final class Queue implements QueueInterface
                 $args
             );
 
-            if (isset($this->channel->getResource()->callbacks[$consumerTag])) {
-                while (count($this->channel->getResource()->callbacks)) {
-                    $this->channel->getResource()->wait();
-                }
+            $readTimeout = $this->getConnection()->getOptions()->getReadTimeout();
+
+            while ($this->channel->getResource()->is_consuming()) {
+                $this->channel->getResource()->wait(null, false, $readTimeout);
             }
         } catch (\Throwable $e) {
             throw Exception\QueueException::fromPhpAmqpLib($e);

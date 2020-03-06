@@ -66,6 +66,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function it_reconnects()
     {

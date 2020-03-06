@@ -97,7 +97,10 @@ final class SslConnectionTest extends AbstractConnectionTest
     public function it_reconnects()
     {
         $connection = $this->createConnection();
+        $this->assertTrue($connection->isConnected());
+
         $connection->reconnect();
+        $this->assertTrue($connection->isConnected());
     }
 
     /**
