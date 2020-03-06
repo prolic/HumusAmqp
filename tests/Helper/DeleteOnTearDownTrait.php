@@ -36,7 +36,7 @@ trait DeleteOnTearDownTrait
      */
     protected $toCleanUp = [];
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach ($this->toCleanUp as $resource) {
             try {
