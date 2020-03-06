@@ -177,9 +177,9 @@ Set up the consumer using config and factory
             'factories' => [
                 Driver::class => Humus\Amqp\Container\DriverFactory::class,
                 'default-amqp-connection' => [Humus\Amqp\Container\ConnectionFactory::class, 'default'],
-                \My\EchoCallback::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
-                \My\FlushDeferredCallback::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
-                \Psr\Log\NullLogger => \Zend\ServiceManager\Factory\InvokableFactory::class,
+                \My\EchoCallback::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+                \My\FlushDeferredCallback::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+                \Psr\Log\NullLogger => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             ],
         ],
         'humus' => [

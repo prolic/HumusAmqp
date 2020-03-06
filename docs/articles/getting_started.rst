@@ -62,7 +62,7 @@ a) You can use composer to install HumusAmqp
 b) Select a driver to use, currently only php-amqplib and php-amqp (PHP extension) are supported.
 
 Configure your container to return the DriverFactory for the Driver class. If your container supports configuration by
-array like Zend\ServiceManager f.e., this should look similar to this.
+array like Laminas\ServiceManager f.e., this should look similar to this.
 For integration with the Symfony Framework you can use the `Symfony container-interop bundle <https://github.com/proophsoftware/prooph-interop-bundle>`_.
 
 .. code-block:: php
