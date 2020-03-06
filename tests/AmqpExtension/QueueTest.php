@@ -41,4 +41,16 @@ final class QueueTest extends AbstractQueueTest
 
         parent::setUp();
     }
+
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function it_consumes_without_callback()
+    {
+        $this->exchange->publish('foo');
+        $this->exchange->publish('bar');
+
+        $this->queue->consume(null);
+    }
 }

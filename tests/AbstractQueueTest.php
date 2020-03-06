@@ -226,18 +226,6 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
     /**
      * @test
-     * @doesNotPerformAssertions
-     */
-    public function it_consumes_without_callback()
-    {
-        $this->exchange->publish('foo');
-        $this->exchange->publish('bar');
-
-        $this->queue->consume(null);
-    }
-
-    /**
-     * @test
      */
     public function it_produces_and_get_messages_from_queue()
     {

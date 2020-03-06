@@ -241,8 +241,10 @@ final class Queue implements QueueInterface
                 $args
             );
 
+            $readTimeout = $this->getConnection()->getOptions()->getReadTimeout();
+
             while ($this->channel->getResource()->is_consuming()) {
-                $this->channel->getResource()->wait();
+                $this->channel->getResource()->wait(null, false, $readTimeout);
             }
         } catch (\Throwable $e) {
             throw Exception\QueueException::fromPhpAmqpLib($e);
