@@ -93,7 +93,7 @@ class ResponseTest extends TestCase
         $this->assertEquals($message, $response->error()->message());
         $this->assertEquals('id', $response->id());
     }
-    
+
     public function customCodeDateProvider(): array
     {
         return [
