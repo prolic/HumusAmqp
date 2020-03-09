@@ -97,9 +97,9 @@ class ResponseTest extends TestCase
     public function customCodeDateProvider(): array
     {
         return [
-            [-32000,'custom error message lower'],
-            [-32050,'custom error message middle'],
-            [-32099,'custom error message upper'],
+            [-32000, 'custom error message lower'],
+            [-32050, 'custom error message middle'],
+            [-32099, 'custom error message upper'],
         ];
     }
 
