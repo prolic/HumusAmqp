@@ -230,8 +230,8 @@ final class JsonRpcServer extends AbstractConsumer
                 'error' => [
                     'code' => $response->error()->code(),
                     'message' => $response->error()->message(),
+                    'data' => $response->error()->data(),
                 ],
-                'data' => $response->data(),
             ];
         } else {
             $payload = [

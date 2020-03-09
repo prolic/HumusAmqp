@@ -48,11 +48,6 @@ final class JsonRpcResponse implements Response
     private $id;
 
     /**
-     * @var array|string|int|float|bool|null
-     */
-    private $data;
-
-    /**
      * @param string|null $id
      * @param array|string|int|float|bool|null $result
      * @return Response
@@ -75,15 +70,12 @@ final class JsonRpcResponse implements Response
      * @param array|string|int|float|bool|null $data
      * @return Response
      */
-    public static function withError(string $id = null, Error $error, $data = null)
+    public static function withError(string $id = null, Error $error)
     {
         $self = new self();
 
-        $self->assertPayload($data, 'data');
-
         $self->id = $id;
         $self->error = $error;
-        $self->data = $data;
 
         return $self;
     }
@@ -122,15 +114,6 @@ final class JsonRpcResponse implements Response
     public function isError(): bool
     {
         return null !== $this->error;
-    }
-
-    /**
-     * @return array|bool|float|int|null|string
-     * @deprecated will be moved to Error in 2.0
-     */
-    public function data()
-    {
-        return $this->data;
     }
 
     /**

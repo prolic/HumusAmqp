@@ -40,9 +40,6 @@ interface Error
 
     /**
      * @return array|bool|float|int|null|string
-     *
-     * see: https://github.com/prolic/HumusAmqp/issues/64
-     * will be added to interface with 2.0
      */
-    //public function data();
+    public function data();
 }
