@@ -82,6 +82,13 @@ final class JsonRpcError implements Error
                 $code
             ));
         }
+        
+        if ($customCode && null === $message) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Message is required for custom error code %s',
+                $code
+            ));
+        }
 
         if ($predefinedCode && null === $message) {
             $message = $this->recommendedMessagePhrases[$code];
