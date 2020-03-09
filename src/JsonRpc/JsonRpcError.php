@@ -74,7 +74,7 @@ final class JsonRpcError implements Error
     public function __construct(int $code, string $message = null, $data = null)
     {
         $predefinedCode = defined(JsonRpcError::class . '::ERROR_CODE_' . -$code);
-        $customCode = $code > -32000 && $code < -32099;
+        $customCode = $code >= -32099 && $code <= -32000;
         
         if (! ($predefinedCode || $customCode)) {
             throw new Exception\InvalidArgumentException(sprintf(
