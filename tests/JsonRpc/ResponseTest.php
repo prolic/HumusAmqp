@@ -61,7 +61,7 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_error_with_data()
     {
-        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603), ['foo' => 'bar']);
+        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603, ['foo' => 'bar']));
         $this->assertInstanceOf(JsonRpcError::class, $response->error());
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('Internal error', $response->error()->message());
