@@ -53,7 +53,7 @@ class ResponseTest extends TestCase
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('Internal error', $response->error()->message());
         $this->assertEquals('id', $response->id());
-        $this->assertNull($response->data());
+        $this->assertNull($response->error()->data());
     }
 
     /**
@@ -66,7 +66,7 @@ class ResponseTest extends TestCase
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('Internal error', $response->error()->message());
         $this->assertEquals('id', $response->id());
-        $this->assertEquals(['foo' => 'bar'], $response->data());
+        $this->assertEquals(['foo' => 'bar'], $response->error()->data());
     }
 
     /**
@@ -79,6 +79,28 @@ class ResponseTest extends TestCase
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('custom message', $response->error()->message());
         $this->assertEquals('id', $response->id());
+    }
+
+    /**
+     * @test
+     * @dataProvider customCodeDateProvider
+     */
+    public function it_creates_valid_error_with_custom_error_code(int $code, string $message)
+    {
+        $response = JsonRpcResponse::withError('id', new JsonRpcError($code, $message));
+        $this->assertInstanceOf(JsonRpcError::class, $response->error());
+        $this->assertEquals($code, $response->error()->code());
+        $this->assertEquals($message, $response->error()->message());
+        $this->assertEquals('id', $response->id());
+    }
+    
+    public function customCodeDateProvider(): array
+    {
+        return [
+            [-32000,'custom error message lower'],
+            [-32050,'custom error message middle'],
+            [-32099,'custom error message upper'],
+        ];
     }
 
     /**

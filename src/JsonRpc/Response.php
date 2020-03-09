@@ -47,10 +47,4 @@ interface Response
      * @return bool
      */
     public function isError(): bool;
-
-    /**
-     * @return array|bool|float|int|null|string
-     * @deprecated will be moved to Error in 2.0
-     */
-    public function data();
 }
