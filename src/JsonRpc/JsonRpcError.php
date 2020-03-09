@@ -70,18 +70,28 @@ final class JsonRpcError implements Error
      * JsonRpcError constructor.
      * @param int $code
      * @param string|null $message
-     * @param string|null $traceAsString
+     * @param array|bool|float|int|null|string $data
      */
     public function __construct(int $code, string $message = null, $data = null)
     {
-        if (! defined(JsonRpcError::class . '::ERROR_CODE_' . -$code)) {
+        $isPredefinedCode = defined(JsonRpcError::class . '::ERROR_CODE_' . -$code);
+        $isCustomCode = $code >= -32099 && $code <= -32000;
+
+        if (! ($isPredefinedCode || $isCustomCode)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid status code provided: %s',
                 $code
             ));
         }
 
-        if (null === $message) {
+        if ($isCustomCode && null === $message) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Message is required for custom error code %s',
+                $code
+            ));
+        }
+
+        if ($isPredefinedCode && null === $message) {
             $message = $this->recommendedMessagePhrases[$code];
         }
 
@@ -108,9 +118,6 @@ final class JsonRpcError implements Error
 
     /**
      * @return array|bool|float|int|null|string
-     *
-     * see: https://github.com/prolic/HumusAmqp/issues/64
-     * will be added to interface with 2.0
      */
     public function data()
     {

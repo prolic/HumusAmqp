@@ -159,8 +159,7 @@ final class JsonRpcServer extends AbstractConsumer
                     JsonRpcError::ERROR_CODE_32600,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null
-                ),
-                $this->returnTrace ? $e->getTraceAsString() : null
+                )
             );
         } catch (Exception\InvalidJsonRpcRequest $e) {
             $this->logger->error('Invalid json rpc request', $this->extractMessageInformation($envelope));
@@ -170,8 +169,7 @@ final class JsonRpcServer extends AbstractConsumer
                     JsonRpcError::ERROR_CODE_32600,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null
-                ),
-                $this->returnTrace ? $e->getTraceAsString() : null
+                )
             );
         } catch (Exception\JsonParseError $e) {
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
@@ -181,8 +179,7 @@ final class JsonRpcServer extends AbstractConsumer
                     JsonRpcError::ERROR_CODE_32700,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null
-                ),
-                $this->returnTrace ? $e->getTraceAsString() : null
+                )
             );
         } catch (\Throwable $e) {
             $extra = $this->extractMessageInformation($envelope);
@@ -196,8 +193,7 @@ final class JsonRpcServer extends AbstractConsumer
                     JsonRpcError::ERROR_CODE_32603,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null
-                ),
-                $this->returnTrace ? $e->getTraceAsString() : null
+                )
             );
         }
 
@@ -230,8 +226,8 @@ final class JsonRpcServer extends AbstractConsumer
                 'error' => [
                     'code' => $response->error()->code(),
                     'message' => $response->error()->message(),
+                    'data' => $response->error()->data(),
                 ],
-                'data' => $response->data(),
             ];
         } else {
             $payload = [
