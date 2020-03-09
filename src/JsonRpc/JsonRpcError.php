@@ -70,6 +70,7 @@ final class JsonRpcError implements Error
      * JsonRpcError constructor.
      * @param int $code
      * @param string|null $message
+     * @param array|bool|float|int|null|string $data
      */
     public function __construct(int $code, string $message = null, $data = null)
     {
