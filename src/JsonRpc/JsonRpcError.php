@@ -74,24 +74,24 @@ final class JsonRpcError implements Error
      */
     public function __construct(int $code, string $message = null, $data = null)
     {
-        $predefinedCode = defined(JsonRpcError::class . '::ERROR_CODE_' . -$code);
-        $customCode = $code >= -32099 && $code <= -32000;
+        $isPredefinedCode = defined(JsonRpcError::class . '::ERROR_CODE_' . -$code);
+        $isCustomCode = $code >= -32099 && $code <= -32000;
 
-        if (! ($predefinedCode || $customCode)) {
+        if (! ($isPredefinedCode || $isCustomCode)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid status code provided: %s',
                 $code
             ));
         }
 
-        if ($customCode && null === $message) {
+        if ($isCustomCode && null === $message) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Message is required for custom error code %s',
                 $code
             ));
         }
 
-        if ($predefinedCode && null === $message) {
+        if ($isPredefinedCode && null === $message) {
             $message = $this->recommendedMessagePhrases[$code];
         }
 
