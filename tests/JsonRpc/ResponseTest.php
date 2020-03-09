@@ -83,7 +83,7 @@ class ResponseTest extends TestCase
 
     /**
      * @test
-     * @dataProvider customCodeDateProvider
+     * @dataProvider customCodeDataProvider
      */
     public function it_creates_valid_error_with_custom_error_code(int $code, string $message)
     {
@@ -94,13 +94,25 @@ class ResponseTest extends TestCase
         $this->assertEquals('id', $response->id());
     }
 
-    public function customCodeDateProvider(): array
+    public function customCodeDataProvider(): array
     {
         return [
             [-32000, 'custom error message lower'],
             [-32050, 'custom error message middle'],
             [-32099, 'custom error message upper'],
         ];
+    }
+
+    /**
+     * @test
+     * @dataProvider customCodeDataProvider
+     */
+    public function it_throws_exception_when_custom_error_code_has_no_message(int $code)
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(sprintf('Message is required for custom error code %s', $code));
+
+        JsonRpcResponse::withError('id', new JsonRpcError($code, null));
     }
 
     /**

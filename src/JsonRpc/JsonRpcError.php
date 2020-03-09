@@ -70,6 +70,7 @@ final class JsonRpcError implements Error
      * JsonRpcError constructor.
      * @param int $code
      * @param string|null $message
+     * @param array|bool|float|int|null|string
      */
     public function __construct(int $code, string $message = null, $data = null)
     {
@@ -79,6 +80,13 @@ final class JsonRpcError implements Error
         if (! ($predefinedCode || $customCode)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid status code provided: %s',
+                $code
+            ));
+        }
+        
+        if ($customCode && null === $message) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Message is required for custom error code %s',
                 $code
             ));
         }
