@@ -44,11 +44,11 @@ final class JsonRpcErrorFactory implements ErrorFactory
     /**
      * @var array Reason phrases for custom codes.
      */
-    private $customMessages = [];
+    private $customMessagePhrases = [];
 
-    public function __construct(array $customMessages = [])
+    public function __construct(array $customCodes = [])
     {
-        $this->customMessages = $customMessages;
+        $this->customMessagePhrases = $customCodes;
     }
 
     /**
@@ -69,8 +69,8 @@ final class JsonRpcErrorFactory implements ErrorFactory
             ));
         }
 
-        if ($isCustomCode && null===$message && isset($this->customMessages[$code])) {
-            $message = $this->customMessages[$code];
+        if ($isCustomCode && null===$message && isset($this->customMessagePhrases[$code])) {
+            $message = $this->customMessagePhrases[$code];
         }
 
         if ($isPredefinedCode && null === $message) {
