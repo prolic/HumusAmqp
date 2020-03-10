@@ -111,7 +111,12 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
             $exchanges[$exchange] = ExchangeFactory::$exchange($container, $channel);
         }
 
-        return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id']);
+        $errorFactory = null;
+        if (isset($options['error_factory'])) {
+            $errorFactory = $container->get($options['error_factory']);
+        }
+
+        return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id'], $errorFactory);
     }
 
     /**

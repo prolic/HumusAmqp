@@ -53,6 +53,12 @@ final class JsonRpcServer extends AbstractConsumer
     private $returnTrace;
 
     /**
+     *
+     * @var ErrorFactory
+     */
+    private $errorFactory;
+
+    /**
      * Constructor
      *
      * @param Queue $queue
@@ -70,10 +76,15 @@ final class JsonRpcServer extends AbstractConsumer
         float $idleTimeout,
         string $consumerTag = '',
         string $appId = '',
-        bool $returnTrace = false
+        bool $returnTrace = false,
+        ?ErrorFactory $errorFactory = null
     ) {
         if ('' === $consumerTag) {
             $consumerTag = bin2hex(random_bytes(24));
+        }
+
+        if (null === $errorFactory) {
+            $errorFactory = new JsonRpcErrorFactory();
         }
 
         if (extension_loaded('pcntl')) {
@@ -89,6 +100,7 @@ final class JsonRpcServer extends AbstractConsumer
         $this->exchange->setType('direct');
         $this->deliveryCallback = $deliveryCallback;
         $this->logger = $logger;
+        $this->errorFactory = $errorFactory;
         $this->idleTimeout = $idleTimeout;
         $this->consumerTag = $consumerTag;
         $this->appId = $appId;
@@ -121,9 +133,7 @@ final class JsonRpcServer extends AbstractConsumer
             } else {
                 $response = JsonRpcResponse::withError(
                     $envelope->getCorrelationId(),
-                    new JsonRpcError(
-                        JsonRpcError::ERROR_CODE_32601
-                    )
+                    $this->errorFactory->create(JsonRpcError::ERROR_CODE_32601)
                 );
             }
 
@@ -138,7 +148,7 @@ final class JsonRpcServer extends AbstractConsumer
             if (null === $request->id()) {
                 $response = JsonRpcResponse::withError(
                     $envelope->getCorrelationId(),
-                    new JsonRpcError(
+                    $this->errorFactory->create(
                         JsonRpcError::ERROR_CODE_32600,
                         'There was an error in detecting the id in the Request object'
                     )
@@ -155,7 +165,7 @@ final class JsonRpcServer extends AbstractConsumer
             $this->logger->error('Invalid json rpc version', $this->extractMessageInformation($envelope));
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
-                new JsonRpcError(
+                $this->errorFactory->create(
                     JsonRpcError::ERROR_CODE_32600,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null
@@ -165,7 +175,7 @@ final class JsonRpcServer extends AbstractConsumer
             $this->logger->error('Invalid json rpc request', $this->extractMessageInformation($envelope));
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
-                new JsonRpcError(
+                $this->errorFactory->create(
                     JsonRpcError::ERROR_CODE_32600,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null
@@ -175,7 +185,7 @@ final class JsonRpcServer extends AbstractConsumer
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
-                new JsonRpcError(
+                $this->errorFactory->create(
                     JsonRpcError::ERROR_CODE_32700,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null
@@ -189,7 +199,7 @@ final class JsonRpcServer extends AbstractConsumer
             $this->logger->error('Exception occurred', $extra);
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
-                new JsonRpcError(
+                $this->errorFactory->create(
                     JsonRpcError::ERROR_CODE_32603,
                     null,
                     $this->returnTrace ? $e->getTraceAsString() : null

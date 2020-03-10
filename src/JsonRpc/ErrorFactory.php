@@ -26,67 +26,13 @@ namespace Humus\Amqp\JsonRpc;
  * Class JsonRpcError
  * @package Humus\Amqp\JsonRpc
  */
-final class JsonRpcError implements Error
+interface ErrorFactory
 {
-    /**#@+
-     * @const int error codes
-     */
-    const ERROR_CODE_32700 = -32700;
-    const ERROR_CODE_32600 = -32600;
-    const ERROR_CODE_32601 = -32601;
-    const ERROR_CODE_32602 = -32602;
-    const ERROR_CODE_32603 = -32603;
-    /**#@-*/
-
     /**
-     * @var int
-     */
-    private $code;
-
-    /**
-     * @var
-     */
-    private $message;
-
-    /**
-     * @var array|bool|float|int|null|string
-     */
-    private $data;
-
-    /**
-     * JsonRpcError constructor.
+     * JsonRpcError factory.
      * @param int $code
-     * @param string $message
+     * @param ?string $message
      * @param array|bool|float|int|null|string $data
      */
-    public function __construct(int $code, string $message, $data = null)
-    {
-        $this->code = $code;
-        $this->message = $message;
-        $this->data = $data;
-    }
-
-    /**
-     * @return int
-     */
-    public function code()
-    {
-        return $this->code;
-    }
-
-    /**
-     * @return string
-     */
-    public function message()
-    {
-        return $this->message;
-    }
-
-    /**
-     * @return array|bool|float|int|null|string
-     */
-    public function data()
-    {
-        return $this->data;
-    }
+    public function create(int $code, ?string $message = null, $data = null): Error;
 }
