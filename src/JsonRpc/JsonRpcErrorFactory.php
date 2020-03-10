@@ -57,7 +57,7 @@ final class JsonRpcErrorFactory implements ErrorFactory
      * @param ?string $message
      * @param array|bool|float|int|null|string $data
      */
-    public function create(int $code, ?string $message = null, $data = null): JsonRpcError
+    public function create(int $code, ?string $message = null, $data = null): Error
     {
         $isPredefinedCode = defined(JsonRpcError::class . '::ERROR_CODE_' . -$code);
         $isCustomCode = $code >= -32099 && $code <= -32000;

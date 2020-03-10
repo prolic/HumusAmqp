@@ -105,18 +105,6 @@ class ResponseTest extends TestCase
 
     /**
      * @test
-     * @dataProvider customCodeDataProvider
-     */
-    public function it_throws_exception_when_no_message_provided_for_custom_code(int $code)
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('Message is required for custom error code %s', $code));
-
-        JsonRpcResponse::withError('id', new JsonRpcError($code));
-    }
-
-    /**
-     * @test
      */
     public function it_throws_exception_when_invalid_result_given()
     {
@@ -145,6 +133,6 @@ class ResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid status code provided: 100');
 
-        JsonRpcResponse::withError('id', new JsonRpcError(100));
+        JsonRpcResponse::withError('id', new JsonRpcError(100, 'whatever'));
     }
 }

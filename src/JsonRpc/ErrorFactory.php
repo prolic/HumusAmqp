@@ -34,5 +34,5 @@ interface ErrorFactory
      * @param ?string $message
      * @param array|bool|float|int|null|string $data
      */
-    public function create(int $code, ?string $message = null, $data = null): JsonRpcError;
+    public function create(int $code, ?string $message = null, $data = null): Error;
 }
