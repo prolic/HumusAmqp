@@ -71,6 +71,12 @@ final class JsonRpcClient implements Client
      * @var int
      */
     private $timeout = 0;
+    
+    /**
+     *
+     * @var ErrorFactory
+     */
+    private $errorFactory;
 
     /**
      * Constructor
@@ -80,14 +86,19 @@ final class JsonRpcClient implements Client
      * @param int $waitMillis
      * @param string $appId
      */
-    public function __construct(Queue $queue, array $exchanges, int $waitMillis = 100, string $appId = '')
+    public function __construct(Queue $queue, array $exchanges, int $waitMillis = 100, string $appId = '', ?ErrorFactory $errorFactory = null)
     {
         Assertion::min($waitMillis, 1);
         Assertion::notEmpty($exchanges, 'No exchanges given');
         Assertion::allIsInstanceOf($exchanges, Exchange::class);
+        
+        if (null === $errorFactory) {
+            $errorFactory = new JsonRpcErrorFactory();
+        }
 
         $this->queue = $queue;
         $this->exchanges = $exchanges;
+        $this->errorFactory = $errorFactory;
         $this->waitMillis = $waitMillis;
         $this->appId = $appId;
     }
@@ -218,7 +229,7 @@ final class JsonRpcClient implements Client
         ) {
             return JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
-                new JsonRpcError(JsonRpcError::ERROR_CODE_32603, 'Invalid JSON-RPC response')
+                $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Invalid JSON-RPC response')
             );
         }
 
@@ -233,7 +244,7 @@ final class JsonRpcClient implements Client
         if (! in_array($correlationId, $this->requestIds) && null !== $correlationId) {
             $response = JsonRpcResponse::withError(
                 $correlationId,
-                new JsonRpcError(JsonRpcError::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')
+                $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')
             );
         } elseif (isset($payload['result'])) {
             $response = JsonRpcResponse::withResult(
@@ -247,12 +258,12 @@ final class JsonRpcClient implements Client
         ) {
             $response = JsonRpcResponse::withError(
                 $correlationId,
-                new JsonRpcError(JsonRpcError::ERROR_CODE_32603, 'Invalid JSON-RPC response')
+                $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Invalid JSON-RPC response')
             );
         } else {
             $response = JsonRpcResponse::withError(
                 $correlationId,
-                new JsonRpcError($payload['error']['code'], $payload['error']['message'], $payload['error']['data'] ?? null)
+                $this->errorFactory->create($payload['error']['code'], $payload['error']['message'], $payload['error']['data'] ?? null)
             );
         }
 

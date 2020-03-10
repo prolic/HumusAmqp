@@ -25,6 +25,7 @@ namespace HumusTest\Amqp\Container;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Container\JsonRpcClientFactory;
+use Humus\Amqp\JsonRpc\ErrorFactory;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\Queue;
@@ -101,6 +102,81 @@ class JsonRpcClientFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
+        
+        $factory = new JsonRpcClientFactory('my_client');
+        $jsonRpcClient = $factory($container->reveal());
+
+        $this->assertInstanceOf(JsonRpcClient::class, $jsonRpcClient);
+    }
+    
+    /**
+     * @test
+     */
+    public function it_creates_json_rpc_client_with_custom_error_factory()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
+                        ],
+                    ],
+                    'exchange' => [
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
+                        ],
+                    ],
+                    'queue' => [
+                        'my_queue' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_queue',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
+                        ],
+                    ],
+                    'json_rpc_client' => [
+                        'my_client' => [
+                            'exchanges' => [
+                                'my_exchange',
+                            ],
+                            'queue' => 'my_queue',
+                            'error_factory' => 'my_error_factory',
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->getChannel()->shouldBeCalled();
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal())->shouldBeCalled();
+
+        $channel2 = $this->prophesize(Channel::class);
+        $channel2->newExchange()->willReturn($exchange->reveal());
+
+        $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
+        $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
+
+        $errorFactory = $this->prophesize(ErrorFactory::class);
+        $container->get('my_error_factory')->willReturn($errorFactory->reveal())->shouldBeCalled();
 
         $factory = new JsonRpcClientFactory('my_client');
         $jsonRpcClient = $factory($container->reveal());
@@ -145,6 +221,7 @@ class JsonRpcClientFactoryTest extends TestCase
                                 'my_exchange',
                             ]),
                             'queue' => 'my_queue',
+                            'error_factory' => 'my_error_factory',
                         ],
                     ],
                 ],
@@ -172,6 +249,9 @@ class JsonRpcClientFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
+        
+        $errorFactory = $this->prophesize(ErrorFactory::class);
+        $container->get('my_error_factory')->willReturn($errorFactory->reveal())->shouldBeCalled();
 
         $clientName = 'my_client';
         $jsonRpcClient = JsonRpcClientFactory::$clientName($container->reveal());

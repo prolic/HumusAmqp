@@ -25,6 +25,7 @@ namespace Humus\Amqp\Container;
 use Humus\Amqp\Exception;
 use Humus\Amqp\JsonRpc\Client;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
+use Humus\Amqp\JsonRpc\JsonRpcErrorFactory;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
@@ -110,8 +111,13 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         foreach ($options['exchanges'] as $exchange) {
             $exchanges[$exchange] = ExchangeFactory::$exchange($container, $channel);
         }
+        
+        $errorFactory = null;
+        if (isset($options['error_factory'])) {
+            $errorFactory = $container->get($options['error_factory']);
+        }
 
-        return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id']);
+        return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id'], $errorFactory);
     }
 
     /**
