@@ -104,7 +104,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $container->get('my_connection')->willReturn($connection->reveal());
         $container->get('my_callback')->willReturn(function () {
         });
-        
+
         $factory = new JsonRpcServerFactory('my_server');
         $jsonRpcServer = $factory($container->reveal());
 

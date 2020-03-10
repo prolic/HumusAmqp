@@ -102,7 +102,7 @@ class JsonRpcClientFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        
+
         $factory = new JsonRpcClientFactory('my_client');
         $jsonRpcClient = $factory($container->reveal());
 
@@ -249,7 +249,7 @@ class JsonRpcClientFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        
+
         $errorFactory = $this->prophesize(ErrorFactory::class);
         $container->get('my_error_factory')->willReturn($errorFactory->reveal())->shouldBeCalled();
 

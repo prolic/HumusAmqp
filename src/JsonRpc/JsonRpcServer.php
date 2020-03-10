@@ -82,7 +82,7 @@ final class JsonRpcServer extends AbstractConsumer
         if ('' === $consumerTag) {
             $consumerTag = bin2hex(random_bytes(24));
         }
-        
+
         if (null === $errorFactory) {
             $errorFactory = new JsonRpcErrorFactory();
         }

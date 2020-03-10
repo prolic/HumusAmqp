@@ -40,12 +40,12 @@ final class JsonRpcErrorFactory implements ErrorFactory
         -32602 => 'Invalid params',
         -32603 => 'Internal error',
     ];
-    
+
     /**
      * @var array Reason phrases for custom codes.
      */
     private $customMessages = [];
-    
+
     public function __construct(array $customMessages = [])
     {
         $this->customMessages = $customMessages;

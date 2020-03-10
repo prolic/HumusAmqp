@@ -91,7 +91,7 @@ final class JsonRpcClient implements Client
         Assertion::min($waitMillis, 1);
         Assertion::notEmpty($exchanges, 'No exchanges given');
         Assertion::allIsInstanceOf($exchanges, Exchange::class);
-        
+
         if (null === $errorFactory) {
             $errorFactory = new JsonRpcErrorFactory();
         }
