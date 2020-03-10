@@ -49,7 +49,7 @@ use Psr\Log\NullLogger;
 abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
-    
+
     /**
      * @var JsonRpcErrorFactory
      */
