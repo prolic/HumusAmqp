@@ -36,8 +36,8 @@ class JsonRpcErrorFactoryTest extends TestCase
     private $factory;
 
     private $customMessages = [
-        -32000 => 'lower message test',
-        -31099 => 'upper message test',
+        -32000 => 'upper message test',
+        -32099 => 'lower message test',
     ];
 
     protected function setUp(): void

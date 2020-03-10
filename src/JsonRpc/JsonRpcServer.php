@@ -51,7 +51,7 @@ final class JsonRpcServer extends AbstractConsumer
      * @var bool
      */
     private $returnTrace;
-    
+
     /**
      *
      * @var ErrorFactory

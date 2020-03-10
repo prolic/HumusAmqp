@@ -76,14 +76,14 @@ final class JsonRpcErrorFactory implements ErrorFactory
         if ($isPredefinedCode && null === $message) {
             $message = $this->recommendedMessagePhrases[$code];
         }
-        
+
         if (null === $message) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Message is required for error code %s',
                 $code
             ));
         }
-        
+
         return new JsonRpcError($code, $message, $data);
     }
 }
