@@ -54,7 +54,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
      * @var JsonRpcErrorFactory
      */
     private $errorFactory;
-    
+
     protected function setUp(): void
     {
         $this->errorFactory = new JsonRpcErrorFactory();
