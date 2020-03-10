@@ -40,6 +40,16 @@ final class JsonRpcErrorFactory implements ErrorFactory
         -32602 => 'Invalid params',
         -32603 => 'Internal error',
     ];
+    
+    /**
+     * @var array Reason phrases for custom codes.
+     */
+    private $customMessages = [];
+    
+    public function __construct(array $customMessages = [])
+    {
+        $this->customMessages = $customMessages;
+    }
 
     /**
      * JsonRpcError factory.
@@ -59,15 +69,19 @@ final class JsonRpcErrorFactory implements ErrorFactory
             ));
         }
 
-        if ($isCustomCode && null === $message) {
-            throw new Exception\InvalidArgumentException(sprintf(
-                'Message is required for custom error code %s',
-                $code
-            ));
+        if ($isCustomCode && isset($this->customMessages[$code])) {
+            $message = $this->customMessages[$code];
         }
 
         if ($isPredefinedCode && null === $message) {
             $message = $this->recommendedMessagePhrases[$code];
+        }
+        
+        if (null === $message) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Message is required for error code %s',
+                $code
+            ));
         }
         
         return new JsonRpcError($code, $message, $data);
