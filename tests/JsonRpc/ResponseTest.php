@@ -107,12 +107,12 @@ class ResponseTest extends TestCase
      * @test
      * @dataProvider customCodeDataProvider
      */
-    public function it_throws_exception_when_custom_error_code_has_no_message(int $code)
+    public function it_throws_exception_when_no_message_provided_for_custom_code(int $code)
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf('Message is required for custom error code %s', $code));
 
-        JsonRpcResponse::withError('id', new JsonRpcError($code, null));
+        JsonRpcResponse::withError('id', new JsonRpcError($code));
     }
 
     /**
