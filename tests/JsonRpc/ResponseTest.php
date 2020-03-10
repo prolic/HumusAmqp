@@ -24,6 +24,7 @@ namespace HumusTest\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\JsonRpc\JsonRpcError;
+use Humus\Amqp\JsonRpc\JsonRpcErrorFactory;
 use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -33,6 +34,13 @@ use PHPUnit\Framework\TestCase;
  */
 class ResponseTest extends TestCase
 {
+    private $errorFactory;
+
+    protected function setUp(): void
+    {
+        $this->errorFactory = new JsonRpcErrorFactory();
+    }
+
     /**
      * @test
      */
@@ -48,7 +56,7 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_error()
     {
-        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603));
+        $response = JsonRpcResponse::withError('id', $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603));
         $this->assertInstanceOf(JsonRpcError::class, $response->error());
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('Internal error', $response->error()->message());
@@ -61,7 +69,7 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_error_with_data()
     {
-        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603, null, ['foo' => 'bar']));
+        $response = JsonRpcResponse::withError('id', $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, null, ['foo' => 'bar']));
         $this->assertInstanceOf(JsonRpcError::class, $response->error());
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('Internal error', $response->error()->message());
@@ -74,45 +82,11 @@ class ResponseTest extends TestCase
      */
     public function it_creates_valid_error_with_custom_message()
     {
-        $response = JsonRpcResponse::withError('id', new JsonRpcError(JsonRpcError::ERROR_CODE_32603, 'custom message'));
+        $response = JsonRpcResponse::withError('id', $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'custom message'));
         $this->assertInstanceOf(JsonRpcError::class, $response->error());
         $this->assertEquals(JsonRpcError::ERROR_CODE_32603, $response->error()->code());
         $this->assertEquals('custom message', $response->error()->message());
         $this->assertEquals('id', $response->id());
-    }
-
-    /**
-     * @test
-     * @dataProvider customCodeDataProvider
-     */
-    public function it_creates_valid_error_with_custom_error_code(int $code, string $message)
-    {
-        $response = JsonRpcResponse::withError('id', new JsonRpcError($code, $message));
-        $this->assertInstanceOf(JsonRpcError::class, $response->error());
-        $this->assertEquals($code, $response->error()->code());
-        $this->assertEquals($message, $response->error()->message());
-        $this->assertEquals('id', $response->id());
-    }
-
-    public function customCodeDataProvider(): array
-    {
-        return [
-            [-32000, 'custom error message lower'],
-            [-32050, 'custom error message middle'],
-            [-32099, 'custom error message upper'],
-        ];
-    }
-
-    /**
-     * @test
-     * @dataProvider customCodeDataProvider
-     */
-    public function it_throws_exception_when_no_message_provided_for_custom_code(int $code)
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('Message is required for custom error code %s', $code));
-
-        JsonRpcResponse::withError('id', new JsonRpcError($code));
     }
 
     /**
@@ -135,16 +109,5 @@ class ResponseTest extends TestCase
         $this->expectExceptionMessage('result must only contain arrays and scalar values');
 
         JsonRpcResponse::withResult('id', ['foo' => new \stdClass()]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_throws_exception_when_invalid_error_code_given()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid status code provided: 100');
-
-        JsonRpcResponse::withError('id', new JsonRpcError(100));
     }
 }

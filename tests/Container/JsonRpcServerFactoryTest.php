@@ -26,6 +26,7 @@ use Humus\Amqp\Channel;
 use Humus\Amqp\Connection;
 use Humus\Amqp\Container\JsonRpcServerFactory;
 use Humus\Amqp\Exchange;
+use Humus\Amqp\JsonRpc\ErrorFactory;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
@@ -178,6 +179,82 @@ class JsonRpcServerFactoryTest extends TestCase
         $container->get('my_callback')->willReturn(function () {
         });
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
+
+        $serverName = 'my_server';
+        $jsonRpcServer = JsonRpcServerFactory::$serverName($container->reveal());
+
+        $this->assertInstanceOf(JsonRpcServer::class, $jsonRpcServer);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_json_rpc_server_with_call_static_and_defined_error_factory()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'vhost' => '/humus-amqp-test',
+                            'type' => 'stream',
+                        ],
+                    ],
+                    'exchange' => [
+                        'my_exchange' => [
+                            'connection' => 'my_connection',
+                            'name' => 'test_exchange',
+                        ],
+                    ],
+                    'queue' => [
+                        'my_queue' => [
+                            'connection' => 'my_connection',
+                            'name' => 'my_queue',
+                            'exchanges' => [
+                                'my_exchange' => [],
+                            ],
+                        ],
+                    ],
+                    'json_rpc_server' => [
+                        'my_server' => [
+                            'exchange' => 'my_exchange',
+                            'delivery_callback' => 'my_callback',
+                            'queue' => 'my_queue',
+                            'idle_timeout' => 1.5,
+                            'error_factory' => 'my_error_factory',
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $exchange = $this->prophesize(Exchange::class);
+
+        $channel2 = $this->prophesize(Channel::class);
+        $channel2->newExchange()->willReturn($exchange->reveal());
+
+        $queue = $this->prophesize(Queue::class);
+        $queue->setName('my_queue')->shouldBeCalled();
+        $queue->setFlags(2)->shouldBeCalled();
+        $queue->setArguments([])->shouldBeCalled();
+        $queue->declareQueue()->shouldBeCalled();
+        $queue->getName()->willReturn('my_queue')->shouldBeCalled();
+        $queue->getChannel()->willReturn($channel2->reveal())->shouldBeCalled();
+
+        $channel = $this->prophesize(Channel::class);
+        $channel->newQueue()->willReturn($queue->reveal());
+
+        $connection = $this->prophesize(Connection::class);
+        $connection->newChannel()->willReturn($channel->reveal());
+
+        $container->get('my_connection')->willReturn($connection->reveal());
+        $container->get('my_callback')->willReturn(function () {
+        });
+
+        $errorFactory = $this->prophesize(ErrorFactory::class);
+        $container->get('my_error_factory')->willReturn($errorFactory->reveal())->shouldBeCalled();
 
         $serverName = 'my_server';
         $jsonRpcServer = JsonRpcServerFactory::$serverName($container->reveal());

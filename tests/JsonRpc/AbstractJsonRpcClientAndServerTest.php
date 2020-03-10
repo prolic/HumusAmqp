@@ -30,6 +30,7 @@ use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\JsonRpc\JsonRpcError;
+use Humus\Amqp\JsonRpc\JsonRpcErrorFactory;
 use Humus\Amqp\JsonRpc\JsonRpcRequest;
 use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
@@ -48,6 +49,16 @@ use Psr\Log\NullLogger;
 abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
+
+    /**
+     * @var JsonRpcErrorFactory
+     */
+    private $errorFactory;
+
+    protected function setUp(): void
+    {
+        $this->errorFactory = new JsonRpcErrorFactory();
+    }
 
     /**
      * @test
@@ -693,7 +704,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
                 return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
             }
 
-            return JsonRpcResponse::withError($request->id(), new JsonRpcError(JsonRpcError::ERROR_CODE_32601));
+            return JsonRpcResponse::withError($request->id(), $this->errorFactory->create(JsonRpcError::ERROR_CODE_32601));
         };
 
         $logger = new ArrayLogger();

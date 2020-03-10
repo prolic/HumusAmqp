@@ -101,6 +101,11 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
             $logger = $container->get($options['logger']);
         }
 
+        $errorFactory = null;
+        if (isset($options['error_factory'])) {
+            $errorFactory = $container->get($options['error_factory']);
+        }
+
         return new JsonRpcServer(
             $queue,
             $deliveryCallback,
@@ -108,7 +113,8 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
             $options['idle_timeout'],
             $options['consumer_tag'],
             $options['app_id'],
-            $options['return_trace']
+            $options['return_trace'],
+            $errorFactory
         );
     }
 
