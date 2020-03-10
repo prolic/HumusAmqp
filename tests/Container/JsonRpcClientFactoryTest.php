@@ -108,7 +108,7 @@ class JsonRpcClientFactoryTest extends TestCase
 
         $this->assertInstanceOf(JsonRpcClient::class, $jsonRpcClient);
     }
-    
+
     /**
      * @test
      */

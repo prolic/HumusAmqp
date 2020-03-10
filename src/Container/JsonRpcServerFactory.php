@@ -24,7 +24,6 @@ namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
 use Humus\Amqp\JsonRpc\JsonRpcServer;
-use Humus\Amqp\JsonRpc\JsonRpcErrorFactory;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
@@ -101,7 +100,7 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
         } else {
             $logger = $container->get($options['logger']);
         }
-        
+
         $errorFactory = null;
         if (isset($options['error_factory'])) {
             $errorFactory = $container->get($options['error_factory']);

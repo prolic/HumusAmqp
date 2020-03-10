@@ -52,7 +52,7 @@ class JsonRpcErrorFactoryTest extends TestCase
     public function it_creates_valid_predefined_error(int $code, string $message, $data = null)
     {
         $error = $this->factory->create($code, null, $data);
-        
+
         $this->assertInstanceOf(Error::class, $error);
 
         $this->assertEquals($code, $error->code());
@@ -67,7 +67,7 @@ class JsonRpcErrorFactoryTest extends TestCase
     public function it_creates_valid_custom_error(int $code, string $message, $data = null)
     {
         $error = $this->factory->create($code, null, $data);
-        
+
         $this->assertInstanceOf(Error::class, $error);
 
         $this->assertEquals($code, $error->code());
@@ -98,11 +98,11 @@ class JsonRpcErrorFactoryTest extends TestCase
     public function customCodeDataProvider(): array
     {
         $set = [];
-        
+
         foreach ($this->customMessages as $code => $message) {
             $set[] = [$code, $message, ['test' => 1]];
         }
-        
+
         return $set;
     }
 }

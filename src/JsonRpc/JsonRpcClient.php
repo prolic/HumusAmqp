@@ -71,7 +71,7 @@ final class JsonRpcClient implements Client
      * @var int
      */
     private $timeout = 0;
-    
+
     /**
      *
      * @var ErrorFactory

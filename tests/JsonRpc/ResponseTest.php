@@ -35,11 +35,12 @@ use PHPUnit\Framework\TestCase;
 class ResponseTest extends TestCase
 {
     private $errorFactory;
-    
+
     protected function setUp(): void
     {
         $this->errorFactory = new JsonRpcErrorFactory();
     }
+
     /**
      * @test
      */
