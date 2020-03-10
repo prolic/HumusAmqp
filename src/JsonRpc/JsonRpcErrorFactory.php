@@ -69,7 +69,7 @@ final class JsonRpcErrorFactory implements ErrorFactory
             ));
         }
 
-        if ($isCustomCode && null===$message && isset($this->customMessagePhrases[$code])) {
+        if ($isCustomCode && null === $message && isset($this->customMessagePhrases[$code])) {
             $message = $this->customMessagePhrases[$code];
         }
 
