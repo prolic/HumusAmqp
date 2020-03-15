@@ -39,26 +39,26 @@ interface Connection
      *
      * This method will initiate a connection with the AMQP broker.
      */
-    public function connect(): bool;
+    public function connect(): void;
 
     /**
      * Closes the transient connection with the AMQP broker.
      *
      * This method will close an open connection with the AMQP broker.
      */
-    public function disconnect(): bool;
+    public function disconnect(): void;
 
     /**
      * Close any open transient connections and initiate a new one with the AMQP broker.
      */
-    public function reconnect(): bool;
+    public function reconnect(): void;
 
     public function getOptions(): ConnectionOptions;
 
     /**
      * @return mixed
      */
-    public function getResource();
+    public function getResource(): object;
 
     public function newChannel(): Channel;
 }

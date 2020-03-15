@@ -53,11 +53,9 @@ abstract class AbstractConnection implements ConnectionInterface
         throw new BadMethodCallException();
     }
 
-    public function reconnect(): bool
+    public function reconnect(): void
     {
         $this->connection->reconnect();
-
-        return $this->isConnected();
     }
 
     public function getOptions(): ConnectionOptions

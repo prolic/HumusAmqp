@@ -79,13 +79,13 @@ final class Connection implements ConnectionInterface
         }
     }
 
-    public function reconnect(): bool
+    public function reconnect(): void
     {
         if ($this->options->getPersistent()) {
-            return $this->connection->preconnect();
+            $this->connection->preconnect();
         }
 
-        return $this->connection->reconnect();
+        $this->connection->reconnect();
     }
 
     public function getOptions(): ConnectionOptions
