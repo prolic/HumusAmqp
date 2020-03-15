@@ -32,43 +32,19 @@ use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class AbstractPlainProducerTest
- * @package HumusTest\Amqp
- */
 abstract class AbstractPlainProducerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
-    /**
-     * @var Channel
-     */
-    protected $channel;
-
-    /**
-     * @var Exchange
-     */
-    protected $exchange;
-
-    /**
-     * @var Queue
-     */
-    protected $queue;
-
-    /**
-     * @var PlainProducer
-     */
-    protected $producer;
-
+    protected Channel $channel;
+    protected Exchange $exchange;
+    protected Queue $queue;
+    protected PlainProducer $producer;
     /**
      * @var callable
      */
     protected $callback;
-
-    /**
-     * @var array
-     */
-    protected $results = [];
+    protected array $results = [];
 
     protected function setUp(): void
     {
@@ -100,7 +76,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
     /**
      * @test
      */
-    public function it_produces_and_get_messages_from_queue()
+    public function it_produces_and_get_messages_from_queue(): void
     {
         $producer = new PlainProducer($this->exchange);
         $producer->publish('foo');
@@ -116,7 +92,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
     /**
      * @test
      */
-    public function it_produces_transactional_and_get_messages_from_queue()
+    public function it_produces_transactional_and_get_messages_from_queue(): void
     {
         $producer = new PlainProducer($this->exchange);
         $producer->startTransaction();
@@ -134,7 +110,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
     /**
      * @test
      */
-    public function it_rolls_back_transaction()
+    public function it_rolls_back_transaction(): void
     {
         $producer = new PlainProducer($this->exchange);
         $producer->startTransaction();
@@ -149,7 +125,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
     /**
      * @test
      */
-    public function it_produces_in_confirm_mode()
+    public function it_produces_in_confirm_mode(): void
     {
         $this->exchange->getChannel()->setConfirmCallback(
             function () {

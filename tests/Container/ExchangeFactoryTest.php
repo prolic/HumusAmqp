@@ -30,16 +30,12 @@ use Humus\Amqp\Exchange;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class ExchangeFactoryTest
- * @package HumusTest\Amqp\Container
- */
 class ExchangeFactoryTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_creates_exchange()
+    public function it_creates_exchange(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -84,7 +80,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_exchange_with_call_static()
+    public function it_creates_exchange_with_call_static(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -129,7 +125,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_exchange_with_call_static_and_given_channel()
+    public function it_creates_exchange_with_call_static_and_given_channel(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -164,7 +160,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_container_param()
+    public function it_throws_exception_with_invalid_call_static_container_param(): void
     {
         $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
@@ -176,7 +172,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_channel_param()
+    public function it_throws_exception_with_invalid_call_static_channel_param(): void
     {
         $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The second argument must be a type of Humus\Amqp\Channel or null');
@@ -190,7 +186,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_auto_declares_exchange()
+    public function it_auto_declares_exchange(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -237,7 +233,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_auto_declares_exchange_and_binds_exchange_to_exchange()
+    public function it_auto_declares_exchange_and_binds_exchange_to_exchange(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -355,7 +351,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_auto_declares_alternate_exchange()
+    public function it_auto_declares_alternate_exchange(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -419,7 +415,7 @@ class ExchangeFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_no_bool_given_to_call_static_as_third_parameter()
+    public function it_throws_exception_when_no_bool_given_to_call_static_as_third_parameter(): void
     {
         $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The third argument must be a boolean');

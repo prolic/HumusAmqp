@@ -22,23 +22,9 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-/**
- * Interface Consumer
- * @package Humus\Amqp
- */
 interface Consumer
 {
-    /**
-     * Start consumer
-     *
-     * @param int $msgAmount
-     */
-    public function consume(int $msgAmount = 0);
+    public function consume(int $msgAmount = 0): void;
 
-    /**
-     * Shutdown consumer
-     *
-     * @return void
-     */
-    public function shutdown();
+    public function shutdown(): void;
 }

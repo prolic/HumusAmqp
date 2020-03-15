@@ -29,21 +29,10 @@ use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class AbstractChannelTest
- * @package HumusTest\Amqp
- */
 abstract class AbstractChannelTest extends TestCase implements CanCreateConnection
 {
-    /**
-     * @var Connection
-     */
-    protected $connection;
-
-    /**
-     * @var Channel
-     */
-    protected $channel;
+    protected Connection $connection;
+    protected Channel $channel;
 
     protected function setUp(): void
     {
@@ -54,7 +43,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
     /**
      * @test
      */
-    public function it_returns_channel_id()
+    public function it_returns_channel_id(): void
     {
         $this->assertEquals(1, $this->channel->getChannelId());
     }
@@ -62,7 +51,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
     /**
      * @test
      */
-    public function it_returns_connection()
+    public function it_returns_connection(): void
     {
         $connection = $this->channel->getConnection();
 
@@ -74,7 +63,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
      * @test
      * @doesNotPerformAssertions
      */
-    public function it_creates_multiple_channels()
+    public function it_creates_multiple_channels(): void
     {
         $this->connection->newChannel();
     }
@@ -82,7 +71,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
     /**
      * @test
      */
-    public function it_creates_new_exchange()
+    public function it_creates_new_exchange(): void
     {
         $channel = $this->connection->newChannel();
 
@@ -94,7 +83,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
     /**
      * @test
      */
-    public function it_creates_new_queue()
+    public function it_creates_new_queue(): void
     {
         $channel = $this->connection->newChannel();
 
@@ -106,7 +95,7 @@ abstract class AbstractChannelTest extends TestCase implements CanCreateConnecti
     /**
      * @test
      */
-    public function it_changes_qos()
+    public function it_changes_qos(): void
     {
         $channel = $this->connection->newChannel();
         $channel->qos(0, 5);

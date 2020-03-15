@@ -26,10 +26,6 @@ use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractChannelTest;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
-/**
- * Class ChannelTest
- * @package HumusTest\Amqp\PhpAmqpLib
- */
 final class ChannelTest extends AbstractChannelTest
 {
     use CreateConnectionTrait;
@@ -37,7 +33,7 @@ final class ChannelTest extends AbstractChannelTest
     /**
      * @test
      */
-    public function it_throws_exception_on_isConnected()
+    public function it_throws_exception_on_isConnected(): void
     {
         $this->expectException(BadMethodCallException::class);
 

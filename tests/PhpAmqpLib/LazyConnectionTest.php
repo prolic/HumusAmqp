@@ -26,27 +26,19 @@ use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
 use HumusTest\Amqp\AbstractConnectionTest;
 
-/**
- * Class LazyConnectionTest
- * @package HumusTest\Amqp\PhpAmqpLib
- */
 final class LazyConnectionTest extends AbstractConnectionTest
 {
     /**
      * @test
      */
-    public function it_returns_internal_connection()
+    public function it_returns_internal_connection(): void
     {
         $connection = $this->createConnection();
 
         $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPLazyConnection::class, $connection->getResource());
     }
 
-    /**
-     * @param ConnectionOptions|null $options
-     * @return \Humus\Amqp\Connection
-     */
-    public function createConnection(ConnectionOptions $options = null): \Humus\Amqp\Connection
+    public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         if (null === $options) {
             $options = new ConnectionOptions();

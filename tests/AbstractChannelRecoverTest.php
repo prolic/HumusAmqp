@@ -31,21 +31,10 @@ use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class AbstractChannelRecoverTest
- * @package HumusTest\Amqp
- */
 abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateConnection
 {
-    /**
-     * @var Exchange
-     */
-    private $exchange;
-
-    /**
-     * @var Queue
-     */
-    private $queue;
+    private Exchange $exchange;
+    private Queue $queue;
 
     protected function tearDown(): void
     {
@@ -56,7 +45,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
     /**
      * @test
      */
-    public function it_recovers()
+    public function it_recovers(): void
     {
         $result = [];
 

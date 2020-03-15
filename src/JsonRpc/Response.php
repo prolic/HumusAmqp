@@ -22,29 +22,16 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-/**
- * Class JsonRpcResponse
- * @package Humus\Amqp\JsonRpc
- */
 interface Response
 {
-    /**
-     * @return string|null
-     */
-    public function id();
+    public function id(): ?string;
 
     /**
      * @return array|bool|float|int|string|null
      */
     public function result();
 
-    /**
-     * @return Error|null
-     */
-    public function error();
+    public function error(): ?Error;
 
-    /**
-     * @return bool
-     */
     public function isError(): bool;
 }

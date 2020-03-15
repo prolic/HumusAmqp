@@ -29,16 +29,12 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\ApplicationTester;
 
-/**
- * Class ConsumerRunnerTest
- * @package HumusTest\Amqp\Console
- */
 class ConsumerRunnerTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_creates_helper_set()
+    public function it_creates_helper_set(): void
     {
         $container = $this->prophesize(ContainerInterface::class)->reveal();
 
@@ -52,7 +48,7 @@ class ConsumerRunnerTest extends TestCase
     /**
      * @test
      */
-    public function it_prints_cli_config_template()
+    public function it_prints_cli_config_template(): void
     {
         ob_start();
         ConsoleRunner::printCliConfigTemplate();
@@ -65,7 +61,7 @@ class ConsumerRunnerTest extends TestCase
      * @test
      * @backupGlobals
      */
-    public function it_runs_application()
+    public function it_runs_application(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 

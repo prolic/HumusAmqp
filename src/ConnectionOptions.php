@@ -22,310 +22,164 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-/**
- * Class ConnectionOptions
- * @package Humus\Amqp
- */
 class ConnectionOptions extends AbstractOptions
 {
-    /**
-     * @var string
-     */
-    protected $host = 'localhost';
+    protected string $host = 'localhost';
+    protected int $port = 5672;
+    protected string $login = 'guest';
+    protected string $password = 'guest';
+    protected string $vhost = '/';
+    protected bool $persistent = false;
+    protected float $connectTimeout = 1.00; //secs
+    protected float $readTimeout = 1.00; // secs
+    protected float $writeTimeout = 1.00; // secs
+    protected int $heartbeat = 0;
+    protected ?string $cacert = null;
+    protected ?string $cert = null;
+    protected ?string $key = null;
+    protected ?bool $verify = null;
 
-    /**
-     * @var int
-     */
-    protected $port = 5672;
-
-    /**
-     * @var string
-     */
-    protected $login = 'guest';
-
-    /**
-     * @var string
-     */
-    protected $password = 'guest';
-
-    /**
-     * @var string
-     */
-    protected $vhost = '/';
-
-    /**
-     * @var bool
-     */
-    protected $persistent = false;
-
-    /**
-     * @var float
-     */
-    protected $connectTimeout = 1.00; //secs
-
-    /**
-     * @var float
-     */
-    protected $readTimeout = 1.00; // secs
-
-    /**
-     * @var float
-     */
-    protected $writeTimeout = 1.00; // secs
-
-    /**
-     * @var int
-     */
-    protected $heartbeat = 0;
-
-    /**
-     * @var string
-     */
-    protected $cacert = null;
-
-    /**
-     * @var string
-     */
-    protected $cert = null;
-
-    /**
-     * @var string
-     */
-    protected $key = null;
-
-    /**
-     * @var bool|null
-     */
-    protected $verify = null;
-
-    /**
-     * @param string $host
-     */
-    public function setHost(string $host)
+    public function setHost(string $host): void
     {
         $this->host = $host;
     }
 
-    /**
-     * @return string
-     */
     public function getHost(): string
     {
         return $this->host;
     }
 
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password)
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
 
-    /**
-     * @return string
-     */
     public function getPassword(): string
     {
         return $this->password;
     }
 
-    /**
-     * @param bool $persistent
-     */
-    public function setPersistent(bool $persistent)
+    public function setPersistent(bool $persistent): void
     {
         $this->persistent = $persistent;
     }
 
-    /**
-     * @return bool
-     */
     public function getPersistent(): bool
     {
         return $this->persistent;
     }
 
-    /**
-     * @param int $port
-     */
-    public function setPort(int $port)
+    public function setPort(int $port): void
     {
         $this->port = $port;
     }
 
-    /**
-     * @return int
-     */
     public function getPort(): int
     {
         return $this->port;
     }
 
-    /**
-     * @return float
-     */
     public function getConnectTimeout(): float
     {
         return $this->connectTimeout;
     }
 
-    /**
-     * @param float $connectTimeout
-     */
-    public function setConnectTimeout(float $connectTimeout)
+    public function setConnectTimeout(float $connectTimeout): void
     {
         $this->connectTimeout = $connectTimeout;
     }
 
-    /**
-     * @param float $readTimeout
-     */
-    public function setReadTimeout(float $readTimeout)
+    public function setReadTimeout(float $readTimeout): void
     {
         $this->readTimeout = $readTimeout;
     }
 
-    /**
-     * @return float
-     */
     public function getReadTimeout(): float
     {
         return $this->readTimeout;
     }
 
-    /**
-     * @param string $login
-     */
-    public function setLogin(string $login)
+    public function setLogin(string $login): void
     {
         $this->login = $login;
     }
 
-    /**
-     * @return string
-     */
     public function getLogin(): string
     {
         return $this->login;
     }
 
-    /**
-     * @param string $vhost
-     */
-    public function setVhost(string $vhost)
+    public function setVhost(string $vhost): void
     {
         $this->vhost = $vhost;
     }
 
-    /**
-     * @return string
-     */
     public function getVhost(): string
     {
         return $this->vhost;
     }
 
-    /**
-     * @param float $writeTimeout
-     */
-    public function setWriteTimeout(float $writeTimeout)
+    public function setWriteTimeout(float $writeTimeout): void
     {
         $this->writeTimeout = $writeTimeout;
     }
 
-    /**
-     * @return float
-     */
     public function getWriteTimeout(): float
     {
         return $this->writeTimeout;
     }
 
-    /**
-     * @return int
-     */
     public function getHeartbeat(): int
     {
         return $this->heartbeat;
     }
 
-    /**
-     * @param int $heartbeat
-     */
-    public function setHeartbeat(int $heartbeat)
+    public function setHeartbeat(int $heartbeat): void
     {
         $this->heartbeat = $heartbeat;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getCACert()
+    public function getCACert(): ?string
     {
         return $this->cacert;
     }
 
-    /**
-     * @param string $cacert
-     */
-    public function setCACert(string $cacert)
+    public function setCACert(string $cacert): void
     {
         $this->cacert = $cacert;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getCert()
+    public function getCert(): ?string
     {
         return $this->cert;
     }
 
-    /**
-     * @param string $cert
-     */
-    public function setCert(string $cert)
+    public function setCert(string $cert): void
     {
         $this->cert = $cert;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getKey()
+    public function getKey(): ?string
     {
         return $this->key;
     }
 
-    /**
-     * @param string $key
-     */
-    public function setKey(string $key)
+    public function setKey(string $key): void
     {
         $this->key = $key;
     }
 
-    /**
-     * @return bool|null
-     */
-    public function getVerify()
+    public function getVerify(): ?bool
     {
         return $this->verify;
     }
 
-    /**
-     * @param bool $verify
-     */
-    public function setVerify(bool $verify)
+    public function setVerify(bool $verify): void
     {
         $this->verify = $verify;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         $array = [];
         $transform = function ($letters) {

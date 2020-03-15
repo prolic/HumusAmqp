@@ -34,28 +34,13 @@ use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class AbstractQueueTest
- * @package HumusTest\Amqp
- */
 abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
-    /**
-     * @var Channel
-     */
-    protected $channel;
-
-    /**
-     * @var Exchange
-     */
-    protected $exchange;
-
-    /**
-     * @var Queue
-     */
-    protected $queue;
+    protected Channel $channel;
+    protected Exchange $exchange;
+    protected Queue $queue;
 
     protected function setUp(): void
     {
@@ -91,7 +76,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_sets_argument()
+    public function it_sets_argument(): void
     {
         $this->queue->setArgument('key', 'value');
 
@@ -130,7 +115,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_sets_name_flags_and_type()
+    public function it_sets_name_flags_and_type(): void
     {
         $this->assertEquals('test-queue', $this->queue->getName());
 
@@ -151,7 +136,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
      * @test
      * @doesNotPerformAssertions
      */
-    public function it_binds_with_arguments()
+    public function it_binds_with_arguments(): void
     {
         $this->queue->unbind('test-exchange', '#', [
             'foo' => 'bar',
@@ -181,7 +166,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
      * @test
      * @doesNotPerformAssertions
      */
-    public function it_unbinds_queue()
+    public function it_unbinds_queue(): void
     {
         $this->queue->unbind('test-exchange');
     }
@@ -189,7 +174,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_returns_channel_and_connection()
+    public function it_returns_channel_and_connection(): void
     {
         $this->assertInstanceOf(Channel::class, $this->queue->getChannel());
         $this->assertInstanceOf(Connection::class, $this->queue->getConnection());
@@ -198,7 +183,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_consumes_with_callback()
+    public function it_consumes_with_callback(): void
     {
         $this->exchange->publish('foo');
         $this->exchange->publish('bar');
@@ -227,7 +212,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_produces_and_get_messages_from_queue()
+    public function it_produces_and_get_messages_from_queue(): void
     {
         $this->exchange->publish('foo', '', Constants::AMQP_NOPARAM, [
             'priority' => 5,
@@ -266,7 +251,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_produces_transactional_and_get_messages_from_queue()
+    public function it_produces_transactional_and_get_messages_from_queue(): void
     {
         $this->channel->startTransaction();
         $this->exchange->publish('foo');
@@ -286,7 +271,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_rolls_back_transation()
+    public function it_rolls_back_transation(): void
     {
         $this->channel->startTransaction();
         $this->exchange->publish('foo');
@@ -300,7 +285,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_purges_messages_from_queue()
+    public function it_purges_messages_from_queue(): void
     {
         $this->channel->startTransaction();
         $this->exchange->publish('foo');
@@ -321,7 +306,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_returns_envelope_information()
+    public function it_returns_envelope_information(): void
     {
         $this->exchange->publish('foo', 'routingKey', Constants::AMQP_NOPARAM, [
             'content_type' => 'text/plain',
@@ -371,7 +356,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_acks()
+    public function it_acks(): void
     {
         $this->exchange->publish('foo');
 
@@ -387,7 +372,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_nacks_and_rejects_message()
+    public function it_nacks_and_rejects_message(): void
     {
         $this->exchange->publish('foo');
 
@@ -410,7 +395,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_cannot_declare_queue_with_reserved_name_prefix()
+    public function it_cannot_declare_queue_with_reserved_name_prefix(): void
     {
         $this->expectException(QueueException::class);
         $this->expectExceptionMessage('ACCESS_REFUSED - queue name \'amq.foo\' contains reserved prefix \'amq.*\'');
@@ -423,7 +408,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_cannot_declare_queue_with_closed_channel()
+    public function it_cannot_declare_queue_with_closed_channel(): void
     {
         $this->expectException(ChannelException::class);
 
@@ -435,7 +420,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_cannot_redeclare_with_other_arguments()
+    public function it_cannot_redeclare_with_other_arguments(): void
     {
         $this->expectException(QueueException::class);
         $this->expectExceptionMessage(
@@ -450,7 +435,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_cannot_access_an_exclusive_queue_from_another_channel()
+    public function it_cannot_access_an_exclusive_queue_from_another_channel(): void
     {
         $this->expectException(QueueException::class);
         $this->expectExceptionMessage(
@@ -497,7 +482,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     /**
      * @test
      */
-    public function it_throws_exception_in_passive_mode_when_queues_does_not_exist()
+    public function it_throws_exception_in_passive_mode_when_queues_does_not_exist(): void
     {
         $this->expectException(QueueException::class);
         $this->expectExceptionMessage(

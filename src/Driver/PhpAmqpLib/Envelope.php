@@ -26,173 +26,108 @@ use Humus\Amqp\Envelope as EnvelopeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 
-/**
- * Class Envelope
- * @package Humus\Amqp\Driver\AmqpExtension
- */
 final class Envelope implements EnvelopeInterface
 {
-    /**
-     * @var AMQPMessage
-     */
-    private $envelope;
+    private AMQPMessage $envelope;
 
-    /**
-     * Envelope constructor.
-     * @param AMQPMessage $message
-     */
     public function __construct(AMQPMessage $message)
     {
         $this->envelope = $message;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBody(): string
     {
         return $this->envelope->body;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getRoutingKey(): string
     {
-        return $this->envelope->get('routing_key');
+        return (string) $this->envelope->get('routing_key');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDeliveryTag(): int
     {
         return (int) $this->envelope->get('delivery_tag');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDeliveryMode(): int
     {
         if ($this->envelope->has('delivery_mode')) {
-            return $this->envelope->get('delivery_mode');
+            return (int) $this->envelope->get('delivery_mode');
         }
 
         return 1;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExchangeName(): string
     {
         return $this->getFromEnvelope('exchange');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isRedelivery(): bool
     {
-        return $this->envelope->get('redelivered');
+        return (bool) $this->envelope->get('redelivered');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getContentType(): string
     {
         return $this->getFromEnvelope('content_type');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getContentEncoding(): string
     {
         return $this->getFromEnvelope('content_encoding');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getType(): string
     {
         return $this->getFromEnvelope('type');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getTimestamp(): int
     {
         return (int) $this->getFromEnvelope('timestamp');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPriority(): int
     {
         if ($this->envelope->has('priority')) {
-            return $this->envelope->get('priority');
+            return (int) $this->envelope->get('priority');
         }
 
         return 0;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpiration(): int
     {
         return (int) $this->getFromEnvelope('expiration');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getUserId(): string
     {
         return $this->getFromEnvelope('user_id');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAppId(): string
     {
         return $this->getFromEnvelope('app_id');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getMessageId(): string
     {
         return $this->getFromEnvelope('message_id');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getReplyTo(): string
     {
         return $this->getFromEnvelope('reply_to');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getCorrelationId(): string
     {
         return $this->getFromEnvelope('correlation_id');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHeaders(): array
     {
         try {
@@ -212,19 +147,13 @@ final class Envelope implements EnvelopeInterface
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeader(string $header)
+    public function getHeader(string $header): ?string
     {
         $headers = $this->getHeaders();
 
-        return $headers[$header] ?? false;
+        return $headers[$header] ?? null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function hasHeader(string $header): bool
     {
         $headers = $this->getHeaders();
@@ -232,10 +161,6 @@ final class Envelope implements EnvelopeInterface
         return isset($headers[$header]);
     }
 
-    /**
-     * @param string $name
-     * @return string
-     */
     private function getFromEnvelope(string $name): string
     {
         if ($this->envelope->has($name)) {

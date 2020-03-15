@@ -26,9 +26,6 @@ use MabeEnum\Enum;
 use MabeEnum\EnumSerializableTrait;
 
 /**
- * Class DeliveryResult
- * @package Humus\Amqp
- *
  * @method static DeliveryResult MSG_ACK()
  * @method static DeliveryResult MSG_DEFER()
  * @method static DeliveryResult MSG_REJECT()

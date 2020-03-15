@@ -24,30 +24,12 @@ namespace Humus\Amqp;
 
 use Humus\Amqp\Exception\ChannelException;
 
-/**
- * Class AbstractProducer
- * @package Humus\Amqp
- */
 abstract class AbstractProducer implements Producer
 {
-    /**
-     * @var Exchange
-     */
-    protected $exchange;
+    protected Exchange $exchange;
+    protected array $defaultAttributes;
 
-    /**
-     * @var array
-     */
-    protected $defaultAttributes;
-
-    /**
-     * Constructor
-     *
-     * @param Exchange $exchange
-     * @param array|null $defaultAttributes
-     * @throws ChannelException
-     */
-    public function __construct(Exchange $exchange, array $defaultAttributes = null)
+    public function __construct(Exchange $exchange, ?array $defaultAttributes = null)
     {
         $this->exchange = $exchange;
 
@@ -56,66 +38,42 @@ abstract class AbstractProducer implements Producer
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->exchange->getChannel()->startTransaction();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
         $this->exchange->getChannel()->commitTransaction();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         $this->exchange->getChannel()->rollbackTransaction();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function confirmSelect()
+    public function confirmSelect(): void
     {
         $this->exchange->getChannel()->confirmSelect();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
+    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null): void
     {
         $this->exchange->getChannel()->setConfirmCallback($ackCallback, $nackCallback);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function waitForConfirm(float $timeout = 0.0)
+    public function waitForConfirm(float $timeout = 0.0): void
     {
         $this->exchange->getChannel()->waitForConfirm($timeout);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setReturnCallback(callable $returnCallback = null)
+    public function setReturnCallback(callable $returnCallback = null): void
     {
         $this->exchange->getChannel()->setReturnCallback($returnCallback);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function waitForBasicReturn(float $timeout = 0.0)
+    public function waitForBasicReturn(float $timeout = 0.0): void
     {
         $this->exchange->getChannel()->waitForBasicReturn($timeout);
     }

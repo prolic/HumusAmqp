@@ -24,9 +24,6 @@ namespace  Humus\Amqp;
 
 /**
  * Represents a AMQP connection between PHP and a AMQP server.
- *
- * Interface Connection
- * @package Humus\Amqp
  */
 interface Connection
 {
@@ -34,8 +31,6 @@ interface Connection
      * Check whether the connection to the AMQP broker is still valid.
      *
      * It does so by checking the return status of the last connect-command.
-     *
-     * @return bool True if connected, false otherwise.
      */
     public function isConnected(): bool;
 
@@ -43,30 +38,21 @@ interface Connection
      * Establish a transient connection with the AMQP broker.
      *
      * This method will initiate a connection with the AMQP broker.
-     *
-     * @return bool TRUE on success or throw an exception on failure.
      */
-    public function connect();
+    public function connect(): bool;
 
     /**
      * Closes the transient connection with the AMQP broker.
      *
      * This method will close an open connection with the AMQP broker.
-     *
-     * @return bool true if connection was successfully closed, false otherwise.
      */
-    public function disconnect();
+    public function disconnect(): bool;
 
     /**
      * Close any open transient connections and initiate a new one with the AMQP broker.
-     *
-     * @return bool TRUE on success or FALSE on failure.
      */
     public function reconnect(): bool;
 
-    /**
-     * @return ConnectionOptions
-     */
     public function getOptions(): ConnectionOptions;
 
     /**
@@ -74,8 +60,5 @@ interface Connection
      */
     public function getResource();
 
-    /**
-     * @return Channel
-     */
     public function newChannel(): Channel;
 }

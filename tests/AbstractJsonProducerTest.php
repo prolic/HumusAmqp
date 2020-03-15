@@ -34,38 +34,15 @@ use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-/**
- * Class AbstractJsonProducerTest
- * @package HumusTest\Amqp
- */
 abstract class AbstractJsonProducerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
-    /**
-     * @var Channel
-     */
-    protected $channel;
-
-    /**
-     * @var Exchange
-     */
-    protected $exchange;
-
-    /**
-     * @var Queue
-     */
-    protected $queue;
-
-    /**
-     * @var JsonProducer
-     */
-    protected $producer;
-
-    /**
-     * @var array
-     */
-    protected $results = [];
+    protected Channel $channel;
+    protected Exchange $exchange;
+    protected Queue $queue;
+    protected JsonProducer $producer;
+    protected array $results = [];
 
     protected function setUp(): void
     {
@@ -95,7 +72,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_and_get_messages_from_queue()
+    public function it_produces_and_get_messages_from_queue(): void
     {
         $producer = new JsonProducer($this->exchange);
         $producer->publish(['foo' => 'bar']);
@@ -119,7 +96,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_transactional_and_get_messages_from_queue()
+    public function it_produces_transactional_and_get_messages_from_queue(): void
     {
         $producer = new JsonProducer($this->exchange);
         $producer->startTransaction();
@@ -142,7 +119,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_in_confirm_mode()
+    public function it_produces_in_confirm_mode(): void
     {
         $count = 2;
 
@@ -183,7 +160,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_in_nested_confirm_mode()
+    public function it_produces_in_nested_confirm_mode(): void
     {
         $count = 1;
 
@@ -238,7 +215,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_sends_given_attributes()
+    public function it_sends_given_attributes(): void
     {
         $producer = new JsonProducer($this->exchange, [
             'content_type' => 'application/json',
@@ -271,7 +248,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_uses_confirm_callback()
+    public function it_uses_confirm_callback(): void
     {
         $result = [];
         $multipleAcks = false;
@@ -326,7 +303,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_uses_confirm_callback_and_fails()
+    public function it_uses_confirm_callback_and_fails(): void
     {
         $result = [];
         $message = '';
@@ -370,7 +347,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_uses_return_callback()
+    public function it_uses_return_callback(): void
     {
         $result = [];
 
@@ -411,7 +388,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_throws_exception_when_data_could_not_be_encoded_to_json()
+    public function it_throws_exception_when_data_could_not_be_encoded_to_json(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Error during json encoding');
@@ -429,7 +406,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_throws_exception_when_data_could_not_be_encoded_to_json_2()
+    public function it_throws_exception_when_data_could_not_be_encoded_to_json_2(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Exception during json encoding');

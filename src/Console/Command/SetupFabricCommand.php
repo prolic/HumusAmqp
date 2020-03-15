@@ -27,16 +27,9 @@ use Humus\Amqp\Container\QueueFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class SetupFabricCommand
- * @package Humus\Amqp\Console\Command
- */
 class SetupFabricCommand extends AbstractCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('setup-fabric')
@@ -45,10 +38,7 @@ class SetupFabricCommand extends AbstractCommand
             ->setHelp('Declares all AMQP exchanges and queues');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $config = $this->getContainer()->get('config');
 

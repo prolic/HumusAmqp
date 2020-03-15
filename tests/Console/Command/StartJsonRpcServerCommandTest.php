@@ -30,16 +30,12 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * Class StartJsonRpcServerCommandTest
- * @package HumusTest\Amqp\Console\Command
- */
 class StartJsonRpcServerCommandTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_starts_the_json_rpc_server()
+    public function it_starts_the_json_rpc_server(): void
     {
         $server = $this->prophesize(Consumer::class);
         $server->consume(4)->shouldBeCalled();
@@ -58,7 +54,7 @@ class StartJsonRpcServerCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_when_no_name_given()
+    public function it_returns_when_no_name_given(): void
     {
         $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
         $tester->execute([]);
@@ -70,7 +66,7 @@ class StartJsonRpcServerCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_when_json_rpc_server_not_found()
+    public function it_returns_when_json_rpc_server_not_found(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->has('unknown_server')->willReturn(false)->shouldBeCalled();
@@ -82,11 +78,7 @@ class StartJsonRpcServerCommandTest extends TestCase
         $this->assertEquals("No JSON-RPC server with name unknown_server found\n", $tester->getDisplay(true));
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return CommandTester
-     */
-    private function createCommandTester(ContainerInterface $container)
+    private function createCommandTester(ContainerInterface $container): CommandTester
     {
         $command = new StartJsonRpcServerCommand();
         $command->setHelperSet(

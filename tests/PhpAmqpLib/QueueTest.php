@@ -26,10 +26,6 @@ use Humus\Amqp\Exception\QueueException;
 use HumusTest\Amqp\AbstractQueueTest;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
-/**
- * Class QueueTest
- * @package HumusTest\Amqp\PhpAmqpLib
- */
 final class QueueTest extends AbstractQueueTest
 {
     use CreateConnectionTrait;
@@ -37,7 +33,7 @@ final class QueueTest extends AbstractQueueTest
     /**
      * @test
      */
-    public function it_consumes_without_callback()
+    public function it_consumes_without_callback(): void
     {
         $this->expectException(QueueException::class);
 

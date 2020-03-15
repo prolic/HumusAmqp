@@ -35,10 +35,6 @@ use HumusTest\Amqp\TestAsset\ArrayLogger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-/**
- * Class AbstractCallbackConsumer
- * @package HumusTest\Amqp
- */
 abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
@@ -46,7 +42,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_processes_messages_and_acks()
+    public function it_processes_messages_and_acks(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -154,7 +150,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_processes_messages_and_rejects()
+    public function it_processes_messages_and_rejects(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -262,7 +258,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_processes_messages_rejects_and_requeues()
+    public function it_processes_messages_rejects_and_requeues(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -314,7 +310,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_processes_messages_defers_and_acks_block()
+    public function it_processes_messages_defers_and_acks_block(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -400,7 +396,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_handles_flush_deferred_after_timeout()
+    public function it_handles_flush_deferred_after_timeout(): void
     {
         $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
         $channel = $connection->newChannel();
@@ -487,7 +483,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_uses_custom_flush_deferred_callback()
+    public function it_uses_custom_flush_deferred_callback(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -592,7 +588,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_rejects_and_requeues_on_flush_deferred()
+    public function it_rejects_and_requeues_on_flush_deferred(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -650,7 +646,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_handles_delivery_exception()
+    public function it_handles_delivery_exception(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -741,7 +737,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_handles_delivery_exception_when_error_callback_returns_true()
+    public function it_handles_delivery_exception_when_error_callback_returns_true(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -834,7 +830,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_handles_delivery_exception_when_error_callback_returns_false()
+    public function it_handles_delivery_exception_when_error_callback_returns_false(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -927,7 +923,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_handles_flush_deferred_exception()
+    public function it_handles_flush_deferred_exception(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -1008,7 +1004,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_handles_shutdown_message()
+    public function it_handles_shutdown_message(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -1105,7 +1101,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_handles_reconfigure_message()
+    public function it_handles_reconfigure_message(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -1245,7 +1241,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_errors_invalid_reconfigure_message()
+    public function it_errors_invalid_reconfigure_message(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -1314,7 +1310,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
     /**
      * @test
      */
-    public function it_errors_invalid_internal_message()
+    public function it_errors_invalid_internal_message(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();

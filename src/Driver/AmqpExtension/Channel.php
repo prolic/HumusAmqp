@@ -22,161 +22,100 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
+use AMQPChannel;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Exception\ChannelException;
 use Humus\Amqp\Exchange as ExchangeInterface;
 use Humus\Amqp\Queue as QueueInterface;
 
-/**
- * Class Channel
- * @package Humus\Amqp\Driver\AmqpExtension
- */
 final class Channel implements ChannelInterface
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
+    private AMQPChannel $channel;
 
-    /**
-     * @var \AMQPChannel
-     */
-    private $channel;
-
-    /**
-     * Create an instance of an AMQPChannel object.
-     */
     public function __construct(Connection $amqpConnection)
     {
         $this->connection = $amqpConnection;
-        $this->channel = new \AMQPChannel($amqpConnection->getResource());
+        $this->channel = new AMQPChannel($amqpConnection->getResource());
     }
 
-    /**
-     * @return \AMQPChannel
-     */
     public function getResource(): \AMQPChannel
     {
         return $this->channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isConnected(): bool
     {
         return $this->channel->isConnected();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChannelId(): int
     {
         return $this->channel->getChannelId();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPrefetchSize(int $size)
+    public function setPrefetchSize(int $size): void
     {
         $this->channel->setPrefetchSize($size);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPrefetchSize(): int
     {
         return $this->channel->getPrefetchSize();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPrefetchCount(int $count)
+    public function setPrefetchCount(int $count): void
     {
         $this->channel->setPrefetchCount($count);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPrefetchCount(): int
     {
         return $this->channel->getPrefetchCount();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function qos(int $size, int $count)
+    public function qos(int $size, int $count): void
     {
         $this->channel->qos($size, $count);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->channel->startTransaction();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
         $this->channel->commitTransaction();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         $this->channel->rollbackTransaction();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConnection(): ConnectionInterface
     {
         return $this->connection;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function basicRecover(bool $requeue = true)
+    public function basicRecover(bool $requeue = true): void
     {
         $this->channel->basicRecover($requeue);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function confirmSelect()
+    public function confirmSelect(): void
     {
         $this->channel->confirmSelect();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
+    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null): void
     {
         $this->channel->setConfirmCallback($ackCallback, $nackCallback);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function waitForConfirm(float $timeout = 0.0)
+    public function waitForConfirm(float $timeout = 0.0): void
     {
         try {
             $this->channel->waitForConfirm($timeout);
@@ -187,10 +126,7 @@ final class Channel implements ChannelInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setReturnCallback(callable $returnCallback = null)
+    public function setReturnCallback(callable $returnCallback = null): void
     {
         $innerCallback = null;
         if ($returnCallback) {
@@ -209,10 +145,7 @@ final class Channel implements ChannelInterface
         $this->channel->setReturnCallback($innerCallback);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function waitForBasicReturn(float $timeout = 0.0)
+    public function waitForBasicReturn(float $timeout = 0.0): void
     {
         try {
             $this->channel->waitForBasicReturn($timeout);
@@ -223,17 +156,11 @@ final class Channel implements ChannelInterface
         }
     }
 
-    /**
-     * @return ExchangeInterface
-     */
     public function newExchange(): ExchangeInterface
     {
         return new Exchange($this);
     }
 
-    /**
-     * @return QueueInterface
-     */
     public function newQueue(): QueueInterface
     {
         return new Queue($this);

@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\PhpAmqpLib\JsonRpc;
 use HumusTest\Amqp\JsonRpc\AbstractJsonRpcClientAndServerTest;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
-/**
- * Class JsonRpcJsonRpcClientAndServerTest
- * @package HumusTest\Amqp\PhpAmqpLib\JsonRpc
- */
 class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
 {
     use CreateConnectionTrait;

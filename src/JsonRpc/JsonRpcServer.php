@@ -31,32 +31,12 @@ use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class JsonRpcServer
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcServer extends AbstractConsumer
 {
-    /**
-     * @var Exchange
-     */
-    private $exchange;
-
-    /**
-     * @var string
-     */
-    private $appId;
-
-    /**
-     * @var bool
-     */
-    private $returnTrace;
-
-    /**
-     *
-     * @var ErrorFactory
-     */
-    private $errorFactory;
+    private Exchange $exchange;
+    private string $appId;
+    private bool $returnTrace;
+    private ErrorFactory $errorFactory;
 
     /**
      * Constructor
@@ -67,7 +47,8 @@ final class JsonRpcServer extends AbstractConsumer
      * @param float $idleTimeout in seconds
      * @param string $consumerTag
      * @param string $appId
-     * @praram bool $returnTrace
+     * @param bool $returnTrace
+     * @param ErrorFactory|null $errorFactory
      */
     public function __construct(
         Queue $queue,
@@ -107,11 +88,6 @@ final class JsonRpcServer extends AbstractConsumer
         $this->returnTrace = $returnTrace;
     }
 
-    /**
-     * @param Envelope $envelope
-     * @param Queue $queue
-     * @return DeliveryResult
-     */
     protected function handleDelivery(Envelope $envelope, Queue $queue): DeliveryResult
     {
         $this->countMessagesConsumed++;
@@ -212,13 +188,7 @@ final class JsonRpcServer extends AbstractConsumer
         return DeliveryResult::MSG_ACK();
     }
 
-    /**
-     * Send reply to rpc client
-     *
-     * @param Response $response
-     * @param Envelope $envelope
-     */
-    protected function sendReply(Response $response, Envelope $envelope)
+    protected function sendReply(Response $response, Envelope $envelope): void
     {
         $attributes = [
             'content_type' => 'application/json',
@@ -259,24 +229,11 @@ final class JsonRpcServer extends AbstractConsumer
         $this->exchange->publish($message, $envelope->getReplyTo(), Constants::AMQP_NOPARAM, $attributes);
     }
 
-    /**
-     * Handle process flag
-     *
-     * @param Envelope $envelope
-     * @param DeliveryResult $flag
-     * @return void
-     */
-    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
+    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag): void
     {
         // do nothing, message was already acknowledged
     }
 
-    /**
-     * @param Envelope $envelope
-     * @return Request
-     * @throws Exception\InvalidJsonRpcVersion
-     * @throws Exception\JsonParseError
-     */
     protected function requestFromEnvelope(Envelope $envelope): Request
     {
         if ($envelope->getHeader('jsonrpc') !== JsonRpcRequest::JSONRPC_VERSION) {

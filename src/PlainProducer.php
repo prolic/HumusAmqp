@@ -22,16 +22,9 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-/**
- * Class PlainProducer
- * @package Humus\Amqp
- */
 final class PlainProducer extends AbstractProducer
 {
-    /**
-     * @var array
-     */
-    protected $defaultAttributes = [
+    protected array $defaultAttributes = [
         'content_type' => 'text/plain',
         'content_encoding' => 'UTF-8',
         'delivery_mode' => 2, // persistent

@@ -31,18 +31,11 @@ use Interop\Config\RequiresMandatoryOptions;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 
-/**
- * Class JsonRpcServerFactory
- * @package Humus\Amqp\Container
- */
 final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
-    /**
-     * @var string
-     */
-    private $serverName;
+    private string $serverName;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -59,7 +52,9 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
      *
      * @param string $name
      * @param array $arguments
+     *
      * @return JsonRpcServer
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments): JsonRpcServer
@@ -73,19 +68,11 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
         return (new static($name))->__invoke($arguments[0]);
     }
 
-    /**
-     * JsonRpcClientFactory constructor.
-     * @param string $serverName
-     */
     public function __construct(string $serverName)
     {
         $this->serverName = $serverName;
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return JsonRpcServer
-     */
     public function __invoke(ContainerInterface $container): JsonRpcServer
     {
         $options = $this->options($container->get('config'), $this->serverName);
@@ -118,17 +105,11 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
         );
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp', 'json_rpc_server'];
     }
 
-    /**
-     * @return array
-     */
     public function defaultOptions(): array
     {
         return [
@@ -139,9 +120,6 @@ final class JsonRpcServerFactory implements ProvidesDefaultOptions, RequiresConf
         ];
     }
 
-    /**
-     * @return array
-     */
     public function mandatoryOptions(): array
     {
         return [

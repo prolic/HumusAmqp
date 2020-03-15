@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Class ConnectionException
- * @package Humus\Amqp\Exception
- */
 class ConnectionException extends AmqpException
 {
 }

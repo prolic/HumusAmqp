@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 use HumusTest\Amqp\AbstractPlainProducerTest;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
-/**
- * Class PlainProducerTest
- * @package HumusTest\Amqp\PhpAmqpLib
- */
 final class PlainProducerTest extends AbstractPlainProducerTest
 {
     use CreateConnectionTrait;

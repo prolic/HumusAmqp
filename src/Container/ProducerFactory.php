@@ -32,18 +32,11 @@ use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class ProducerFactory
- * @package Humus\Amqp\Container
- */
 final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
-    /**
-     * @var string
-     */
-    private $producerName;
+    private string $producerName;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -60,7 +53,9 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
      *
      * @param string $name
      * @param array $arguments
+     *
      * @return Producer
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments): Producer
@@ -74,18 +69,11 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
         return (new static($name))->__invoke($arguments[0]);
     }
 
-    /**
-     * @param string $producerName
-     */
     public function __construct(string $producerName)
     {
         $this->producerName = $producerName;
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return Producer
-     */
     public function __invoke(ContainerInterface $container): Producer
     {
         $options = $this->options($container->get('config'), $this->producerName);
@@ -107,17 +95,11 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
         }
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp', 'producer'];
     }
 
-    /**
-     * @return array
-     */
     public function defaultOptions(): array
     {
         return [
@@ -127,9 +109,6 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
         ];
     }
 
-    /**
-     * @return array
-     */
     public function mandatoryOptions(): array
     {
         return [

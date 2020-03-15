@@ -27,16 +27,12 @@ use Humus\Amqp\Driver\Driver;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class DriverFactoryTest
- * @package HumusTest\Amqp\Container
- */
 class DriverFactoryTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_returns_amqp_extension_driver()
+    public function it_returns_amqp_extension_driver(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -58,7 +54,7 @@ class DriverFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_php_amqplib_driver()
+    public function it_returns_php_amqplib_driver(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 

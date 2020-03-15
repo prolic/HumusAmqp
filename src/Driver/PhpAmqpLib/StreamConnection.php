@@ -26,14 +26,9 @@ use Humus\Amqp\ConnectionOptions;
 use PhpAmqpLib\Connection\AMQPStreamConnection as BaseAMQPStreamConnection;
 use Traversable;
 
-/**
- * Class StreamConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
- */
 final class StreamConnection extends AbstractConnection
 {
     /**
-     * StreamConnection constructor.
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)

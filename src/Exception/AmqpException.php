@@ -22,26 +22,16 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Interface AmqpException
- * @package Humus\Amqp\Exception
- */
-class AmqpException extends \Exception
+use Exception as BaseException;
+
+class AmqpException extends BaseException implements Exception
 {
-    /**
-     * @param \AMQPException $e
-     * @return AmqpException
-     */
-    public static function fromAmqpExtension(\AMQPException $e)
+    public static function fromAmqpExtension(\AMQPException $e): AmqpException
     {
         return new static($e->getMessage(), $e->getCode(), $e);
     }
 
-    /**
-     * @param \Exception $e
-     * @return AmqpException
-     */
-    public static function fromPhpAmqpLib(\Exception $e)
+    public static function fromPhpAmqpLib(BaseException $e): AmqpException
     {
         return new static($e->getMessage(), $e->getCode(), $e);
     }

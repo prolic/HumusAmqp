@@ -35,18 +35,11 @@ use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class ConnectionFactory
- * @package Humus\Amqp\Container
- */
 final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigId
 {
     use ConfigurationTrait;
 
-    /**
-     * @var string
-     */
-    private $connectionName;
+    private string $connectionName;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -63,7 +56,9 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
      *
      * @param string $name
      * @param array $arguments
+     *
      * @return Connection
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments): Connection
@@ -77,19 +72,11 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
         return (new static($name))->__invoke($arguments[0]);
     }
 
-    /**
-     * ConnectionFactory constructor.
-     * @param string $connectionName
-     */
     public function __construct(string $connectionName)
     {
         $this->connectionName = $connectionName;
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return Connection
-     */
     public function __invoke(ContainerInterface $container): Connection
     {
         if (! $container->has(Driver::class)) {
@@ -143,17 +130,11 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
         return $connection;
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp', 'connection'];
     }
 
-    /**
-     * @return array
-     */
     public function defaultOptions(): array
     {
         return [

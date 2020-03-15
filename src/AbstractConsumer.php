@@ -26,83 +26,20 @@ use Assert\Assertion;
 use Humus\Amqp\Exception\RuntimeException;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class AbstractConsumer
- * @package Humus\Amqp
- */
 abstract class AbstractConsumer implements Consumer
 {
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var Queue
-     */
-    protected $queue;
-
-    /**
-     * @var string
-     */
-    protected $consumerTag;
-
-    /**
-     * Number of consumed messages
-     *
-     * @var int
-     */
-    protected $countMessagesConsumed = 0;
-
-    /**
-     * Number of unacked messaged
-     *
-     * @var int
-     */
-    protected $countMessagesUnacked = 0;
-
-    /**
-     * Last delivery tag seen
-     *
-     * @var int
-     */
-    protected $lastDeliveryTag;
-
-    /**
-     * @var bool
-     */
-    protected $keepAlive = true;
-
-    /**
-     * Idle timeout in seconds
-     *
-     * @var float
-     */
-    protected $idleTimeout;
-
-    /**
-     * How many messages are handled in one block without acknowledgement
-     *
-     * @var int
-     */
-    protected $blockSize;
-
-    /**
-     * @var float
-     */
-    protected $timestampLastAck;
-
-    /**
-     * @var float
-     */
-    protected $timestampLastMessage;
-
-    /**
-     * How many messages we want to consume
-     *
-     * @var int
-     */
-    protected $target;
+    protected LoggerInterface $logger;
+    protected Queue $queue;
+    protected string $consumerTag;
+    protected int $countMessagesConsumed = 0;
+    protected int $countMessagesUnacked = 0;
+    protected ?int $lastDeliveryTag;
+    protected bool $keepAlive = true;
+    protected float $idleTimeout;
+    protected int $blockSize;
+    protected float $timestampLastAck;
+    protected float $timestampLastMessage;
+    protected int $target;
 
     /**
      * @var callable
@@ -119,13 +56,7 @@ abstract class AbstractConsumer implements Consumer
      */
     protected $errorCallback;
 
-    /**
-     * Start consumer
-     *
-     * @param int $msgAmount
-     * @throws Exception\QueueException
-     */
-    public function consume(int $msgAmount = 0)
+    public function consume(int $msgAmount = 0): void
     {
         Assertion::min($msgAmount, 0);
 
@@ -177,11 +108,6 @@ abstract class AbstractConsumer implements Consumer
         }
     }
 
-    /**
-     * @param Envelope $envelope
-     * @param Queue $queue
-     * @return DeliveryResult
-     */
     protected function handleDelivery(Envelope $envelope, Queue $queue): DeliveryResult
     {
         $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
@@ -195,12 +121,7 @@ abstract class AbstractConsumer implements Consumer
         return $callback($envelope, $queue);
     }
 
-    /**
-     * Shutdown consumer
-     *
-     * @return void
-     */
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->keepAlive = false;
         $this->queue->cancel($this->consumerTag);
@@ -210,11 +131,8 @@ abstract class AbstractConsumer implements Consumer
      * Handle exception
      *
      * Returns true when a message should be requeued; otherwise false.
-     *
-     * @param \Throwable $e
-     * @return bool
      */
-    protected function handleException(\Throwable $e)
+    protected function handleException(\Throwable $e): bool
     {
         if (null === $this->errorCallback) {
             return true;
@@ -241,8 +159,6 @@ abstract class AbstractConsumer implements Consumer
      *
      * Messages are deferred until the block size (see prefetch_count) or the timeout is reached
      * The unacked messages will also be flushed immediately when the handleDelivery method returns true
-     *
-     * @return FlushDeferredResult
      */
     protected function flushDeferred(): FlushDeferredResult
     {
@@ -266,14 +182,7 @@ abstract class AbstractConsumer implements Consumer
         return $result;
     }
 
-    /**
-     * Handle process flag
-     *
-     * @param Envelope $envelope
-     * @param $flag
-     * @return void
-     */
-    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
+    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag): void
     {
         $this->countMessagesConsumed++;
 
@@ -304,10 +213,8 @@ abstract class AbstractConsumer implements Consumer
      * Acknowledge all deferred messages
      *
      * This will be called every time the block size (see prefetch_count) or timeout is reached
-     *
-     * @return void
      */
-    protected function ack()
+    protected function ack(): void
     {
         $this->queue->ack($this->lastDeliveryTag, Constants::AMQP_MULTIPLE);
         $this->lastDeliveryTag = null;
@@ -323,13 +230,7 @@ abstract class AbstractConsumer implements Consumer
         $this->countMessagesUnacked = 0;
     }
 
-    /**
-     * Send nack for all deferred messages
-     *
-     * @param bool $requeue
-     * @return void
-     */
-    protected function nackAll($requeue = false)
+    protected function nackAll($requeue = false): void
     {
         $delta = $this->timestampLastMessage - $this->timestampLastAck;
 
@@ -350,12 +251,7 @@ abstract class AbstractConsumer implements Consumer
         $this->countMessagesUnacked = 0;
     }
 
-    /**
-     * Handle deferred acknowledgments
-     *
-     * @return void
-     */
-    protected function ackOrNackBlock()
+    protected function ackOrNackBlock(): void
     {
         if (! $this->lastDeliveryTag) {
             return;
@@ -376,10 +272,6 @@ abstract class AbstractConsumer implements Consumer
         }
     }
 
-    /**
-     * @param Envelope $envelope
-     * @return DeliveryResult
-     */
     protected function handleInternalMessage(Envelope $envelope): DeliveryResult
     {
         if ('shutdown' === $envelope->getType()) {
@@ -419,10 +311,6 @@ abstract class AbstractConsumer implements Consumer
         return $result;
     }
 
-    /**
-     * @param Envelope $envelope
-     * @return array
-     */
     protected function extractMessageInformation(Envelope $envelope): array
     {
         return [

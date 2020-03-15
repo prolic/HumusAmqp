@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 use HumusTest\Amqp\AbstractPlainProducerTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
-/**
- * Class PlainProducerTest
- * @package HumusTest\Amqp\AmqpExtension
- */
 final class PlainProducerTest extends AbstractPlainProducerTest
 {
     use CreateConnectionTrait;

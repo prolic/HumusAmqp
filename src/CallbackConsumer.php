@@ -28,24 +28,10 @@ use Psr\Log\LoggerInterface;
  * The consumer attaches to a single queue
  *
  * The used block size is the configured prefetch size of the queue's channel
- *
- * Class CallbackConsumer
- * @package Humus\Amqp
  */
 final class CallbackConsumer extends AbstractConsumer
 {
     /**
-     * Constructor
-     *
-     * @param Queue $queue
-     * @param LoggerInterface $logger
-     * @param float $idleTimeout in seconds
-     * @param callable $deliveryCallback,
-     * @param callable|null $flushCallback,
-     * @param callable|null $errorCallback
-     * @param string $consumerTag
-     * @throws Exception\InvalidArgumentException
-     *
      * Callback functions with all arguments have the following signature:
      *
      *      function deliveryCallback(Envelope $envelope, Queue $queue): DeliveryResult;

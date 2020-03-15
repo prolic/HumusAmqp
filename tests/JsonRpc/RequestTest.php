@@ -26,16 +26,12 @@ use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\JsonRpc\JsonRpcRequest;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class RequestTest
- * @package HumusTest\Amqp\JsonRpc
- */
 class RequestTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_throws_exception_when_invalid_payload_given()
+    public function it_throws_exception_when_invalid_payload_given(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Params must be of type array, scalar or null');

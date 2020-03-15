@@ -27,14 +27,9 @@ use Humus\Amqp\Exception\InvalidArgumentException;
 use PhpAmqpLib\Connection\AMQPSSLConnection as BaseAMQPSSLConnection;
 use Traversable;
 
-/**
- * Class SslConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
- */
 final class SslConnection extends AbstractConnection
 {
     /**
-     * SslConnection constructor.
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)

@@ -28,13 +28,9 @@ use Humus\Amqp\JsonRpc\JsonRpcErrorFactory;
 use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class ResponseTest
- * @package HumusTest\Amqp\JsonRpc
- */
 class ResponseTest extends TestCase
 {
-    private $errorFactory;
+    private ?JsonRpcErrorFactory $errorFactory = null;
 
     protected function setUp(): void
     {
@@ -44,7 +40,7 @@ class ResponseTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_valid_result()
+    public function it_creates_valid_result(): void
     {
         $response = JsonRpcResponse::withResult('id', ['foo' => 'bar']);
         $this->assertEquals(['foo' => 'bar'], $response->result());
@@ -54,7 +50,7 @@ class ResponseTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_valid_error()
+    public function it_creates_valid_error(): void
     {
         $response = JsonRpcResponse::withError('id', $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603));
         $this->assertInstanceOf(JsonRpcError::class, $response->error());
@@ -67,7 +63,7 @@ class ResponseTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_valid_error_with_data()
+    public function it_creates_valid_error_with_data(): void
     {
         $response = JsonRpcResponse::withError('id', $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, null, ['foo' => 'bar']));
         $this->assertInstanceOf(JsonRpcError::class, $response->error());
@@ -80,7 +76,7 @@ class ResponseTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_valid_error_with_custom_message()
+    public function it_creates_valid_error_with_custom_message(): void
     {
         $response = JsonRpcResponse::withError('id', $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'custom message'));
         $this->assertInstanceOf(JsonRpcError::class, $response->error());
@@ -92,7 +88,7 @@ class ResponseTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_invalid_result_given()
+    public function it_throws_exception_when_invalid_result_given(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('result must only contain arrays and scalar values');
@@ -103,7 +99,7 @@ class ResponseTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_invalid_sub_result_given()
+    public function it_throws_exception_when_invalid_sub_result_given(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('result must only contain arrays and scalar values');

@@ -27,15 +27,10 @@ use Humus\Amqp\JsonRpc\Error;
 use Humus\Amqp\JsonRpc\JsonRpcErrorFactory;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class ResponseTest
- * @package HumusTest\Amqp\JsonRpc
- */
 class JsonRpcErrorFactoryTest extends TestCase
 {
-    private $factory;
-
-    private $customMessages = [
+    private ?JsonRpcErrorFactory $factory = null;
+    private array $customMessages = [
         -32000 => 'upper message test',
         -32099 => 'lower message test',
     ];
@@ -49,7 +44,7 @@ class JsonRpcErrorFactoryTest extends TestCase
      * @test
      * @dataProvider predefinedCodeDataProvider
      */
-    public function it_creates_valid_predefined_error(int $code, string $message, $data = null)
+    public function it_creates_valid_predefined_error(int $code, string $message, $data = null): void
     {
         $error = $this->factory->create($code, null, $data);
 
@@ -64,7 +59,7 @@ class JsonRpcErrorFactoryTest extends TestCase
      * @test
      * @dataProvider customCodeDataProvider
      */
-    public function it_creates_valid_custom_error(int $code, string $message, $data = null)
+    public function it_creates_valid_custom_error(int $code, string $message, $data = null): void
     {
         $error = $this->factory->create($code, null, $data);
 
@@ -78,7 +73,7 @@ class JsonRpcErrorFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_for_invalid_code()
+    public function it_throws_exception_for_invalid_code(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->factory->create(-1);

@@ -28,18 +28,10 @@ use Interop\Config\RequiresConfig;
 use Interop\Config\RequiresMandatoryOptions;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class DriverFactory
- * @package Humus\Amqp\Container
- */
 final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
-    /**
-     * @param ContainerInterface $container
-     * @return Driver
-     */
     public function __invoke(ContainerInterface $container): Driver
     {
         $options = $this->options($container->get('config'));
@@ -47,17 +39,11 @@ final class DriverFactory implements RequiresConfig, RequiresMandatoryOptions
         return Driver::get($options['driver']);
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp'];
     }
 
-    /**
-     * @return array
-     */
     public function mandatoryOptions(): array
     {
         return [

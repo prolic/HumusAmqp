@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Class InvalidJsonRpcVersion
- * @package Humus\Amqp\Exception
- */
 final class InvalidJsonRpcVersion extends RuntimeException
 {
 }

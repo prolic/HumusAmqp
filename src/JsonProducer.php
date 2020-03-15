@@ -24,16 +24,9 @@ namespace Humus\Amqp;
 
 use Humus\Amqp\Exception\InvalidArgumentException;
 
-/**
- * Class JsonProducer
- * @package Humus\Amqp
- */
 final class JsonProducer extends AbstractProducer
 {
-    /**
-     * @var array
-     */
-    protected $defaultAttributes = [
+    protected array $defaultAttributes = [
         'content_type' => 'application/json',
         'content_encoding' => 'UTF-8',
         'delivery_mode' => 2, // persistent

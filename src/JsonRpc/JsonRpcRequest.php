@@ -25,51 +25,22 @@ namespace Humus\Amqp\JsonRpc;
 use Assert\Assertion;
 use Humus\Amqp\Exception;
 
-/**
- * Class JsonRpcRequest
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcRequest implements Request
 {
     const JSONRPC_VERSION = '2.0';
 
-    /**
-     * @var string
-     */
-    private $server;
-
-    /**
-     * @var string
-     */
-    private $method;
+    private string $server;
+    private string $method;
     /**
      * @var array|string|int|float|bool
      */
     private $params;
+    private string $id;
+    private string $routingKey;
+    private int $expiration = 0;
+    private int $timestamp;
 
     /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $routingKey;
-
-    /**
-     * @var int
-     */
-    private $expiration = 0;
-
-    /**
-     * @var int
-     */
-    private $timestamp;
-
-    /**
-     * JsonRpcRequest constructor.
-     *
      * @param string $server
      * @param string $method
      * @param array|string|int|float|bool $params
@@ -77,6 +48,9 @@ final class JsonRpcRequest implements Request
      * @param int $expiration in milliseconds
      * @param string|null $id
      * @param int $timestamp
+     *
+     * @throws \Assert\AssertionFailedException
+     * @throws Exception\InvalidArgumentException
      */
     public function __construct(
         string $server,
@@ -110,50 +84,31 @@ final class JsonRpcRequest implements Request
         return $this->params;
     }
 
-    /**
-     * @return string
-     */
     public function server(): string
     {
         return $this->server;
     }
 
-    /**
-     * @return string
-     */
     public function routingKey(): string
     {
         return $this->routingKey;
     }
 
-    /**
-     * Expiration in milliseconds
-     * @return int
-     */
     public function expiration(): int
     {
         return $this->expiration;
     }
 
-    /**
-     * @return null|string
-     */
-    public function id()
+    public function id(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @return int
-     */
     public function timestamp(): int
     {
         return $this->timestamp;
     }
 
-    /**
-     * @return string
-     */
     public function method(): string
     {
         return $this->method;

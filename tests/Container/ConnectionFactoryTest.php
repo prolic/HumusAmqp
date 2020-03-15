@@ -31,16 +31,12 @@ use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class ConnectionFactoryTest
- * @package HumusTest\Amqp\Container
- */
 class ConnectionFactoryTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_creates_amqp_extension_connection()
+    public function it_creates_amqp_extension_connection(): void
     {
         if (! extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
@@ -71,7 +67,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_amqp_extension_connection_with_call_static()
+    public function it_creates_amqp_extension_connection_with_call_static(): void
     {
         if (! extension_loaded('amqp')) {
             $this->markTestSkipped('php amqp extension not loaded');
@@ -102,7 +98,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_php_amqplib_lazy_connection()
+    public function it_creates_php_amqplib_lazy_connection(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -130,7 +126,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_php_amqplib_socket_connection()
+    public function it_creates_php_amqplib_socket_connection(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -158,7 +154,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_php_amqplib_stream_connection()
+    public function it_creates_php_amqplib_stream_connection(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -187,7 +183,7 @@ class ConnectionFactoryTest extends TestCase
      * @test
      * @group ssl
      */
-    public function it_creates_php_amqplib_ssl_connection()
+    public function it_creates_php_amqplib_ssl_connection(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -221,7 +217,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_during_php_amqplib_connection_creation_when_type_is_missing()
+    public function it_throws_exception_during_php_amqplib_connection_creation_when_type_is_missing(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('For php-amqplib driver a connection type is required');
@@ -249,7 +245,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_during_php_amqplib_connection_creation_when_invalid_type_given()
+    public function it_throws_exception_during_php_amqplib_connection_creation_when_invalid_type_given(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid connection type for php-amqplib driver given');
@@ -278,7 +274,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_container_param()
+    public function it_throws_exception_with_invalid_call_static_container_param(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
@@ -290,7 +286,7 @@ class ConnectionFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_no_driver_registered()
+    public function it_throws_exception_when_no_driver_registered(): void
     {
         $this->expectException(\Humus\Amqp\Exception\RuntimeException::class);
         $this->expectExceptionMessage('No driver factory registered in container');

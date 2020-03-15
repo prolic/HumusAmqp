@@ -28,16 +28,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class PurgeQueueCommand
- * @package Humus\Amqp\Console\Command
- */
 class PurgeQueueCommand extends AbstractCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('purge-queue')
@@ -54,10 +47,7 @@ class PurgeQueueCommand extends AbstractCommand
             ->setHelp('Purges a queue');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $queueName = $input->getOption('name');
 
@@ -77,7 +67,7 @@ class PurgeQueueCommand extends AbstractCommand
             return 1;
         }
 
-        /* @var Queue $queue */
+        assert($queue instanceof Queue);
 
         $queue->purge();
 

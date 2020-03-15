@@ -25,14 +25,9 @@ namespace Humus\Amqp\Driver\PhpAmqpLib;
 use Humus\Amqp\ConnectionOptions;
 use Traversable;
 
-/**
- * Class LazyConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
- */
 final class LazyConnection extends AbstractConnection
 {
     /**
-     * LazyConnection constructor.
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)

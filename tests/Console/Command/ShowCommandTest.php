@@ -29,16 +29,12 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * Class ShowCommandTest
- * @package HumusTest\Amqp\Console\Command
- */
 class ShowCommandTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_returns_when_invalid_type_given()
+    public function it_returns_when_invalid_type_given(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -52,7 +48,7 @@ class ShowCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_when_no_name_given()
+    public function it_returns_when_no_name_given(): void
     {
         $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
         $tester->execute([]);
@@ -65,7 +61,7 @@ class ShowCommandTest extends TestCase
      * @test
      * @dataProvider dataProvider
      */
-    public function it_returns_when_types_not_available(string $type)
+    public function it_returns_when_types_not_available(string $type): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(new \ArrayObject())->shouldBeCalled();
@@ -80,7 +76,7 @@ class ShowCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_lists_all_types_with_specs()
+    public function it_lists_all_types_with_specs(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(
@@ -141,11 +137,7 @@ class ShowCommandTest extends TestCase
         $this->assertRegExp('/Producer: demo-producer/', $output);
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return CommandTester
-     */
-    private function createCommandTester(ContainerInterface $container)
+    private function createCommandTester(ContainerInterface $container): CommandTester
     {
         $command = new ShowCommand();
         $command->setHelperSet(
@@ -157,10 +149,7 @@ class ShowCommandTest extends TestCase
         return new CommandTester($command);
     }
 
-    /**
-     * @return array
-     */
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
             ['connections'],

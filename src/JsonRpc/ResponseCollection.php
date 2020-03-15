@@ -31,20 +31,9 @@ use IteratorAggregate;
  */
 interface ResponseCollection extends Countable, IteratorAggregate
 {
-    /**
-     * @param Response $response
-     */
-    public function addResponse(Response $response);
+    public function addResponse(Response $response): void;
 
-    /**
-     * @param string $id
-     * @return Response|null
-     */
-    public function getResponse(string $id);
+    public function getResponse(string $id): ?Response;
 
-    /**
-     * @param string $id
-     * @return bool
-     */
-    public function hasResponse(string $id);
+    public function hasResponse(string $id): bool;
 }

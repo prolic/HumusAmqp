@@ -25,17 +25,9 @@ namespace HumusTest\Amqp\PhpAmqpLib\Helper;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 
-/**
- * Class CreateConnectionTrait
- * @package HumusTest\Amqp\PhpAmqpLib\Helper
- */
 trait CreateConnectionTrait
 {
-    /**
-     * @param ConnectionOptions|null $options
-     * @return \Humus\Amqp\Connection
-     */
-    public function createConnection(ConnectionOptions $options = null): \Humus\Amqp\Connection
+    public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         if (null === $options) {
             $options = new ConnectionOptions();

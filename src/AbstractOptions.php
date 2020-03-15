@@ -24,24 +24,16 @@ namespace Humus\Amqp;
 
 use Traversable;
 
-/**
- * Class AbstractOptions
- * @package Humus\Amqp
- */
 abstract class AbstractOptions
 {
     /**
      * We use the __ prefix to avoid collisions with properties in
      * user-implementations.
-     *
-     * @var bool
      */
-    protected $__strictMode__ = true;
+    protected bool $__strictMode__ = true;
 
     /**
-     * Constructor
-     *
-     * @param  array|Traversable|null $options
+     * @param array|Traversable|null $options
      */
     public function __construct($options = null)
     {
@@ -54,10 +46,12 @@ abstract class AbstractOptions
      * Set one or more configuration properties
      *
      * @param  array|Traversable|AbstractOptions $options
-     * @throws Exception\InvalidArgumentException
+     *
      * @return AbstractOptions Provides fluent interface
+     *
+     * @throws Exception\InvalidArgumentException
      */
-    public function setFromArray($options)
+    public function setFromArray($options): AbstractOptions
     {
         if ($options instanceof self) {
             $options = $options->toArray();
@@ -82,12 +76,7 @@ abstract class AbstractOptions
         return $this;
     }
 
-    /**
-     * Cast to array
-     *
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         $array = [];
         $transform = function ($letters) {
@@ -110,12 +99,15 @@ abstract class AbstractOptions
      * Set a configuration property
      *
      * @see ParameterObject::__set()
+     *
      * @param string $key
      * @param mixed $value
-     * @throws Exception\BadMethodCallException
+     *
      * @return void
+     *
+     * @throws Exception\BadMethodCallException
      */
-    public function __set($key, $value)
+    public function __set(string $key, $value): void
     {
         $setter = 'set' . str_replace('_', '', $key);
 
@@ -139,11 +131,14 @@ abstract class AbstractOptions
      * Get a configuration property
      *
      * @see ParameterObject::__get()
+     *
      * @param string $key
-     * @throws Exception\BadMethodCallException
+     *
      * @return mixed
+     *
+     * @throws Exception\BadMethodCallException
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         $getter = 'get' . str_replace('_', '', $key);
 
@@ -161,10 +156,8 @@ abstract class AbstractOptions
     /**
      * Test if a configuration property is null
      * @see ParameterObject::__isset()
-     * @param string $key
-     * @return bool
      */
-    public function __isset($key)
+    public function __isset(string $key): bool
     {
         $getter = 'get' . str_replace('_', '', $key);
 
@@ -175,11 +168,8 @@ abstract class AbstractOptions
      * Set a configuration property to NULL
      *
      * @see ParameterObject::__unset()
-     * @param string $key
-     * @throws Exception\InvalidArgumentException
-     * @return void
      */
-    public function __unset($key)
+    public function __unset(string $key): void
     {
         try {
             $this->__set($key, null);

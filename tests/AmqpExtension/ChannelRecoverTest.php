@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 use HumusTest\Amqp\AbstractChannelRecoverTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
-/**
- * Class ChannelRecoverTest
- * @package HumusTest\Amqp\AmqpExtension
- */
 final class ChannelRecoverTest extends AbstractChannelRecoverTest
 {
     use CreateConnectionTrait;

@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Class InvalidArgumentException
- * @package Humus\Amqp\Exception
- */
 class InvalidArgumentException extends \InvalidArgumentException implements Exception
 {
 }

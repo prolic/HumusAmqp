@@ -29,94 +29,45 @@ use Humus\Amqp\Exchange as ExchangeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 
-/**
- * Class Exchange
- * @package Humus\Amqp\Driver\AmqpExtension
- */
 final class Exchange implements ExchangeInterface
 {
-    /**
-     * @var Channel
-     */
-    private $channel;
+    private Channel $channel;
+    private string $name = '';
+    private string $type = '';
+    private int $flags = Constants::AMQP_NOPARAM;
+    private array $arguments = [];
 
-    /**
-     * @var string
-     */
-    private $name = '';
-
-    /**
-     * @var string
-     */
-    private $type = '';
-
-    /**
-     * @var int
-     */
-    private $flags = Constants::AMQP_NOPARAM;
-
-    /**
-     * @var array
-     */
-    private $arguments = [];
-
-    /**
-     * Create an instance of AMQPExchange.
-     *
-     * Returns a new instance of an AMQPExchange object, associated with the
-     * given Channel object.
-     *
-     * @param Channel $channel A valid Channel object, connected to a broker.
-     */
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setName(string $exchangeName)
+    public function setName(string $exchangeName): void
     {
         $this->name = $exchangeName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setType(string $exchangeType)
+    public function setType(string $exchangeType): void
     {
         $this->type = $exchangeType;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFlags(): int
     {
         return $this->flags;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setFlags(int $flags)
+    public function setFlags(int $flags): void
     {
         $this->flags = (int) $flags;
     }
@@ -129,34 +80,22 @@ final class Exchange implements ExchangeInterface
         return $this->arguments[$key] ?? false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getArguments(): array
     {
         return $this->arguments;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setArgument(string $key, $value)
+    public function setArgument(string $key, $value): void
     {
         $this->arguments[$key] = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments): void
     {
         $this->arguments = $arguments;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function declareExchange()
+    public function declareExchange(): void
     {
         $args = new AMQPTable($this->arguments);
 
@@ -173,10 +112,7 @@ final class Exchange implements ExchangeInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM)
+    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM): void
     {
         if ('' === $exchangeName) {
             $exchangeName = $this->name;
@@ -185,10 +121,7 @@ final class Exchange implements ExchangeInterface
         $this->channel->getResource()->exchange_delete($exchangeName, $flags);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []): void
     {
         $args = empty($arguments) ? null : new AMQPTable($arguments);
 
@@ -202,10 +135,7 @@ final class Exchange implements ExchangeInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []): void
     {
         $args = empty($arguments) ? null : new AMQPTable($arguments);
 
@@ -219,14 +149,11 @@ final class Exchange implements ExchangeInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function publish(
         string $message,
         string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
-    ) {
+    ): void {
         $attributes['user_id'] = $this->getConnection()->getOptions()->getLogin();
         $message = new AMQPMessage($message, $attributes);
 
@@ -244,17 +171,11 @@ final class Exchange implements ExchangeInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChannel(): ChannelInterface
     {
         return $this->channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConnection(): ConnectionInterface
     {
         return $this->channel->getConnection();

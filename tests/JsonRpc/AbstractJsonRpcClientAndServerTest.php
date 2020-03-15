@@ -42,18 +42,11 @@ use HumusTest\Amqp\TestAsset\ArrayLogger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-/**
- * Class AbstractJsonRpcClientAndServerTest
- * @package HumusTest\Amqp\JsonRpc
- */
 abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
-    /**
-     * @var JsonRpcErrorFactory
-     */
-    private $errorFactory;
+    private JsonRpcErrorFactory $errorFactory;
 
     protected function setUp(): void
     {
@@ -63,7 +56,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_requests_and_server_responds()
+    public function it_sends_requests_and_server_responds(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -148,7 +141,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_shutdown_notifications()
+    public function it_sends_shutdown_notifications(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -209,7 +202,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_responds_to_invalid_notifications()
+    public function it_responds_to_invalid_notifications(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -271,7 +264,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_responds_to_request_without_id_with_error()
+    public function it_responds_to_request_without_id_with_error(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -333,7 +326,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_requests_and_server_responds_and_handles_exception()
+    public function it_sends_requests_and_server_responds_and_handles_exception(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -428,7 +421,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_requests_and_server_times_out()
+    public function it_sends_requests_and_server_times_out(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -490,7 +483,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_ttl_requests_and_server_responds_late()
+    public function it_sends_ttl_requests_and_server_responds_late(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -555,7 +548,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_throws_exception_when_invalid_server_name_given_to_request()
+    public function it_throws_exception_when_invalid_server_name_given_to_request(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid server given, no related exchange "invalid-rpc-server" found.');
@@ -591,7 +584,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_handles_invalid_requests_and_responses()
+    public function it_handles_invalid_requests_and_responses(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -789,7 +782,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_throws_exception_on_client_when_data_could_not_be_encoded_to_json()
+    public function it_throws_exception_on_client_when_data_could_not_be_encoded_to_json(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Error during json encoding');
@@ -818,7 +811,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_returns_error_on_server_when_data_could_not_be_encoded_to_json()
+    public function it_returns_error_on_server_when_data_could_not_be_encoded_to_json(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -880,7 +873,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_returns_trace_when_enabled()
+    public function it_returns_trace_when_enabled(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();

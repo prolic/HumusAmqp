@@ -27,16 +27,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class StartCallbackConsumerCommand
- * @package Humus\Amqp\Console\Command
- */
 class StartCallbackConsumerCommand extends AbstractCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('consumer')
@@ -60,10 +53,7 @@ class StartCallbackConsumerCommand extends AbstractCommand
             ->setHelp('Start a consumer');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $consumerName = $input->getOption('name');
 
@@ -82,7 +72,8 @@ class StartCallbackConsumerCommand extends AbstractCommand
         }
 
         $callbackConsumer = $container->get($consumerName);
-        /* @var Consumer $callbackConsumer */
+
+        assert($callbackConsumer instanceof Consumer);
 
         $callbackConsumer->consume((int) $input->getOption('amount'));
 

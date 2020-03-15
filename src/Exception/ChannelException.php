@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Class ChannelException
- * @package Humus\Amqp\Exception
- */
 class ChannelException extends AmqpException
 {
 }

@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Class RuntimeException
- * @package Humus\Amqp\Exception
- */
 class RuntimeException extends \RuntimeException implements Exception
 {
 }

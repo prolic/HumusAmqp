@@ -25,20 +25,10 @@ namespace Humus\Amqp\Console\Command;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 
-/**
- * Class AbstractCommand
- * @package Humus\Amqp\Console\Command
- */
 abstract class AbstractCommand extends Command
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private ContainerInterface $container;
 
-    /**
-     * @return ContainerInterface
-     */
     public function getContainer(): ContainerInterface
     {
         if (null === $this->container) {

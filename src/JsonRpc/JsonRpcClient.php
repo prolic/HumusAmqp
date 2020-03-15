@@ -29,63 +29,26 @@ use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 
-/**
- * Class JsonRpcClient
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcClient implements Client
 {
-    /**
-     * @var Queue
-     */
-    private $queue;
-
+    private Queue $queue;
     /**
      * @var string[]
      */
-    private $requestIds = [];
-
-    /**
-     * @var int
-     */
-    private $countRequests = 0;
-
+    private array $requestIds = [];
+    private int $countRequests = 0;
     /**
      * Milliseconds to wait between two tries when reply is not yet there
-     *
-     * @var int
      */
-    private $waitMillis;
-
+    private int $waitMillis;
     /**
      * @var Exchange[]
      */
-    private $exchanges = [];
+    private array $exchanges = [];
+    private ?string $appId;
+    private int $timeout = 0;
+    private ErrorFactory $errorFactory;
 
-    /**
-     * @var string|null
-     */
-    private $appId;
-
-    /**
-     * @var int
-     */
-    private $timeout = 0;
-
-    /**
-     *
-     * @var ErrorFactory
-     */
-    private $errorFactory;
-
-    /**
-     * Constructor
-     *
-     * @param Queue $queue
-     * @param Exchange[] $exchanges
-     * @param int $waitMillis
-     * @param string $appId
-     */
     public function __construct(Queue $queue, array $exchanges, int $waitMillis = 100, string $appId = '', ?ErrorFactory $errorFactory = null)
     {
         Assertion::min($waitMillis, 1);
@@ -103,13 +66,7 @@ final class JsonRpcClient implements Client
         $this->appId = $appId;
     }
 
-    /**
-     * Add a request to rpc client
-     *
-     * @param Request $request
-     * @throws Exception\InvalidArgumentException
-     */
-    public function addRequest(Request $request)
+    public function addRequest(Request $request): void
     {
         $attributes = $this->createAttributes($request);
 
@@ -128,18 +85,12 @@ final class JsonRpcClient implements Client
         }
 
         if (0 !== $request->expiration() && ceil($request->expiration() / 1000) > $this->timeout) {
-            $this->timeout = ceil($request->expiration() / 1000);
+            $this->timeout = (int) ceil($request->expiration() / 1000);
         }
 
         ++$this->countRequests;
     }
 
-    /**
-     * Get response collection
-     *
-     * @param float $timeout in seconds
-     * @return ResponseCollection
-     */
     public function getResponseCollection(float $timeout = 0): ResponseCollection
     {
         if ($timeout < $this->timeout) {
@@ -170,11 +121,7 @@ final class JsonRpcClient implements Client
         return $responseCollection;
     }
 
-    /**
-     * @param string $server
-     * @return Exchange
-     */
-    private function getExchange(string $server)
+    private function getExchange(string $server): Exchange
     {
         if (! isset($this->exchanges[$server])) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -186,10 +133,6 @@ final class JsonRpcClient implements Client
         return $this->exchanges[$server];
     }
 
-    /**
-     * @param Request $request
-     * @return array
-     */
     private function createAttributes(Request $request): array
     {
         $attributes = [
@@ -217,10 +160,6 @@ final class JsonRpcClient implements Client
         return $attributes;
     }
 
-    /**
-     * @param Envelope $envelope
-     * @return Response
-     */
     private function responseFromEnvelope(Envelope $envelope): Response
     {
         if ($envelope->getHeader('jsonrpc') !== JsonRpcResponse::JSONRPC_VERSION

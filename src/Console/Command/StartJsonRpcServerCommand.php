@@ -27,16 +27,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class StartJsonRpcServerCommand
- * @package Humus\Amqp\Console\Command
- */
 class StartJsonRpcServerCommand extends AbstractCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('json_rpc_server')
@@ -60,10 +53,7 @@ class StartJsonRpcServerCommand extends AbstractCommand
             ->setHelp('Start a JSON-RPC server');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $serverName = $input->getOption('name');
 
@@ -82,7 +72,8 @@ class StartJsonRpcServerCommand extends AbstractCommand
         }
 
         $jsonRpcServer = $container->get($serverName);
-        /* @var Consumer $jsonRpcServer */
+
+        assert($jsonRpcServer instanceof Consumer);
 
         $jsonRpcServer->consume((int) $input->getOption('amount'));
 

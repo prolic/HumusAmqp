@@ -23,31 +23,21 @@ declare(strict_types=1);
 namespace Humus\Amqp\JsonRpc;
 
 use ArrayIterator;
+use Iterator;
 
-/**
- * Class JsonRpcResponseCollection
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcResponseCollection implements ResponseCollection
 {
     /**
      * @var Response[]
      */
-    private $responses = [];
+    private array $responses = [];
 
-    /**
-     * @param Response $response
-     */
-    public function addResponse(Response $response)
+    public function addResponse(Response $response): void
     {
         $this->responses[] = $response;
     }
 
-    /**
-     * @param string $id
-     * @return Response|null
-     */
-    public function getResponse(string $id)
+    public function getResponse(string $id): ?Response
     {
         foreach ($this->responses as $response) {
             if ($response->id() === $id) {
@@ -56,11 +46,7 @@ final class JsonRpcResponseCollection implements ResponseCollection
         }
     }
 
-    /**
-     * @param string $id
-     * @return bool
-     */
-    public function hasResponse(string $id)
+    public function hasResponse(string $id): bool
     {
         foreach ($this->responses as $response) {
             if ($response->id() === $id) {
@@ -71,18 +57,12 @@ final class JsonRpcResponseCollection implements ResponseCollection
         return false;
     }
 
-    /**
-     * @return int
-     */
-    public function count()
+    public function count(): int
     {
         return count($this->responses);
     }
 
-    /**
-     * @return ArrayIterator
-     */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ArrayIterator($this->responses);
     }

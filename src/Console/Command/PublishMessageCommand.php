@@ -29,16 +29,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class PublishMessageCommand
- * @package Humus\Amqp\Console\Command
- */
 class PublishMessageCommand extends AbstractCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('publish-message')
@@ -95,10 +88,7 @@ class PublishMessageCommand extends AbstractCommand
             ->setHelp('Purges a queue');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $producerName = $input->getOption('producer');
 
@@ -150,7 +140,7 @@ class PublishMessageCommand extends AbstractCommand
 
         $producer = $container->get($producerName);
 
-        /* @var Producer $producer */
+        assert($producer instanceof Producer);
 
         if ($transactional) {
             $producer->startTransaction();

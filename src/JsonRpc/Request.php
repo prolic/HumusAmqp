@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-/**
- * Class JsonRpcRequest
- * @package Humus\Amqp\JsonRpc
- */
 interface Request
 {
     /**
@@ -33,34 +29,15 @@ interface Request
      */
     public function params();
 
-    /**
-     * @return string
-     */
     public function server(): string;
 
-    /**
-     * @return string
-     */
     public function routingKey(): string;
 
-    /**
-     * Expiration in milliseconds
-     * @return int
-     */
     public function expiration(): int;
 
-    /**
-     * @return null|string
-     */
-    public function id();
+    public function id(): ?string;
 
-    /**
-     * @return int
-     */
     public function timestamp(): int;
 
-    /**
-     * @return string
-     */
     public function method(): string;
 }
