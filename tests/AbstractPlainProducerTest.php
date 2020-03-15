@@ -119,7 +119,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
         $producer->rollbackTransaction();
 
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
-        $this->assertFalse($msg);
+        $this->assertNull($msg);
     }
 
     /**

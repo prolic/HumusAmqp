@@ -27,7 +27,7 @@ use Symfony\Component\Console\Command\Command;
 
 abstract class AbstractCommand extends Command
 {
-    private ContainerInterface $container;
+    private ?ContainerInterface $container = null;
 
     public function getContainer(): ContainerInterface
     {

@@ -44,6 +44,8 @@ final class JsonRpcResponseCollection implements ResponseCollection
                 return $response;
             }
         }
+
+        return null;
     }
 
     public function hasResponse(string $id): bool

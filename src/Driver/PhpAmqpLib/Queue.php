@@ -144,7 +144,7 @@ final class Queue implements QueueInterface
             return new Envelope($envelope);
         }
 
-        return false;
+        return null;
     }
 
     public function consume(

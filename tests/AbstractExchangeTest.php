@@ -446,7 +446,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
 
         $this->addToCleanUp($queue);
 
-        $this->assertFalse($queue->get());
+        $this->assertNull($queue->get());
 
         try {
             $this->channel->waitForBasicReturn(1);

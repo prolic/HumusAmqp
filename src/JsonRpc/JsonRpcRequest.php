@@ -35,7 +35,7 @@ final class JsonRpcRequest implements Request
      * @var array|string|int|float|bool
      */
     private $params;
-    private string $id;
+    private ?string $id;
     private string $routingKey;
     private int $expiration = 0;
     private int $timestamp;
@@ -44,9 +44,9 @@ final class JsonRpcRequest implements Request
      * @param string $server
      * @param string $method
      * @param array|string|int|float|bool $params
+     * @param string|null $id
      * @param string $routingKey
      * @param int $expiration in milliseconds
-     * @param string|null $id
      * @param int $timestamp
      *
      * @throws \Assert\AssertionFailedException
@@ -56,7 +56,7 @@ final class JsonRpcRequest implements Request
         string $server,
         string $method,
         $params,
-        string $id = null,
+        ?string $id = null,
         string $routingKey = '',
         int $expiration = 0, // in milliseconds
         int $timestamp = 0

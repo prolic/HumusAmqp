@@ -279,7 +279,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
         $msg = $this->queue->get(Constants::AMQP_AUTOACK);
 
-        $this->assertFalse($msg);
+        $this->assertNull($msg);
     }
 
     /**
@@ -300,7 +300,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
         $msg2 = $this->queue->get(Constants::AMQP_AUTOACK);
 
-        $this->assertFalse($msg2);
+        $this->assertNull($msg2);
     }
 
     /**
@@ -366,7 +366,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
 
-        $this->assertFalse($msg);
+        $this->assertNull($msg);
     }
 
     /**
@@ -389,7 +389,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
         $msg = $this->queue->get(Constants::AMQP_NOPARAM);
 
-        $this->assertFalse($msg);
+        $this->assertNull($msg);
     }
 
     /**

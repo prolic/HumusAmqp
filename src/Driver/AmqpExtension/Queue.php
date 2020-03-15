@@ -109,15 +109,11 @@ final class Queue implements AmqpQueueInterface
             throw new ChannelException($e->getMessage());
         }
 
-        if (false === $envelope) {
-            return null;
-        }
-
         if ($envelope instanceof \AMQPEnvelope) {
-            $envelope = new Envelope($envelope);
+            return new Envelope($envelope);
         }
 
-        return $envelope;
+        return null;
     }
 
     public function consume(?callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = ''): void
