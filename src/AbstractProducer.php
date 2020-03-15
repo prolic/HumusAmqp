@@ -22,8 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\ChannelException;
-
 abstract class AbstractProducer implements Producer
 {
     protected Exchange $exchange;

@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\PhpAmqpLib;
 
-use http\Env;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Constants;

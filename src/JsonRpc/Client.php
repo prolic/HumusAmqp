@@ -22,8 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-use Humus\Amqp\Exception;
-
 interface Client
 {
     public function addRequest(Request $request): void;

@@ -41,7 +41,7 @@ final class JsonRpcResponse implements Response
      *
      * @return Response
      */
-    public static function withResult(?string $id = null, $result): Response
+    public static function withResult(?string $id, $result): Response
     {
         $self = new self();
 
@@ -60,7 +60,7 @@ final class JsonRpcResponse implements Response
      *
      * @return Response
      */
-    public static function withError(?string $id = null, Error $error): Response
+    public static function withError(?string $id, Error $error): Response
     {
         $self = new self();
 
