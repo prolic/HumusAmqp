@@ -37,7 +37,7 @@ abstract class AbstractConsumer implements Consumer
     protected bool $keepAlive = true;
     protected float $idleTimeout;
     protected int $blockSize;
-    protected float $timestampLastAck;
+    protected ?float $timestampLastAck = null;
     protected ?float $timestampLastMessage = null;
     protected int $target;
 
