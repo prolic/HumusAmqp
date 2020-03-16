@@ -185,7 +185,7 @@ final class Queue implements QueueInterface
                 $args
             );
 
-            $readTimeout = $this->getConnection()->getOptions()->getReadTimeout();
+            $readTimeout = $this->getConnection()->getOptions()->readTimeout();
 
             while ($this->channel->getResource()->is_consuming()) {
                 $this->channel->getResource()->wait(null, false, $readTimeout);

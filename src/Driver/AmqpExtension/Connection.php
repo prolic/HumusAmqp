@@ -26,6 +26,7 @@ use AMQPConnection;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\ConnectionOptions;
+use Humus\Amqp\Exception\ConnectionException;
 use Humus\Amqp\Exception\InvalidArgumentException;
 use Traversable;
 
@@ -43,7 +44,7 @@ final class Connection implements ConnectionInterface
             $options = new ConnectionOptions($options);
         }
 
-        if (true === $options->getVerify() && null === $options->getCACert()) {
+        if (true === $options->verify() && null === $options->caCert()) {
             throw new InvalidArgumentException('CA cert not set, so it can\'t be verified.');
         }
 
@@ -63,7 +64,7 @@ final class Connection implements ConnectionInterface
 
     public function connect(): void
     {
-        if ($this->options->getPersistent()) {
+        if ($this->options->isPersistent()) {
             $this->connection->pconnect();
         } else {
             $this->connection->connect();
@@ -72,7 +73,7 @@ final class Connection implements ConnectionInterface
 
     public function disconnect(): void
     {
-        if ($this->options->getPersistent()) {
+        if ($this->options->isPersistent()) {
             $this->connection->pdisconnect();
         } else {
             $this->connection->disconnect();
@@ -81,11 +82,11 @@ final class Connection implements ConnectionInterface
 
     public function reconnect(): void
     {
-        if ($this->options->getPersistent()) {
+        if ($this->options->isPersistent()) {
             $this->connection->preconnect();
+        } else {
+            $this->connection->reconnect();
         }
-
-        $this->connection->reconnect();
     }
 
     public function getOptions(): ConnectionOptions

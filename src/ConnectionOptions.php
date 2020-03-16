@@ -44,7 +44,7 @@ class ConnectionOptions extends AbstractOptions
         $this->host = $host;
     }
 
-    public function getHost(): string
+    public function host(): string
     {
         return $this->host;
     }
@@ -54,7 +54,7 @@ class ConnectionOptions extends AbstractOptions
         $this->password = $password;
     }
 
-    public function getPassword(): string
+    public function password(): string
     {
         return $this->password;
     }
@@ -64,7 +64,7 @@ class ConnectionOptions extends AbstractOptions
         $this->persistent = $persistent;
     }
 
-    public function getPersistent(): bool
+    public function isPersistent(): bool
     {
         return $this->persistent;
     }
@@ -74,12 +74,12 @@ class ConnectionOptions extends AbstractOptions
         $this->port = $port;
     }
 
-    public function getPort(): int
+    public function port(): int
     {
         return $this->port;
     }
 
-    public function getConnectTimeout(): float
+    public function connectTimeout(): float
     {
         return $this->connectTimeout;
     }
@@ -94,7 +94,7 @@ class ConnectionOptions extends AbstractOptions
         $this->readTimeout = $readTimeout;
     }
 
-    public function getReadTimeout(): float
+    public function readTimeout(): float
     {
         return $this->readTimeout;
     }
@@ -104,7 +104,7 @@ class ConnectionOptions extends AbstractOptions
         $this->login = $login;
     }
 
-    public function getLogin(): string
+    public function login(): string
     {
         return $this->login;
     }
@@ -114,7 +114,7 @@ class ConnectionOptions extends AbstractOptions
         $this->vhost = $vhost;
     }
 
-    public function getVhost(): string
+    public function vhost(): string
     {
         return $this->vhost;
     }
@@ -124,12 +124,12 @@ class ConnectionOptions extends AbstractOptions
         $this->writeTimeout = $writeTimeout;
     }
 
-    public function getWriteTimeout(): float
+    public function writeTimeout(): float
     {
         return $this->writeTimeout;
     }
 
-    public function getHeartbeat(): int
+    public function heartbeat(): int
     {
         return $this->heartbeat;
     }
@@ -139,17 +139,17 @@ class ConnectionOptions extends AbstractOptions
         $this->heartbeat = $heartbeat;
     }
 
-    public function getCACert(): ?string
+    public function caCert(): ?string
     {
         return $this->cacert;
     }
 
-    public function setCACert(string $cacert): void
+    public function setCaCert(string $cacert): void
     {
         $this->cacert = $cacert;
     }
 
-    public function getCert(): ?string
+    public function cert(): ?string
     {
         return $this->cert;
     }
@@ -159,7 +159,7 @@ class ConnectionOptions extends AbstractOptions
         $this->cert = $cert;
     }
 
-    public function getKey(): ?string
+    public function key(): ?string
     {
         return $this->key;
     }
@@ -169,7 +169,7 @@ class ConnectionOptions extends AbstractOptions
         $this->key = $key;
     }
 
-    public function getVerify(): ?bool
+    public function verify(): ?bool
     {
         return $this->verify;
     }

@@ -38,41 +38,41 @@ final class SslConnection extends AbstractConnection
             $options = new ConnectionOptions($options);
         }
 
-        if (true === $options->getVerify() && null === $options->getCACert()) {
+        if (true === $options->verify() && null === $options->caCert()) {
             throw new InvalidArgumentException('CA cert not set, so it can\'t be verified.');
         }
 
         $sslOptions = [];
 
-        if ($caCert = $options->getCACert()) {
+        if ($caCert = $options->caCert()) {
             $sslOptions['cafile'] = $caCert;
         }
 
-        if ($cert = $options->getCert()) {
+        if ($cert = $options->cert()) {
             $sslOptions['local_cert'] = $cert;
         }
 
-        if (null !== ($verify = $options->getVerify())) {
+        if (null !== ($verify = $options->verify())) {
             $sslOptions['verify_peer'] = $verify;
             $sslOptions['verify_peer_name'] = $verify;
         }
 
-        if ($key = $options->getKey()) {
+        if ($key = $options->key()) {
             $sslOptions['local_pk'] = $key;
         }
 
         $this->options = $options;
         $this->connection = new BaseAMQPSSLConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
+            $options->host(),
+            $options->port(),
+            $options->login(),
+            $options->password(),
+            $options->vhost(),
             $sslOptions,
             [
-                'connection_timeout' => $options->getReadTimeout(),
-                'read_write_timeout' => $options->getWriteTimeout(),
-                'heartbeat' => $options->getHeartbeat(),
+                'connection_timeout' => $options->readTimeout(),
+                'read_write_timeout' => $options->writeTimeout(),
+                'heartbeat' => $options->heartbeat(),
             ]
         );
     }

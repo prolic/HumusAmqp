@@ -40,17 +40,17 @@ final class LazySocketConnection extends AbstractConnection
 
         $this->options = $options;
         $this->connection = new BaseLazySocketConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
+            $options->host(),
+            $options->port(),
+            $options->login(),
+            $options->password(),
+            $options->vhost(),
             false,
             'AMQPLAIN',
             null,
             'en_US',
-            $options->getReadTimeout() ?: $options->getWriteTimeout(),
-            $options->getHeartbeat() > 0
+            $options->readTimeout() ?: $options->writeTimeout(),
+            $options->heartbeat() > 0
         );
     }
 

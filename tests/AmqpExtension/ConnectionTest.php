@@ -128,7 +128,7 @@ final class ConnectionTest extends AbstractConnectionTest
         $options = new ConnectionOptions();
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setCaCert(__DIR__ . '/../../provision/test_certs/cacert.pem');
         $options->setCert(__DIR__ . '/../../provision/test_certs/cert.pem');
         $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
         $options->setVerify(false);
@@ -154,7 +154,7 @@ final class ConnectionTest extends AbstractConnectionTest
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setCaCert(__DIR__ . '/../../provision/test_certs/cacert.pem');
         $options->setVerify(false);
 
         $connection = new Connection($options);

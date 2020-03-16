@@ -33,7 +33,7 @@ abstract class AbstractConsumer implements Consumer
     protected string $consumerTag;
     protected int $countMessagesConsumed = 0;
     protected int $countMessagesUnacked = 0;
-    protected ?int $lastDeliveryTag;
+    protected ?int $lastDeliveryTag = null;
     protected bool $keepAlive = true;
     protected float $idleTimeout;
     protected int $blockSize;

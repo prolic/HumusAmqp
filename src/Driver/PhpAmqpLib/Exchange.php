@@ -154,7 +154,7 @@ final class Exchange implements ExchangeInterface
         string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ): void {
-        $attributes['user_id'] = $this->getConnection()->getOptions()->getLogin();
+        $attributes['user_id'] = $this->getConnection()->getOptions()->login();
         $message = new AMQPMessage($message, $attributes);
 
         if (isset($attributes['headers'])) {

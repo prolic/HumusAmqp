@@ -143,7 +143,7 @@ final class JsonRpcClient implements Client
             'timestamp' => $request->timestamp(),
             'reply_to' => $this->queue->getName(),
             'app_id' => $this->appId,
-            'user_id' => $this->queue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $this->queue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],

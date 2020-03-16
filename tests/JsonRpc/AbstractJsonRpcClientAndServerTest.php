@@ -633,7 +633,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'correlation_id' => 'request-3',
             'type' => 'time2',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
@@ -646,7 +646,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'correlation_id' => 'request-4',
             'type' => 'time2',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
         ]);
 
         $serverExchange->publish('2', '', Constants::AMQP_NOPARAM, [
@@ -655,7 +655,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'type' => 'time2',
             'correlation_id' => 'request-5',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
@@ -667,7 +667,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'type' => 'time2',
             'correlation_id' => 'request-6',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
