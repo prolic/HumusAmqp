@@ -102,7 +102,7 @@ final class JsonRpcClient implements Client
 
         do {
             $message = $this->queue->get(Constants::AMQP_AUTOACK);
-
+var_dump($message);
             if ($message instanceof Envelope) {
                 $responseCollection->addResponse($this->responseFromEnvelope($message));
             } else {

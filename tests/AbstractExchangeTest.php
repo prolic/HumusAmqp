@@ -264,7 +264,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     {
         $result = [];
 
-        set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use (&$result) {
+        set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use (&$result): void {
             $result[] = $errstr;
         });
 
@@ -312,8 +312,10 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
             string $routingKey,
             Envelope $envelope,
             string $body
-        ) use (&$result) {
+        ) use (&$result): bool {
             $result[] = 'Message returned: ' . $replyText . ', message body:' . $body;
+
+            return true;
         });
 
         $cnt = 2;
@@ -322,7 +324,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
             function (
                 int $deliveryTag,
                 bool $multiple = false
-            ) use (&$cnt, &$result) {
+            ) use (&$cnt, &$result): bool {
                 $result[] = 'Message acked';
 
                 return --$cnt > 0;
@@ -331,7 +333,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
                 int $deliveryTag,
                 bool $multiple,
                 bool $requeue
-            ) use (&$result) {
+            ) use (&$result): bool {
                 $result[] = 'Message nacked';
 
                 return false;
@@ -396,10 +398,10 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $this->exchange->declareExchange();
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function () {
+            function (): bool {
                 return false;
             },
-            function (int $deliveryTag, bool $multiple, bool $requeue) {
+            function (int $deliveryTag, bool $multiple, bool $requeue): void {
                 throw new \Exception('Could not confirm message publishing');
             }
         );

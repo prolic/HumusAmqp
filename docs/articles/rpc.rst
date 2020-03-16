@@ -12,6 +12,8 @@ A sample configuration might look like this, more details and explanation will b
 
 .. code-block:: php
 
+    use Humus\Amqp\JsonRpc;
+
     return [
         'dependencies' => [
             'factories' => [
@@ -19,8 +21,8 @@ A sample configuration might look like this, more details and explanation will b
                 'default-amqp-connection' => [Container\ConnectionFactory::class, 'default'],
                 'demo-rpc-server' => [Container\JsonRpcServerFactory::class, 'demo-rpc-server'],
                 'timestwo' => function () {
-                    return function (\Humus\Amqp\JsonRpc\Request $request): \Humus\Amqp\JsonRpc\Response {
-                        return \Humus\Amqp\JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 2);
+                    return function (JsonRpc\Request $request): JsonRpc\Response {
+                        return JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 2);
                     };
                 },
             ],
@@ -77,8 +79,10 @@ callback is simply turning a Request into a Response like this:
 
 .. code-block:: php
 
-    function (\Humus\Amqp\JsonRpc\Request $request): \Humus\Amqp\JsonRpc\Response {
-        return \Humus\Amqp\JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 2);
+    use Humus\Amqp\JsonRpc;
+
+    function (JsonRpc\Request $request): JsonRpc\Response {
+        return JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 2);
     }
 
 For the callback function consider this:
@@ -92,16 +96,18 @@ different results, based on the method. For example:
 
 .. code-block:: php
 
-    function (\Humus\Amqp\JsonRpc\Request $request): \Humus\Amqp\JsonRpc\Response {
+    use Humus\Amqp\JsonRpc;
+
+    function (JsonRpc\Request $request): JsonRpc\Response {
         switch ($request->method()) {
             case 'times2':
-                return \Humus\Amqp\JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 2);
+                return JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 2);
             case 'times3:
-                return \Humus\Amqp\JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 3);
+                return JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() * 3);
             case 'plus5':
-                return \Humus\Amqp\JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() + 5);
+                return JsonRpc\JsonRpcResponse::withResult($request->id(), $request->params() + 5);
             default:
-                return \Humus\Amqp\JsonRpc\JsonRpcResponse::withError($request->id(), new \Humus\Amqp\JsonRpc\JsonRpcError(32601));
+                return JsonRpc\JsonRpcResponse::withError($request->id(), new JsonRpc\JsonRpcError(32601));
         }
     }
 

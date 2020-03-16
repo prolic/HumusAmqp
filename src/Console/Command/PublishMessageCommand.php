@@ -150,10 +150,10 @@ class PublishMessageCommand extends AbstractCommand
             $producer->confirmSelect();
 
             $producer->setConfirmCallback(
-                function (int $deliveryTag, bool $multiple = false) {
+                function (int $deliveryTag, bool $multiple = false): bool {
                     return false;
                 },
-                function (int $deliveryTag, bool $multiple, bool $requeue) {
+                function (int $deliveryTag, bool $multiple, bool $requeue): void {
                     throw new Exception\RuntimeException('Message nacked');
                 }
             );

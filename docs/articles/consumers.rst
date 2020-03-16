@@ -114,9 +114,17 @@ Set up the consumer
 
     <?php
 
-    $logger = new \Psr\Log\NullLogger();
+    use Humus\Amqp\CallbackConsumer;
+    use Humus\Amqp\DeliveryResult;
+    use Humus\Amqp\Driver\AmqpExtension\Connection;
+    use Humus\Amqp\Envelope;
+    use Humus\Amqp\FlushDeferredResult;
+    use Humus\Amqp\Queue;
+    use Psr\Log\NullLogger;
 
-    $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection();
+    $logger = new NullLogger();
+
+    $connection = new Connection();
     $connection->connect();
 
     $channel = $connection->newChannel();
@@ -126,16 +134,16 @@ Set up the consumer
     $queue = $channel->newQueue();
     $queue->setName('test-queue');
 
-    $consumer = new \Humus\Amqp\CallbackConsumer(
+    $consumer = new CallbackConsumer(
         $queue,
         $logger,
         12.5, // idle timeout, float in seconds
-        function (\Humus\Amqp\Envelope $envelope, \Humus\Amqp\Queue $queue) {
+        function (Envelope $envelope,Queue $queue): DeliveryResult {
             echo $envelope->getBody();
-            return \Humus\Amqp\DeliveryResult::MSG_DEFER();
+            return DeliveryResult::MSG_DEFER();
         },
-        function (\Humus\Amqp\Queue $queue) {
-            return \Humus\Amqp\FlushDeferredResult::MSG_ACK();
+        function (Queue $queue) {
+            return FlushDeferredResult::MSG_ACK();
         },
         null, // no custom error callback
         'demo-consumer-tag'

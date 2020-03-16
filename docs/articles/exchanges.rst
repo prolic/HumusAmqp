@@ -826,7 +826,7 @@ none of the bindings match), the message is returned to the producer.
             string $routingKey,
             Envelope $envelope,
             string $body
-        ) use (&$result) {
+        ) use (&$result): bool {
             $result[] = 'Message returned';
             $result[] = func_get_args();
             return false;

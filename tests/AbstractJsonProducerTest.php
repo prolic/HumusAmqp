@@ -124,10 +124,10 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $count = 2;
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function (int $delivery_tag, bool $multiple) use (&$count) {
+            function (int $delivery_tag, bool $multiple) use (&$count): bool {
                 return $delivery_tag !== $count;
             },
-            function (int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue): bool {
                 throw new \Exception('Could not confirm message publishing');
             }
         );
@@ -165,12 +165,10 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $count = 1;
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function (int $delivery_tag, bool $multiple) use (&$count) {
-                var_dump(__LINE__, $delivery_tag, $count);
-
+            function (int $delivery_tag, bool $multiple) use (&$count): bool {
                 return $delivery_tag !== $count;
             },
-            function (int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue): void {
                 throw new \Exception('Could not confirm message publishing');
             }
         );
@@ -191,10 +189,10 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $count = 2;
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function (int $delivery_tag, bool $multiple) use (&$count) {
+            function (int $delivery_tag, bool $multiple) use (&$count): bool {
                 return $delivery_tag !== $count;
             },
-            function (int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue): void {
                 throw new \Exception('Could not confirm message publishing');
             }
         );
@@ -258,7 +256,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $producer->confirmSelect();
 
         $producer->setConfirmCallback(
-            function (int $deliveryTag, bool $multiple) use (&$result, &$multipleAcks) {
+            function (int $deliveryTag, bool $multiple) use (&$result, &$multipleAcks): bool {
                 $result[] = 'acked ' . (string) $deliveryTag;
                 if ($multiple) {
                     $multipleAcks = $multiple;
@@ -266,7 +264,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
                 return 3 !== $deliveryTag;
             },
-            function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result) {
+            function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result): bool {
                 $result[] = 'nacked' . (string) $deliveryTag;
 
                 return false;
@@ -319,12 +317,12 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
         $cnt = 2;
         $producer->setConfirmCallback(
-            function ($deliveryTag, bool $multiple) use (&$result, &$cnt) {
+            function ($deliveryTag, bool $multiple) use (&$result, &$cnt): bool {
                 $result[] = 'acked ' . (string) $deliveryTag;
 
                 return --$cnt > 0;
             },
-            function ($deliveryTag, bool $multiple, bool $requeue) use (&$result) {
+            function ($deliveryTag, bool $multiple, bool $requeue) use (&$result): bool {
                 $result = 'nacked' . (string) $deliveryTag;
 
                 return false;
@@ -363,7 +361,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
             string $routingKey,
             Envelope $envelope,
             string $body
-        ) use (&$result) {
+        ) use (&$result): bool {
             $result[] = 'Message returned';
             $result[] = func_get_args();
 

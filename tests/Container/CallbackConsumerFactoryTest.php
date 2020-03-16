@@ -92,7 +92,7 @@ class CallbackConsumerFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         })->shouldBeCalled();
 
         $factory = new CallbackConsumerFactory('my_consumer');
@@ -161,11 +161,11 @@ class CallbackConsumerFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         })->shouldBeCalled();
-        $container->get('my_flush')->willReturn(function () {
+        $container->get('my_flush')->willReturn(function (): void {
         })->shouldBeCalled();
-        $container->get('my_error')->willReturn(function () {
+        $container->get('my_error')->willReturn(function (): void {
         })->shouldBeCalled();
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 

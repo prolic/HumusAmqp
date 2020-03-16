@@ -68,11 +68,12 @@ abstract class AbstractConsumer implements Consumer
             $this->timestampLastAck = microtime(true);
         }
 
-        $callback = function (Envelope $envelope) {
+        $callback = function (Envelope $envelope): bool {
             try {
                 $processFlag = $this->handleDelivery($envelope, $this->queue);
             } catch (\Throwable $e) {
                 $this->logger->error('Exception during handleDelivery: ' . $e->getMessage());
+
                 if ($this->handleException($e)) {
                     $processFlag = DeliveryResult::MSG_REJECT_REQUEUE();
                 } else {
@@ -97,6 +98,8 @@ abstract class AbstractConsumer implements Consumer
 
                 return false;
             }
+
+            return true;
         };
 
         try {

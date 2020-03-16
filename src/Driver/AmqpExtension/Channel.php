@@ -129,6 +129,7 @@ final class Channel implements ChannelInterface
     public function setReturnCallback(callable $returnCallback = null): void
     {
         $innerCallback = null;
+
         if ($returnCallback) {
             $innerCallback = function (
                 int $replyCode,
@@ -137,7 +138,7 @@ final class Channel implements ChannelInterface
                 string $routingKey,
                 \AMQPBasicProperties $properties,
                 string $body
-            ) use ($returnCallback) {
+            ) use ($returnCallback): bool {
                 return $returnCallback($replyCode, $replyText, $exchange, $routingKey, new Envelope($properties), $body);
             };
         }

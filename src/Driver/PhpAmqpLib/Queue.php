@@ -153,7 +153,7 @@ final class Queue implements QueueInterface
         string $consumerTag = null
     ): void {
         if (null !== $callback) {
-            $innerCallback = function (AMQPMessage $envelope) use ($callback) {
+            $innerCallback = function (AMQPMessage $envelope) use ($callback): bool {
                 $result = $callback(new Envelope($envelope), $this);
 
                 if (false === $result) {

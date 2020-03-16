@@ -119,7 +119,7 @@ final class Queue implements AmqpQueueInterface
     public function consume(?callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = ''): void
     {
         if (null !== $callback) {
-            $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback) {
+            $innerCallback = function (\AMQPEnvelope $envelope, \AMQPQueue $queue) use ($callback): bool {
                 $envelope = new Envelope($envelope);
 
                 return $callback($envelope, $this);

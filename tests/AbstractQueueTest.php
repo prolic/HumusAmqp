@@ -190,7 +190,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
 
         $result = [];
         $cnt = 2;
-        $this->queue->consume(function (Envelope $envelope, Queue $queue) use (&$result, &$cnt) {
+        $this->queue->consume(function (Envelope $envelope, Queue $queue) use (&$result, &$cnt): bool {
             $result[] = $envelope->getBody();
             $result[] = $queue->getName();
             $cnt--;

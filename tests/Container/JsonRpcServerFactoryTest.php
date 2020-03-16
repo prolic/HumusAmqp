@@ -98,7 +98,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         });
 
         $factory = new JsonRpcServerFactory('my_server');
@@ -172,7 +172,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         });
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 
@@ -246,7 +246,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         });
 
         $errorFactory = $this->prophesize(ErrorFactory::class);

@@ -48,7 +48,7 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
 
     protected function setUp(): void
     {
-        $this->callback = function (Envelope $envelope) {
+        $this->callback = function (Envelope $envelope): void {
             $this->results[] = $envelope->getBody();
         };
 
@@ -128,10 +128,10 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
     public function it_produces_in_confirm_mode(): void
     {
         $this->exchange->getChannel()->setConfirmCallback(
-            function () {
+            function (): bool {
                 return false;
             },
-            function (int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue): void {
                 throw new \Exception('Could not confirm message publishing');
             }
         );

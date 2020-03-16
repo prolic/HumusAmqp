@@ -79,11 +79,13 @@ abstract class AbstractOptions
     public function toArray(): array
     {
         $array = [];
-        $transform = function ($letters) {
+
+        $transform = function ($letters): string {
             $letter = array_shift($letters);
 
             return '_' . strtolower($letter);
         };
+
         foreach ($this as $key => $value) {
             if ($key === '__strictMode__') {
                 continue;

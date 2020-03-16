@@ -72,7 +72,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_ACK();
@@ -180,7 +180,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_REJECT();
@@ -289,7 +289,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             new NullLogger(),
             7,
-            function (Envelope $envelope, Queue $queue) use (&$result, &$i) {
+            function (Envelope $envelope, Queue $queue) use (&$result, &$i): DeliveryResult {
                 $i++;
                 if ((int) $envelope->getBody() % 2 === 0 && ! $envelope->isRedelivery()) {
                     $result[] = $envelope->getBody();
@@ -340,7 +340,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_DEFER();
@@ -425,12 +425,12 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_DEFER();
             },
-            function (Queue $queue) {
+            function (Queue $queue): FlushDeferredResult {
                 return FlushDeferredResult::MSG_REJECT_REQUEUE();
             },
             null,
@@ -513,12 +513,12 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_DEFER();
             },
-            function () use (&$result) {
+            function () use (&$result): FlushDeferredResult {
                 $result[] = 'flushed';
 
                 return FlushDeferredResult::MSG_REJECT();
@@ -619,12 +619,12 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             new NullLogger(),
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_DEFER();
             },
-            function () use (&$result, &$flushes) {
+            function () use (&$result, &$flushes): FlushDeferredResult {
                 $flushes++;
                 $result[] = 'flushed';
                 if (1 === $flushes) {
@@ -676,12 +676,14 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): void {
                 throw new \Exception('foo');
             },
             null,
-            function (\Exception $e) use (&$result) {
+            function (\Exception $e) use (&$result): bool {
                 $result[] = $e->getMessage();
+
+                return true;
             }
         );
 
@@ -767,11 +769,11 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): void {
                 throw new \Exception('foo');
             },
             null,
-            function (\Exception $e) use (&$result) {
+            function (\Exception $e) use (&$result): bool {
                 $result[] = $e->getMessage();
 
                 return true;
@@ -860,11 +862,11 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): void {
                 throw new \Exception('foo');
             },
             null,
-            function (\Exception $e) use (&$result) {
+            function (\Exception $e) use (&$result): bool {
                 $result[] = $e->getMessage();
 
                 return false;
@@ -953,16 +955,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_DEFER();
             },
-            function () {
+            function (): void {
                 throw new \Exception('foo');
             },
-            function (\Exception $e) use (&$result) {
+            function (\Exception $e) use (&$result): bool {
                 $result[] = $e->getMessage();
+
+                return true;
             }
         );
 
@@ -1043,7 +1047,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_ACK();
@@ -1151,7 +1155,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_ACK();
@@ -1279,7 +1283,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_ACK();
@@ -1346,7 +1350,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             $queue,
             $logger,
             3,
-            function (Envelope $envelope, Queue $queue) use (&$result) {
+            function (Envelope $envelope, Queue $queue) use (&$result): DeliveryResult {
                 $result[] = $envelope->getBody();
 
                 return DeliveryResult::MSG_ACK();

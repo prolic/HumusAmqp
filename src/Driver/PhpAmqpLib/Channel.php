@@ -43,13 +43,13 @@ final class Channel implements ChannelInterface
     {
         $this->connection = $connection;
         $this->channel = $channel;
-        $this->channel->set_ack_handler(function () {
+        $this->channel->set_ack_handler(function (): void {
             trigger_error('Unhandled basic.ack method from server received.');
         });
-        $this->channel->set_nack_handler(function () {
+        $this->channel->set_nack_handler(function (): void {
             trigger_error('Unhandled basic.nack method from server received.');
         });
-        $this->channel->set_return_listener(function () {
+        $this->channel->set_return_listener(function (): void {
             trigger_error('Unhandled basic.return method from server received.');
         });
     }
@@ -131,14 +131,14 @@ final class Channel implements ChannelInterface
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null): void
     {
         if (is_callable($ackCallback)) {
-            $innerAckCallback = function (AMQPMessage $message) use ($ackCallback) {
+            $innerAckCallback = function (AMQPMessage $message) use ($ackCallback): bool {
                 return $ackCallback((int) $message->get('delivery_tag'), false);
             };
             $this->channel->set_ack_handler($innerAckCallback);
         }
 
         if (is_callable($nackCallback)) {
-            $innerNackCallback = function (AMQPMessage $message) use ($ackCallback) {
+            $innerNackCallback = function (AMQPMessage $message) use ($ackCallback): bool {
                 return $ackCallback((int) $message->get('delivery_tag'), false, false);
             };
             $this->channel->set_nack_handler($innerNackCallback);
@@ -174,7 +174,7 @@ final class Channel implements ChannelInterface
             $exchange,
             $routingKey,
             $message
-        ) use ($returnCallback) {
+        ) use ($returnCallback): bool {
             $envelope = new Envelope($message);
 
             return $returnCallback($replyCode, $replyText, $exchange, $routingKey, $envelope, $envelope->getBody());

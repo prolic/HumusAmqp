@@ -98,7 +98,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
         };
 
@@ -108,7 +108,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $server->consume(2);
 
         $responses = $client->getResponseCollection();
-
+die('fdssd');
         $this->assertCount(2, $responses);
 
         $response1 = $responses->getResponse('request-1');
@@ -183,7 +183,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
         };
 
         $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
@@ -244,7 +244,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
         };
 
         $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
@@ -306,7 +306,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
         };
 
         $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
@@ -368,7 +368,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): int {
             $params = $request->params();
             if (1 == $params) {
                 throw new \Exception('invalid body');
@@ -463,7 +463,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
         };
 
@@ -525,7 +525,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Envelope $envelope) {
+        $callback = function (Envelope $envelope): int {
             return $envelope->getBody() * 2;
         };
 
@@ -692,7 +692,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $reflectionProperty2->setAccessible(true);
         $reflectionProperty2->setValue($client, 9);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             if ('time2' === $request->method()) {
                 return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
             }
@@ -851,7 +851,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $client->addRequest($request1);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             return JsonRpcResponse::withResult($request->id(), "\xB1\x31");
         };
 
@@ -913,7 +913,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $client->addRequest($request1);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
             throw new \Exception('foo');
         };
 
