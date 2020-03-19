@@ -69,14 +69,8 @@ final class JsonRpcClient implements Client
     public function addRequest(Request $request): void
     {
         $attributes = $this->createAttributes($request);
-
         $exchange = $this->getExchange($request->server());
-
-        $message = json_encode($request->params());
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception\InvalidArgumentException('Error during json encoding');
-        }
+        $message = \json_encode($request->params(), JSON_THROW_ON_ERROR);
 
         $exchange->publish($message, $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
 
@@ -97,18 +91,18 @@ final class JsonRpcClient implements Client
             $timeout = $this->timeout;
         }
 
-        $now = microtime(true);
+        $now = \microtime(true);
         $responseCollection = new JsonRpcResponseCollection();
 
         do {
             $message = $this->queue->get(Constants::AMQP_AUTOACK);
-var_dump($message);
+
             if ($message instanceof Envelope) {
                 $responseCollection->addResponse($this->responseFromEnvelope($message));
             } else {
-                usleep($this->waitMillis * 1000);
+                \usleep($this->waitMillis * 1000);
             }
-            $time = microtime(true);
+            $time = \microtime(true);
         } while (
             $responseCollection->count() < $this->countRequests
             && (0 == $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
@@ -172,7 +166,7 @@ var_dump($message);
             );
         }
 
-        $payload = json_decode($envelope->getBody(), true);
+        $payload = \json_decode($envelope->getBody(), true);
 
         $correlationId = $envelope->getCorrelationId();
 
@@ -180,7 +174,7 @@ var_dump($message);
             $correlationId = null;
         }
 
-        if (! in_array($correlationId, $this->requestIds) && null !== $correlationId) {
+        if (! \in_array($correlationId, $this->requestIds) && null !== $correlationId) {
             $response = JsonRpcResponse::withError(
                 $correlationId,
                 $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')
@@ -192,8 +186,8 @@ var_dump($message);
             );
         } elseif (! isset($payload['error']['code'])
             || ! isset($payload['error']['message'])
-            || ! is_int($payload['error']['code'])
-            || ! is_string($payload['error']['message'])
+            || ! \is_int($payload['error']['code'])
+            || ! \is_string($payload['error']['message'])
         ) {
             $response = JsonRpcResponse::withError(
                 $correlationId,

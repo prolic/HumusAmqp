@@ -25,6 +25,7 @@ namespace Humus\Amqp\Console\Command;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Producer;
+use JsonException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -130,9 +131,9 @@ class PublishMessageCommand extends AbstractCommand
 
         $arguments = $input->getOption('arguments');
 
-        $arguments = json_decode($arguments, true);
-
-        if (json_last_error() !== 0) {
+        try {
+            $arguments = \json_decode($arguments, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
             $output->writeln('Cannot decode arguments');
 
             return 1;

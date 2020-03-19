@@ -103,7 +103,7 @@ final class JsonRpcResponse implements Response
      */
     private static function assertPayload($payload, string $name): void
     {
-        if (is_array($payload)) {
+        if (\is_array($payload)) {
             foreach ($payload as $subPayload) {
                 self::assertPayload($subPayload, $name);
             }
@@ -111,7 +111,7 @@ final class JsonRpcResponse implements Response
             return;
         }
 
-        if (! is_scalar($payload) && null !== $payload) {
+        if (! \is_scalar($payload) && null !== $payload) {
             throw new Exception\InvalidArgumentException($name . ' must only contain arrays and scalar values');
         }
     }

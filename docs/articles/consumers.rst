@@ -19,9 +19,13 @@ and the queue) and returns a delivery result. A very simple callback would look 
 
     <?php
 
-    $callback = function(\Humus\Amqp\Envelope $envelope, \Humus\Amqp\Queue $queue) {
+    use Humus\Amqp\DeliveryResult;
+    use Humus\Amqp\Envelope;
+    use Humus\Amqp\Queue;
+
+    $callback = function(Envelope $envelope, Queue $queue): DeliveryResult {
         echo $envelope->getBody();
-        return \Humus\Amqp\DeliveryResult::MSG_ACK();
+        return DeliveryResult::MSG_ACK();
     }
 
 The delivery result will signal the consumer whether it should ack, nack, reject, reject and
@@ -142,7 +146,7 @@ Set up the consumer
             echo $envelope->getBody();
             return DeliveryResult::MSG_DEFER();
         },
-        function (Queue $queue) {
+        function (Queue $queue): FlushDeferredResult {
             return FlushDeferredResult::MSG_ACK();
         },
         null, // no custom error callback
@@ -158,24 +162,29 @@ Set up the consumer using config and factory
 
     <?php
 
-    // declare callbacks as invokable classes first
+    use Humus\Amqp\DeliveryResult;
+    use Humus\Amqp\Envelope;
+    use Humus\Amqp\FlushDeferredResult;
+    use Humus\Amqp\Queue;
 
     namespace My
     {
+        // declare callbacks as invokable classes first
+
         class EchoCallback
         {
-            public function __invoke(\Humus\Amqp\Envelope $envelope, \Humus\Amqp\Queue $queue)
+            public function __invoke(Envelope $envelope, Queue $queue): DeliveryResult
             {
                 echo $envelope->getBody();
-                return \Humus\Amqp\DeliveryResult::MSG_DEFER();
+                return DeliveryResult::MSG_DEFER();
             }
         }
 
         class FlushDeferredCallback
         {
-            public function (\Humus\Amqp\Queue $queue)
+            public function (Queue $queue): FlushDeferredResult
             {
-                return \Humus\Amqp\FlushDeferredResult::MSG_ACK();
+                return FlushDeferredResult::MSG_ACK();
             }
         }
     }

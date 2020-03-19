@@ -184,9 +184,9 @@ class ConnectionOptions extends AbstractOptions
         $array = [];
 
         $transform = function ($letters): string {
-            $letter = array_shift($letters);
+            $letter = \array_shift($letters);
 
-            return '_' . strtolower($letter);
+            return '_' . \strtolower($letter);
         };
 
         foreach ($this as $key => $value) {
@@ -195,7 +195,7 @@ class ConnectionOptions extends AbstractOptions
             ) {
                 continue;
             }
-            $normalizedKey = preg_replace_callback('/([A-Z])/', $transform, $key);
+            $normalizedKey = \preg_replace_callback('/([A-Z])/', $transform, $key);
             $array[$normalizedKey] = $value;
         }
 

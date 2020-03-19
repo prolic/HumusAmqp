@@ -130,14 +130,14 @@ final class Channel implements ChannelInterface
 
     public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null): void
     {
-        if (is_callable($ackCallback)) {
+        if (\is_callable($ackCallback)) {
             $innerAckCallback = function (AMQPMessage $message) use ($ackCallback): bool {
                 return $ackCallback((int) $message->get('delivery_tag'), false);
             };
             $this->channel->set_ack_handler($innerAckCallback);
         }
 
-        if (is_callable($nackCallback)) {
+        if (\is_callable($nackCallback)) {
             $innerNackCallback = function (AMQPMessage $message) use ($ackCallback): bool {
                 return $ackCallback((int) $message->get('delivery_tag'), false, false);
             };

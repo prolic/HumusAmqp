@@ -65,7 +65,7 @@ abstract class AbstractConsumer implements Consumer
         $this->blockSize = $this->queue->getChannel()->getPrefetchCount();
 
         if (! $this->timestampLastAck) {
-            $this->timestampLastAck = microtime(true);
+            $this->timestampLastAck = \microtime(true);
         }
 
         $callback = function (Envelope $envelope): bool {
@@ -83,7 +83,7 @@ abstract class AbstractConsumer implements Consumer
 
             $this->handleProcessFlag($envelope, $processFlag);
 
-            $now = microtime(true);
+            $now = \microtime(true);
 
             if ($this->countMessagesUnacked > 0
                 && ($this->countMessagesUnacked === $this->blockSize
@@ -147,10 +147,10 @@ abstract class AbstractConsumer implements Consumer
             return true;
         }
 
-        if (! is_bool($requeue)) {
+        if (! \is_bool($requeue)) {
             throw new RuntimeException(sprintf(
                 'The error callback must returns boolean or null, given "%s".',
-                is_object($requeue) ? get_class($requeue) : gettype($requeue)
+                \is_object($requeue) ? \get_class($requeue) : \gettype($requeue)
             ));
         }
 
@@ -201,13 +201,13 @@ abstract class AbstractConsumer implements Consumer
             case DeliveryResult::MSG_ACK():
                 $this->countMessagesUnacked++;
                 $this->lastDeliveryTag = $envelope->getDeliveryTag();
-                $this->timestampLastMessage = microtime(true);
+                $this->timestampLastMessage = \microtime(true);
                 $this->ack();
                 break;
             case DeliveryResult::MSG_DEFER():
                 $this->countMessagesUnacked++;
                 $this->lastDeliveryTag = $envelope->getDeliveryTag();
-                $this->timestampLastMessage = microtime(true);
+                $this->timestampLastMessage = \microtime(true);
                 break;
         }
     }
@@ -229,7 +229,7 @@ abstract class AbstractConsumer implements Consumer
             $delta ? $this->countMessagesUnacked / $delta : 0
         ));
 
-        $this->timestampLastAck = microtime(true);
+        $this->timestampLastAck = \microtime(true);
         $this->countMessagesUnacked = 0;
     }
 
@@ -285,9 +285,9 @@ abstract class AbstractConsumer implements Consumer
         } elseif ('reconfigure' === $envelope->getType()) {
             $this->logger->info('Reconfigure message received');
             try {
-                list($idleTimeout, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
+                list($idleTimeout, $target, $prefetchSize, $prefetchCount) = \json_decode($envelope->getBody());
 
-                if (is_numeric($idleTimeout)) {
+                if (\is_numeric($idleTimeout)) {
                     $idleTimeout = (float) $idleTimeout;
                 }
                 Assertion::float($idleTimeout);

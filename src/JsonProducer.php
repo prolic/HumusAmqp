@@ -41,17 +41,8 @@ final class JsonProducer extends AbstractProducer
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
     ) {
-        $attributes = array_merge_recursive($this->defaultAttributes, $attributes);
-
-        try {
-            $message = json_encode($message);
-        } catch (\Throwable $e) {
-            throw new InvalidArgumentException('Exception during json encoding', 0, $e);
-        }
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidArgumentException('Error during json encoding');
-        }
+        $attributes = \array_merge_recursive($this->defaultAttributes, $attributes);
+        $message = \json_encode($message, JSON_THROW_ON_ERROR);
 
         $this->exchange->publish($message, $routingKey, $flags, $attributes);
     }

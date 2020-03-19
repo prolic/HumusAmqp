@@ -84,7 +84,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             $arguments[2] = false;
         }
 
-        if (! is_bool($arguments[2])) {
+        if (! \is_bool($arguments[2])) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The third argument must be a boolean')
             );
@@ -133,7 +133,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 $exchanges = iterator_to_array($exchanges);
             }
 
-            if (! is_array($exchanges) || empty($exchanges)) {
+            if (! \is_array($exchanges) || empty($exchanges)) {
                 throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
             }
 

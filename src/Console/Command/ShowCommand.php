@@ -72,7 +72,7 @@ class ShowCommand extends AbstractCommand
             return 1;
         }
 
-        if (! in_array($type, $this->knownTypes)) {
+        if (! \in_array($type, $this->knownTypes)) {
             $output->writeln(
                 'Invalid type given, use one of ' . implode(', ', $this->knownTypes)
             );
@@ -122,7 +122,7 @@ class ShowCommand extends AbstractCommand
                 $output->writeln(ucfirst($type) . ': ' . $name);
 
                 if ($input->getOption('details')) {
-                    $output->writeln('Specs: ' . json_encode($spec, JSON_PRETTY_PRINT));
+                    $output->writeln('Specs: ' . \json_encode($spec, JSON_PRETTY_PRINT));
                     $output->writeln('');
                 }
             }

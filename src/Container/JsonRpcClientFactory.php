@@ -86,7 +86,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
             $options['exchanges'] = iterator_to_array($options['exchanges']);
         }
 
-        if (! is_array($options['exchanges']) || empty($options['exchanges'])) {
+        if (! \is_array($options['exchanges']) || empty($options['exchanges'])) {
             throw new Exception\InvalidArgumentException(
                 'Option "exchanges" must be a not empty array or an instance of Traversable'
             );

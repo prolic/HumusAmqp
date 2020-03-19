@@ -38,7 +38,7 @@ final class PlainProducer extends AbstractProducer
         string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM, array $attributes = []
     ) {
-        $attributes = array_merge_recursive($this->defaultAttributes, $attributes);
+        $attributes = \array_merge_recursive($this->defaultAttributes, $attributes);
 
         $this->exchange->publish((string) $message, $routingKey, $flags, $attributes);
     }

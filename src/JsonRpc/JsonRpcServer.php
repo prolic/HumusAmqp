@@ -29,7 +29,9 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
+use JsonException;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 final class JsonRpcServer extends AbstractConsumer
 {
@@ -42,7 +44,7 @@ final class JsonRpcServer extends AbstractConsumer
      * Constructor
      *
      * @param Queue $queue
-     * @param callable(JsonRpcRequest):JsonRpcResponse $deliveryCallback
+     * @param callable(JsonRpcRequest): JsonRpcResponse $deliveryCallback
      * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
      * @param string $consumerTag
@@ -61,7 +63,7 @@ final class JsonRpcServer extends AbstractConsumer
         ?ErrorFactory $errorFactory = null
     ) {
         if ('' === $consumerTag) {
-            $consumerTag = bin2hex(random_bytes(24));
+            $consumerTag = \bin2hex(\random_bytes(24));
         }
 
         if (null === $errorFactory) {
@@ -69,11 +71,11 @@ final class JsonRpcServer extends AbstractConsumer
         }
 
         if (extension_loaded('pcntl')) {
-            pcntl_async_signals(true);
+            \pcntl_async_signals(true);
 
-            pcntl_signal(SIGTERM, [$this, 'shutdown']);
-            pcntl_signal(SIGINT, [$this, 'shutdown']);
-            pcntl_signal(SIGHUP, [$this, 'shutdown']);
+            \pcntl_signal(SIGTERM, [$this, 'shutdown']);
+            \pcntl_signal(SIGINT, [$this, 'shutdown']);
+            \pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
         $this->queue = $queue;
@@ -93,7 +95,7 @@ final class JsonRpcServer extends AbstractConsumer
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
         $this->lastDeliveryTag = $envelope->getDeliveryTag();
-        $this->timestampLastMessage = microtime(true);
+        $this->timestampLastMessage = \microtime(true);
         $this->ack();
 
         $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
@@ -157,7 +159,7 @@ final class JsonRpcServer extends AbstractConsumer
                     $this->returnTrace ? $e->getTraceAsString() : null
                 )
             );
-        } catch (Exception\JsonParseError $e) {
+        } catch (JsonException $e) {
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
@@ -167,7 +169,7 @@ final class JsonRpcServer extends AbstractConsumer
                     $this->returnTrace ? $e->getTraceAsString() : null
                 )
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $extra = $this->extractMessageInformation($envelope);
             $extra['exception_class'] = get_class($e);
             $extra['exception_message'] = $e->getMessage();
@@ -215,10 +217,10 @@ final class JsonRpcServer extends AbstractConsumer
             ];
         }
 
-        $message = json_encode($payload);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $message = json_encode([
+        try {
+            $message = \json_encode($payload, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $message = \json_encode([
                 'error' => [
                     'code' => JsonRpcError::ERROR_CODE_32603,
                     'message' => 'Internal error',
@@ -234,6 +236,12 @@ final class JsonRpcServer extends AbstractConsumer
         // do nothing, message was already acknowledged
     }
 
+    /**
+     * @throws JsonException
+     * @throws Exception\InvalidJsonRpcRequest
+     * @throws Exception\InvalidJsonRpcVersion
+     * @throws \Assert\AssertionFailedException
+     */
     protected function requestFromEnvelope(Envelope $envelope): Request
     {
         if ($envelope->getHeader('jsonrpc') !== JsonRpcRequest::JSONRPC_VERSION) {
@@ -246,11 +254,8 @@ final class JsonRpcServer extends AbstractConsumer
             throw new Exception\InvalidJsonRpcRequest();
         }
 
-        $payload = json_decode($envelope->getBody(), true);
-
-        if (0 !== json_last_error()) {
-            throw new Exception\JsonParseError();
-        }
+        // @todo introduce json util ?
+        $payload = \json_decode($envelope->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         return new JsonRpcRequest(
             $envelope->getExchangeName(),

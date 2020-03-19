@@ -107,8 +107,8 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $server->consume(2);
 
-        $responses = $client->getResponseCollection();
-die('fdssd');
+        $responses = $client->getResponseCollection(2);
+
         $this->assertCount(2, $responses);
 
         $response1 = $responses->getResponse('request-1');

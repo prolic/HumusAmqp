@@ -57,7 +57,7 @@ abstract class AbstractOptions
             $options = $options->toArray();
         }
 
-        if (! is_array($options) && ! $options instanceof Traversable) {
+        if (! \is_array($options) && ! $options instanceof Traversable) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'Parameter provided to %s must be an %s, %s or %s',
@@ -81,16 +81,16 @@ abstract class AbstractOptions
         $array = [];
 
         $transform = function ($letters): string {
-            $letter = array_shift($letters);
+            $letter = \array_shift($letters);
 
-            return '_' . strtolower($letter);
+            return '_' . \strtolower($letter);
         };
 
         foreach ($this as $key => $value) {
             if ($key === '__strictMode__') {
                 continue;
             }
-            $normalizedKey = preg_replace_callback('/([A-Z])/', $transform, $key);
+            $normalizedKey = \preg_replace_callback('/([A-Z])/', $transform, $key);
             $array[$normalizedKey] = $value;
         }
 
@@ -113,7 +113,7 @@ abstract class AbstractOptions
     {
         $setter = 'set' . str_replace('_', '', $key);
 
-        if (is_callable([$this, $setter])) {
+        if (\is_callable([$this, $setter])) {
             $this->{$setter}($value);
 
             return;
@@ -144,7 +144,7 @@ abstract class AbstractOptions
     {
         $getter = 'get' . str_replace('_', '', $key);
 
-        if (is_callable([$this, $getter])) {
+        if (\is_callable([$this, $getter])) {
             return $this->{$getter}();
         }
 

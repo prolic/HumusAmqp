@@ -80,7 +80,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             $arguments[2] = false;
         }
 
-        if (! is_bool($arguments[2])) {
+        if (! \is_bool($arguments[2])) {
             throw new Exception\InvalidArgumentException('The third argument must be a boolean');
         }
 
