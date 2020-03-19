@@ -22,10 +22,10 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Console;
 
+use Humus\Amqp\Console\Command;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 
 class ConsoleRunner

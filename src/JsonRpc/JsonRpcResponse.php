@@ -32,8 +32,8 @@ final class JsonRpcResponse implements Response
      * @var array|string|int|float|bool|null
      */
     private $result;
-    private ?Error $error;
-    private string $id;
+    private ?Error $error = null;
+    private ?string $id;
 
     /**
      * @param string|null $id

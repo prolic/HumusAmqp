@@ -388,15 +388,14 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
      */
     public function it_throws_exception_when_data_could_not_be_encoded_to_json(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Error during json encoding');
-
         $exchange = $this->prophesize(Exchange::class);
         $exchange->publish(Argument::any(), Argument::any(), Argument::any(), Argument::any())->shouldNotBeCalled();
 
         $producer = new JsonProducer($exchange->reveal());
 
         $text = "\xB1\x31";
+
+        $this->expectException(\JsonException::class);
 
         $producer->publish($text);
     }
@@ -406,9 +405,6 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
      */
     public function it_throws_exception_when_data_could_not_be_encoded_to_json_2(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Exception during json encoding');
-
         $exchange = $this->prophesize(Exchange::class);
         $exchange->publish(Argument::any(), Argument::any(), Argument::any(), Argument::any())->shouldNotBeCalled();
 
@@ -420,6 +416,8 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
                 throw new \Exception('foo');
             }
         };
+
+        $this->expectException(\Exception::class);
 
         $producer->publish($message);
     }

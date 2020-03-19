@@ -107,7 +107,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $server->consume(2);
 
-        $responses = $client->getResponseCollection(2);
+        $responses = $client->getResponseCollection();
 
         $this->assertCount(2, $responses);
 
@@ -784,11 +784,8 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
      */
     public function it_throws_exception_on_client_when_data_could_not_be_encoded_to_json(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Error during json encoding');
-
         $options = $this->prophesize(ConnectionOptions::class);
-        $options->getLogin()->willReturn('user123')->shouldBeCalled();
+        $options->login()->willReturn('user123')->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->getOptions()->willReturn($options->reveal())->shouldBeCalled();
@@ -800,6 +797,8 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $exchane = $this->prophesize(Exchange::class);
 
         $client = new JsonRpcClient($queue->reveal(), ['rpc-server' => $exchane->reveal()]);
+
+        $this->expectException(\JsonException::class);
 
         $client->addRequest(new JsonRpcRequest(
             'rpc-server',
