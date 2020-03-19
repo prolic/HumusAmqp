@@ -25,7 +25,6 @@ namespace HumusTest\Amqp;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
-use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\Queue;

@@ -26,7 +26,6 @@ use AMQPConnection;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\ConnectionOptions;
-use Humus\Amqp\Exception\ConnectionException;
 use Humus\Amqp\Exception\InvalidArgumentException;
 use Traversable;
 
