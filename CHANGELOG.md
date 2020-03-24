@@ -1,6 +1,43 @@
-# Change Log
+# Changelog
 
-## [v1.4.2](https://github.com/prolic/HumusAmqp/tree/v1.4.2)
+## [v1.5.0](https://github.com/prolic/HumusAmqp/tree/v1.5.0)
+
+[Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.4.2...v1.5.0)
+
+**Implemented enhancements:**
+
+- Support php-amqplib \>=2.9 [\#81](https://github.com/prolic/HumusAmqp/issues/81)
+- Add "Server Error" Codes [\#69](https://github.com/prolic/HumusAmqp/issues/69)
+- Data belongs to Error object, not to response [\#64](https://github.com/prolic/HumusAmqp/issues/64)
+- Add Priority Queue Support [\#28](https://github.com/prolic/HumusAmqp/issues/28)
+- Json rpc error factory \(\#2\) [\#93](https://github.com/prolic/HumusAmqp/pull/93) ([rppgorecki](https://github.com/rppgorecki))
+- Json rpc error [\#91](https://github.com/prolic/HumusAmqp/pull/91) ([rppgorecki](https://github.com/rppgorecki))
+- PHPUnit 8 [\#88](https://github.com/prolic/HumusAmqp/pull/88) ([rppgorecki](https://github.com/rppgorecki))
+- Zend -\> Laminas migration [\#87](https://github.com/prolic/HumusAmqp/pull/87) ([rppgorecki](https://github.com/rppgorecki))
+- symfony/console: ^5.0 compatibility [\#86](https://github.com/prolic/HumusAmqp/pull/86) ([rppgorecki](https://github.com/rppgorecki))
+- php-amqplib 2.9 support [\#84](https://github.com/prolic/HumusAmqp/pull/84) ([prolic](https://github.com/prolic))
+- \[enable\_php-enum\_version\_4\] Allow 'marc-mabe/php-enum' in version 4.0. [\#83](https://github.com/prolic/HumusAmqp/pull/83) ([func0der](https://github.com/func0der))
+- Use pcntl\_async\_signals for php \>=7.1 [\#79](https://github.com/prolic/HumusAmqp/pull/79) ([genhoi](https://github.com/genhoi))
+- Fix ci tests [\#78](https://github.com/prolic/HumusAmqp/pull/78) ([genhoi](https://github.com/genhoi))
+
+**Fixed bugs:**
+
+- Tests are failing [\#74](https://github.com/prolic/HumusAmqp/issues/74)
+
+**Closed issues:**
+
+- Your changelog change years are wrong \(is 2018, should be 2020\) [\#95](https://github.com/prolic/HumusAmqp/issues/95)
+- Update documented requirement to PHP 7.2 [\#82](https://github.com/prolic/HumusAmqp/issues/82)
+- Implement JsonRpcError factory [\#70](https://github.com/prolic/HumusAmqp/issues/70)
+- Add script-wrapper to manage consumers via PCNTL messages [\#45](https://github.com/prolic/HumusAmqp/issues/45)
+
+**Merged pull requests:**
+
+- Set read\_timeout for consume in PhpAmqpLib [\#85](https://github.com/prolic/HumusAmqp/pull/85) ([genhoi](https://github.com/genhoi))
+- Tests on php 7.4 [\#80](https://github.com/prolic/HumusAmqp/pull/80) ([genhoi](https://github.com/genhoi))
+- Tests on php 7.3 [\#73](https://github.com/prolic/HumusAmqp/pull/73) ([samnela](https://github.com/samnela))
+
+## [v1.4.2](https://github.com/prolic/HumusAmqp/tree/v1.4.2) (2018-11-24)
 
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.4.1...v1.4.2)
 
@@ -9,6 +46,7 @@
 - Use AMQPChannel::close\(\) in AbstractConsumer [\#72](https://github.com/prolic/HumusAmqp/pull/72) ([genhoi](https://github.com/genhoi))
 
 ## [v1.4.1](https://github.com/prolic/HumusAmqp/tree/v1.4.1) (2018-11-02)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.4.0...v1.4.1)
 
 **Merged pull requests:**
@@ -16,6 +54,7 @@
 - allow beberlei/assert v3 [\#71](https://github.com/prolic/HumusAmqp/pull/71) ([basz](https://github.com/basz))
 
 ## [v1.4.0](https://github.com/prolic/HumusAmqp/tree/v1.4.0) (2018-03-03)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.3.0...v1.4.0)
 
 **Implemented enhancements:**
@@ -27,16 +66,13 @@
 - json rpc server returns trace if enabled [\#60](https://github.com/prolic/HumusAmqp/pull/60) ([prolic](https://github.com/prolic))
 - allow marc-mabe/php-enum 3.0 [\#59](https://github.com/prolic/HumusAmqp/pull/59) ([prolic](https://github.com/prolic))
 
-**Fixed bugs:**
-
-- handle json-rpc responses without id [\#68](https://github.com/prolic/HumusAmqp/pull/68) ([prolic](https://github.com/prolic))
-
 **Merged pull requests:**
 
 - adds a test for empty json rpc response collections [\#66](https://github.com/prolic/HumusAmqp/pull/66) ([oqq](https://github.com/oqq))
 - updates rpc docs to match current mandatory options from factory [\#55](https://github.com/prolic/HumusAmqp/pull/55) ([oqq](https://github.com/oqq))
 
 ## [v1.3.0](https://github.com/prolic/HumusAmqp/tree/v1.3.0) (2017-09-14)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.2.0...v1.3.0)
 
 **Implemented enhancements:**
@@ -64,6 +100,7 @@
 - update coding style [\#48](https://github.com/prolic/HumusAmqp/pull/48) ([prolic](https://github.com/prolic))
 
 ## [v1.2.0](https://github.com/prolic/HumusAmqp/tree/v1.2.0) (2017-06-18)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.1.0...v1.2.0)
 
 **Implemented enhancements:**
@@ -74,7 +111,6 @@
 
 **Fixed bugs:**
 
-- fix exchange binding / unbinding for php-amqplib [\#38](https://github.com/prolic/HumusAmqp/pull/38) ([prolic](https://github.com/prolic))
 - fix waitForConfirm in php-amqplib [\#36](https://github.com/prolic/HumusAmqp/pull/36) ([prolic](https://github.com/prolic))
 - fix ssl connection for php amqplib [\#35](https://github.com/prolic/HumusAmqp/pull/35) ([prolic](https://github.com/prolic))
 
@@ -88,6 +124,7 @@
 - Connection type allowed only for php-amqplib driver [\#37](https://github.com/prolic/HumusAmqp/pull/37) ([marinovdf](https://github.com/marinovdf))
 
 ## [v1.1.0](https://github.com/prolic/HumusAmqp/tree/v1.1.0) (2017-02-07)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.0.0...v1.1.0)
 
 **Implemented enhancements:**
@@ -105,6 +142,7 @@
 - adds exchange name as array key in rpc client factory [\#30](https://github.com/prolic/HumusAmqp/pull/30) ([oqq](https://github.com/oqq))
 
 ## [v1.0.0](https://github.com/prolic/HumusAmqp/tree/v1.0.0) (2016-08-13)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.0.0-BETA.4...v1.0.0)
 
 **Implemented enhancements:**
@@ -113,9 +151,11 @@
 - Add documentation [\#11](https://github.com/prolic/HumusAmqp/issues/11)
 
 ## [v1.0.0-BETA.4](https://github.com/prolic/HumusAmqp/tree/v1.0.0-BETA.4) (2016-07-31)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.0.0-BETA.3...v1.0.0-BETA.4)
 
 ## [v1.0.0-BETA.3](https://github.com/prolic/HumusAmqp/tree/v1.0.0-BETA.3) (2016-07-16)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.0.0-BETA.2...v1.0.0-BETA.3)
 
 **Implemented enhancements:**
@@ -123,6 +163,7 @@
 - Allow queue to bind to multiple exchanges [\#20](https://github.com/prolic/HumusAmqp/issues/20)
 
 ## [v1.0.0-BETA.2](https://github.com/prolic/HumusAmqp/tree/v1.0.0-BETA.2) (2016-07-09)
+
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.0.0-BETA.1...v1.0.0-BETA.2)
 
 **Fixed bugs:**
@@ -140,6 +181,9 @@
 - alias humus-amqp to vendor/bin [\#14](https://github.com/prolic/HumusAmqp/pull/14) ([basz](https://github.com/basz))
 
 ## [v1.0.0-BETA.1](https://github.com/prolic/HumusAmqp/tree/v1.0.0-BETA.1) (2016-06-07)
+
+[Full Changelog](https://github.com/prolic/HumusAmqp/compare/b19d56e667c1de7141a9415777fc5f7b265ecea2...v1.0.0-BETA.1)
+
 **Implemented enhancements:**
 
 - Implement JSON-RPC 2.0 specifications [\#10](https://github.com/prolic/HumusAmqp/issues/10)
@@ -158,4 +202,4 @@
 
 
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
