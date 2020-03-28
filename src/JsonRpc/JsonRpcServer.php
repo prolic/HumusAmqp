@@ -30,7 +30,7 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
-use HumusAmqp\Util\Json;
+use Humus\Amqp\Util\Json;
 use JsonException;
 use Psr\Log\LoggerInterface;
 use Throwable;

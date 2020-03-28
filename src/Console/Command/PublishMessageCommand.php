@@ -25,7 +25,7 @@ namespace Humus\Amqp\Console\Command;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Producer;
-use HumusAmqp\Util\Json;
+use Humus\Amqp\Util\Json;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

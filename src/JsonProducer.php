@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-use HumusAmqp\Util\Json;
+use Humus\Amqp\Util\Json;
 
 final class JsonProducer extends AbstractProducer
 {

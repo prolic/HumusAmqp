@@ -24,7 +24,7 @@ namespace Humus\Amqp;
 
 use Assert\Assertion;
 use Humus\Amqp\Exception\RuntimeException;
-use HumusAmqp\Util\Json;
+use Humus\Amqp\Util\Json;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractConsumer implements Consumer
