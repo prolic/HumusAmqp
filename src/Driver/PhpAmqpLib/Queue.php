@@ -32,70 +32,35 @@ use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 
-/**
- * Class Queue
- * @package Humus\Amqp\Driver\AmqpExtension
- */
 final class Queue implements QueueInterface
 {
-    /**
-     * @var Channel
-     */
-    private $channel;
+    private Channel $channel;
+    private string $name = '';
+    private int $flags = Constants::AMQP_NOPARAM;
+    private array $arguments = [];
 
-    /**
-     * @var string
-     */
-    private $name = '';
-
-    /**
-     * @var int
-     */
-    private $flags = Constants::AMQP_NOPARAM;
-
-    /**
-     * @var array
-     */
-    private $arguments = [];
-
-    /**
-     * Create an instance of an Queue object.
-     *
-     * @param Channel $channel The amqp channel to use.
-     */
+    /** @internal */
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setName(string $exchangeName)
+    public function setName(string $exchangeName): void
     {
         $this->name = $exchangeName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFlags(): int
     {
         return $this->flags;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setFlags(int $flags)
+    public function setFlags(int $flags): void
     {
         $this->flags = (int) $flags;
     }
@@ -108,33 +73,21 @@ final class Queue implements QueueInterface
         return isset($this->arguments[$key]) ? $this->arguments[$key] : false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getArguments(): array
     {
         return $this->arguments;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setArgument(string $key, $value)
+    public function setArgument(string $key, $value): void
     {
         $this->arguments[$key] = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments): void
     {
         $this->arguments = $arguments;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function declareQueue(): int
     {
         $args = new AMQPTable($this->arguments);
@@ -161,10 +114,7 @@ final class Queue implements QueueInterface
         return $result[1];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function bind(string $exchangeName, string $routingKey = null, array $arguments = [])
+    public function bind(string $exchangeName, string $routingKey = null, array $arguments = []): void
     {
         if (null === $routingKey) {
             $routingKey = '';
@@ -182,10 +132,7 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get(int $flags = Constants::AMQP_NOPARAM)
+    public function get(int $flags = Constants::AMQP_NOPARAM): ?Envelope
     {
         $envelope = $this->channel->getResource()->basic_get(
             $this->name,
@@ -197,19 +144,16 @@ final class Queue implements QueueInterface
             return new Envelope($envelope);
         }
 
-        return false;
+        return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function consume(
-        callable $callback = null,
+        ?callable $callback = null,
         int $flags = Constants::AMQP_NOPARAM,
         string $consumerTag = null
-    ) {
+    ): void {
         if (null !== $callback) {
-            $innerCallback = function (AMQPMessage $envelope) use ($callback) {
+            $innerCallback = function (AMQPMessage $envelope) use ($callback): bool {
                 $result = $callback(new Envelope($envelope), $this);
 
                 if (false === $result) {
@@ -241,7 +185,7 @@ final class Queue implements QueueInterface
                 $args
             );
 
-            $readTimeout = $this->getConnection()->getOptions()->getReadTimeout();
+            $readTimeout = $this->getConnection()->getOptions()->readTimeout();
 
             while ($this->channel->getResource()->is_consuming()) {
                 $this->channel->getResource()->wait(null, false, $readTimeout);
@@ -251,10 +195,7 @@ final class Queue implements QueueInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function ack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM): void
     {
         $this->channel->getResource()->basic_ack(
             $deliveryTag,
@@ -262,10 +203,7 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function nack(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM): void
     {
         $this->channel->getResource()->basic_nack(
             $deliveryTag,
@@ -274,10 +212,7 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM)
+    public function reject(int $deliveryTag, int $flags = Constants::AMQP_NOPARAM): void
     {
         $this->channel->getResource()->basic_reject(
             $deliveryTag,
@@ -285,10 +220,7 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function purge()
+    public function purge(): void
     {
         $this->channel->getResource()->queue_purge(
             $this->name,
@@ -297,10 +229,7 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function cancel(string $consumerTag = '')
+    public function cancel(string $consumerTag = ''): void
     {
         $this->channel->getResource()->basic_cancel(
             $consumerTag,
@@ -309,10 +238,7 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []): void
     {
         $args = empty($arguments) ? null : new AMQPTable($arguments);
 
@@ -325,10 +251,7 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(int $flags = Constants::AMQP_NOPARAM)
+    public function delete(int $flags = Constants::AMQP_NOPARAM): void
     {
         $this->channel->getResource()->queue_delete(
             $this->name,
@@ -339,17 +262,11 @@ final class Queue implements QueueInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChannel(): ChannelInterface
     {
         return $this->channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConnection(): ConnectionInterface
     {
         return $this->channel->getConnection();

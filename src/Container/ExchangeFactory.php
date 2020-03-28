@@ -32,28 +32,13 @@ use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class ExchangeFactory
- * @package Humus\Amqp\Container
- */
 final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
-    /**
-     * @var string
-     */
-    private $exchangeName;
-
-    /**
-     * @var Channel|null
-     */
-    private $channel;
-
-    /**
-     * @var bool
-     */
-    private $autoSetupFabric;
+    private string $exchangeName;
+    private ?Channel $channel;
+    private bool $autoSetupFabric;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -70,7 +55,9 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
      *
      * @param string $name
      * @param array $arguments
+     *
      * @return Exchange
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments): Exchange
@@ -93,19 +80,13 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
             $arguments[2] = false;
         }
 
-        if (! is_bool($arguments[2])) {
+        if (! \is_bool($arguments[2])) {
             throw new Exception\InvalidArgumentException('The third argument must be a boolean');
         }
 
         return (new static($name, $arguments[1], $arguments[2]))->__invoke($arguments[0]);
     }
 
-    /**
-     * QueueFactory constructor.
-     * @param string $exchangeName
-     * @param Channel|null $channel
-     * @param bool $autoSetupFabric
-     */
     public function __construct(string $exchangeName, Channel $channel = null, bool $autoSetupFabric = false)
     {
         $this->exchangeName = $exchangeName;
@@ -113,11 +94,6 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         $this->autoSetupFabric = $autoSetupFabric;
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return Exchange
-     * @throws Exception\InvalidArgumentException
-     */
     public function __invoke(ContainerInterface $container): Exchange
     {
         $config = $container->get('config');
@@ -162,17 +138,11 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         return $exchange;
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp', 'exchange'];
     }
 
-    /**
-     * @return array
-     */
     public function defaultOptions(): array
     {
         return [
@@ -188,9 +158,6 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         ];
     }
 
-    /**
-     * return array
-     */
     public function mandatoryOptions(): array
     {
         return [
@@ -201,6 +168,7 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
 
     /**
      * @param array|ArrayAccess
+     *
      * @return int
      */
     private function getFlags($options): int
@@ -214,18 +182,12 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
         return $flags;
     }
 
-    /**
-     * @param Exchange $exchange
-     * @param string $exchangeName
-     * @param array $routingKeys
-     * @param array $bindArguments
-     */
     private function bindExchange(
         Exchange $exchange,
         string $exchangeName,
         array $routingKeys,
         array $bindArguments
-    ) {
+    ): void {
         if (empty($routingKeys)) {
             $exchange->bind($exchangeName, '', $bindArguments);
         } else {

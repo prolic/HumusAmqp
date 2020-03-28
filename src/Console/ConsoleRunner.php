@@ -27,49 +27,28 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 
-/**
- * Class ConsoleRunner
- * @package Humus\Amqp\Console
- */
 class ConsoleRunner
 {
-    /**
-     * Create a Symfony Console HelperSet
-     *
-     * @param ContainerInterface $container
-     * @return HelperSet
-     */
-    public static function createHelperSet(ContainerInterface $container)
+    public static function createHelperSet(ContainerInterface $container): HelperSet
     {
         return new HelperSet([
             'container' => new ContainerHelper($container),
         ]);
     }
 
-    /**
-     * Runs console with the given helperset.
-     *
-     * @param HelperSet  $helperSet
-     * @param \Symfony\Component\Console\Command\Command[] $commands
-     *
-     * @return void
-     */
-    public static function run(HelperSet $helperSet, array $commands = [])
+    public static function run(HelperSet $helperSet, array $commands = []): void
     {
         $cli = self::createApplication($helperSet, $commands);
         $cli->run();
     }
 
     /**
-     * Creates a console application with the given helperset and
-     * optional commands.
-     *
      * @param HelperSet $helperSet
-     * @param \Symfony\Component\Console\Command\Command[] $commands
+     * @param Command[] $commands
      *
      * @return Application
      */
-    public static function createApplication(HelperSet $helperSet, $commands = [])
+    public static function createApplication(HelperSet $helperSet, array $commands = []): Application
     {
         $cli = new Application('Humus Amqp Command Line Interface');
 
@@ -83,12 +62,7 @@ class ConsoleRunner
         return $cli;
     }
 
-    /**
-     * @param Application $cli
-     *
-     * @return void
-     */
-    public static function addCommands(Application $cli)
+    public static function addCommands(Application $cli): void
     {
         $cli->addCommands([
             new Command\PublishMessageCommand(),
@@ -100,10 +74,7 @@ class ConsoleRunner
         ]);
     }
 
-    /**
-     * @return void
-     */
-    public static function printCliConfigTemplate()
+    public static function printCliConfigTemplate(): void
     {
         echo <<<'HELP'
 You are missing a "humus-amqp-config.php" or "config/humus-amqp-config.php" file in your

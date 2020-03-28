@@ -32,16 +32,12 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * Class PurgeQueueCommandTest
- * @package HumusTest\Amqp\Console\Command
- */
 class PurgeQueueCommandTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_returns_when_invalid_name_given()
+    public function it_returns_when_invalid_name_given(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(
@@ -84,7 +80,7 @@ class PurgeQueueCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_when_no_name_given()
+    public function it_returns_when_no_name_given(): void
     {
         $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
         $tester->execute([]);
@@ -96,7 +92,7 @@ class PurgeQueueCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_purges_the_queue()
+    public function it_purges_the_queue(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(
@@ -156,11 +152,7 @@ class PurgeQueueCommandTest extends TestCase
         );
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return CommandTester
-     */
-    private function createCommandTester(ContainerInterface $container)
+    private function createCommandTester(ContainerInterface $container): CommandTester
     {
         $command = new PurgeQueueCommand();
         $command->setHelperSet(

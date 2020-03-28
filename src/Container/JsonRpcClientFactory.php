@@ -23,7 +23,6 @@ declare(strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
-use Humus\Amqp\JsonRpc\Client;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
@@ -32,18 +31,11 @@ use Interop\Config\RequiresMandatoryOptions;
 use Psr\Container\ContainerInterface;
 use Traversable;
 
-/**
- * Class JsonRpcClientFactory
- * @package Humus\Amqp\Container
- */
 final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
-    /**
-     * @var string
-     */
-    private $clientName;
+    private string $clientName;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -60,7 +52,9 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
      *
      * @param string $name
      * @param array $arguments
-     * @return Client
+     *
+     * @return JsonRpcClient
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments): JsonRpcClient
@@ -74,19 +68,11 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         return (new static($name))->__invoke($arguments[0]);
     }
 
-    /**
-     * JsonRpcClientFactory constructor.
-     * @param string $clientName
-     */
     public function __construct(string $clientName)
     {
         $this->clientName = $clientName;
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return JsonRpcClient
-     */
     public function __invoke(ContainerInterface $container): JsonRpcClient
     {
         $options = $this->options($container->get('config'), $this->clientName);
@@ -99,7 +85,7 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
             $options['exchanges'] = iterator_to_array($options['exchanges']);
         }
 
-        if (! is_array($options['exchanges']) || empty($options['exchanges'])) {
+        if (! \is_array($options['exchanges']) || empty($options['exchanges'])) {
             throw new Exception\InvalidArgumentException(
                 'Option "exchanges" must be a not empty array or an instance of Traversable'
             );
@@ -119,17 +105,11 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         return new JsonRpcClient($queue, $exchanges, $options['wait_micros'], $options['app_id'], $errorFactory);
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp', 'json_rpc_client'];
     }
 
-    /**
-     * @return array
-     */
     public function defaultOptions(): array
     {
         return [
@@ -138,9 +118,6 @@ final class JsonRpcClientFactory implements ProvidesDefaultOptions, RequiresConf
         ];
     }
 
-    /**
-     * @return array
-     */
     public function mandatoryOptions(): array
     {
         return [

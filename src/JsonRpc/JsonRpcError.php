@@ -22,39 +22,22 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-/**
- * Class JsonRpcError
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcError implements Error
 {
-    /**#@+
-     * @const int error codes
-     */
     const ERROR_CODE_32700 = -32700;
     const ERROR_CODE_32600 = -32600;
     const ERROR_CODE_32601 = -32601;
     const ERROR_CODE_32602 = -32602;
     const ERROR_CODE_32603 = -32603;
-    /**#@-*/
 
-    /**
-     * @var int
-     */
-    private $code;
-
-    /**
-     * @var
-     */
-    private $message;
-
+    private int $code;
+    private string $message;
     /**
      * @var array|bool|float|int|null|string
      */
     private $data;
 
     /**
-     * JsonRpcError constructor.
      * @param int $code
      * @param string $message
      * @param array|bool|float|int|null|string $data
@@ -66,18 +49,12 @@ final class JsonRpcError implements Error
         $this->data = $data;
     }
 
-    /**
-     * @return int
-     */
-    public function code()
+    public function code(): int
     {
         return $this->code;
     }
 
-    /**
-     * @return string
-     */
-    public function message()
+    public function message(): string
     {
         return $this->message;
     }

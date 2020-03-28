@@ -31,16 +31,12 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class CallbackConsumerFactoryTest
- * @package HumusTest\Amqp\Container
- */
 class CallbackConsumerFactoryTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_creates_callback_consumer()
+    public function it_creates_callback_consumer(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -96,7 +92,7 @@ class CallbackConsumerFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         })->shouldBeCalled();
 
         $factory = new CallbackConsumerFactory('my_consumer');
@@ -108,7 +104,7 @@ class CallbackConsumerFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_callback_consumer_with_call_static_and_defined_logger_delivery_and_flush_callback()
+    public function it_creates_callback_consumer_with_call_static_and_defined_logger_delivery_and_flush_callback(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $logger = $this->prophesize(LoggerInterface::class);
@@ -165,11 +161,11 @@ class CallbackConsumerFactoryTest extends TestCase
         $connection = $this->prophesize(Connection::class);
         $connection->newChannel()->willReturn($channel->reveal())->shouldBeCalled();
         $container->get('my_connection')->willReturn($connection->reveal())->shouldBeCalled();
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         })->shouldBeCalled();
-        $container->get('my_flush')->willReturn(function () {
+        $container->get('my_flush')->willReturn(function (): void {
         })->shouldBeCalled();
-        $container->get('my_error')->willReturn(function () {
+        $container->get('my_error')->willReturn(function (): void {
         })->shouldBeCalled();
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 
@@ -182,7 +178,7 @@ class CallbackConsumerFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_container_param()
+    public function it_throws_exception_with_invalid_call_static_container_param(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');

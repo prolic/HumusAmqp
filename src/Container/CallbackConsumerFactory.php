@@ -32,18 +32,11 @@ use Interop\Config\RequiresMandatoryOptions;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 
-/**
- * Class CallbackConsumerFactory
- * @package Humus\Amqp\Container
- */
 class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
-    /**
-     * @var string
-     */
-    private $consumerName;
+    private string $consumerName;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -60,7 +53,9 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
      *
      * @param string $name
      * @param array $arguments
+     *
      * @return CallbackConsumer
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function __callStatic(string $name, array $arguments): CallbackConsumer
@@ -74,26 +69,19 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
         return (new static($name))->__invoke($arguments[0]);
     }
 
-    /**
-     * CallbackConsumerFactory constructor.
-     * @param string $consumerName
-     */
     public function __construct(string $consumerName)
     {
         $this->consumerName = $consumerName;
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return CallbackConsumer
-     */
     public function __invoke(ContainerInterface $container): CallbackConsumer
     {
         $options = $this->options($container->get('config'), $this->consumerName);
 
         $queueName = $options['queue'];
         $queue = QueueFactory::$queueName($container);
-        /* @var Queue $queue */
+
+        assert($queue instanceof Queue);
 
         $channel = $queue->getChannel();
         $channel->qos($options['qos']['prefetch_size'], $options['qos']['prefetch_count']);
@@ -129,17 +117,11 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
         );
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp', 'callback_consumer'];
     }
 
-    /**
-     * @return array
-     */
     public function defaultOptions(): array
     {
         return [
@@ -155,9 +137,6 @@ class CallbackConsumerFactory implements ProvidesDefaultOptions, RequiresConfigI
         ];
     }
 
-    /**
-     * @return array
-     */
     public function mandatoryOptions(): array
     {
         return [

@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Class JsonParseError
- * @package Humus\Amqp\Exception
- */
 final class JsonParseError extends RuntimeException
 {
 }

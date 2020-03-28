@@ -32,16 +32,12 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * Class PublishMessageCommandTest
- * @package HumusTest\Amqp\Console\Command
- */
 class PublishMessageCommandTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_returns_when_invalid_name_given()
+    public function it_returns_when_invalid_name_given(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->has('invalid-producer')->willReturn(false)->shouldBeCalled();
@@ -56,7 +52,7 @@ class PublishMessageCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_when_no_name_given()
+    public function it_returns_when_no_name_given(): void
     {
         $tester = $this->createCommandTester($this->prophesize(ContainerInterface::class)->reveal());
         $tester->execute([]);
@@ -68,7 +64,7 @@ class PublishMessageCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_when_confirm_select_and_transactional_are_set()
+    public function it_returns_when_confirm_select_and_transactional_are_set(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->has('producer')->willReturn(true)->shouldBeCalled();
@@ -83,7 +79,7 @@ class PublishMessageCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_when_cannot_decode_arguments()
+    public function it_returns_when_cannot_decode_arguments(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->has('producer')->willReturn(true)->shouldBeCalled();
@@ -98,7 +94,7 @@ class PublishMessageCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_publishes_with_arguments_and_routing_key_and_flag()
+    public function it_publishes_with_arguments_and_routing_key_and_flag(): void
     {
         $producer = $this->prophesize(Producer::class);
         $producer->publish('test-message', 'test', Constants::AMQP_IMMEDIATE, [
@@ -134,7 +130,7 @@ class PublishMessageCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_publishes_transactional()
+    public function it_publishes_transactional(): void
     {
         $producer = $this->prophesize(Producer::class);
         $producer->startTransaction()->shouldBeCalled();
@@ -155,7 +151,7 @@ class PublishMessageCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_publishes_with_confirm_select()
+    public function it_publishes_with_confirm_select(): void
     {
         $producer = $this->prophesize(Producer::class);
         $producer->confirmSelect()->shouldBeCalled();
@@ -174,11 +170,7 @@ class PublishMessageCommandTest extends TestCase
         $this->assertEquals("Message published\n", $tester->getDisplay(true));
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return CommandTester
-     */
-    private function createCommandTester(ContainerInterface $container)
+    private function createCommandTester(ContainerInterface $container): CommandTester
     {
         $command = new PublishMessageCommand();
         $command->setHelperSet(

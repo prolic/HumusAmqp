@@ -140,9 +140,9 @@ interface Queue
      *                       value is not provided, it will use the
      *                       value of ini-setting amqp.auto_ack.
      *
-     * @return Envelope|false
+     * @return Envelope|null
      */
-    public function get(int $flags = Constants::AMQP_NOPARAM);
+    public function get(int $flags = Constants::AMQP_NOPARAM): ?Envelope;
 
     /**
      * Consume messages from a queue.
@@ -175,7 +175,7 @@ interface Queue
      *
      *      function callback(Envelope $envelope, Queue $queue = null): bool;
      */
-    public function consume(callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = '');
+    public function consume(?callable $callback = null, int $flags = Constants::AMQP_NOPARAM, string $consumerTag = '');
 
     /**
      * Acknowledge the receipt of a message.

@@ -25,7 +25,6 @@ namespace Humus\Amqp\Container;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
-use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
@@ -33,28 +32,13 @@ use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class QueueFactory
- * @package Humus\Amqp\Container
- */
 final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
-    /**
-     * @var string
-     */
-    private $queueName;
-
-    /**
-     * @var Channel|null
-     */
-    private $channel;
-
-    /**
-     * @var bool
-     */
-    private $autoSetupFabric;
+    private string $queueName;
+    private ?Channel $channel;
+    private bool $autoSetupFabric;
 
     /**
      * Creates a new instance from a specified config, specifically meant to be used as static factory.
@@ -71,7 +55,9 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
      *
      * @param string $name
      * @param array $arguments
+     *
      * @return Queue
+     *
      * @throws Exception\ChannelException
      * @throws Exception\QueueException
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -97,7 +83,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
             $arguments[2] = false;
         }
 
-        if (! is_bool($arguments[2])) {
+        if (! \is_bool($arguments[2])) {
             throw new Exception\InvalidArgumentException(
                 sprintf('The third argument must be a boolean')
             );
@@ -106,12 +92,6 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         return (new static($name, $arguments[1], $arguments[2]))->__invoke($arguments[0]);
     }
 
-    /**
-     * QueueFactory constructor.
-     * @param string $queueName
-     * @param Channel|null $channel
-     * @param bool $autoSetupFabric
-     */
     public function __construct(string $queueName, Channel $channel = null, bool $autoSetupFabric = false)
     {
         $this->queueName = $queueName;
@@ -119,14 +99,6 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         $this->autoSetupFabric = $autoSetupFabric;
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return Queue
-     * @throws Exception\ChannelException
-     * @throws Exception\QueueException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function __invoke(ContainerInterface $container): Queue
     {
         $options = $this->options($container->get('config'), $this->queueName);
@@ -160,7 +132,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
                 $exchanges = iterator_to_array($exchanges);
             }
 
-            if (! is_array($exchanges) || empty($exchanges)) {
+            if (! \is_array($exchanges) || empty($exchanges)) {
                 throw new Exception\InvalidArgumentException('Expected an array or traversable of exchanges');
             }
 
@@ -204,17 +176,11 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         return $queue;
     }
 
-    /**
-     * @return array
-     */
     public function dimensions(): array
     {
         return ['humus', 'amqp', 'queue'];
     }
 
-    /**
-     * @return array
-     */
     public function defaultOptions(): array
     {
         return [
@@ -230,9 +196,6 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         ];
     }
 
-    /**
-     * return array
-     */
     public function mandatoryOptions(): array
     {
         return [
@@ -243,6 +206,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
 
     /**
      * @param array|\ArrayAccess
+     *
      * @return int
      */
     private function getFlags($options): int
@@ -256,13 +220,7 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
         return $flags;
     }
 
-    /**
-     * @param Queue $queue
-     * @param string $exchange
-     * @param array $routingKeys
-     * @param array $bindArguments
-     */
-    private function bindQueue(Queue $queue, string $exchange, array $routingKeys, array $bindArguments)
+    private function bindQueue(Queue $queue, string $exchange, array $routingKeys, array $bindArguments): void
     {
         if (empty($routingKeys)) {
             $queue->bind($exchange, '', $bindArguments);

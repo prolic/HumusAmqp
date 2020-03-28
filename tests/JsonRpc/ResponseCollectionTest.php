@@ -26,16 +26,12 @@ use Humus\Amqp\JsonRpc\JsonRpcResponse;
 use Humus\Amqp\JsonRpc\JsonRpcResponseCollection;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class ResponseCollectionTest
- * @package HumusTest\Amqp\JsonRpc
- */
 class ResponseCollectionTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_iterates_and_accesses_correctly()
+    public function it_iterates_and_accesses_correctly(): void
     {
         $responseCollection = new JsonRpcResponseCollection();
         $responseCollection->addResponse(JsonRpcResponse::withResult('id1', ['foo' => 'bar']));
@@ -62,7 +58,7 @@ class ResponseCollectionTest extends TestCase
     /**
      * @test
      */
-    public function it_iterates_and_accesses_correctly_without_results()
+    public function it_iterates_and_accesses_correctly_without_results(): void
     {
         $responseCollection = new JsonRpcResponseCollection();
 

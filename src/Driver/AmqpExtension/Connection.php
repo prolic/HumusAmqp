@@ -22,30 +22,19 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
+use AMQPConnection;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Exception\InvalidArgumentException;
 use Traversable;
 
-/**
- * Class Connection
- * @package Humus\Amqp\Driver\AmqpExtension
- */
 final class Connection implements ConnectionInterface
 {
-    /**
-     * @var \AMQPConnection
-     */
-    private $connection;
+    private AMQPConnection $connection;
+    private ConnectionOptions $options;
 
     /**
-     * @var ConnectionOptions
-     */
-    private $options;
-
-    /**
-     * Connection constructor.
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)
@@ -54,77 +43,56 @@ final class Connection implements ConnectionInterface
             $options = new ConnectionOptions($options);
         }
 
-        if (true === $options->getVerify() && null === $options->getCACert()) {
+        if (true === $options->verify() && null === $options->caCert()) {
             throw new InvalidArgumentException('CA cert not set, so it can\'t be verified.');
         }
 
         $this->options = $options;
-        $this->connection = new \AMQPConnection($options->toArray());
+        $this->connection = new AMQPConnection($options->toArray());
     }
 
-    /**
-     * @return \AMQPConnection
-     */
-    public function getResource(): \AMQPConnection
+    public function getResource(): AMQPConnection
     {
         return $this->connection;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isConnected(): bool
     {
         return $this->connection->isConnected();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function connect()
+    public function connect(): void
     {
-        if ($this->options->getPersistent()) {
+        if ($this->options->isPersistent()) {
             $this->connection->pconnect();
         } else {
             $this->connection->connect();
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function disconnect()
+    public function disconnect(): void
     {
-        if ($this->options->getPersistent()) {
+        if ($this->options->isPersistent()) {
             $this->connection->pdisconnect();
         } else {
             $this->connection->disconnect();
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function reconnect(): bool
+    public function reconnect(): void
     {
-        if ($this->options->getPersistent()) {
-            return $this->connection->preconnect();
+        if ($this->options->isPersistent()) {
+            $this->connection->preconnect();
+        } else {
+            $this->connection->reconnect();
         }
-
-        return $this->connection->reconnect();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getOptions(): ConnectionOptions
     {
         return $this->options;
     }
 
-    /**
-     * @return ChannelInterface
-     */
     public function newChannel(): ChannelInterface
     {
         return new Channel($this);

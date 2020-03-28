@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 use HumusTest\Amqp\AbstractExchangeTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
-/**
- * Class ExchangeTest
- * @package HumusTest\Amqp\AmqpExtension
- */
 final class ExchangeTest extends AbstractExchangeTest
 {
     use CreateConnectionTrait;

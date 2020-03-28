@@ -25,17 +25,9 @@ namespace HumusTest\Amqp\AmqpExtension\Helper;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Driver\AmqpExtension\Connection;
 
-/**
- * Class CreateConnectionTrait
- * @package HumusTest\Amqp\AmqpExtension\Helper
- */
 trait CreateConnectionTrait
 {
-    /**
-     * @param ConnectionOptions|null $options
-     * @return \Humus\Amqp\Connection
-     */
-    public function createConnection(ConnectionOptions $options = null): \Humus\Amqp\Connection
+    public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         if (null === $options) {
             $options = new ConnectionOptions();

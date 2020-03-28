@@ -24,48 +24,19 @@ namespace Humus\Amqp;
 
 /**
  * Represents a AMQP exchange
- *
- * Interface Exchange
- * @package Humus\Amqp
  */
 interface Exchange
 {
-    /**
-     * Get the configured name.
-     *
-     * @return string The configured name as a string.
-     */
     public function getName(): string;
 
-    /**
-     * Set the name of the exchange.
-     *
-     * @param string $exchangeName The name of the exchange to set as string.
-     *
-     * @return void
-     */
-    public function setName(string $exchangeName);
+    public function setName(string $exchangeName): void;
 
-    /**
-     * Get the configured type.
-     *
-     * @return string The configured type as a string.
-     */
     public function getType(): string;
 
-    /**
-     * Set the type of the exchange.
-     *
-     * @param string $exchangeType The type of exchange as a string.
-     * @return void
-     */
-    public function setType(string $exchangeType);
+    public function setType(string $exchangeType): void;
 
     /**
      * Get all the flags currently set on the given exchange.
-     *
-     * @return int An integer bitmask of all the flags currently set on this
-     *             exchange object.
      */
     public function getFlags(): int;
 
@@ -78,7 +49,7 @@ interface Exchange
      *                       and Constants::AMQP_DURABLE (needs librabbitmq version >= 0.5.3 when using with ext-amqp)
      * @return void
      */
-    public function setFlags(int $flags);
+    public function setFlags(int $flags): void;
 
     /**
      * Get the argument associated with the given key.
@@ -104,22 +75,14 @@ interface Exchange
      * @param string|integer $value Value of the argument to set.
      * @return void
      */
-    public function setArgument(string $key, $value);
+    public function setArgument(string $key, $value): void;
 
     /**
      * Set all arguments on the exchange.
-     *
-     * @param array $arguments An array of key/value pairs of arguments.
-     * @return void
      */
-    public function setArguments(array $arguments);
+    public function setArguments(array $arguments): void;
 
-    /**
-     * Declare a new exchange on the broker.
-     *
-     * @return void
-     */
-    public function declareExchange();
+    public function declareExchange(): void;
 
     /**
      * Delete the exchange from the broker.
@@ -131,7 +94,7 @@ interface Exchange
      *                              it.
      * @return void
      */
-    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM);
+    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM): void;
 
     /**
      * Bind to another exchange.
@@ -141,9 +104,10 @@ interface Exchange
      * @param string $exchangeName Name of the exchange to bind.
      * @param string $routingKey   The routing key to use for binding.
      * @param array  $arguments     Additional binding arguments.
+     *
      * @return void
      */
-    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []);
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []): void;
 
     /**
      * Remove binding to another exchange.
@@ -153,9 +117,10 @@ interface Exchange
      * @param string $exchangeName Name of the exchange to bind.
      * @param string $routingKey   The routing key to use for binding.
      * @param array  $arguments     Additional binding arguments.
+     *
      * @return void
      */
-    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []);
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []): void;
 
     /**
      * Publish a message to an exchange.
@@ -176,19 +141,9 @@ interface Exchange
         string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
-    );
+    ): void;
 
-    /**
-     * Get the Channel object in use
-     *
-     * @return Channel
-     */
     public function getChannel(): Channel;
 
-    /**
-     * Get the Connection object in use
-     *
-     * @return Connection
-     */
     public function getConnection(): Connection;
 }

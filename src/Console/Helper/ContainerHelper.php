@@ -25,38 +25,21 @@ namespace Humus\Amqp\Console\Helper;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\Helper;
 
-/**
- * Class ContainerHelper
- * @package Humus\Amqp\Console\Helper
- */
 class ContainerHelper extends Helper
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
-    /**
-     * ContainerHelper constructor.
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @return ContainerInterface
-     */
-    public function getContainer()
+    public function getContainer(): ContainerInterface
     {
         return $this->container;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'container';
     }

@@ -32,193 +32,120 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPExceptionInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
-/**
- * Class Channel
- * @package Humus\Amqp\Driver\AmqpExtension
- */
 final class Channel implements ChannelInterface
 {
-    /**
-     * @var AbstractConnection
-     */
-    private $connection;
+    private AbstractConnection $connection;
+    private AMQPChannel $channel;
+    private int $prefetchCount;
+    private int $prefetchSize;
 
-    /**
-     * @var AMQPChannel
-     */
-    private $channel;
-
-    /**
-     * @var int
-     */
-    private $prefetchCount;
-
-    /**
-     * @var int
-     */
-    private $prefechSize;
-
-    /**
-     * Create an instance of an AMQPChannel object.
-     *
-     * @param AbstractConnection $connection  An instance of AbstractConnection with an active connection to a broker.
-     * @param AMQPChannel $channel
-     */
     public function __construct(AbstractConnection $connection, AMQPChannel $channel)
     {
         $this->connection = $connection;
         $this->channel = $channel;
-        $this->channel->set_ack_handler(function () {
+        $this->channel->set_ack_handler(function (): void {
             trigger_error('Unhandled basic.ack method from server received.');
         });
-        $this->channel->set_nack_handler(function () {
+        $this->channel->set_nack_handler(function (): void {
             trigger_error('Unhandled basic.nack method from server received.');
         });
-        $this->channel->set_return_listener(function () {
+        $this->channel->set_return_listener(function (): void {
             trigger_error('Unhandled basic.return method from server received.');
         });
     }
 
-    /**
-     * @return AMQPChannel
-     */
     public function getResource(): AMQPChannel
     {
         return $this->channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isConnected(): bool
     {
         throw new BadMethodCallException();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChannelId(): int
     {
         return (int) $this->channel->getChannelId();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPrefetchSize(int $size)
+    public function setPrefetchSize(int $size): void
     {
         $this->channel->basic_qos($size, 0, false);
-        $this->prefechSize = $size;
+        $this->prefetchSize = $size;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPrefetchSize(): int
     {
-        return $this->prefechSize;
+        return $this->prefetchSize;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPrefetchCount(int $count)
+    public function setPrefetchCount(int $count): void
     {
         $this->channel->basic_qos(0, $count, false);
         $this->prefetchCount = $count;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPrefetchCount(): int
     {
         return $this->prefetchCount;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function qos(int $size, int $count)
+    public function qos(int $size, int $count): void
     {
         $this->channel->basic_qos($size, $count, false);
         $this->prefechSize = $size;
         $this->prefetchCount = $count;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->channel->tx_select();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
         $this->channel->tx_commit();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         $this->channel->tx_rollback();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConnection(): ConnectionInterface
     {
         return $this->connection;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function basicRecover(bool $requeue = true)
+    public function basicRecover(bool $requeue = true): void
     {
         $this->channel->basic_recover($requeue);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function confirmSelect()
+    public function confirmSelect(): void
     {
         $this->channel->confirm_select();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null)
+    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null): void
     {
-        if (is_callable($ackCallback)) {
-            $innerAckCallback = function (AMQPMessage $message) use ($ackCallback) {
+        if (\is_callable($ackCallback)) {
+            $innerAckCallback = function (AMQPMessage $message) use ($ackCallback): bool {
                 return $ackCallback((int) $message->get('delivery_tag'), false);
             };
             $this->channel->set_ack_handler($innerAckCallback);
         }
 
-        if (is_callable($nackCallback)) {
-            $innerNackCallback = function (AMQPMessage $message) use ($ackCallback) {
+        if (\is_callable($nackCallback)) {
+            $innerNackCallback = function (AMQPMessage $message) use ($ackCallback): bool {
                 return $ackCallback((int) $message->get('delivery_tag'), false, false);
             };
             $this->channel->set_nack_handler($innerNackCallback);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function waitForConfirm(float $timeout = 0.0)
+    public function waitForConfirm(float $timeout = 0.0): void
     {
         if ($timeout < 0) {
             throw new ChannelException('Timeout must be greater than or equal to zero.');
@@ -235,10 +162,7 @@ final class Channel implements ChannelInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setReturnCallback(callable $returnCallback = null)
+    public function setReturnCallback(callable $returnCallback = null): void
     {
         if (! $returnCallback) {
             return;
@@ -250,7 +174,7 @@ final class Channel implements ChannelInterface
             $exchange,
             $routingKey,
             $message
-        ) use ($returnCallback) {
+        ) use ($returnCallback): bool {
             $envelope = new Envelope($message);
 
             return $returnCallback($replyCode, $replyText, $exchange, $routingKey, $envelope, $envelope->getBody());
@@ -259,10 +183,7 @@ final class Channel implements ChannelInterface
         $this->channel->set_return_listener($innerCallback);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function waitForBasicReturn(float $timeout = 0.0)
+    public function waitForBasicReturn(float $timeout = 0.0): void
     {
         try {
             $this->channel->wait(null, false, $timeout);
@@ -271,17 +192,11 @@ final class Channel implements ChannelInterface
         }
     }
 
-    /**
-     * @return ExchangeInterface
-     */
     public function newExchange(): ExchangeInterface
     {
         return new Exchange($this);
     }
 
-    /**
-     * @return QueueInterface
-     */
     public function newQueue(): QueueInterface
     {
         return new Queue($this);

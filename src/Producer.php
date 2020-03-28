@@ -22,19 +22,14 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\ChannelException;
-use Humus\Amqp\Exception\QueueException;
+use JsonSerializable;
 
-/**
- * Interface Producer
- * @package Humus\Amqp
- */
 interface Producer
 {
     /**
      * Publish a message
      *
-     * @param string  $message     The message to publish.
+     * @param string|JsonSerializable  $message     The message to publish.
      * @param string  $routingKey  The optional routing key to which to
      *                             publish to.
      * @param int     $flags       One or more of Constants::AMQP_MANDATORY and
@@ -57,40 +52,29 @@ interface Producer
      *
      * This method must be called on the given channel prior to calling
      * Producer::commitTransaction() or Producer::rollbackTransaction().
-     *
-     * @return void
      */
-    public function startTransaction();
+    public function startTransaction(): void;
 
     /**
      * Commit a pending transaction.
-     *
-     * @return void
      */
-    public function commitTransaction();
+    public function commitTransaction(): void;
 
     /**
      * Rollback a transaction.
      *
      * Rollback an existing transaction. Producer::startTransaction() must
      * be called prior to this.
-     *
-     * @return void
      */
-    public function rollbackTransaction();
+    public function rollbackTransaction(): void;
 
     /**
      * Set the channel to use publisher acknowledgements. This can only used on a non-transactional channel.
-     *
-     * @return void
      */
-    public function confirmSelect();
+    public function confirmSelect(): void;
 
     /**
      * Set callback to process basic.ack and basic.nac AMQP server methods (applicable when channel in confirm mode).
-     *
-     * @param callable|null $ackCallback
-     * @param callable|null $nackCallback
      *
      * Callback functions with all arguments have the following signature:
      *
@@ -101,28 +85,18 @@ interface Producer
      *
      * Note, basic.nack server method will only be delivered if an internal error occurs in the Erlang process
      * responsible for a queue (see https://www.rabbitmq.com/confirms.html for details).
-     *
-     * @return void
      */
-    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null);
+    public function setConfirmCallback(?callable $ackCallback = null, ?callable $nackCallback = null): void;
 
     /**
      * Wait until all messages published since the last call have been either ack'd or nack'd by the broker.
      *
      * Note, this method also catch all basic.return message from server.
-     *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
-     * @throws ChannelException
-     * @throws QueueException
      */
-    public function waitForConfirm(float $timeout = 0.0);
+    public function waitForConfirm(float $timeout = 0.0): void;
 
     /**
      * Set callback to process basic.return AMQP server method
-     *
-     * @param callable|null $returnCallback
-     * @return void
      *
      * Callback function with all arguments has the following signature:
      *
@@ -136,15 +110,10 @@ interface Producer
      * and should return boolean false when wait loop should be canceled.
      *
      */
-    public function setReturnCallback(callable $returnCallback = null);
+    public function setReturnCallback(?callable $returnCallback = null): void;
 
     /**
      * Start wait loop for basic.return AMQP server methods
-     *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
-     * @throws ChannelException
-     * @throws QueueException
      */
-    public function waitForBasicReturn(float $timeout = 0.0);
+    public function waitForBasicReturn(float $timeout = 0.0): void;
 }

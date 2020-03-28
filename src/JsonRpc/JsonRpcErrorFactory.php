@@ -24,27 +24,16 @@ namespace Humus\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception;
 
-/**
- * Class JsonRpcError
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcErrorFactory implements ErrorFactory
 {
-    /**
-     * @var array Recommended Reason Phrases
-     */
-    private $recommendedMessagePhrases = [
+    private array $recommendedMessagePhrases = [
         -32700 => 'Parse error',
         -32600 => 'Invalid JsonRpcRequest',
         -32601 => 'Method not found',
         -32602 => 'Invalid params',
         -32603 => 'Internal error',
     ];
-
-    /**
-     * @var array Reason phrases for custom codes.
-     */
-    private $customMessagePhrases = [];
+    private array $customMessagePhrases = [];
 
     public function __construct(array $customCodes = [])
     {
@@ -52,10 +41,11 @@ final class JsonRpcErrorFactory implements ErrorFactory
     }
 
     /**
-     * JsonRpcError factory.
      * @param int $code
-     * @param ?string $message
+     * @param string|null $message
      * @param array|bool|float|int|null|string $data
+     *
+     * @return Error
      */
     public function create(int $code, ?string $message = null, $data = null): Error
     {

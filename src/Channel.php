@@ -22,36 +22,18 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-use Humus\Amqp\Exception\ChannelException;
-use Humus\Amqp\Exception\QueueException;
-
 /**
  * Represents a AMQP channel between PHP and a AMQP server.
- *
- * Interface Channel
- * @package Humus\Amqp
  */
 interface Channel
 {
     /**
      * Return the internal channel implementation based on the used driver
-     *
-     * @return object
      */
-    public function getResource();
+    public function getResource(): object;
 
-    /**
-     * Check the channel connection.
-     *
-     * @return bool Indicates whether the channel is connected.
-     */
     public function isConnected(): bool;
 
-    /**
-     * Return internal channel ID
-     *
-     * @return int
-     */
     public function getChannelId(): int;
 
     /**
@@ -63,16 +45,11 @@ interface Channel
      * prefetch message count setting will be ignored. If the call to either
      * Queue::consume() or Queue::get() is done with the Constants::AMQP_AUTOACK
      * flag set, this setting will be ignored.
-     *
-     * @param int $size The window size, in octets, to prefetch.
-     * @return void
      */
-    public function setPrefetchSize(int $size);
+    public function setPrefetchSize(int $size): void;
 
     /**
      * Get the window size to prefetch from the broker.
-     *
-     * @return int
      */
     public function getPrefetchSize(): int;
 
@@ -83,16 +60,11 @@ interface Channel
      * Queue::consume() or Queue::get(). Any call to this method will
      * automatically set the prefetch window size to 0, meaning that the
      * prefetch window size setting will be ignored.
-     *
-     * @param int $count The number of messages to prefetch.
-     * @return void
      */
-    public function setPrefetchCount(int $count);
+    public function setPrefetchCount(int $count): void;
 
     /**
      * Get the number of messages to prefetch from the broker.
-     *
-     * @return int
      */
     public function getPrefetchCount(): int;
 
@@ -113,64 +85,49 @@ interface Channel
      *
      * @param int $size  The window size, in octets, to prefetch.
      * @param int $count The number of messages to prefetch.
+     *
      * @return void
      */
-    public function qos(int $size, int $count);
+    public function qos(int $size, int $count): void;
 
     /**
      * Start a transaction.
      *
      * This method must be called on the given channel prior to calling
      * Channel::commitTransaction() or Channel::rollbackTransaction().
-     *
-     * @return void
      */
-    public function startTransaction();
+    public function startTransaction(): void;
 
     /**
      * Commit a pending transaction.
-     *
-     * @return void
      */
-    public function commitTransaction();
+    public function commitTransaction(): void;
 
     /**
      * Rollback a transaction.
      *
      * Rollback an existing transaction. Channel::startTransaction() must
      * be called prior to this.
-     *
-     * @return void
      */
-    public function rollbackTransaction();
+    public function rollbackTransaction(): void;
 
     /**
      * Get the Connection object in use
-     *
-     * @return Connection
      */
     public function getConnection(): Connection;
 
     /**
      * Redeliver unacknowledged messages.
-     *
-     * @param bool $requeue
-     * @return void
      */
-    public function basicRecover(bool $requeue = true);
+    public function basicRecover(bool $requeue = true): void;
 
     /**
      * Set the channel to use publisher acknowledgements. This can only used on a non-transactional channel.
-     *
-     * @return void
      */
-    public function confirmSelect();
+    public function confirmSelect(): void;
 
     /**
      * Set callback to process basic.ack and basic.nac AMQP server methods (applicable when channel in confirm mode).
-     *
-     * @param callable|null $ackCallback
-     * @param callable|null $nackCallback
      *
      * Callback functions with all arguments have the following signature:
      *
@@ -181,28 +138,18 @@ interface Channel
      *
      * Note, basic.nack server method will only be delivered if an internal error occurs in the Erlang process
      * responsible for a queue (see https://www.rabbitmq.com/confirms.html for details).
-     *
-     * @return void
      */
-    public function setConfirmCallback(callable $ackCallback = null, callable $nackCallback = null);
+    public function setConfirmCallback(?callable $ackCallback = null, ?callable $nackCallback = null): void;
 
     /**
      * Wait until all messages published since the last call have been either ack'd or nack'd by the broker.
      *
      * Note, this method also catch all basic.return message from server.
-     *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
-     * @throws ChannelException
-     * @throws QueueException
      */
-    public function waitForConfirm(float $timeout = 0.0);
+    public function waitForConfirm(float $timeout = 0.0): void;
 
     /**
      * Set callback to process basic.return AMQP server method
-     *
-     * @param callable|null $returnCallback
-     * @return void
      *
      * Callback function with all arguments has the following signature:
      *
@@ -214,27 +161,15 @@ interface Channel
      *                        string $body): bool;
      *
      * and should return boolean false when wait loop should be canceled.
-     *
      */
-    public function setReturnCallback(callable $returnCallback = null);
+    public function setReturnCallback(?callable $returnCallback = null): void;
 
     /**
      * Start wait loop for basic.return AMQP server methods
-     *
-     * @param float $timeout Timeout in seconds. May be fractional.
-     * @return void
-     * @throws ChannelException
-     * @throws QueueException
      */
-    public function waitForBasicReturn(float $timeout = 0.0);
+    public function waitForBasicReturn(float $timeout = 0.0): void;
 
-    /**
-     * @return Exchange
-     */
     public function newExchange(): Exchange;
 
-    /**
-     * @return Queue
-     */
     public function newQueue(): Queue;
 }

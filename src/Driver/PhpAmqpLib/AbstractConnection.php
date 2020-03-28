@@ -28,75 +28,41 @@ use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Exception\BadMethodCallException;
 use PhpAmqpLib\Connection\AbstractConnection as PhpAmqplibAbstractConnection;
 
-/**
- * Class AbstractConnection
- * @package Humus\Amqp\Driver\AmqpExtension
- */
 abstract class AbstractConnection implements ConnectionInterface
 {
-    /**
-     * @var PhpAmqplibAbstractConnection
-     */
-    protected $connection;
+    protected PhpAmqplibAbstractConnection $connection;
+    protected ConnectionOptions $options;
 
-    /**
-     * @var ConnectionOptions
-     */
-    protected $options;
-
-    /**
-     * @return PhpAmqplibAbstractConnection
-     */
     public function getResource(): PhpAmqplibAbstractConnection
     {
         return $this->connection;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isConnected(): bool
     {
         return $this->connection->isConnected();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function connect()
+    public function connect(): void
     {
         throw new BadMethodCallException();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function disconnect()
+    public function disconnect(): void
     {
         throw new BadMethodCallException();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function reconnect(): bool
+    public function reconnect(): void
     {
         $this->connection->reconnect();
-
-        return $this->isConnected();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getOptions(): ConnectionOptions
     {
         return $this->options;
     }
 
-    /**
-     * @return ChannelInterface
-     */
     public function newChannel(): ChannelInterface
     {
         $channel = new Channel($this, $this->getResource()->channel());

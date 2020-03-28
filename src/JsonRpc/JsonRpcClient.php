@@ -28,64 +28,28 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
+use Humus\Amqp\Util\Json;
 
-/**
- * Class JsonRpcClient
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcClient implements Client
 {
-    /**
-     * @var Queue
-     */
-    private $queue;
-
+    private Queue $queue;
     /**
      * @var string[]
      */
-    private $requestIds = [];
-
-    /**
-     * @var int
-     */
-    private $countRequests = 0;
-
+    private array $requestIds = [];
+    private int $countRequests = 0;
     /**
      * Milliseconds to wait between two tries when reply is not yet there
-     *
-     * @var int
      */
-    private $waitMillis;
-
+    private int $waitMillis;
     /**
      * @var Exchange[]
      */
-    private $exchanges = [];
+    private array $exchanges = [];
+    private ?string $appId;
+    private int $timeout = 0;
+    private ErrorFactory $errorFactory;
 
-    /**
-     * @var string|null
-     */
-    private $appId;
-
-    /**
-     * @var int
-     */
-    private $timeout = 0;
-
-    /**
-     *
-     * @var ErrorFactory
-     */
-    private $errorFactory;
-
-    /**
-     * Constructor
-     *
-     * @param Queue $queue
-     * @param Exchange[] $exchanges
-     * @param int $waitMillis
-     * @param string $appId
-     */
     public function __construct(Queue $queue, array $exchanges, int $waitMillis = 100, string $appId = '', ?ErrorFactory $errorFactory = null)
     {
         Assertion::min($waitMillis, 1);
@@ -103,50 +67,36 @@ final class JsonRpcClient implements Client
         $this->appId = $appId;
     }
 
-    /**
-     * Add a request to rpc client
-     *
-     * @param Request $request
-     * @throws Exception\InvalidArgumentException
-     */
-    public function addRequest(Request $request)
+    public function addRequest(Request $request): void
     {
         $attributes = $this->createAttributes($request);
-
         $exchange = $this->getExchange($request->server());
 
-        $message = json_encode($request->params());
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception\InvalidArgumentException('Error during json encoding');
-        }
-
-        $exchange->publish($message, $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
+        $exchange->publish(
+            Json::encode($request->params()),
+            $request->routingKey(),
+            Constants::AMQP_NOPARAM,
+            $attributes
+        );
 
         if (null !== $request->id()) {
             $this->requestIds[] = $request->id();
         }
 
         if (0 !== $request->expiration() && ceil($request->expiration() / 1000) > $this->timeout) {
-            $this->timeout = ceil($request->expiration() / 1000);
+            $this->timeout = (int) ceil($request->expiration() / 1000);
         }
 
         ++$this->countRequests;
     }
 
-    /**
-     * Get response collection
-     *
-     * @param float $timeout in seconds
-     * @return ResponseCollection
-     */
     public function getResponseCollection(float $timeout = 0): ResponseCollection
     {
         if ($timeout < $this->timeout) {
             $timeout = $this->timeout;
         }
 
-        $now = microtime(true);
+        $now = \microtime(true);
         $responseCollection = new JsonRpcResponseCollection();
 
         do {
@@ -155,9 +105,9 @@ final class JsonRpcClient implements Client
             if ($message instanceof Envelope) {
                 $responseCollection->addResponse($this->responseFromEnvelope($message));
             } else {
-                usleep($this->waitMillis * 1000);
+                \usleep($this->waitMillis * 1000);
             }
-            $time = microtime(true);
+            $time = \microtime(true);
         } while (
             $responseCollection->count() < $this->countRequests
             && (0 == $timeout || ($timeout > 0 && (($time - $now) < $timeout)))
@@ -170,11 +120,7 @@ final class JsonRpcClient implements Client
         return $responseCollection;
     }
 
-    /**
-     * @param string $server
-     * @return Exchange
-     */
-    private function getExchange(string $server)
+    private function getExchange(string $server): Exchange
     {
         if (! isset($this->exchanges[$server])) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -186,10 +132,6 @@ final class JsonRpcClient implements Client
         return $this->exchanges[$server];
     }
 
-    /**
-     * @param Request $request
-     * @return array
-     */
     private function createAttributes(Request $request): array
     {
         $attributes = [
@@ -200,7 +142,7 @@ final class JsonRpcClient implements Client
             'timestamp' => $request->timestamp(),
             'reply_to' => $this->queue->getName(),
             'app_id' => $this->appId,
-            'user_id' => $this->queue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $this->queue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
@@ -217,10 +159,6 @@ final class JsonRpcClient implements Client
         return $attributes;
     }
 
-    /**
-     * @param Envelope $envelope
-     * @return Response
-     */
     private function responseFromEnvelope(Envelope $envelope): Response
     {
         if ($envelope->getHeader('jsonrpc') !== JsonRpcResponse::JSONRPC_VERSION
@@ -233,40 +171,49 @@ final class JsonRpcClient implements Client
             );
         }
 
-        $payload = json_decode($envelope->getBody(), true);
-
         $correlationId = $envelope->getCorrelationId();
 
         if ('' === $correlationId) {
             $correlationId = null;
         }
 
-        if (! in_array($correlationId, $this->requestIds) && null !== $correlationId) {
-            $response = JsonRpcResponse::withError(
+        if (! \in_array($correlationId, $this->requestIds) && null !== $correlationId) {
+            return JsonRpcResponse::withError(
                 $correlationId,
                 $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')
             );
-        } elseif (isset($payload['result'])) {
-            $response = JsonRpcResponse::withResult(
+        }
+
+        try {
+            $payload = Json::decode($envelope->getBody(), true);
+        } catch (\Throwable $e) {
+            return JsonRpcResponse::withError(
                 $correlationId,
-                $payload['result']
-            );
-        } elseif (! isset($payload['error']['code'])
-            || ! isset($payload['error']['message'])
-            || ! is_int($payload['error']['code'])
-            || ! is_string($payload['error']['message'])
-        ) {
-            $response = JsonRpcResponse::withError(
-                $correlationId,
-                $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Invalid JSON-RPC response')
-            );
-        } else {
-            $response = JsonRpcResponse::withError(
-                $correlationId,
-                $this->errorFactory->create($payload['error']['code'], $payload['error']['message'], $payload['error']['data'] ?? null)
+                $this->errorFactory->create(JsonRpcError::ERROR_CODE_32700, $e->getMessage())
             );
         }
 
-        return $response;
+        if (isset($payload['result'])) {
+            return JsonRpcResponse::withResult(
+                $correlationId,
+                $payload['result']
+            );
+        }
+
+        if (! isset($payload['error']['code'])
+            || ! isset($payload['error']['message'])
+            || ! \is_int($payload['error']['code'])
+            || ! \is_string($payload['error']['message'])
+        ) {
+            return JsonRpcResponse::withError(
+                $correlationId,
+                $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Invalid JSON-RPC response')
+            );
+        }
+
+        return JsonRpcResponse::withError(
+            $correlationId,
+            $this->errorFactory->create($payload['error']['code'], $payload['error']['message'], $payload['error']['data'] ?? null)
+        );
     }
 }

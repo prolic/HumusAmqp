@@ -27,14 +27,9 @@ use Humus\Amqp\ConnectionOptions;
 use PhpAmqpLib\Connection\AMQPLazySocketConnection as BaseLazySocketConnection;
 use Traversable;
 
-/**
- * Class LazySocketConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
- */
 final class LazySocketConnection extends AbstractConnection
 {
     /**
-     * SocketConnection constructor.
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)
@@ -45,23 +40,20 @@ final class LazySocketConnection extends AbstractConnection
 
         $this->options = $options;
         $this->connection = new BaseLazySocketConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
+            $options->host(),
+            $options->port(),
+            $options->login(),
+            $options->password(),
+            $options->vhost(),
             false,
             'AMQPLAIN',
             null,
             'en_US',
-            $options->getReadTimeout() ?: $options->getWriteTimeout(),
-            $options->getHeartbeat() > 0
+            $options->readTimeout() ?: $options->writeTimeout(),
+            $options->heartbeat() > 0
         );
     }
 
-    /**
-     * @return ChannelInterface
-     */
     public function newChannel(): ChannelInterface
     {
         $method = new \ReflectionMethod($this->connection, 'connect');

@@ -26,16 +26,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class ShowCommand
- * @package Humus\Amqp\Console\Command
- */
 class ShowCommand extends AbstractCommand
 {
-    /**
-     * @var array
-     */
-    protected $knownTypes = [
+    protected array $knownTypes = [
         'connections',
         'exchanges',
         'queues',
@@ -46,10 +39,7 @@ class ShowCommand extends AbstractCommand
         'all',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('show')
@@ -72,10 +62,7 @@ class ShowCommand extends AbstractCommand
             ->setHelp('Show all AMQP ' . implode(', ', $this->knownTypes));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $type = $input->getOption('type');
 
@@ -85,7 +72,7 @@ class ShowCommand extends AbstractCommand
             return 1;
         }
 
-        if (! in_array($type, $this->knownTypes)) {
+        if (! \in_array($type, $this->knownTypes)) {
             $output->writeln(
                 'Invalid type given, use one of ' . implode(', ', $this->knownTypes)
             );
@@ -124,14 +111,7 @@ class ShowCommand extends AbstractCommand
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @param array $config
-     * @param string $type
-     * @return void
-     */
-    protected function listType(InputInterface $input, OutputInterface $output, array $config, string $type)
+    protected function listType(InputInterface $input, OutputInterface $output, array $config, string $type): void
     {
         $type = substr($type, 0, -1);
 
@@ -142,7 +122,7 @@ class ShowCommand extends AbstractCommand
                 $output->writeln(ucfirst($type) . ': ' . $name);
 
                 if ($input->getOption('details')) {
-                    $output->writeln('Specs: ' . json_encode($spec, JSON_PRETTY_PRINT));
+                    $output->writeln('Specs: ' . \json_encode($spec, JSON_PRETTY_PRINT));
                     $output->writeln('');
                 }
             }

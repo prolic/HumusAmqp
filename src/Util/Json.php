@@ -20,24 +20,31 @@
 
 declare(strict_types=1);
 
-namespace Humus\Amqp\JsonRpc;
+namespace Humus\Amqp\Util;
 
-interface Request
+class Json
 {
     /**
-     * @return array|bool|float|int|string
+     * @param mixed $value
+     * @return string
      */
-    public function params();
+    public static function encode($value): string
+    {
+        $flags = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR;
 
-    public function server(): string;
+        return \json_encode($value, $flags);
+    }
 
-    public function routingKey(): string;
+    /**
+     * @param string $json
+     * @return mixed
+     */
+    public static function decode(string $json)
+    {
+        return \json_decode($json, true, 512, \JSON_BIGINT_AS_STRING | \JSON_THROW_ON_ERROR);
+    }
 
-    public function expiration(): int;
-
-    public function id(): ?string;
-
-    public function timestamp(): int;
-
-    public function method(): string;
+    final private function __construct()
+    {
+    }
 }

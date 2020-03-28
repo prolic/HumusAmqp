@@ -24,10 +24,6 @@ namespace Humus\Amqp\JsonRpc;
 
 use Humus\Amqp\Exception;
 
-/**
- * Class JsonRpcResponse
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcResponse implements Response
 {
     const JSONRPC_VERSION = '2.0';
@@ -36,23 +32,16 @@ final class JsonRpcResponse implements Response
      * @var array|string|int|float|bool|null
      */
     private $result;
-
-    /**
-     * @var Error|null
-     */
-    private $error;
-
-    /**
-     * @var string
-     */
-    private $id;
+    private ?Error $error = null;
+    private ?string $id;
 
     /**
      * @param string|null $id
      * @param array|string|int|float|bool|null $result
+     *
      * @return Response
      */
-    public static function withResult(string $id = null, $result)
+    public static function withResult(?string $id, $result): JsonRpcResponse
     {
         $self = new self();
 
@@ -68,9 +57,10 @@ final class JsonRpcResponse implements Response
      * @param string|null $id
      * @param Error $error
      * @param array|string|int|float|bool|null $data
+     *
      * @return Response
      */
-    public static function withError(string $id = null, Error $error)
+    public static function withError(?string $id, Error $error): JsonRpcResponse
     {
         $self = new self();
 
@@ -84,10 +74,7 @@ final class JsonRpcResponse implements Response
     {
     }
 
-    /**
-     * @return string|null
-     */
-    public function id()
+    public function id(): ?string
     {
         return $this->id;
     }
@@ -100,17 +87,11 @@ final class JsonRpcResponse implements Response
         return $this->result;
     }
 
-    /**
-     * @return Error|null
-     */
-    public function error()
+    public function error(): ?Error
     {
         return $this->error;
     }
 
-    /**
-     * @return bool
-     */
     public function isError(): bool
     {
         return null !== $this->error;
@@ -120,9 +101,9 @@ final class JsonRpcResponse implements Response
      * @param mixed $payload
      * @param string $name
      */
-    private static function assertPayload($payload, string $name)
+    private static function assertPayload($payload, string $name): void
     {
-        if (is_array($payload)) {
+        if (\is_array($payload)) {
             foreach ($payload as $subPayload) {
                 self::assertPayload($subPayload, $name);
             }
@@ -130,7 +111,7 @@ final class JsonRpcResponse implements Response
             return;
         }
 
-        if (! is_scalar($payload) && null !== $payload) {
+        if (! \is_scalar($payload) && null !== $payload) {
             throw new Exception\InvalidArgumentException($name . ' must only contain arrays and scalar values');
         }
     }

@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Interface Exception
- * @package Humus\Amqp\Exception
- */
 interface Exception
 {
 }

@@ -26,14 +26,9 @@ use Humus\Amqp\ConnectionOptions;
 use PhpAmqpLib\Connection\AMQPSocketConnection as BaseAMQPSocketConnection;
 use Traversable;
 
-/**
- * Class SocketConnection
- * @package Humus\Amqp\Driver\PhpAmqpLib
- */
 final class SocketConnection extends AbstractConnection
 {
     /**
-     * SocketConnection constructor.
      * @param ConnectionOptions|array|Traversable $options
      */
     public function __construct($options)
@@ -44,19 +39,19 @@ final class SocketConnection extends AbstractConnection
 
         $this->options = $options;
         $this->connection = new BaseAMQPSocketConnection(
-            $options->getHost(),
-            $options->getPort(),
-            $options->getLogin(),
-            $options->getPassword(),
-            $options->getVhost(),
+            $options->host(),
+            $options->port(),
+            $options->login(),
+            $options->password(),
+            $options->vhost(),
             false,
             'AMQPLAIN',
             null,
             'en_US',
-            $options->getReadTimeout(),
-            $options->getHeartbeat() > 0,
-            $options->getWriteTimeout(),
-            $options->getHeartbeat()
+            $options->readTimeout(),
+            $options->heartbeat() > 0,
+            $options->writeTimeout(),
+            $options->heartbeat()
         );
     }
 }

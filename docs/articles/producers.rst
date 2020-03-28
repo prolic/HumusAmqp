@@ -188,7 +188,7 @@ Publishing messages with confirm select
         function (
             int $deliveryTag,
             bool $multiple = false
-        ) use (&$cnt, &$result) {
+        ) use (&$cnt, &$result): bool {
             $result[] = 'Message acked';
             $result[] = func_get_args();
             return --$cnt > 0;
@@ -197,7 +197,7 @@ Publishing messages with confirm select
             int $deliveryTag,
             bool $multiple,
             bool $requeue
-        ) use (&$result) {
+        ) use (&$result): bool {
             $result[] = 'Message nacked';
             $result[] = func_get_args();
             return false;
@@ -225,7 +225,7 @@ Publishing messages as mandatory
             string $routingKey,
             Envelope $envelope,
             string $body
-        ) {
+        ): void {
             throw new \RuntimeException('Message returned: ' . $replyText);
         }
     );

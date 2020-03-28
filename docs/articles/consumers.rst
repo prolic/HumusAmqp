@@ -19,9 +19,13 @@ and the queue) and returns a delivery result. A very simple callback would look 
 
     <?php
 
-    $callback = function(\Humus\Amqp\Envelope $envelope, \Humus\Amqp\Queue $queue) {
+    use Humus\Amqp\DeliveryResult;
+    use Humus\Amqp\Envelope;
+    use Humus\Amqp\Queue;
+
+    $callback = function(Envelope $envelope, Queue $queue): DeliveryResult {
         echo $envelope->getBody();
-        return \Humus\Amqp\DeliveryResult::MSG_ACK();
+        return DeliveryResult::MSG_ACK();
     }
 
 The delivery result will signal the consumer whether it should ack, nack, reject, reject and
@@ -114,9 +118,17 @@ Set up the consumer
 
     <?php
 
-    $logger = new \Psr\Log\NullLogger();
+    use Humus\Amqp\CallbackConsumer;
+    use Humus\Amqp\DeliveryResult;
+    use Humus\Amqp\Driver\AmqpExtension\Connection;
+    use Humus\Amqp\Envelope;
+    use Humus\Amqp\FlushDeferredResult;
+    use Humus\Amqp\Queue;
+    use Psr\Log\NullLogger;
 
-    $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection();
+    $logger = new NullLogger();
+
+    $connection = new Connection();
     $connection->connect();
 
     $channel = $connection->newChannel();
@@ -126,16 +138,16 @@ Set up the consumer
     $queue = $channel->newQueue();
     $queue->setName('test-queue');
 
-    $consumer = new \Humus\Amqp\CallbackConsumer(
+    $consumer = new CallbackConsumer(
         $queue,
         $logger,
         12.5, // idle timeout, float in seconds
-        function (\Humus\Amqp\Envelope $envelope, \Humus\Amqp\Queue $queue) {
+        function (Envelope $envelope,Queue $queue): DeliveryResult {
             echo $envelope->getBody();
-            return \Humus\Amqp\DeliveryResult::MSG_DEFER();
+            return DeliveryResult::MSG_DEFER();
         },
-        function (\Humus\Amqp\Queue $queue) {
-            return \Humus\Amqp\FlushDeferredResult::MSG_ACK();
+        function (Queue $queue): FlushDeferredResult {
+            return FlushDeferredResult::MSG_ACK();
         },
         null, // no custom error callback
         'demo-consumer-tag'
@@ -150,24 +162,29 @@ Set up the consumer using config and factory
 
     <?php
 
-    // declare callbacks as invokable classes first
+    use Humus\Amqp\DeliveryResult;
+    use Humus\Amqp\Envelope;
+    use Humus\Amqp\FlushDeferredResult;
+    use Humus\Amqp\Queue;
 
     namespace My
     {
+        // declare callbacks as invokable classes first
+
         class EchoCallback
         {
-            public function __invoke(\Humus\Amqp\Envelope $envelope, \Humus\Amqp\Queue $queue)
+            public function __invoke(Envelope $envelope, Queue $queue): DeliveryResult
             {
                 echo $envelope->getBody();
-                return \Humus\Amqp\DeliveryResult::MSG_DEFER();
+                return DeliveryResult::MSG_DEFER();
             }
         }
 
         class FlushDeferredCallback
         {
-            public function (\Humus\Amqp\Queue $queue)
+            public function (Queue $queue): FlushDeferredResult
             {
-                return \Humus\Amqp\FlushDeferredResult::MSG_ACK();
+                return FlushDeferredResult::MSG_ACK();
             }
         }
     }

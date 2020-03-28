@@ -27,16 +27,12 @@ use Humus\Amqp\Driver\PhpAmqpLib\Channel;
 use Humus\Amqp\Driver\PhpAmqpLib\LazySocketConnection;
 use HumusTest\Amqp\AbstractConnectionTest;
 
-/**
- * Class LazySocketConnectionTest
- * @package HumusTest\Amqp\PhpAmqpLib
- */
 final class LazySocketConnectionTest extends AbstractConnectionTest
 {
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_credentials()
+    public function it_throws_exception_with_invalid_credentials(): void
     {
         $this->expectException(\Exception::class);
 
@@ -47,7 +43,7 @@ final class LazySocketConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_connects_with_valid_credentials()
+    public function it_connects_with_valid_credentials(): void
     {
         $connection = $this->createConnection();
 
@@ -57,7 +53,7 @@ final class LazySocketConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_returns_internal_connection()
+    public function it_returns_internal_connection(): void
     {
         $connection = $this->createConnection();
 
@@ -67,18 +63,14 @@ final class LazySocketConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_connects_and_createss_new_channel()
+    public function it_connects_and_createss_new_channel(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
         $this->assertInstanceOf(Channel::class, $channel);
     }
 
-    /**
-     * @param ConnectionOptions|null $options
-     * @return \Humus\Amqp\Connection
-     */
-    public function createConnection(ConnectionOptions $options = null): \Humus\Amqp\Connection
+    public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         return new LazySocketConnection($options);
     }

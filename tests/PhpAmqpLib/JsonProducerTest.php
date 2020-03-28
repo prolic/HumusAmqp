@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\PhpAmqpLib;
 use HumusTest\Amqp\AbstractJsonProducerTest;
 use HumusTest\Amqp\PhpAmqpLib\Helper\CreateConnectionTrait;
 
-/**
- * Class JsonProducerTest
- * @package HumusTest\Amqp\PhpAmqpLib
- */
 final class JsonProducerTest extends AbstractJsonProducerTest
 {
     use CreateConnectionTrait;

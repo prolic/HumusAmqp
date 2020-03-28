@@ -22,17 +22,14 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-/**
- * Class JsonRpcError
- * @package Humus\Amqp\JsonRpc
- */
 interface ErrorFactory
 {
     /**
-     * JsonRpcError factory.
      * @param int $code
-     * @param ?string $message
+     * @param string|null $message
      * @param array|bool|float|int|null|string $data
+     *
+     * @return Error
      */
     public function create(int $code, ?string $message = null, $data = null): Error;
 }

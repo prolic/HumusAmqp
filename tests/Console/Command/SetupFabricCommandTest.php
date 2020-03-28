@@ -33,16 +33,12 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * Class SetupFabricCommand
- * @package HumusTest\Amqp\Console\Command
- */
 class SetupFabricCommandTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_outputs_that_nothing_is_to_do()
+    public function it_outputs_that_nothing_is_to_do(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(new \ArrayObject())->shouldBeCalled();
@@ -60,7 +56,7 @@ class SetupFabricCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_declares_exchanges_and_queues()
+    public function it_declares_exchanges_and_queues(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn(
@@ -125,11 +121,7 @@ class SetupFabricCommandTest extends TestCase
         );
     }
 
-    /**
-     * @param ContainerInterface $container
-     * @return CommandTester
-     */
-    private function createCommandTester(ContainerInterface $container)
+    private function createCommandTester(ContainerInterface $container): CommandTester
     {
         $command = new SetupFabricCommand();
         $command->setHelperSet(

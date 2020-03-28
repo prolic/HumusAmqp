@@ -32,16 +32,12 @@ use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class JsonRpcClientFactoryTest
- * @package HumusTest\Amqp\Container
- */
 class JsonRpcClientFactoryTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_creates_json_rpc_client()
+    public function it_creates_json_rpc_client(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -112,7 +108,7 @@ class JsonRpcClientFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_json_rpc_client_with_custom_error_factory()
+    public function it_creates_json_rpc_client_with_custom_error_factory(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -187,7 +183,7 @@ class JsonRpcClientFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_json_rpc_client_with_call_static()
+    public function it_creates_json_rpc_client_with_call_static(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -262,7 +258,7 @@ class JsonRpcClientFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_container_param()
+    public function it_throws_exception_with_invalid_call_static_container_param(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');

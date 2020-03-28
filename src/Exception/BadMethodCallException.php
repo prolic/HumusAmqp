@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Exception;
 
-/**
- * Class BadMethodCallException
- * @package Humus\Amqp\Exception
- */
 class BadMethodCallException extends \BadMethodCallException implements Exception
 {
 }

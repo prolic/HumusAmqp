@@ -22,10 +22,6 @@ declare(strict_types=1);
 
 namespace Humus\Amqp;
 
-/**
- * Class Constants
- * @package Humus\Amqp
- */
 abstract class Constants
 {
     /**

@@ -22,27 +22,9 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-use Humus\Amqp\Exception;
-
-/**
- * Class JsonRpcClient
- * @package Humus\Amqp\JsonRpc
- */
 interface Client
 {
-    /**
-     * Add a request to rpc client
-     *
-     * @param Request $request
-     * @throws Exception\InvalidArgumentException
-     */
-    public function addRequest(Request $request);
+    public function addRequest(Request $request): void;
 
-    /**
-     * Get response collection
-     *
-     * @param float $timeout in seconds
-     * @return ResponseCollection
-     */
     public function getResponseCollection(float $timeout = 0): ResponseCollection;
 }

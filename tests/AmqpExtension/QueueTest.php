@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 use HumusTest\Amqp\AbstractQueueTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
-/**
- * Class QueueTest
- * @package HumusTest\Amqp\AmqpExtension
- */
 final class QueueTest extends AbstractQueueTest
 {
     use CreateConnectionTrait;
@@ -46,7 +42,7 @@ final class QueueTest extends AbstractQueueTest
      * @test
      * @doesNotPerformAssertions
      */
-    public function it_consumes_without_callback()
+    public function it_consumes_without_callback(): void
     {
         $this->exchange->publish('foo');
         $this->exchange->publish('bar');

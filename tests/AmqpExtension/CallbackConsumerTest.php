@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 use HumusTest\Amqp\AbstractCallbackConsumerTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
-/**
- * Class CallbackConsumerTest
- * @package HumusTest\Amqp\AmqpExtension
- */
 class CallbackConsumerTest extends AbstractCallbackConsumerTest
 {
     use CreateConnectionTrait;

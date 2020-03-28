@@ -26,7 +26,6 @@ use Humus\Amqp\Connection;
 use Humus\Amqp\ConnectionOptions;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
-use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\JsonRpc\JsonRpcError;
@@ -42,18 +41,11 @@ use HumusTest\Amqp\TestAsset\ArrayLogger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-/**
- * Class AbstractJsonRpcClientAndServerTest
- * @package HumusTest\Amqp\JsonRpc
- */
 abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
-    /**
-     * @var JsonRpcErrorFactory
-     */
-    private $errorFactory;
+    private JsonRpcErrorFactory $errorFactory;
 
     protected function setUp(): void
     {
@@ -63,7 +55,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_requests_and_server_responds()
+    public function it_sends_requests_and_server_responds(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -105,7 +97,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
         };
 
@@ -148,7 +140,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_shutdown_notifications()
+    public function it_sends_shutdown_notifications(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -190,7 +182,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
         };
 
         $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
@@ -209,7 +201,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_responds_to_invalid_notifications()
+    public function it_responds_to_invalid_notifications(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -251,7 +243,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
         };
 
         $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
@@ -271,7 +263,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_responds_to_request_without_id_with_error()
+    public function it_responds_to_request_without_id_with_error(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -313,7 +305,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
         };
 
         $server = new JsonRpcServer($serverQueue, $callback, new NullLogger(), 1.0);
@@ -333,7 +325,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_requests_and_server_responds_and_handles_exception()
+    public function it_sends_requests_and_server_responds_and_handles_exception(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -375,7 +367,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): int {
             $params = $request->params();
             if (1 == $params) {
                 throw new \Exception('invalid body');
@@ -428,7 +420,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_requests_and_server_times_out()
+    public function it_sends_requests_and_server_times_out(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -470,7 +462,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
         };
 
@@ -490,7 +482,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_sends_ttl_requests_and_server_responds_late()
+    public function it_sends_ttl_requests_and_server_responds_late(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -532,7 +524,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $client->addRequest($request1);
         $client->addRequest($request2);
 
-        $callback = function (Envelope $envelope) {
+        $callback = function (Envelope $envelope): int {
             return $envelope->getBody() * 2;
         };
 
@@ -555,7 +547,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_throws_exception_when_invalid_server_name_given_to_request()
+    public function it_throws_exception_when_invalid_server_name_given_to_request(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid server given, no related exchange "invalid-rpc-server" found.');
@@ -591,7 +583,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_handles_invalid_requests_and_responses()
+    public function it_handles_invalid_requests_and_responses(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -640,7 +632,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'correlation_id' => 'request-3',
             'type' => 'time2',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
@@ -653,7 +645,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'correlation_id' => 'request-4',
             'type' => 'time2',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
         ]);
 
         $serverExchange->publish('2', '', Constants::AMQP_NOPARAM, [
@@ -662,7 +654,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'type' => 'time2',
             'correlation_id' => 'request-5',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
@@ -674,7 +666,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
             'type' => 'time2',
             'correlation_id' => 'request-6',
             'reply_to' => $clientQueue->getName(),
-            'user_id' => $clientQueue->getConnection()->getOptions()->getLogin(),
+            'user_id' => $clientQueue->getConnection()->getOptions()->login(),
             'headers' => [
                 'jsonrpc' => JsonRpcRequest::JSONRPC_VERSION,
             ],
@@ -699,7 +691,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $reflectionProperty2->setAccessible(true);
         $reflectionProperty2->setValue($client, 9);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             if ('time2' === $request->method()) {
                 return JsonRpcResponse::withResult($request->id(), $request->params() * 2);
             }
@@ -789,13 +781,10 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_throws_exception_on_client_when_data_could_not_be_encoded_to_json()
+    public function it_throws_exception_on_client_when_data_could_not_be_encoded_to_json(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Error during json encoding');
-
         $options = $this->prophesize(ConnectionOptions::class);
-        $options->getLogin()->willReturn('user123')->shouldBeCalled();
+        $options->login()->willReturn('user123')->shouldBeCalled();
 
         $connection = $this->prophesize(Connection::class);
         $connection->getOptions()->willReturn($options->reveal())->shouldBeCalled();
@@ -808,6 +797,8 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $client = new JsonRpcClient($queue->reveal(), ['rpc-server' => $exchane->reveal()]);
 
+        $this->expectException(\JsonException::class);
+
         $client->addRequest(new JsonRpcRequest(
             'rpc-server',
             'something',
@@ -818,7 +809,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_returns_error_on_server_when_data_could_not_be_encoded_to_json()
+    public function it_returns_error_on_server_when_data_could_not_be_encoded_to_json(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -858,7 +849,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $client->addRequest($request1);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): JsonRpcResponse {
             return JsonRpcResponse::withResult($request->id(), "\xB1\x31");
         };
 
@@ -880,7 +871,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
     /**
      * @test
      */
-    public function it_returns_trace_when_enabled()
+    public function it_returns_trace_when_enabled(): void
     {
         $connection = $this->createConnection();
         $channel = $connection->newChannel();
@@ -920,7 +911,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
 
         $client->addRequest($request1);
 
-        $callback = function (Request $request) {
+        $callback = function (Request $request): void {
             throw new \Exception('foo');
         };
 

@@ -28,10 +28,6 @@ use Humus\Amqp\Exception\InvalidArgumentException;
 use HumusTest\Amqp\AbstractConnectionTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
-/**
- * Class ConnectionTest
- * @package HumusTest\Amqp\AmqpExtension
- */
 final class ConnectionTest extends AbstractConnectionTest
 {
     use CreateConnectionTrait;
@@ -46,7 +42,7 @@ final class ConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_credentials()
+    public function it_throws_exception_with_invalid_credentials(): void
     {
         $this->expectException(\Exception::class);
 
@@ -60,7 +56,7 @@ final class ConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_connects_with_valid_credentials()
+    public function it_connects_with_valid_credentials(): void
     {
         $connection = $this->createConnection();
 
@@ -74,7 +70,7 @@ final class ConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_uses_persistent_connection()
+    public function it_uses_persistent_connection(): void
     {
         $connection = $this->createConnection(new ConnectionOptions(['persistent' => true]));
 
@@ -88,7 +84,7 @@ final class ConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_reconnects()
+    public function it_reconnects(): void
     {
         $connection = $this->createConnection();
 
@@ -102,7 +98,7 @@ final class ConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_reconnects_a_persistent_connection()
+    public function it_reconnects_a_persistent_connection(): void
     {
         $connection = $this->createConnection(new ConnectionOptions(['persistent' => true]));
 
@@ -116,7 +112,7 @@ final class ConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_returns_internal_connection()
+    public function it_returns_internal_connection(): void
     {
         $connection = $this->createConnection();
 
@@ -127,12 +123,12 @@ final class ConnectionTest extends AbstractConnectionTest
      * @test
      * @group ssl
      */
-    public function it_connects_with_ssl()
+    public function it_connects_with_ssl(): void
     {
         $options = new ConnectionOptions();
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setCaCert(__DIR__ . '/../../provision/test_certs/cacert.pem');
         $options->setCert(__DIR__ . '/../../provision/test_certs/cert.pem');
         $options->setKey(__DIR__ . '/../../provision/test_certs/key.pem');
         $options->setVerify(false);
@@ -152,13 +148,13 @@ final class ConnectionTest extends AbstractConnectionTest
      * @test
      * @group ssl
      */
-    public function it_connects_with_only_cacert()
+    public function it_connects_with_only_cacert(): void
     {
         $options = new ConnectionOptions();
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
-        $options->setCACert(__DIR__ . '/../../provision/test_certs/cacert.pem');
+        $options->setCaCert(__DIR__ . '/../../provision/test_certs/cacert.pem');
         $options->setVerify(false);
 
         $connection = new Connection($options);
@@ -172,7 +168,7 @@ final class ConnectionTest extends AbstractConnectionTest
      * @test
      * @group ssl
      */
-    public function it_throws_if_cacert_not_set_but_verify_is_set_to_true()
+    public function it_throws_if_cacert_not_set_but_verify_is_set_to_true(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('CA cert not set, so it can\'t be verified.');

@@ -25,20 +25,15 @@ namespace Humus\Amqp\Console\Command;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Producer;
+use Humus\Amqp\Util\Json;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
-/**
- * Class PublishMessageCommand
- * @package Humus\Amqp\Console\Command
- */
 class PublishMessageCommand extends AbstractCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('publish-message')
@@ -95,10 +90,7 @@ class PublishMessageCommand extends AbstractCommand
             ->setHelp('Purges a queue');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $producerName = $input->getOption('producer');
 
@@ -140,9 +132,9 @@ class PublishMessageCommand extends AbstractCommand
 
         $arguments = $input->getOption('arguments');
 
-        $arguments = json_decode($arguments, true);
-
-        if (json_last_error() !== 0) {
+        try {
+            $arguments = Json::decode($arguments);
+        } catch (Throwable $e) {
             $output->writeln('Cannot decode arguments');
 
             return 1;
@@ -150,7 +142,7 @@ class PublishMessageCommand extends AbstractCommand
 
         $producer = $container->get($producerName);
 
-        /* @var Producer $producer */
+        assert($producer instanceof Producer);
 
         if ($transactional) {
             $producer->startTransaction();
@@ -160,10 +152,10 @@ class PublishMessageCommand extends AbstractCommand
             $producer->confirmSelect();
 
             $producer->setConfirmCallback(
-                function (int $deliveryTag, bool $multiple = false) {
+                function (int $deliveryTag, bool $multiple = false): bool {
                     return false;
                 },
-                function (int $deliveryTag, bool $multiple, bool $requeue) {
+                function (int $deliveryTag, bool $multiple, bool $requeue): void {
                     throw new Exception\RuntimeException('Message nacked');
                 }
             );

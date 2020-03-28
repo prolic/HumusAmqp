@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
+use AMQPExchange;
 use Humus\Amqp\Channel as ChannelInterface;
 use Humus\Amqp\Connection as ConnectionInterface;
 use Humus\Amqp\Constants;
@@ -33,74 +34,41 @@ use Humus\Amqp\Exchange as ExchangeInterface;
  */
 final class Exchange implements ExchangeInterface
 {
-    /**
-     * @var Channel
-     */
-    private $channel;
+    private Channel $channel;
+    private AMQPExchange $exchange;
 
-    /**
-     * @var \AMQPExchange
-     */
-    private $exchange;
-
-    /**
-     * Create an instance of AMQPExchange.
-     *
-     * Returns a new instance of an AMQPExchange object, associated with the
-     * given Channel object.
-     *
-     * @param Channel $channel A valid Channel object, connected to a broker.
-     */
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
-        $this->exchange = new \AMQPExchange($channel->getResource());
+        $this->exchange = new AMQPExchange($channel->getResource());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName(): string
     {
         return $this->exchange->getName() ?: '';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setName(string $exchangeName)
+    public function setName(string $exchangeName): void
     {
         $this->exchange->setName($exchangeName);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getType(): string
     {
         return $this->exchange->getType() ?: '';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setType(string $exchangeType)
+    public function setType(string $exchangeType): void
     {
         $this->exchange->setType($exchangeType);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFlags(): int
     {
         return $this->exchange->getFlags();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setFlags(int $flags)
+    public function setFlags(int $flags): void
     {
         $this->exchange->setFlags($flags);
     }
@@ -113,85 +81,55 @@ final class Exchange implements ExchangeInterface
         return $this->exchange->getArgument($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getArguments(): array
     {
         return $this->exchange->getArguments();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setArgument(string $key, $value)
+    public function setArgument(string $key, $value): void
     {
         $this->exchange->setArgument($key, $value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments): void
     {
         $this->exchange->setArguments($arguments);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function declareExchange()
+    public function declareExchange(): void
     {
         $this->exchange->declareExchange();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM)
+    public function delete(string $exchangeName = '', int $flags = Constants::AMQP_NOPARAM): void
     {
         $this->exchange->delete($exchangeName, $flags);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function bind(string $exchangeName, string $routingKey = '', array $arguments = [])
+    public function bind(string $exchangeName, string $routingKey = '', array $arguments = []): void
     {
         $this->exchange->bind($exchangeName, $routingKey, $arguments);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = [])
+    public function unbind(string $exchangeName, string $routingKey = '', array $arguments = []): void
     {
         $this->exchange->unbind($exchangeName, $routingKey, $arguments);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function publish(
         string $message,
         string $routingKey = '',
         int $flags = Constants::AMQP_NOPARAM,
         array $attributes = []
-    ) {
+    ): void {
         $this->exchange->publish($message, $routingKey, $flags, $attributes);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChannel(): ChannelInterface
     {
         return $this->channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConnection(): ConnectionInterface
     {
         return $this->channel->getConnection();

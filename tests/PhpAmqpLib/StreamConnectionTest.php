@@ -28,16 +28,12 @@ use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use Humus\Amqp\Exception\BadMethodCallException;
 use HumusTest\Amqp\AbstractConnectionTest;
 
-/**
- * Class StreamConnectionTest
- * @package HumusTest\Amqp\PhpAmqpLib
- */
 final class StreamConnectionTest extends AbstractConnectionTest
 {
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_credentials()
+    public function it_throws_exception_with_invalid_credentials(): void
     {
         $this->expectException(\Exception::class);
 
@@ -47,7 +43,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_connects_with_valid_credentials()
+    public function it_connects_with_valid_credentials(): void
     {
         $connection = $this->createConnection();
 
@@ -57,7 +53,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_returns_internal_connection()
+    public function it_returns_internal_connection(): void
     {
         $connection = $this->createConnection();
 
@@ -68,7 +64,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      * @test
      * @doesNotPerformAssertions
      */
-    public function it_reconnects()
+    public function it_reconnects(): void
     {
         $connection = $this->createConnection();
         $connection->reconnect();
@@ -77,7 +73,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_throws_exception_on_connect()
+    public function it_throws_exception_on_connect(): void
     {
         $this->expectException(BadMethodCallException::class);
 
@@ -88,7 +84,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     /**
      * @test
      */
-    public function it_throws_exception_on_disconnect()
+    public function it_throws_exception_on_disconnect(): void
     {
         $this->expectException(BadMethodCallException::class);
 
@@ -96,11 +92,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
         $connection->disconnect();
     }
 
-    /**
-     * @param ConnectionOptions|null $options
-     * @return Connection
-     */
-    public function createConnection(ConnectionOptions $options = null): Connection
+    public function createConnection(?ConnectionOptions $options = null): Connection
     {
         if (null === $options) {
             $options = new ConnectionOptions();

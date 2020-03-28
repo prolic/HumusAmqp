@@ -25,10 +25,6 @@ namespace HumusTest\Amqp\AmqpExtension;
 use HumusTest\Amqp\AbstractJsonProducerTest;
 use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 
-/**
- * Class JsonProducerTest
- * @package HumusTest\Amqp\AmqpExtension
- */
 final class JsonProducerTest extends AbstractJsonProducerTest
 {
     use CreateConnectionTrait;

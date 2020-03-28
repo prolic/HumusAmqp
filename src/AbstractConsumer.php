@@ -24,85 +24,23 @@ namespace Humus\Amqp;
 
 use Assert\Assertion;
 use Humus\Amqp\Exception\RuntimeException;
+use Humus\Amqp\Util\Json;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class AbstractConsumer
- * @package Humus\Amqp
- */
 abstract class AbstractConsumer implements Consumer
 {
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var Queue
-     */
-    protected $queue;
-
-    /**
-     * @var string
-     */
-    protected $consumerTag;
-
-    /**
-     * Number of consumed messages
-     *
-     * @var int
-     */
-    protected $countMessagesConsumed = 0;
-
-    /**
-     * Number of unacked messaged
-     *
-     * @var int
-     */
-    protected $countMessagesUnacked = 0;
-
-    /**
-     * Last delivery tag seen
-     *
-     * @var int
-     */
-    protected $lastDeliveryTag;
-
-    /**
-     * @var bool
-     */
-    protected $keepAlive = true;
-
-    /**
-     * Idle timeout in seconds
-     *
-     * @var float
-     */
-    protected $idleTimeout;
-
-    /**
-     * How many messages are handled in one block without acknowledgement
-     *
-     * @var int
-     */
-    protected $blockSize;
-
-    /**
-     * @var float
-     */
-    protected $timestampLastAck;
-
-    /**
-     * @var float
-     */
-    protected $timestampLastMessage;
-
-    /**
-     * How many messages we want to consume
-     *
-     * @var int
-     */
-    protected $target;
+    protected LoggerInterface $logger;
+    protected Queue $queue;
+    protected string $consumerTag;
+    protected int $countMessagesConsumed = 0;
+    protected int $countMessagesUnacked = 0;
+    protected ?int $lastDeliveryTag = null;
+    protected bool $keepAlive = true;
+    protected float $idleTimeout;
+    protected int $blockSize;
+    protected ?float $timestampLastAck = null;
+    protected ?float $timestampLastMessage = null;
+    protected int $target;
 
     /**
      * @var callable
@@ -119,13 +57,7 @@ abstract class AbstractConsumer implements Consumer
      */
     protected $errorCallback;
 
-    /**
-     * Start consumer
-     *
-     * @param int $msgAmount
-     * @throws Exception\QueueException
-     */
-    public function consume(int $msgAmount = 0)
+    public function consume(int $msgAmount = 0): void
     {
         Assertion::min($msgAmount, 0);
 
@@ -134,14 +66,15 @@ abstract class AbstractConsumer implements Consumer
         $this->blockSize = $this->queue->getChannel()->getPrefetchCount();
 
         if (! $this->timestampLastAck) {
-            $this->timestampLastAck = microtime(true);
+            $this->timestampLastAck = \microtime(true);
         }
 
-        $callback = function (Envelope $envelope) {
+        $callback = function (Envelope $envelope): bool {
             try {
                 $processFlag = $this->handleDelivery($envelope, $this->queue);
             } catch (\Throwable $e) {
                 $this->logger->error('Exception during handleDelivery: ' . $e->getMessage());
+
                 if ($this->handleException($e)) {
                     $processFlag = DeliveryResult::MSG_REJECT_REQUEUE();
                 } else {
@@ -151,7 +84,7 @@ abstract class AbstractConsumer implements Consumer
 
             $this->handleProcessFlag($envelope, $processFlag);
 
-            $now = microtime(true);
+            $now = \microtime(true);
 
             if ($this->countMessagesUnacked > 0
                 && ($this->countMessagesUnacked === $this->blockSize
@@ -166,6 +99,8 @@ abstract class AbstractConsumer implements Consumer
 
                 return false;
             }
+
+            return true;
         };
 
         try {
@@ -177,11 +112,6 @@ abstract class AbstractConsumer implements Consumer
         }
     }
 
-    /**
-     * @param Envelope $envelope
-     * @param Queue $queue
-     * @return DeliveryResult
-     */
     protected function handleDelivery(Envelope $envelope, Queue $queue): DeliveryResult
     {
         $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
@@ -195,12 +125,7 @@ abstract class AbstractConsumer implements Consumer
         return $callback($envelope, $queue);
     }
 
-    /**
-     * Shutdown consumer
-     *
-     * @return void
-     */
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->keepAlive = false;
         $this->queue->cancel($this->consumerTag);
@@ -210,11 +135,8 @@ abstract class AbstractConsumer implements Consumer
      * Handle exception
      *
      * Returns true when a message should be requeued; otherwise false.
-     *
-     * @param \Throwable $e
-     * @return bool
      */
-    protected function handleException(\Throwable $e)
+    protected function handleException(\Throwable $e): bool
     {
         if (null === $this->errorCallback) {
             return true;
@@ -226,10 +148,10 @@ abstract class AbstractConsumer implements Consumer
             return true;
         }
 
-        if (! is_bool($requeue)) {
+        if (! \is_bool($requeue)) {
             throw new RuntimeException(sprintf(
                 'The error callback must returns boolean or null, given "%s".',
-                is_object($requeue) ? get_class($requeue) : gettype($requeue)
+                \is_object($requeue) ? \get_class($requeue) : \gettype($requeue)
             ));
         }
 
@@ -241,8 +163,6 @@ abstract class AbstractConsumer implements Consumer
      *
      * Messages are deferred until the block size (see prefetch_count) or the timeout is reached
      * The unacked messages will also be flushed immediately when the handleDelivery method returns true
-     *
-     * @return FlushDeferredResult
      */
     protected function flushDeferred(): FlushDeferredResult
     {
@@ -266,14 +186,7 @@ abstract class AbstractConsumer implements Consumer
         return $result;
     }
 
-    /**
-     * Handle process flag
-     *
-     * @param Envelope $envelope
-     * @param $flag
-     * @return void
-     */
-    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
+    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag): void
     {
         $this->countMessagesConsumed++;
 
@@ -289,13 +202,13 @@ abstract class AbstractConsumer implements Consumer
             case DeliveryResult::MSG_ACK():
                 $this->countMessagesUnacked++;
                 $this->lastDeliveryTag = $envelope->getDeliveryTag();
-                $this->timestampLastMessage = microtime(true);
+                $this->timestampLastMessage = \microtime(true);
                 $this->ack();
                 break;
             case DeliveryResult::MSG_DEFER():
                 $this->countMessagesUnacked++;
                 $this->lastDeliveryTag = $envelope->getDeliveryTag();
-                $this->timestampLastMessage = microtime(true);
+                $this->timestampLastMessage = \microtime(true);
                 break;
         }
     }
@@ -304,10 +217,8 @@ abstract class AbstractConsumer implements Consumer
      * Acknowledge all deferred messages
      *
      * This will be called every time the block size (see prefetch_count) or timeout is reached
-     *
-     * @return void
      */
-    protected function ack()
+    protected function ack(): void
     {
         $this->queue->ack($this->lastDeliveryTag, Constants::AMQP_MULTIPLE);
         $this->lastDeliveryTag = null;
@@ -319,17 +230,11 @@ abstract class AbstractConsumer implements Consumer
             $delta ? $this->countMessagesUnacked / $delta : 0
         ));
 
-        $this->timestampLastAck = microtime(true);
+        $this->timestampLastAck = \microtime(true);
         $this->countMessagesUnacked = 0;
     }
 
-    /**
-     * Send nack for all deferred messages
-     *
-     * @param bool $requeue
-     * @return void
-     */
-    protected function nackAll($requeue = false)
+    protected function nackAll($requeue = false): void
     {
         $delta = $this->timestampLastMessage - $this->timestampLastAck;
 
@@ -350,12 +255,7 @@ abstract class AbstractConsumer implements Consumer
         $this->countMessagesUnacked = 0;
     }
 
-    /**
-     * Handle deferred acknowledgments
-     *
-     * @return void
-     */
-    protected function ackOrNackBlock()
+    protected function ackOrNackBlock(): void
     {
         if (! $this->lastDeliveryTag) {
             return;
@@ -376,10 +276,6 @@ abstract class AbstractConsumer implements Consumer
         }
     }
 
-    /**
-     * @param Envelope $envelope
-     * @return DeliveryResult
-     */
     protected function handleInternalMessage(Envelope $envelope): DeliveryResult
     {
         if ('shutdown' === $envelope->getType()) {
@@ -390,9 +286,9 @@ abstract class AbstractConsumer implements Consumer
         } elseif ('reconfigure' === $envelope->getType()) {
             $this->logger->info('Reconfigure message received');
             try {
-                list($idleTimeout, $target, $prefetchSize, $prefetchCount) = json_decode($envelope->getBody());
+                list($idleTimeout, $target, $prefetchSize, $prefetchCount) = Json::decode($envelope->getBody());
 
-                if (is_numeric($idleTimeout)) {
+                if (\is_numeric($idleTimeout)) {
                     $idleTimeout = (float) $idleTimeout;
                 }
                 Assertion::float($idleTimeout);
@@ -419,10 +315,6 @@ abstract class AbstractConsumer implements Consumer
         return $result;
     }
 
-    /**
-     * @param Envelope $envelope
-     * @return array
-     */
     protected function extractMessageInformation(Envelope $envelope): array
     {
         return [

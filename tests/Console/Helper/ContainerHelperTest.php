@@ -26,16 +26,12 @@ use Humus\Amqp\Console\Helper\ContainerHelper;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class ContainerHelperTest
- * @package HumusTest\Amqp\Console\Helper
- */
 class ContainerHelperTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_gets_container()
+    public function it_gets_container(): void
     {
         $container = $this->prophesize(ContainerInterface::class)->reveal();
 

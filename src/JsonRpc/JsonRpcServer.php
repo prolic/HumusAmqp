@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
+use Assert\AssertionFailedException;
 use Humus\Amqp\AbstractConsumer;
 use Humus\Amqp\Constants;
 use Humus\Amqp\DeliveryResult;
@@ -29,45 +30,29 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
+use Humus\Amqp\Util\Json;
+use JsonException;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
-/**
- * Class JsonRpcServer
- * @package Humus\Amqp\JsonRpc
- */
 final class JsonRpcServer extends AbstractConsumer
 {
-    /**
-     * @var Exchange
-     */
-    private $exchange;
-
-    /**
-     * @var string
-     */
-    private $appId;
-
-    /**
-     * @var bool
-     */
-    private $returnTrace;
-
-    /**
-     *
-     * @var ErrorFactory
-     */
-    private $errorFactory;
+    private Exchange $exchange;
+    private string $appId;
+    private bool $returnTrace;
+    private ErrorFactory $errorFactory;
 
     /**
      * Constructor
      *
      * @param Queue $queue
-     * @param callable(JsonRpcRequest):JsonRpcResponse $deliveryCallback
+     * @param callable(JsonRpcRequest): JsonRpcResponse $deliveryCallback
      * @param LoggerInterface $logger
      * @param float $idleTimeout in seconds
      * @param string $consumerTag
      * @param string $appId
-     * @praram bool $returnTrace
+     * @param bool $returnTrace
+     * @param ErrorFactory|null $errorFactory
      */
     public function __construct(
         Queue $queue,
@@ -80,7 +65,7 @@ final class JsonRpcServer extends AbstractConsumer
         ?ErrorFactory $errorFactory = null
     ) {
         if ('' === $consumerTag) {
-            $consumerTag = bin2hex(random_bytes(24));
+            $consumerTag = \bin2hex(\random_bytes(24));
         }
 
         if (null === $errorFactory) {
@@ -88,11 +73,11 @@ final class JsonRpcServer extends AbstractConsumer
         }
 
         if (extension_loaded('pcntl')) {
-            pcntl_async_signals(true);
+            \pcntl_async_signals(true);
 
-            pcntl_signal(SIGTERM, [$this, 'shutdown']);
-            pcntl_signal(SIGINT, [$this, 'shutdown']);
-            pcntl_signal(SIGHUP, [$this, 'shutdown']);
+            \pcntl_signal(SIGTERM, [$this, 'shutdown']);
+            \pcntl_signal(SIGINT, [$this, 'shutdown']);
+            \pcntl_signal(SIGHUP, [$this, 'shutdown']);
         }
 
         $this->queue = $queue;
@@ -107,17 +92,12 @@ final class JsonRpcServer extends AbstractConsumer
         $this->returnTrace = $returnTrace;
     }
 
-    /**
-     * @param Envelope $envelope
-     * @param Queue $queue
-     * @return DeliveryResult
-     */
     protected function handleDelivery(Envelope $envelope, Queue $queue): DeliveryResult
     {
         $this->countMessagesConsumed++;
         $this->countMessagesUnacked++;
         $this->lastDeliveryTag = $envelope->getDeliveryTag();
-        $this->timestampLastMessage = microtime(true);
+        $this->timestampLastMessage = \microtime(true);
         $this->ack();
 
         $this->logger->debug('Handling delivery of message', $this->extractMessageInformation($envelope));
@@ -181,7 +161,7 @@ final class JsonRpcServer extends AbstractConsumer
                     $this->returnTrace ? $e->getTraceAsString() : null
                 )
             );
-        } catch (Exception\JsonParseError $e) {
+        } catch (JsonException $e) {
             $this->logger->error('Json parse error', $this->extractMessageInformation($envelope));
             $response = JsonRpcResponse::withError(
                 $envelope->getCorrelationId(),
@@ -191,7 +171,7 @@ final class JsonRpcServer extends AbstractConsumer
                     $this->returnTrace ? $e->getTraceAsString() : null
                 )
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $extra = $this->extractMessageInformation($envelope);
             $extra['exception_class'] = get_class($e);
             $extra['exception_message'] = $e->getMessage();
@@ -212,13 +192,7 @@ final class JsonRpcServer extends AbstractConsumer
         return DeliveryResult::MSG_ACK();
     }
 
-    /**
-     * Send reply to rpc client
-     *
-     * @param Response $response
-     * @param Envelope $envelope
-     */
-    protected function sendReply(Response $response, Envelope $envelope)
+    protected function sendReply(Response $response, Envelope $envelope): void
     {
         $attributes = [
             'content_type' => 'application/json',
@@ -245,10 +219,10 @@ final class JsonRpcServer extends AbstractConsumer
             ];
         }
 
-        $message = json_encode($payload);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $message = json_encode([
+        try {
+            $message = Json::encode($payload);
+        } catch (Throwable $e) {
+            $message = Json::encode([
                 'error' => [
                     'code' => JsonRpcError::ERROR_CODE_32603,
                     'message' => 'Internal error',
@@ -259,23 +233,16 @@ final class JsonRpcServer extends AbstractConsumer
         $this->exchange->publish($message, $envelope->getReplyTo(), Constants::AMQP_NOPARAM, $attributes);
     }
 
-    /**
-     * Handle process flag
-     *
-     * @param Envelope $envelope
-     * @param DeliveryResult $flag
-     * @return void
-     */
-    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag)
+    protected function handleProcessFlag(Envelope $envelope, DeliveryResult $flag): void
     {
         // do nothing, message was already acknowledged
     }
 
     /**
-     * @param Envelope $envelope
-     * @return Request
+     * @throws JsonException
+     * @throws Exception\InvalidJsonRpcRequest
      * @throws Exception\InvalidJsonRpcVersion
-     * @throws Exception\JsonParseError
+     * @throws AssertionFailedException
      */
     protected function requestFromEnvelope(Envelope $envelope): Request
     {
@@ -289,16 +256,10 @@ final class JsonRpcServer extends AbstractConsumer
             throw new Exception\InvalidJsonRpcRequest();
         }
 
-        $payload = json_decode($envelope->getBody(), true);
-
-        if (0 !== json_last_error()) {
-            throw new Exception\JsonParseError();
-        }
-
         return new JsonRpcRequest(
             $envelope->getExchangeName(),
             $envelope->getType(),
-            $payload,
+            Json::decode($envelope->getBody()),
             $envelope->getCorrelationId(),
             $envelope->getRoutingKey(),
             (int) $envelope->getExpiration(),

@@ -32,16 +32,12 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Container\ContainerInterface;
 
-/**
- * Class QueueFactoryTest
- * @package HumusTest\Amqp\Container
- */
 class QueueFactoryTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_creates_queue()
+    public function it_creates_queue(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -96,7 +92,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_queue_with_call_static()
+    public function it_creates_queue_with_call_static(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -151,7 +147,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_queue_with_call_static_and_given_channel()
+    public function it_creates_queue_with_call_static_and_given_channel(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -196,7 +192,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_container_param()
+    public function it_throws_exception_with_invalid_call_static_container_param(): void
     {
         $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
@@ -208,7 +204,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_channel_param()
+    public function it_throws_exception_with_invalid_call_static_channel_param(): void
     {
         $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The second argument must be a type of Humus\Amqp\Channel or null');
@@ -222,7 +218,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_auto_declares_exchange()
+    public function it_auto_declares_exchange(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -290,7 +286,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_auto_declares_exchange_as_iterator()
+    public function it_auto_declares_exchange_as_iterator(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -358,7 +354,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_during_auto_declare_with_empty_exchanges()
+    public function it_throws_exception_during_auto_declare_with_empty_exchanges(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected an array or traversable of exchange');
@@ -415,7 +411,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_auto_declares_exchange_with_routing_key_and_bind_arguments()
+    public function it_auto_declares_exchange_with_routing_key_and_bind_arguments(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -494,7 +490,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_auto_declares_dead_letter_exchange()
+    public function it_auto_declares_dead_letter_exchange(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -575,7 +571,7 @@ class QueueFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_no_bool_given_to_call_static_as_third_parameter()
+    public function it_throws_exception_when_no_bool_given_to_call_static_as_third_parameter(): void
     {
         $this->expectException(Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The third argument must be a boolean');

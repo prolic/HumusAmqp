@@ -24,66 +24,56 @@ namespace HumusTest\Amqp\TestAsset;
 
 use Psr\Log\LoggerInterface;
 
-/**
- * Class ArrayLogger
- * @package HumusTest\Amqp\TestAsset
- */
 class ArrayLogger implements LoggerInterface
 {
-    /**
-     * @var array
-     */
-    private $loggerResult = [];
+    private array $loggerResult = [];
 
-    /**
-     * @return array
-     */
-    public function loggerResult()
+    public function loggerResult(): array
     {
         return $this->loggerResult;
     }
 
-    public function emergency($message, array $context = [])
+    public function emergency($message, array $context = []): void
     {
         $this->log('emergency', $message, $context);
     }
 
-    public function alert($message, array $context = [])
+    public function alert($message, array $context = []): void
     {
         $this->log('alert', $message, $context);
     }
 
-    public function critical($message, array $context = [])
+    public function critical($message, array $context = []): void
     {
         $this->log('critical', $message, $context);
     }
 
-    public function error($message, array $context = [])
+    public function error($message, array $context = []): void
     {
         $this->log('error', $message, $context);
     }
 
-    public function warning($message, array $context = [])
+    public function warning($message, array $context = []): void
     {
         $this->log('warning', $message, $context);
     }
 
-    public function notice($message, array $context = [])
+    public function notice($message, array $context = []): void
     {
         $this->log('notice', $message, $context);
     }
 
-    public function info($message, array $context = [])
+    public function info($message, array $context = []): void
     {
         $this->log('info', $message, $context);
     }
 
-    public function debug($message, array $context = [])
+    public function debug($message, array $context = []): void
     {
         $this->log('debug', $message, $context);
     }
 
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $this->loggerResult[] = [
             'level' => $level,

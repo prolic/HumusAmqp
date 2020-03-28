@@ -22,21 +22,11 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
-/**
- * Class JsonRpcError
- * @package Humus\Amqp\JsonRpc
- */
 interface Error
 {
-    /**
-     * @return int
-     */
-    public function code();
+    public function code(): int;
 
-    /**
-     * @return string
-     */
-    public function message();
+    public function message(): string;
 
     /**
      * @return array|bool|float|int|null|string

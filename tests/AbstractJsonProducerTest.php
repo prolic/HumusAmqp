@@ -25,7 +25,6 @@ namespace HumusTest\Amqp;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Envelope;
-use Humus\Amqp\Exception\InvalidArgumentException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\Queue;
@@ -34,38 +33,15 @@ use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-/**
- * Class AbstractJsonProducerTest
- * @package HumusTest\Amqp
- */
 abstract class AbstractJsonProducerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
 
-    /**
-     * @var Channel
-     */
-    protected $channel;
-
-    /**
-     * @var Exchange
-     */
-    protected $exchange;
-
-    /**
-     * @var Queue
-     */
-    protected $queue;
-
-    /**
-     * @var JsonProducer
-     */
-    protected $producer;
-
-    /**
-     * @var array
-     */
-    protected $results = [];
+    protected Channel $channel;
+    protected Exchange $exchange;
+    protected Queue $queue;
+    protected JsonProducer $producer;
+    protected array $results = [];
 
     protected function setUp(): void
     {
@@ -95,7 +71,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_and_get_messages_from_queue()
+    public function it_produces_and_get_messages_from_queue(): void
     {
         $producer = new JsonProducer($this->exchange);
         $producer->publish(['foo' => 'bar']);
@@ -119,7 +95,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_transactional_and_get_messages_from_queue()
+    public function it_produces_transactional_and_get_messages_from_queue(): void
     {
         $producer = new JsonProducer($this->exchange);
         $producer->startTransaction();
@@ -142,15 +118,15 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_in_confirm_mode()
+    public function it_produces_in_confirm_mode(): void
     {
         $count = 2;
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function (int $delivery_tag, bool $multiple) use (&$count) {
+            function (int $delivery_tag, bool $multiple) use (&$count): bool {
                 return $delivery_tag !== $count;
             },
-            function (int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue): bool {
                 throw new \Exception('Could not confirm message publishing');
             }
         );
@@ -183,17 +159,15 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_produces_in_nested_confirm_mode()
+    public function it_produces_in_nested_confirm_mode(): void
     {
         $count = 1;
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function (int $delivery_tag, bool $multiple) use (&$count) {
-                var_dump(__LINE__, $delivery_tag, $count);
-
+            function (int $delivery_tag, bool $multiple) use (&$count): bool {
                 return $delivery_tag !== $count;
             },
-            function (int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue): void {
                 throw new \Exception('Could not confirm message publishing');
             }
         );
@@ -214,10 +188,10 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $count = 2;
 
         $this->exchange->getChannel()->setConfirmCallback(
-            function (int $delivery_tag, bool $multiple) use (&$count) {
+            function (int $delivery_tag, bool $multiple) use (&$count): bool {
                 return $delivery_tag !== $count;
             },
-            function (int $delivery_tag, bool $multiple, bool $requeue) {
+            function (int $delivery_tag, bool $multiple, bool $requeue): void {
                 throw new \Exception('Could not confirm message publishing');
             }
         );
@@ -238,7 +212,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_sends_given_attributes()
+    public function it_sends_given_attributes(): void
     {
         $producer = new JsonProducer($this->exchange, [
             'content_type' => 'application/json',
@@ -271,7 +245,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_uses_confirm_callback()
+    public function it_uses_confirm_callback(): void
     {
         $result = [];
         $multipleAcks = false;
@@ -281,7 +255,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $producer->confirmSelect();
 
         $producer->setConfirmCallback(
-            function (int $deliveryTag, bool $multiple) use (&$result, &$multipleAcks) {
+            function (int $deliveryTag, bool $multiple) use (&$result, &$multipleAcks): bool {
                 $result[] = 'acked ' . (string) $deliveryTag;
                 if ($multiple) {
                     $multipleAcks = $multiple;
@@ -289,7 +263,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
                 return 3 !== $deliveryTag;
             },
-            function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result) {
+            function (int $deliveryTag, bool $multiple, bool $requeue) use (&$result): bool {
                 $result[] = 'nacked' . (string) $deliveryTag;
 
                 return false;
@@ -326,7 +300,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_uses_confirm_callback_and_fails()
+    public function it_uses_confirm_callback_and_fails(): void
     {
         $result = [];
         $message = '';
@@ -342,12 +316,12 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
         $cnt = 2;
         $producer->setConfirmCallback(
-            function ($deliveryTag, bool $multiple) use (&$result, &$cnt) {
+            function ($deliveryTag, bool $multiple) use (&$result, &$cnt): bool {
                 $result[] = 'acked ' . (string) $deliveryTag;
 
                 return --$cnt > 0;
             },
-            function ($deliveryTag, bool $multiple, bool $requeue) use (&$result) {
+            function ($deliveryTag, bool $multiple, bool $requeue) use (&$result): bool {
                 $result = 'nacked' . (string) $deliveryTag;
 
                 return false;
@@ -370,7 +344,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_uses_return_callback()
+    public function it_uses_return_callback(): void
     {
         $result = [];
 
@@ -386,7 +360,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
             string $routingKey,
             Envelope $envelope,
             string $body
-        ) use (&$result) {
+        ) use (&$result): bool {
             $result[] = 'Message returned';
             $result[] = func_get_args();
 
@@ -411,11 +385,8 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     /**
      * @test
      */
-    public function it_throws_exception_when_data_could_not_be_encoded_to_json()
+    public function it_throws_exception_when_data_could_not_be_encoded_to_json(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Error during json encoding');
-
         $exchange = $this->prophesize(Exchange::class);
         $exchange->publish(Argument::any(), Argument::any(), Argument::any(), Argument::any())->shouldNotBeCalled();
 
@@ -423,17 +394,16 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
 
         $text = "\xB1\x31";
 
+        $this->expectException(\JsonException::class);
+
         $producer->publish($text);
     }
 
     /**
      * @test
      */
-    public function it_throws_exception_when_data_could_not_be_encoded_to_json_2()
+    public function it_throws_exception_when_data_could_not_be_encoded_to_json_2(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Exception during json encoding');
-
         $exchange = $this->prophesize(Exchange::class);
         $exchange->publish(Argument::any(), Argument::any(), Argument::any(), Argument::any())->shouldNotBeCalled();
 
@@ -445,6 +415,8 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
                 throw new \Exception('foo');
             }
         };
+
+        $this->expectException(\Exception::class);
 
         $producer->publish($message);
     }

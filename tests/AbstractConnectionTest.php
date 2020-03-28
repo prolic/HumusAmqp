@@ -27,15 +27,8 @@ use Humus\Amqp\ConnectionOptions;
 use HumusTest\Amqp\Helper\CanCreateConnection;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class AbstractConnectionTest
- * @package HumusTest\Amqp
- */
 abstract class AbstractConnectionTest extends TestCase implements CanCreateConnection
 {
-    /**
-     * @return ConnectionOptions
-     */
     protected function invalidCredentials(): ConnectionOptions
     {
         return new ConnectionOptions([
@@ -50,7 +43,7 @@ abstract class AbstractConnectionTest extends TestCase implements CanCreateConne
     /**
      * @test
      */
-    public function it_creates_new_channel()
+    public function it_creates_new_channel(): void
     {
         $connection = $this->createConnection();
 

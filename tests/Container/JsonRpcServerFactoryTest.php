@@ -33,16 +33,12 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class JsonRpcServerFactoryTest
- * @package HumusTest\Amqp\Container
- */
 class JsonRpcServerFactoryTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_creates_json_rpc_server()
+    public function it_creates_json_rpc_server(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -102,7 +98,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         });
 
         $factory = new JsonRpcServerFactory('my_server');
@@ -114,7 +110,7 @@ class JsonRpcServerFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_json_rpc_server_with_call_static_and_defined_logger()
+    public function it_creates_json_rpc_server_with_call_static_and_defined_logger(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $logger = $this->prophesize(LoggerInterface::class);
@@ -176,7 +172,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         });
         $container->get('my_logger')->willReturn($logger->reveal())->shouldBeCalled();
 
@@ -189,7 +185,7 @@ class JsonRpcServerFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_json_rpc_server_with_call_static_and_defined_error_factory()
+    public function it_creates_json_rpc_server_with_call_static_and_defined_error_factory(): void
     {
         $container = $this->prophesize(ContainerInterface::class);
 
@@ -250,7 +246,7 @@ class JsonRpcServerFactoryTest extends TestCase
         $connection->newChannel()->willReturn($channel->reveal());
 
         $container->get('my_connection')->willReturn($connection->reveal());
-        $container->get('my_callback')->willReturn(function () {
+        $container->get('my_callback')->willReturn(function (): void {
         });
 
         $errorFactory = $this->prophesize(ErrorFactory::class);
@@ -265,7 +261,7 @@ class JsonRpcServerFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_with_invalid_call_static_container_param()
+    public function it_throws_exception_with_invalid_call_static_container_param(): void
     {
         $this->expectException(\Humus\Amqp\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('The first argument must be of type Psr\Container\ContainerInterface');
