@@ -20,7 +20,7 @@
 
 declare(strict_types=1);
 
-namespace HumusAmqp\Util;
+namespace Humus\Amqp\Util;
 
 class Json
 {
