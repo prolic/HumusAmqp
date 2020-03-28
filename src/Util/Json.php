@@ -20,29 +20,31 @@
 
 declare(strict_types=1);
 
-namespace Humus\Amqp;
+namespace HumusAmqp\Util;
 
-use HumusAmqp\Util\Json;
-
-final class JsonProducer extends AbstractProducer
+class Json
 {
-    protected array $defaultAttributes = [
-        'content_type' => 'application/json',
-        'content_encoding' => 'UTF-8',
-        'delivery_mode' => 2, // persistent
-    ];
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    public static function encode($value): string
+    {
+        $flags = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR;
+
+        return \json_encode($value, $flags);
+    }
 
     /**
-     * {@inheritdoc}
+     * @param string $json
+     * @return mixed
      */
-    public function publish(
-        $message,
-        string $routingKey = '',
-        int $flags = Constants::AMQP_NOPARAM,
-        array $attributes = []
-    ) {
-        $attributes = \array_merge_recursive($this->defaultAttributes, $attributes);
+    public static function decode(string $json)
+    {
+        return \json_decode($json, true, 512, \JSON_BIGINT_AS_STRING | \JSON_THROW_ON_ERROR);
+    }
 
-        $this->exchange->publish(Json::encode($message), $routingKey, $flags, $attributes);
+    final private function __construct()
+    {
     }
 }

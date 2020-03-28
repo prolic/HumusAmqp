@@ -28,6 +28,7 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
+use HumusAmqp\Util\Json;
 
 final class JsonRpcClient implements Client
 {
@@ -70,9 +71,13 @@ final class JsonRpcClient implements Client
     {
         $attributes = $this->createAttributes($request);
         $exchange = $this->getExchange($request->server());
-        $message = \json_encode($request->params(), JSON_THROW_ON_ERROR);
 
-        $exchange->publish($message, $request->routingKey(), Constants::AMQP_NOPARAM, $attributes);
+        $exchange->publish(
+            Json::encode($request->params()),
+            $request->routingKey(),
+            Constants::AMQP_NOPARAM,
+            $attributes
+        );
 
         if (null !== $request->id()) {
             $this->requestIds[] = $request->id();
@@ -166,7 +171,7 @@ final class JsonRpcClient implements Client
             );
         }
 
-        $payload = \json_decode($envelope->getBody(), true);
+        $payload = Json::decode($envelope->getBody(), true);
 
         $correlationId = $envelope->getCorrelationId();
 

@@ -23,7 +23,6 @@ declare(strict_types=1);
 namespace Humus\Amqp\Container;
 
 use Humus\Amqp\Exception;
-use Humus\Amqp\JsonRpc\Client;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;

@@ -24,6 +24,7 @@ namespace Humus\Amqp;
 
 use Assert\Assertion;
 use Humus\Amqp\Exception\RuntimeException;
+use HumusAmqp\Util\Json;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractConsumer implements Consumer
@@ -285,7 +286,7 @@ abstract class AbstractConsumer implements Consumer
         } elseif ('reconfigure' === $envelope->getType()) {
             $this->logger->info('Reconfigure message received');
             try {
-                list($idleTimeout, $target, $prefetchSize, $prefetchCount) = \json_decode($envelope->getBody());
+                list($idleTimeout, $target, $prefetchSize, $prefetchCount) = Json::decode($envelope->getBody());
 
                 if (\is_numeric($idleTimeout)) {
                     $idleTimeout = (float) $idleTimeout;

@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\JsonRpc;
 
+use Assert\AssertionFailedException;
 use Humus\Amqp\AbstractConsumer;
 use Humus\Amqp\Constants;
 use Humus\Amqp\DeliveryResult;
@@ -29,6 +30,7 @@ use Humus\Amqp\Envelope;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
+use HumusAmqp\Util\Json;
 use JsonException;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -218,9 +220,9 @@ final class JsonRpcServer extends AbstractConsumer
         }
 
         try {
-            $message = \json_encode($payload, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            $message = \json_encode([
+            $message = Json::encode($payload);
+        } catch (Throwable $e) {
+            $message = Json::encode([
                 'error' => [
                     'code' => JsonRpcError::ERROR_CODE_32603,
                     'message' => 'Internal error',
@@ -240,7 +242,7 @@ final class JsonRpcServer extends AbstractConsumer
      * @throws JsonException
      * @throws Exception\InvalidJsonRpcRequest
      * @throws Exception\InvalidJsonRpcVersion
-     * @throws \Assert\AssertionFailedException
+     * @throws AssertionFailedException
      */
     protected function requestFromEnvelope(Envelope $envelope): Request
     {
@@ -254,13 +256,10 @@ final class JsonRpcServer extends AbstractConsumer
             throw new Exception\InvalidJsonRpcRequest();
         }
 
-        // @todo introduce json util ?
-        $payload = \json_decode($envelope->getBody(), true, 512, JSON_THROW_ON_ERROR);
-
         return new JsonRpcRequest(
             $envelope->getExchangeName(),
             $envelope->getType(),
-            $payload,
+            Json::decode($envelope->getBody()),
             $envelope->getCorrelationId(),
             $envelope->getRoutingKey(),
             (int) $envelope->getExpiration(),

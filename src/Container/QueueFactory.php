@@ -25,7 +25,6 @@ namespace Humus\Amqp\Container;
 use Humus\Amqp\Channel;
 use Humus\Amqp\Constants;
 use Humus\Amqp\Exception;
-use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
