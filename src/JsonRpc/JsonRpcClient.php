@@ -171,8 +171,6 @@ final class JsonRpcClient implements Client
             );
         }
 
-        $payload = Json::decode($envelope->getBody(), true);
-
         $correlationId = $envelope->getCorrelationId();
 
         if ('' === $correlationId) {
@@ -180,31 +178,42 @@ final class JsonRpcClient implements Client
         }
 
         if (! \in_array($correlationId, $this->requestIds) && null !== $correlationId) {
-            $response = JsonRpcResponse::withError(
+            return JsonRpcResponse::withError(
                 $correlationId,
                 $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Mismatched JSON-RPC IDs')
             );
-        } elseif (isset($payload['result'])) {
-            $response = JsonRpcResponse::withResult(
+        }
+
+        try {
+            $payload = Json::decode($envelope->getBody(), true);
+        } catch (\Throwable $e) {
+            return JsonRpcResponse::withError(
+                $correlationId,
+                $this->errorFactory->create(JsonRpcError::ERROR_CODE_32700, $e->getMessage())
+            );
+        }
+
+        if (isset($payload['result'])) {
+            return JsonRpcResponse::withResult(
                 $correlationId,
                 $payload['result']
             );
-        } elseif (! isset($payload['error']['code'])
+        }
+
+        if (! isset($payload['error']['code'])
             || ! isset($payload['error']['message'])
             || ! \is_int($payload['error']['code'])
             || ! \is_string($payload['error']['message'])
         ) {
-            $response = JsonRpcResponse::withError(
+            return JsonRpcResponse::withError(
                 $correlationId,
                 $this->errorFactory->create(JsonRpcError::ERROR_CODE_32603, 'Invalid JSON-RPC response')
             );
-        } else {
-            $response = JsonRpcResponse::withError(
-                $correlationId,
-                $this->errorFactory->create($payload['error']['code'], $payload['error']['message'], $payload['error']['data'] ?? null)
-            );
         }
 
-        return $response;
+        return JsonRpcResponse::withError(
+            $correlationId,
+            $this->errorFactory->create($payload['error']['code'], $payload['error']['message'], $payload['error']['data'] ?? null)
+        );
     }
 }
