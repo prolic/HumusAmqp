@@ -1,6 +1,14 @@
 # Changelog
 
-## [v1.5.0](https://github.com/prolic/HumusAmqp/tree/v1.5.0)
+## [v2.0.0](https://github.com/prolic/HumusAmqp/tree/v2.0.0)
+
+[Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.5.0...v2.0.0)
+
+**Implemented enhancements:**
+
+- Require PHP 7.4 [\#94](https://github.com/prolic/HumusAmqp/pull/94) ([prolic](https://github.com/prolic))
+
+## [v1.5.0](https://github.com/prolic/HumusAmqp/tree/v1.5.0) (2020-03-24)
 
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.4.2...v1.5.0)
 
