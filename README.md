@@ -20,7 +20,12 @@ Current supported drivers are: [php-amqp](https://github.com/pdezwart/php-amqp) 
 php-amqp needs at least to be v1.9.3
 php-amqplib needs at least to be v2.11.0
 
-This library ships with `container-interop` factories that help you setting up everything.
+This library ships with `psr/container` factories that help you setting up everything.
+
+## Zend Framework and Symfony Framework Integration
+
+- [ZF Module](https://github.com/prolic/HumusAmqpModule)
+- [Symfony Bundle](https://github.com/genhoi/HumusAmqpBundle)
 
 ## Installation
 
