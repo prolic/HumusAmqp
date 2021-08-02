@@ -1305,7 +1305,11 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('Reconfigure message received', $loggerResult[1]['message']);
 
         $this->assertEquals('error', $loggerResult[2]['level']);
-        $this->assertEquals('Exception during reconfiguration: Undefined offset: 1', $loggerResult[2]['message']);
+        if (PHP_VERSION_ID >= 80000) {
+            $this->assertEquals('Exception during reconfiguration: Undefined array key 1', $loggerResult[2]['message']);
+        } else {
+            $this->assertEquals('Exception during reconfiguration: Undefined offset: 1', $loggerResult[2]['message']);
+        }
 
         $this->assertEquals('debug', $loggerResult[3]['level']);
         $this->assertEquals('Rejected message', $loggerResult[3]['message']);
