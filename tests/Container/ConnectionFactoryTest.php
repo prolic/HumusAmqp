@@ -28,11 +28,16 @@ use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SslConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
+use PhpAmqpLib\Connection\Heartbeat\PCNTLHeartbeatSender;
+use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use ReflectionClass;
 
 class ConnectionFactoryTest extends TestCase
 {
+    use PHPMock;
+
     /**
      * @test
      */
@@ -294,6 +299,42 @@ class ConnectionFactoryTest extends TestCase
         $container = $this->prophesize(ContainerInterface::class);
 
         $container->has(Driver::class)->willReturn(false)->shouldBeCalled();
+
+        $factory = new ConnectionFactory('my_connection');
+        $factory($container->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function it_registers_pnctl_heartbeat_sender(): void
+    {
+        if (! extension_loaded('pcntl')) {
+            $this->markTestSkipped('php pcntl extension not loaded');
+        }
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $heartbeat = 4;
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'type' => 'socket',
+                            'register_pnctl_heartbeat_sender' => true,
+                            'heartbeat' => $heartbeat,
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $interval = ceil($heartbeat / 2);
+        $this->getFunctionMock((new ReflectionClass(PCNTLHeartbeatSender::class))->getNamespaceName(), 'pcntl_alarm')->expects($this->once())->with($interval);
+
+        $this->expectException(\Humus\Amqp\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('No driver factory registered in container');
 
         $factory = new ConnectionFactory('my_connection');
         $factory($container->reveal());

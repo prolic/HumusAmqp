@@ -28,7 +28,8 @@
         "php-coveralls/php-coveralls": "^2.4",
         "php-amqplib/php-amqplib": "^2.11",
         "malukenho/docheader": "^0.1.8",
-        "prooph/php-cs-fixer-config": "^0.4.0"
+        "prooph/php-cs-fixer-config": "^0.4.0",
+        "php-mock/php-mock-phpunit": "^2.6"
     },
     "conflict": {
         "sandrokeil/interop-config": "<1.0",
