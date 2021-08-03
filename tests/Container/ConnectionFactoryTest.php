@@ -333,9 +333,6 @@ class ConnectionFactoryTest extends TestCase
         $interval = ceil($heartbeat / 2);
         $this->getFunctionMock((new ReflectionClass(PCNTLHeartbeatSender::class))->getNamespaceName(), 'pcntl_alarm')->expects($this->once())->with($interval);
 
-        $this->expectException(\Humus\Amqp\Exception\RuntimeException::class);
-        $this->expectExceptionMessage('No driver factory registered in container');
-
         $factory = new ConnectionFactory('my_connection');
         $factory($container->reveal());
     }
