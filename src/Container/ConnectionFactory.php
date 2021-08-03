@@ -33,6 +33,7 @@ use Humus\Amqp\Exception;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
+use PhpAmqpLib\Connection\Heartbeat\PCNTLHeartbeatSender;
 use Psr\Container\ContainerInterface;
 
 final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigId
@@ -99,6 +100,9 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                 }
                 $type = $options['type'];
                 unset($options['type']);
+                $registerPCNTLHeartbeatSender = $options['register_pcntl_heartbeat_sender'] ?? false;
+                unset($options['register_pcntl_heartbeat_sender']);
+
                 switch ($type) {
                     case 'lazy':
                     case LazyConnection::class:
@@ -124,6 +128,11 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                             'Invalid connection type for php-amqplib driver given'
                         );
                 }
+
+                if ($registerPCNTLHeartbeatSender) {
+                    (new PCNTLHeartbeatSender($connection->getResource()))->register();
+                }
+
                 break;
         }
 
