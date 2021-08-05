@@ -313,6 +313,10 @@ class ConnectionFactoryTest extends TestCase
             $this->markTestSkipped('php pcntl extension not loaded');
         }
 
+        if (! class_exists('PhpAmqpLib\Connection\Heartbeat\PCNTLHeartbeatSender')) {
+            $this->markTestSkipped('PCNTLHeartbeatSender requires phpamqplib >= 2.12.0');
+        }
+
         $container = $this->prophesize(ContainerInterface::class);
 
         $heartbeat = 4;
@@ -322,7 +326,7 @@ class ConnectionFactoryTest extends TestCase
                     'connection' => [
                         'my_connection' => [
                             'type' => 'socket',
-                            'register_pnctl_heartbeat_sender' => true,
+                            'register_pcntl_heartbeat_sender' => true,
                             'heartbeat' => $heartbeat,
                         ],
                     ],
@@ -332,6 +336,9 @@ class ConnectionFactoryTest extends TestCase
 
         $interval = ceil($heartbeat / 2);
         $this->getFunctionMock((new ReflectionClass(PCNTLHeartbeatSender::class))->getNamespaceName(), 'pcntl_alarm')->expects($this->once())->with($interval);
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
         $factory = new ConnectionFactory('my_connection');
         $factory($container->reveal());

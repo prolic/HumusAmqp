@@ -100,7 +100,7 @@ You can simply configure as many connection as needed and simply give them a nam
                 'connection' => [
                     'default' => [
                         'type' => 'socket',
-                        'register_pnctl_heartbeat_sender' => true,
+                        'register_pcntl_heartbeat_sender' => true,
                         'host' => 'localhost',
                         'port' => 5672,
                         'login' => 'guest',
@@ -121,7 +121,7 @@ You can simply configure as many connection as needed and simply give them a nam
     `lazy`, `lazy_socket`, `socket`, `ssl` or `stream`.
 
 .. note:: When using php-amqplib as driver, you may enable its provided PNCTL heartbeat sender by setting 
-    the `register_pnctl_heartbeat_sender` option to true. It is off by default.
+    the `register_pcntl_heartbeat_sender` option to true. It is off by default.
 
 
 Getting a connection
