@@ -313,6 +313,10 @@ class ConnectionFactoryTest extends TestCase
             $this->markTestSkipped('php pcntl extension not loaded');
         }
 
+        if (! class_exists('PhpAmqpLib\Connection\Heartbeat\PCNTLHeartbeatSender')) {
+            $this->markTestSkipped('PCNTLHeartbeatSender requires phpamqplib >= 2.12.0');
+        }
+
         $container = $this->prophesize(ContainerInterface::class);
 
         $heartbeat = 4;
