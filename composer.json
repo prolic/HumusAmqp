@@ -19,16 +19,18 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
-        "symfony/console": "^5.0",
+        "ext-pcntl": "*",
+        "laminas/laminas-servicemanager": "^3.0",
+        "malukenho/docheader": "^0.1.8",
+        "php-amqplib/php-amqplib": "^2.11",
+        "php-coveralls/php-coveralls": "^2.4",
+        "php-mock/php-mock-phpunit": "^2.6",
+        "phpspec/prophecy": "^1.10",
+        "phpunit/phpunit": "^8.5",
+        "prooph/php-cs-fixer-config": "^0.4.0",
         "psr/container": "^1.0",
         "sandrokeil/interop-config": "^1.0 || ^2.0",
-        "laminas/laminas-servicemanager": "^3.0",
-        "phpunit/phpunit": "^8.5",
-        "phpspec/prophecy": "^1.10",
-        "php-coveralls/php-coveralls": "^2.4",
-        "php-amqplib/php-amqplib": "^2.11",
-        "malukenho/docheader": "^0.1.8",
-        "prooph/php-cs-fixer-config": "^0.4.0"
+        "symfony/console": "^5.0"
     },
     "conflict": {
         "sandrokeil/interop-config": "<1.0",

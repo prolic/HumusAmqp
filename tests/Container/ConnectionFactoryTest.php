@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016-2020 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
+ * Copyright (c) 2016-2021 Sascha-Oliver Prolic <saschaprolic@googlemail.com>.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,11 +28,16 @@ use Humus\Amqp\Driver\PhpAmqpLib\LazyConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SocketConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\SslConnection;
 use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
+use PhpAmqpLib\Connection\Heartbeat\PCNTLHeartbeatSender;
+use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use ReflectionClass;
 
 class ConnectionFactoryTest extends TestCase
 {
+    use PHPMock;
+
     /**
      * @test
      */
@@ -294,6 +299,46 @@ class ConnectionFactoryTest extends TestCase
         $container = $this->prophesize(ContainerInterface::class);
 
         $container->has(Driver::class)->willReturn(false)->shouldBeCalled();
+
+        $factory = new ConnectionFactory('my_connection');
+        $factory($container->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function it_registers_pnctl_heartbeat_sender(): void
+    {
+        if (! extension_loaded('pcntl')) {
+            $this->markTestSkipped('php pcntl extension not loaded');
+        }
+
+        if (! class_exists('PhpAmqpLib\Connection\Heartbeat\PCNTLHeartbeatSender')) {
+            $this->markTestSkipped('PCNTLHeartbeatSender requires phpamqplib >= 2.12.0');
+        }
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $heartbeat = 4;
+        $container->get('config')->willReturn([
+            'humus' => [
+                'amqp' => [
+                    'connection' => [
+                        'my_connection' => [
+                            'type' => 'socket',
+                            'register_pcntl_heartbeat_sender' => true,
+                            'heartbeat' => $heartbeat,
+                        ],
+                    ],
+                ],
+            ],
+        ])->shouldBeCalled();
+
+        $interval = ceil($heartbeat / 2);
+        $this->getFunctionMock((new ReflectionClass(PCNTLHeartbeatSender::class))->getNamespaceName(), 'pcntl_alarm')->expects($this->once())->with($interval);
+
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
 
         $factory = new ConnectionFactory('my_connection');
         $factory($container->reveal());
