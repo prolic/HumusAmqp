@@ -333,6 +333,9 @@ class ConnectionFactoryTest extends TestCase
         $interval = ceil($heartbeat / 2);
         $this->getFunctionMock((new ReflectionClass(PCNTLHeartbeatSender::class))->getNamespaceName(), 'pcntl_alarm')->expects($this->once())->with($interval);
 
+        $container->has(Driver::class)->willReturn(true)->shouldBeCalled();
+        $container->get(Driver::class)->willReturn(Driver::PHP_AMQP_LIB())->shouldBeCalled();
+
         $factory = new ConnectionFactory('my_connection');
         $factory($container->reveal());
     }
