@@ -1,6 +1,24 @@
 # Changelog
 
-## [v2.0.0](https://github.com/prolic/HumusAmqp/tree/v2.0.0)
+## [v2.1.0](https://github.com/prolic/HumusAmqp/tree/v2.1.0)
+
+[Full Changelog](https://github.com/prolic/HumusAmqp/compare/v2.0.0...v2.1.0)
+
+**Implemented enhancements:**
+
+- PhpAmqpLib PCNTLHeartbeatSender [\#100](https://github.com/prolic/HumusAmqp/issues/100)
+-  Feature/support amqp lib heartbeat [\#102](https://github.com/prolic/HumusAmqp/pull/102) ([prolic](https://github.com/prolic))
+
+**Closed issues:**
+
+- Type issue with exceptions [\#98](https://github.com/prolic/HumusAmqp/issues/98)
+
+**Merged pull requests:**
+
+- setup container [\#103](https://github.com/prolic/HumusAmqp/pull/103) ([basz](https://github.com/basz))
+- Allow php 8.0 [\#99](https://github.com/prolic/HumusAmqp/pull/99) ([genhoi](https://github.com/genhoi))
+
+## [v2.0.0](https://github.com/prolic/HumusAmqp/tree/v2.0.0) (2020-03-28)
 
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.5.0...v2.0.0)
 
@@ -103,10 +121,6 @@
 - JsonProducer should check for errors [\#46](https://github.com/prolic/HumusAmqp/issues/46)
 - Compatibility with latest ConfigurationTrait [\#44](https://github.com/prolic/HumusAmqp/issues/44)
 
-**Merged pull requests:**
-
-- update coding style [\#48](https://github.com/prolic/HumusAmqp/pull/48) ([prolic](https://github.com/prolic))
-
 ## [v1.2.0](https://github.com/prolic/HumusAmqp/tree/v1.2.0) (2017-06-18)
 
 [Full Changelog](https://github.com/prolic/HumusAmqp/compare/v1.1.0...v1.2.0)
@@ -129,6 +143,7 @@
 
 **Merged pull requests:**
 
+- update coding style [\#48](https://github.com/prolic/HumusAmqp/pull/48) ([prolic](https://github.com/prolic))
 - Connection type allowed only for php-amqplib driver [\#37](https://github.com/prolic/HumusAmqp/pull/37) ([marinovdf](https://github.com/marinovdf))
 
 ## [v1.1.0](https://github.com/prolic/HumusAmqp/tree/v1.1.0) (2017-02-07)
