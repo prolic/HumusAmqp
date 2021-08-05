@@ -322,7 +322,7 @@ class ConnectionFactoryTest extends TestCase
                     'connection' => [
                         'my_connection' => [
                             'type' => 'socket',
-                            'register_pnctl_heartbeat_sender' => true,
+                            'register_pcntl_heartbeat_sender' => true,
                             'heartbeat' => $heartbeat,
                         ],
                     ],
