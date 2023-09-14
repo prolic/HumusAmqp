@@ -20,7 +20,7 @@ jobs:
           version: "3.8.9"
           ports: "1883:1883 8883:8883"
           certificates: ${{ github.workspace }}/provision/test_certs
-          config: ${{ github.workspace }}/provision/rabbitmq.config/rabbitmq.conf
+          config: ${{ github.workspace }}/provision/rabbitmq.config
           #definitions: ${{ github.workspace }}/.ci/definitions.json
           container-name: "mqtt"
 
