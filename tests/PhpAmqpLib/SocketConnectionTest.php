@@ -63,6 +63,9 @@ final class SocketConnectionTest extends AbstractConnectionTest
         if (null === $options) {
             $options = new ConnectionOptions();
         }
+        
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
 
         return new SocketConnection($options);
     }

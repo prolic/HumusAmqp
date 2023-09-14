@@ -72,6 +72,13 @@ final class LazySocketConnectionTest extends AbstractConnectionTest
 
     public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
+        if (null === $options) {
+            $options = new ConnectionOptions($options);
+        }
+
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
+
         return new LazySocketConnection($options);
     }
 }

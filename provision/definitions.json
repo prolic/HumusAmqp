@@ -1,16 +1,48 @@
 {
-   "vhosts": [
-       {
-           "name": "humus-amqp-test"
-       }
-   ],
-   "permissions": [
-       {
-           "user": "guest",
-           "vhost": "/humus-amqp-test",
-           "configure": ".*",
-           "write": ".*",
-           "read": ".*"
-       }
-   ]
- }
+  "bindings": [],
+  "exchanges": [],
+  "global_parameters": [],
+  "parameters": [],
+  "permissions": [
+    {
+      "configure": ".*",
+      "read": ".*",
+      "user": "testuser",
+      "vhost": "/",
+      "write": ".*"
+    },
+    {
+      "configure": ".*",
+      "read": ".*",
+      "user": "testuser",
+      "vhost": "/humus-amqp-test",
+      "write": ".*"
+    }
+  ],
+  "policies": [],
+  "queues": [],
+  "rabbit_version": "3.12.4",
+  "rabbitmq_version": "3.12.4",
+  "topic_permissions": [],
+  "users": [
+    {
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "limits": {},
+      "name": "testuser",
+      "password_hash": "kQNnH15OZknQ+/ITn6zkGCYMIWVe3y/xIeO/VF2yN2EPm8gM",
+      "tags": []
+    }
+  ],
+  "vhosts": [
+    {
+      "limits": [],
+      "metadata": { "description": "", "tags": [] },
+      "name": "/humus-amqp-test"
+    },
+    {
+      "limits": [],
+      "metadata": { "description": "", "tags": [] },
+      "name": "/"
+    }
+  ]
+}

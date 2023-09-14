@@ -54,6 +54,8 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
+                            'login' => 'testuser',
+                            'password' => 'testpw',
                         ],
                     ],
                 ],
@@ -85,6 +87,8 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
+                            'login' => 'testuser',
+                            'password' => 'testpw',
                         ],
                     ],
                 ],
@@ -140,6 +144,8 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
+                            'login' => 'testuser',
+                            'password' => 'testpw',
                             'type' => 'socket',
                         ],
                     ],
@@ -168,6 +174,8 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
+                            'login' => 'testuser',
+                            'password' => 'testpw',
                             'type' => 'stream',
                         ],
                     ],
@@ -197,6 +205,8 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
+                            'login' => 'testuser',
+                            'password' => 'testpw',
                             'type' => 'ssl',
                             'vhost' => '/humus-amqp-test',
                             'port' => 5671,
@@ -234,6 +244,8 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
+                            'login' => 'testuser',
+                            'password' => 'testpw',
                         ],
                     ],
                 ],
@@ -325,6 +337,8 @@ class ConnectionFactoryTest extends TestCase
                 'amqp' => [
                     'connection' => [
                         'my_connection' => [
+                            'login' => 'testuser',
+                            'password' => 'testpw',
                             'type' => 'socket',
                             'register_pcntl_heartbeat_sender' => true,
                             'heartbeat' => $heartbeat,

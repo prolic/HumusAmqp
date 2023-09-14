@@ -58,7 +58,8 @@ final class SslConnectionTest extends AbstractConnectionTest
     public function it_connects_with_only_cacert(): void
     {
         $options = new ConnectionOptions();
-
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
         $options->setCaCert(__DIR__ . '/../../provision/test_certs/cacert.pem');
@@ -132,7 +133,9 @@ final class SslConnectionTest extends AbstractConnectionTest
         $this->expectExceptionMessage('CA cert not set, so it can\'t be verified.');
 
         $options = new ConnectionOptions();
-
+        
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
         $options->setVerify(true);
@@ -146,6 +149,8 @@ final class SslConnectionTest extends AbstractConnectionTest
             $options = new ConnectionOptions();
         }
 
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
         $options->setCaCert(__DIR__ . '/../../provision/test_certs/cacert.pem');
