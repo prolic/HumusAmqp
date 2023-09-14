@@ -30,7 +30,7 @@ trait CreateConnectionTrait
     public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         if (null === $options) {
-            $options = new ConnectionOptions();
+            $options = new ConnectionOptions(['host' => 'rabbitmq']);
         }
 
         $options->setVhost('/humus-amqp-test');

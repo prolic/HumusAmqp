@@ -95,7 +95,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
     public function createConnection(?ConnectionOptions $options = null): Connection
     {
         if (null === $options) {
-            $options = new ConnectionOptions();
+            $options = new ConnectionOptions(['host' => 'rabbitmq']);
         }
 
         $options->setVhost('/humus-amqp-test');

@@ -268,7 +268,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
             $result[] = $errstr;
         });
 
-        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 2]));
+        $connection = $this->createConnection(new ConnectionOptions(['host' => 'rabbitmq', 'read_timeout' => 2]));
         $channel = $connection->newChannel();
         $channel->confirmSelect();
 
@@ -381,7 +381,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $this->expectException(ChannelException::class);
         $this->expectExceptionMessage('Timeout must be greater than or equal to zero.');
 
-        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 2]));
+        $connection = $this->createConnection(new ConnectionOptions(['host' => 'rabbitmq', 'read_timeout' => 2]));
         $channel = $connection->newChannel();
         $channel->confirmSelect();
 

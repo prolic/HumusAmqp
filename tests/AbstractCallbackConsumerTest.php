@@ -398,7 +398,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
      */
     public function it_handles_flush_deferred_after_timeout(): void
     {
-        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
+        $connection = $this->createConnection(new ConnectionOptions(['host' => 'rabbitmq', 'read_timeout' => 1]));
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();

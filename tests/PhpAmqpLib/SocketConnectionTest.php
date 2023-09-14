@@ -61,7 +61,7 @@ final class SocketConnectionTest extends AbstractConnectionTest
     public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         if (null === $options) {
-            $options = new ConnectionOptions();
+            $options = new ConnectionOptions(['host' => 'rabbitmq']);
         }
 
         return new SocketConnection($options);
