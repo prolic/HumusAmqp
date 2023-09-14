@@ -1,0 +1,16 @@
+{
+   "vhosts": [
+       {
+           "name": "humus-amqp-test"
+       }
+   ],
+   "permissions": [
+       {
+           "user": "guest",
+           "vhost": "/humus-amqp-test",
+           "configure": ".*",
+           "write": ".*",
+           "read": ".*"
+       }
+   ]
+ }

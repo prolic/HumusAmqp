@@ -21,13 +21,8 @@ jobs:
           ports: "1883:1883 8883:8883"
           certificates: ${{ github.workspace }}/provision/test_certs
           config: ${{ github.workspace }}/provision/rabbitmq.config
-          #definitions: ${{ github.workspace }}/.ci/definitions.json
+          definitions: ${{ github.workspace }}/provision/definitions.json
           container-name: "mqtt"
-
-      - name: Setup RabbitMQ
-        run: |
-          sudo rabbitmqctl add_vhost /humus-amqp-test
-          sudo rabbitmqctl set_permissions -p /humus-amqp-test guest ".*" ".*" ".*"
 
       - name: Set up PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
