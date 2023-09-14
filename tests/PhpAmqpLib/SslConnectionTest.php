@@ -57,7 +57,7 @@ final class SslConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_only_cacert(): void
     {
-        $options = new ConnectionOptions(['host' => 'rabbitmq']);
+        $options = new ConnectionOptions();
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
@@ -131,7 +131,7 @@ final class SslConnectionTest extends AbstractConnectionTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('CA cert not set, so it can\'t be verified.');
 
-        $options = new ConnectionOptions(['host' => 'rabbitmq']);
+        $options = new ConnectionOptions();
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
@@ -143,7 +143,7 @@ final class SslConnectionTest extends AbstractConnectionTest
     public function createConnection(?ConnectionOptions $options = null): \Humus\Amqp\Connection
     {
         if (null === $options) {
-            $options = new ConnectionOptions(['host' => 'rabbitmq']);
+            $options = new ConnectionOptions();
         }
 
         $options->setVhost('/humus-amqp-test');

@@ -72,7 +72,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_uses_persistent_connection(): void
     {
-        $connection = $this->createConnection(new ConnectionOptions(['host' => 'rabbitmq', 'persistent' => true]));
+        $connection = $this->createConnection(new ConnectionOptions(['persistent' => true]));
 
         $this->assertTrue($connection->isConnected());
 
@@ -100,7 +100,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_reconnects_a_persistent_connection(): void
     {
-        $connection = $this->createConnection(new ConnectionOptions(['host' => 'rabbitmq', 'persistent' => true]));
+        $connection = $this->createConnection(new ConnectionOptions(['persistent' => true]));
 
         $this->assertTrue($connection->isConnected());
 
@@ -125,7 +125,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_ssl(): void
     {
-        $options = new ConnectionOptions(['host' => 'rabbitmq']);
+        $options = new ConnectionOptions();
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
         $options->setCaCert(__DIR__ . '/../../provision/test_certs/cacert.pem');
@@ -150,7 +150,7 @@ final class ConnectionTest extends AbstractConnectionTest
      */
     public function it_connects_with_only_cacert(): void
     {
-        $options = new ConnectionOptions(['host' => 'rabbitmq']);
+        $options = new ConnectionOptions();
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);
@@ -173,7 +173,7 @@ final class ConnectionTest extends AbstractConnectionTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('CA cert not set, so it can\'t be verified.');
 
-        $options = new ConnectionOptions(['host' => 'rabbitmq']);
+        $options = new ConnectionOptions();
 
         $options->setVhost('/humus-amqp-test');
         $options->setPort(5671);

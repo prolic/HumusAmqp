@@ -88,7 +88,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
 
         $queue1->cancel(); // we have to do that to prevent redelivering to the same consumer
 
-        $newConnection = $this->createConnection(new ConnectionOptions(['host' => 'rabbitmq', 'read_timeout' => 1]));
+        $newConnection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
         $channel2 = $newConnection->newChannel();
         $channel2->setPrefetchCount(8);
 

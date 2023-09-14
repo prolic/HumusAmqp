@@ -56,7 +56,7 @@ final class ChannelTest extends AbstractChannelTest
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Could not create channel. No connection available.');
 
-        $connection = new Connection(new ConnectionOptions(['host' => 'rabbitmq']));
+        $connection = new Connection(new ConnectionOptions());
 
         $connection->newChannel();
     }
