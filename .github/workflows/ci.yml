@@ -18,7 +18,7 @@ jobs:
         uses: Namoshek/rabbitmq-github-action@v1.1.0
         with:
           version: "3.8.9"
-          ports: "5672:5672 15672:15672"
+          ports: "5672:5672 5671:5671"
           certificates: ${{ github.workspace }}/provision/test_certs
           config: ${{ github.workspace }}/provision/rabbitmq.config
           definitions: ${{ github.workspace }}/provision/definitions.json
