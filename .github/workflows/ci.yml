@@ -52,6 +52,6 @@ jobs:
       - name: Run tests
         run: XDEBUG_MODE=coverage ./vendor/bin/phpunit --exclude-group=ssl --coverage-text --coverage-clover ./build/logs/clover.xml
 
-      - name: Upload coverage
-        run: php vendor/bin/coveralls -v
-        if: ${{ matrix.php-version }} == '8.1'
+      # - name: Upload coverage
+      #   run: php vendor/bin/php-coveralls -v
+      #   if: ${{ matrix.php-version }} == '8.1'
