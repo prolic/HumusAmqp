@@ -29,6 +29,7 @@ use Humus\Amqp\Exception\QueueException;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use HumusTest\Amqp\Helper\CanCreateConnection;
+use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateConnection
@@ -36,11 +37,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
     private Exchange $exchange;
     private Queue $queue;
 
-    protected function tearDown(): void
-    {
-        $this->queue->delete();
-        $this->exchange->delete();
-    }
+    use DeleteOnTearDownTrait;
 
     /**
      * @test
@@ -58,13 +55,18 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
         $exchange1->setFlags(Constants::AMQP_AUTODELETE);
         $exchange1->declareExchange();
 
+
         $queue1 = $channel1->newQueue();
         $queue1->setName('test');
         $queue1->setFlags(Constants::AMQP_DURABLE);
         $queue1->declareQueue();
 
+        
         $this->exchange = $exchange1;
         $this->queue = $queue1;
+        
+        $this->addToCleanUp($this->queue);
+        $this->addToCleanUp($this->exchange);
 
         $queue1->bind($exchange1->getName(), 'test');
 

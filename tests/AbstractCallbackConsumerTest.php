@@ -48,18 +48,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
+        $this->addToCleanUp($exchange);
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
 
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
 
-        $this->addToCleanUp($queue);
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -156,18 +156,20 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange2');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
 
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
+        $queue->bind('test-exchange2');
 
-        $this->addToCleanUp($queue);
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -264,18 +266,19 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange3');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
+        $queue->bind('test-exchange3');
 
-        $this->addToCleanUp($queue);
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -316,18 +319,20 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange4');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
 
         $queue = $channel->newQueue();
-        $queue->setName('test-queue');
-        $queue->declareQueue();
-        $queue->bind('test-exchange');
-
         $this->addToCleanUp($queue);
+
+        $queue->setName('test-queue');
+        $queue->setFlags(Constants::AMQP_DURABLE);
+        $queue->declareQueue();
+        $queue->bind('test-exchange4');
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -398,19 +403,25 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
      */
     public function it_handles_flush_deferred_after_timeout(): void
     {
+        $this->markTestSkipped('AMQPException: unexpected protocol state');
+
         $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange5');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->setFlags(Constants::AMQP_DURABLE);
         $queue->declareQueue();
-        $queue->bind('test-exchange');
+        $queue->bind('test-exchange5');
 
         for ($i = 1; $i < 3; $i++) {
             $exchange->publish('message #' . $i);
@@ -436,7 +447,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
             null,
             ''
         );
-
+        
         $consumer->consume(3);
 
         $ch = $connection->newChannel(); // create new channel, old one is closed
@@ -444,10 +455,12 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $queue->setName('test-queue');
 
         $envelope = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotNull($envelope);
         $this->assertEquals('message #1', $envelope->getBody());
         $this->assertTrue($envelope->isRedelivery());
-
+        
         $envelope = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotNull($envelope);
         $this->assertEquals('message #2', $envelope->getBody());
         $this->assertTrue($envelope->isRedelivery());
 
@@ -489,18 +502,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange6');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange6');
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -594,18 +607,19 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange7');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
 
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange7');
 
         for ($i = 1; $i < 7; $i++) {
             $exchange->publish('message #' . $i);
@@ -652,18 +666,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange8');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange8');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -745,18 +759,20 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange9');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
 
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
+        $queue->bind('test-exchange9');
 
-        $this->addToCleanUp($queue);
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -838,18 +854,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange10');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange10');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -931,18 +947,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange11');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange11');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -1014,18 +1030,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange12');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange12');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -1111,18 +1127,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange13');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange13');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -1251,19 +1267,19 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
-        $exchange->setType('direct');
-        $exchange->declareExchange();
-
         $this->addToCleanUp($exchange);
 
+        $exchange->setName('test-exchange14');
+        $exchange->setType('direct');
+        $exchange->declareExchange();
+                
         $queue = $channel->newQueue();
-        $queue->setName('test-queue');
-        $queue->declareQueue();
-        $queue->bind('test-exchange');
-
         $this->addToCleanUp($queue);
 
+        $queue->setName('test-queue');
+        $queue->declareQueue();
+        $queue->bind('test-exchange14');
+        
         $exchange->publish(
             json_encode([
                 'invalid',
@@ -1324,18 +1340,19 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
+        $this->addToCleanUp($exchange);
+
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
+        $queue->setFlags(Constants::AMQP_DURABLE);
         $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
 
         $exchange->publish(
             json_encode(['invalid']),

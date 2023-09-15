@@ -44,7 +44,7 @@ final class Queue implements AmqpQueueInterface
 
     public function getName(): string
     {
-        return $this->queue->getName();
+        return (string) $this->queue->getName();
     }
 
     public function setName(string $queueName): void
@@ -67,7 +67,11 @@ final class Queue implements AmqpQueueInterface
      */
     public function getArgument(string $key)
     {
-        return $this->queue->getArgument($key);
+        try {
+            return $this->queue->getArgument($key);
+        } catch (\AMQPQueueException $e) {
+            return false;
+        } 
     }
 
     public function getArguments(): array
