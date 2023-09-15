@@ -31,6 +31,7 @@ $autoloadFiles = [
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
         require_once $autoloadFile;
+
         break;
     }
 }
@@ -62,6 +63,7 @@ if (! ($helperSet instanceof HelperSet)) {
     foreach ($GLOBALS as $helperSetCandidate) {
         if ($helperSetCandidate instanceof HelperSet) {
             $helperSet = $helperSetCandidate;
+
             break;
         }
     }

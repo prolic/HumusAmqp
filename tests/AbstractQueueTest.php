@@ -39,7 +39,9 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     use DeleteOnTearDownTrait;
 
     protected Channel $channel;
+
     protected Exchange $exchange;
+
     protected Queue $queue;
 
     protected function setUp(): void

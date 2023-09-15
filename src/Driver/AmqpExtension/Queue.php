@@ -33,6 +33,7 @@ use Humus\Amqp\Queue as AmqpQueueInterface;
 final class Queue implements AmqpQueueInterface
 {
     private Channel $channel;
+
     private AMQPQueue $queue;
 
     /** @internal */
@@ -71,7 +72,7 @@ final class Queue implements AmqpQueueInterface
             return $this->queue->getArgument($key);
         } catch (\AMQPQueueException $e) {
             return false;
-        } 
+        }
     }
 
     public function getArguments(): array

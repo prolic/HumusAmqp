@@ -35,10 +35,12 @@ use PhpAmqpLib\Message\AMQPMessage;
 final class Channel implements ChannelInterface
 {
     private AbstractConnection $connection;
+
     private AMQPChannel $channel;
+
     private int $prefetchCount;
+
     private int $prefetchSize;
-    
 
     public function __construct(AbstractConnection $connection, AMQPChannel $channel)
     {

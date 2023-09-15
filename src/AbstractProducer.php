@@ -25,6 +25,7 @@ namespace Humus\Amqp;
 abstract class AbstractProducer implements Producer
 {
     protected Exchange $exchange;
+
     protected array $defaultAttributes;
 
     public function __construct(Exchange $exchange, ?array $defaultAttributes = null)

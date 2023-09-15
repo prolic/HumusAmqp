@@ -37,7 +37,9 @@ final class QueueFactory implements ProvidesDefaultOptions, RequiresConfigId, Re
     use ConfigurationTrait;
 
     private string $queueName;
+
     private ?Channel $channel;
+
     private bool $autoSetupFabric;
 
     /**

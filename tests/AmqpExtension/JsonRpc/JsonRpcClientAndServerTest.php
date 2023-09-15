@@ -30,7 +30,7 @@ class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
     protected function setUp(): void
     {
         $this->markTestSkipped(); // this currently hangs
-       
+
         parent::setUp();
     }
 

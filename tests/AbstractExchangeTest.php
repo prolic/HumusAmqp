@@ -39,7 +39,9 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     use DeleteOnTearDownTrait;
 
     protected Exchange $exchange;
+
     protected Queue $queue;
+
     protected Channel $channel;
 
     // protected function setUp(): void
@@ -151,7 +153,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     //     $exchange2 = $channel->newExchange();
     //     $exchange2->setType('direct');
     //     $exchange2->setName('foo');
-        
+
     //     $this->exchange->declareExchange();
     //     $this->addToCleanUp($this->exchange);
     //     $exchange2->declareExchange();
@@ -177,7 +179,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     //     $exchange2 = $channel->newExchange();
     //     $exchange2->setType('direct');
     //     $exchange2->setName('foo');
-        
+
     //     $this->exchange->declareExchange();
     //     $exchange2->declareExchange();
     //     $this->addToCleanUp($exchange2);
@@ -202,7 +204,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     //     $exchange2 = $channel->newExchange();
     //     $exchange2->setType('direct');
     //     $exchange2->setName('foo');
-        
+
     //     $this->exchange->declareExchange();
     //     $exchange2->declareExchange();
     //     $this->addToCleanUp($exchange2);
@@ -247,7 +249,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     //     $exchange2 = $channel->newExchange();
     //     $exchange2->setType('direct');
     //     $exchange2->setName('foo');
-        
+
     //     $this->exchange->declareExchange();
     //     $exchange2->declareExchange();
     //     $this->addToCleanUp($exchange2);
@@ -438,17 +440,15 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     {
         $result = [];
 
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $exchange = $channel->newExchange();
+        $exchange->setType('topic');
+        $exchange->setName('test-exchange');
+        $exchange->declareExchange();
+        $this->addToCleanUp($exchange);
 
-$connection = $this->createConnection();
-$channel = $connection->newChannel();
-$exchange = $channel->newExchange();
-$exchange->setType('topic');
-$exchange->setName('test-exchange');
-$exchange->declareExchange();
-$this->addToCleanUp($exchange);
-
-$queue = $channel->newQueue();
-
+        $queue = $channel->newQueue();
 
         $queue = $channel->newQueue();
         $queue->setName('test-mandatory');

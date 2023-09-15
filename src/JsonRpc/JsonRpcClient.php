@@ -33,21 +33,28 @@ use Humus\Amqp\Util\Json;
 final class JsonRpcClient implements Client
 {
     private Queue $queue;
+
     /**
      * @var string[]
      */
     private array $requestIds = [];
+
     private int $countRequests = 0;
+
     /**
      * Milliseconds to wait between two tries when reply is not yet there
      */
     private int $waitMillis;
+
     /**
      * @var Exchange[]
      */
     private array $exchanges = [];
+
     private ?string $appId;
+
     private int $timeout = 0;
+
     private ErrorFactory $errorFactory;
 
     public function __construct(Queue $queue, array $exchanges, int $waitMillis = 100, string $appId = '', ?ErrorFactory $errorFactory = null)

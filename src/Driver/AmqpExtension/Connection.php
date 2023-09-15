@@ -32,6 +32,7 @@ use Traversable;
 final class Connection implements ConnectionInterface
 {
     private AMQPConnection $connection;
+
     private ConnectionOptions $options;
 
     /**

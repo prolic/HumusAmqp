@@ -32,6 +32,7 @@ use PHPUnit\Framework\TestCase;
 abstract class AbstractChannelTest extends TestCase implements CanCreateConnection
 {
     protected Connection $connection;
+
     protected Channel $channel;
 
     protected function setUp(): void

@@ -38,9 +38,13 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
     use DeleteOnTearDownTrait;
 
     protected Channel $channel;
+
     protected Exchange $exchange;
+
     protected Queue $queue;
+
     protected JsonProducer $producer;
+
     protected array $results = [];
 
     protected function setUp(): void

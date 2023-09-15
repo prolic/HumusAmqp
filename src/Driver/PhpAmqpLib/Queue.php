@@ -35,8 +35,11 @@ use PhpAmqpLib\Wire\AMQPTable;
 final class Queue implements QueueInterface
 {
     private Channel $channel;
+
     private string $name = '';
+
     private int $flags = Constants::AMQP_NOPARAM;
+
     private array $arguments = [];
 
     /** @internal */

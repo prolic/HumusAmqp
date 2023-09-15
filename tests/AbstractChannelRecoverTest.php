@@ -35,6 +35,7 @@ use PHPUnit\Framework\TestCase;
 abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateConnection
 {
     private Exchange $exchange;
+
     private Queue $queue;
 
     use DeleteOnTearDownTrait;
@@ -55,16 +56,14 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
         $exchange1->setFlags(Constants::AMQP_AUTODELETE);
         $exchange1->declareExchange();
 
-
         $queue1 = $channel1->newQueue();
         $queue1->setName('test');
         $queue1->setFlags(Constants::AMQP_DURABLE);
         $queue1->declareQueue();
 
-        
         $this->exchange = $exchange1;
         $this->queue = $queue1;
-        
+
         $this->addToCleanUp($this->queue);
         $this->addToCleanUp($this->exchange);
 
@@ -120,6 +119,7 @@ abstract class AbstractChannelRecoverTest extends TestCase implements CanCreateC
         $result[] = 'redelivered';
 
         $consume = 10;
+
         try {
             $queue2->consume(function (Envelope $e, Queue $q) use (&$consume, &$result): bool {
                 $result[] = 'consumed ' . $e->getBody() . ' ' . ($e->isRedelivery() ? '(redelivered)' : '(original)');

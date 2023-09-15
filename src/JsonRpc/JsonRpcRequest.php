@@ -27,17 +27,23 @@ use Humus\Amqp\Exception;
 
 final class JsonRpcRequest implements Request
 {
-    const JSONRPC_VERSION = '2.0';
+    public const JSONRPC_VERSION = '2.0';
 
     private string $server;
+
     private string $method;
+
     /**
      * @var array|string|int|float|bool
      */
     private $params;
+
     private ?string $id;
+
     private string $routingKey;
+
     private int $expiration = 0;
+
     private int $timestamp;
 
     /**

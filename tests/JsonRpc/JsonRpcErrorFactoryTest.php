@@ -30,6 +30,7 @@ use PHPUnit\Framework\TestCase;
 class JsonRpcErrorFactoryTest extends TestCase
 {
     private ?JsonRpcErrorFactory $factory = null;
+
     private array $customMessages = [
         -32000 => 'upper message test',
         -32099 => 'lower message test',

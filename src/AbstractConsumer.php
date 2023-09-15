@@ -30,16 +30,27 @@ use Psr\Log\LoggerInterface;
 abstract class AbstractConsumer implements Consumer
 {
     protected LoggerInterface $logger;
+
     protected Queue $queue;
+
     protected string $consumerTag;
+
     protected int $countMessagesConsumed = 0;
+
     protected int $countMessagesUnacked = 0;
+
     protected ?int $lastDeliveryTag = null;
+
     protected bool $keepAlive = true;
+
     protected float $idleTimeout;
+
     protected int $blockSize;
+
     protected ?float $timestampLastAck = null;
+
     protected ?float $timestampLastMessage = null;
+
     protected int $target;
 
     /**
@@ -87,7 +98,8 @@ abstract class AbstractConsumer implements Consumer
             $now = \microtime(true);
 
             if ($this->countMessagesUnacked > 0
-                && ($this->countMessagesUnacked === $this->blockSize
+                && (
+                    $this->countMessagesUnacked === $this->blockSize
                     || ($now - $this->timestampLastAck) > $this->idleTimeout
                 )) {
                 $this->ackOrNackBlock();
@@ -194,21 +206,25 @@ abstract class AbstractConsumer implements Consumer
             case DeliveryResult::MSG_REJECT():
                 $this->queue->nack($envelope->getDeliveryTag(), Constants::AMQP_NOPARAM);
                 $this->logger->debug('Rejected message', $this->extractMessageInformation($envelope));
+
                 break;
             case DeliveryResult::MSG_REJECT_REQUEUE():
                 $this->queue->nack($envelope->getDeliveryTag(), Constants::AMQP_REQUEUE);
                 $this->logger->debug('Rejected and requeued message', $this->extractMessageInformation($envelope));
+
                 break;
             case DeliveryResult::MSG_ACK():
                 $this->countMessagesUnacked++;
                 $this->lastDeliveryTag = $envelope->getDeliveryTag();
                 $this->timestampLastMessage = \microtime(true);
                 $this->ack();
+
                 break;
             case DeliveryResult::MSG_DEFER():
                 $this->countMessagesUnacked++;
                 $this->lastDeliveryTag = $envelope->getDeliveryTag();
                 $this->timestampLastMessage = \microtime(true);
+
                 break;
         }
     }
@@ -266,12 +282,15 @@ abstract class AbstractConsumer implements Consumer
         switch ($result) {
             case FlushDeferredResult::MSG_ACK():
                 $this->ack();
+
                 break;
             case FlushDeferredResult::MSG_REJECT():
                 $this->nackAll(false);
+
                 break;
             case FlushDeferredResult::MSG_REJECT_REQUEUE():
                 $this->nackAll(true);
+
                 break;
         }
     }
@@ -285,6 +304,7 @@ abstract class AbstractConsumer implements Consumer
             $result = DeliveryResult::MSG_ACK();
         } elseif ('reconfigure' === $envelope->getType()) {
             $this->logger->info('Reconfigure message received');
+
             try {
                 list($idleTimeout, $target, $prefetchSize, $prefetchCount) = Json::decode($envelope->getBody());
 

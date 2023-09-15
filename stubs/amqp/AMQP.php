@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Passing in this constant as a flag will forcefully disable all other flags.
  * Use this if you want to temporarily disable the amqp.auto_ack ini setting.
@@ -112,16 +114,11 @@ const AMQP_EX_TYPE_TOPIC = 'topic';
  */
 const AMQP_EX_TYPE_HEADERS = 'headers';
 
-
 const AMQP_OS_SOCKET_TIMEOUT_ERRNO = 536870947;
-
-
 
 const PHP_AMQP_MAX_CHANNELS = 256;
 
-
 const AMQP_SASL_METHOD_PLAIN = 0;
-
 
 const AMQP_SASL_METHOD_EXTERNAL = 1;
 

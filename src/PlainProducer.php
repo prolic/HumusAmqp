@@ -36,7 +36,8 @@ final class PlainProducer extends AbstractProducer
     public function publish(
         $message,
         string $routingKey = '',
-        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
+        int $flags = Constants::AMQP_NOPARAM,
+        array $attributes = []
     ) {
         $attributes = \array_merge_recursive($this->defaultAttributes, $attributes);
 

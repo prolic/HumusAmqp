@@ -35,6 +35,7 @@ use Humus\Amqp\Exchange as ExchangeInterface;
 final class Exchange implements ExchangeInterface
 {
     private Channel $channel;
+
     private AMQPExchange $exchange;
 
     public function __construct(Channel $channel)

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * stub class representing AMQPDecimal from pecl-amqp
  *

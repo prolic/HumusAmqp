@@ -22,14 +22,14 @@ declare(strict_types=1);
 
 namespace Humus\Amqp\Driver\AmqpExtension;
 
-use AMQPEnvelope;
 use AMQPBasicProperties;
+use AMQPEnvelope;
 use Humus\Amqp\Envelope as EnvelopeInterface;
 
 final class Envelope implements EnvelopeInterface
 {
-    /** 
-     * @var AMQPBasicProperties|AMQPEnvelope 
+    /**
+     * @var AMQPBasicProperties|AMQPEnvelope
      **/
     private $envelope;
 

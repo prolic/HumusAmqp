@@ -133,7 +133,7 @@ final class SslConnectionTest extends AbstractConnectionTest
         $this->expectExceptionMessage('CA cert not set, so it can\'t be verified.');
 
         $options = new ConnectionOptions();
-        
+
         $options->setLogin('testuser');
         $options->setPassword('testpw');
         $options->setVhost('/humus-amqp-test');
