@@ -25,12 +25,15 @@ namespace HumusTest\Amqp\Console\Command;
 use Humus\Amqp\Console\Command\ShowCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ShowCommandTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */
@@ -129,12 +132,12 @@ class ShowCommandTest extends TestCase
 
         $this->assertEquals(0, $tester->getStatusCode());
         $output = $tester->getDisplay(true);
-        $this->assertRegExp('/Connection: default/', $output);
-        $this->assertRegExp('/Exchange: demo/', $output);
-        $this->assertRegExp('/Queue: foo/', $output);
-        $this->assertRegExp('/Callback_consumer: demo-consumer/', $output);
-        $this->assertRegExp('/"delivery_callback": "my_callback"/', $output);
-        $this->assertRegExp('/Producer: demo-producer/', $output);
+        $this->assertMatchesRegularExpression('/Connection: default/', $output);
+        $this->assertMatchesRegularExpression('/Exchange: demo/', $output);
+        $this->assertMatchesRegularExpression('/Queue: foo/', $output);
+        $this->assertMatchesRegularExpression('/Callback_consumer: demo-consumer/', $output);
+        $this->assertMatchesRegularExpression('/"delivery_callback": "my_callback"/', $output);
+        $this->assertMatchesRegularExpression('/Producer: demo-producer/', $output);
     }
 
     private function createCommandTester(ContainerInterface $container): CommandTester

@@ -26,12 +26,15 @@ use Humus\Amqp\Console\Command\StartJsonRpcServerCommand;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Consumer;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class StartJsonRpcServerCommandTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

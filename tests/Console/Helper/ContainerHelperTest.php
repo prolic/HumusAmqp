@@ -24,10 +24,13 @@ namespace HumusTest\Amqp\Console\Helper;
 
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 
 class ContainerHelperTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

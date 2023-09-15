@@ -28,10 +28,13 @@ use Humus\Amqp\Container\ExchangeFactory;
 use Humus\Amqp\Exception;
 use Humus\Amqp\Exchange;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 
 class ExchangeFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

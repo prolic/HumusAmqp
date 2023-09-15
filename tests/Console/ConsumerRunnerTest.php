@@ -25,12 +25,15 @@ namespace HumusTest\Amqp\Console;
 use Humus\Amqp\Console\ConsoleRunner;
 use Humus\Amqp\Console\Helper\ContainerHelper;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\ApplicationTester;
 
 class ConsumerRunnerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */
@@ -77,7 +80,7 @@ class ConsumerRunnerTest extends TestCase
 
         $output = $tester->getDisplay(true);
 
-        $this->assertRegExp('/json_rpc_server/', $output);
-        $this->assertRegExp('/Start a JSON-RPC server/', $output);
+        $this->assertMatchesRegularExpression('/json_rpc_server/', $output);
+        $this->assertMatchesRegularExpression('/Start a JSON-RPC server/', $output);
     }
 }

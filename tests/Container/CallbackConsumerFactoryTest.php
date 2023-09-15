@@ -28,11 +28,14 @@ use Humus\Amqp\Connection;
 use Humus\Amqp\Container\CallbackConsumerFactory;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class CallbackConsumerFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

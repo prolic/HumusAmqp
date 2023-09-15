@@ -31,12 +31,14 @@ use Humus\Amqp\Driver\PhpAmqpLib\StreamConnection;
 use PhpAmqpLib\Connection\Heartbeat\PCNTLHeartbeatSender;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 
 class ConnectionFactoryTest extends TestCase
 {
     use PHPMock;
+    use ProphecyTrait;
 
     /**
      * @test

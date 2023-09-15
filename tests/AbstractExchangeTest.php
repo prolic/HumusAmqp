@@ -370,7 +370,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     //     $this->assertEquals('Message returned: NO_ROUTE, message body:message 4', $result[4]);
     //     $this->assertEquals('Message acked', $result[5]);
     //     $this->assertEquals(ChannelException::class, $result[6]);
-    //     $this->assertRegExp("/.+no exchange 'non-existent' in vhost '.+'/", $result[7]);
+    //     $this->assertMatchesRegularExpression("/.+no exchange 'non-existent' in vhost '.+'/", $result[7]);
 
     //     restore_error_handler();
     // }

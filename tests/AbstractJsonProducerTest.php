@@ -32,10 +32,12 @@ use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 abstract class AbstractJsonProducerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
+    use ProphecyTrait;
 
     protected Channel $channel;
 
@@ -342,7 +344,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
             $message = $e->getMessage();
         }
 
-        $this->assertRegExp('/NOT_FOUND - no exchange \'invalid-test-exchange\' in vhost \'\/humus-amqp-test\'$/', $message);
+        $this->assertMatchesRegularExpression('/NOT_FOUND - no exchange \'invalid-test-exchange\' in vhost \'\/humus-amqp-test\'$/', $message);
     }
 
     /**
