@@ -410,6 +410,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $producer = new JsonProducer($exchange->reveal());
 
         $message = new class() implements \JsonSerializable {
+            #[\ReturnTypeWillChange]
             public function jsonSerialize()
             {
                 throw new \Exception('foo');
