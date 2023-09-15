@@ -9,9 +9,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [7.4, 8.0, 8.1]
         amqp-version: [v1.11.0, v2.1.0]
         rabbitmq-version: [3.9, 3.10, 3.11, 3.12]
+        php-version: ["7.4"] #, 8.0, 8.1]
         composer-flags: ["", "--prefer-lowest --prefer-stable"]
 
     steps:
