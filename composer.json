@@ -29,7 +29,7 @@
     "ext-pcntl": "*",
     "laminas/laminas-servicemanager": "^3.0",
     "malukenho/docheader": "^0.1.8",
-    "php-amqplib/php-amqplib": "^2.11",
+    "php-amqplib/php-amqplib": "^3.0",
     "php-coveralls/php-coveralls": "^2.4",
     "php-mock/php-mock-phpunit": "^2.6",
     "phpspec/prophecy": "^1.10",
