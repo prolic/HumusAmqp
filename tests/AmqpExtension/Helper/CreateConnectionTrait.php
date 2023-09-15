@@ -32,9 +32,9 @@ trait CreateConnectionTrait
         if (null === $options) {
             $options = new ConnectionOptions();
         }
-        
-$options->setLogin('testuser');
-$options->setPassword('testpw');
+
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
         $options->setVhost('/humus-amqp-test');
 
         $connection = new Connection($options);
