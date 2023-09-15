@@ -7,8 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         php-version: [7.4, 8.0, 8.1]
+        amqp-version: [v1.11.0, v2.1.0]
         composer-flags: ["", "--prefer-lowest --prefer-stable"]
 
     steps:
@@ -28,7 +30,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: amqp
+          extensions: amqp-${{ matrix.amqp-version }}
           tools: composer:v2
           coverage: "xdebug"
 
