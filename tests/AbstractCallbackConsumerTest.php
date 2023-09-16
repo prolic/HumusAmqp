@@ -397,8 +397,6 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
      */
     public function it_handles_flush_deferred_after_timeout(): void
     {
-        $this->markTestSkipped('AMQPException: unexpected protocol state');
-
         $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
         $channel = $connection->newChannel();
 

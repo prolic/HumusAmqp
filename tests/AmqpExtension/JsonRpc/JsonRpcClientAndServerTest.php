@@ -27,12 +27,5 @@ use HumusTest\Amqp\JsonRpc\AbstractJsonRpcClientAndServerTest;
 
 class JsonRpcClientAndServerTest extends AbstractJsonRpcClientAndServerTest
 {
-    protected function setUp(): void
-    {
-        $this->markTestSkipped(); // this currently hangs
-
-        parent::setUp();
-    }
-
     use CreateConnectionTrait;
 }
