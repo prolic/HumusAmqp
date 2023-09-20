@@ -28,12 +28,4 @@ use HumusTest\Amqp\AmqpExtension\Helper\CreateConnectionTrait;
 class CallbackConsumerTest extends AbstractCallbackConsumerTest
 {
     use CreateConnectionTrait;
-
-    /**
-     * @test
-     */
-    public function it_handles_flush_deferred_after_timeout(): void
-    {
-        $this->markTestSkipped('AMQPException: unexpected protocol state');
-    }
 }
