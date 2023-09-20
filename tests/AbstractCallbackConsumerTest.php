@@ -442,6 +442,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
 
         $consumer->consume(3);
 
+        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
         $ch = $connection->newChannel(); // create new channel, old one is closed
         $queue = $ch->newQueue();
         $queue->setName('test-queue');
