@@ -94,7 +94,7 @@ final class Channel implements ChannelInterface
     public function qos(int $size, int $count): void
     {
         $this->channel->basic_qos($size, $count, false);
-        $this->prefechSize = $size;
+        $this->prefetchSize = $size;
         $this->prefetchCount = $count;
     }
 
