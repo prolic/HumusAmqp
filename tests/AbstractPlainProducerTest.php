@@ -37,13 +37,18 @@ abstract class AbstractPlainProducerTest extends TestCase implements CanCreateCo
     use DeleteOnTearDownTrait;
 
     protected Channel $channel;
+
     protected Exchange $exchange;
+
     protected Queue $queue;
+
     protected PlainProducer $producer;
+
     /**
      * @var callable
      */
     protected $callback;
+
     protected array $results = [];
 
     protected function setUp(): void

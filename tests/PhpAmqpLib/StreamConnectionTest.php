@@ -55,7 +55,7 @@ final class StreamConnectionTest extends AbstractConnectionTest
      */
     public function it_returns_internal_connection(): void
     {
-        $connection = $this->createConnection();
+        $connection = $this->createConnection(new ConnectionOptions(['login'=>'testuser', 'password'=>'testpw']));
 
         $this->assertInstanceOf(\PhpAmqpLib\Connection\AMQPStreamConnection::class, $connection->getResource());
     }
@@ -98,6 +98,8 @@ final class StreamConnectionTest extends AbstractConnectionTest
             $options = new ConnectionOptions();
         }
 
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
         $options->setVhost('/humus-amqp-test');
 
         return new StreamConnection($options);

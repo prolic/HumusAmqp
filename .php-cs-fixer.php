@@ -20,13 +20,9 @@ class Prooph extends Config
         return [
             '@PSR2' => true,
             'array_syntax' => ['syntax' => 'short'],
-            'binary_operator_spaces' => [
-                'align_double_arrow' => false,
-                'align_equals' => false,
-            ],
             'blank_line_after_opening_tag' => true,
             'blank_line_after_namespace' => true,
-            'blank_line_before_return' => true,
+            'blank_line_before_statement' => true,
             'braces' => true,
             'cast_spaces' => true,
             'class_definition' => true,
@@ -38,16 +34,16 @@ class Prooph extends Config
             'full_opening_tag' => true,
             'function_declaration' => true,
             'function_typehint_space' => true,
-            'hash_to_slash_comment' => true,
+            'single_line_comment_style' => true,
             'header_comment' => false,
             'include' => true,
             'indentation_type' => true,
             'linebreak_after_opening_tag' => true,
             'line_ending' => true,
-            'lowercase_constants' => true,
+            'constant_case' => ['case' => 'lower'],
             'lowercase_keywords' => true,
             'method_argument_space' => true,
-            'method_separation' => true,
+            'class_attributes_separation' => ['elements' => ['property' => 'one']],
             'modernize_types_casting' => true,
             'native_function_casing' => true,
             'new_with_braces' => true,
@@ -55,13 +51,13 @@ class Prooph extends Config
             'no_blank_lines_after_class_opening' => true,
             'no_closing_tag' => true,
             'no_empty_statement' => true,
-            'no_extra_consecutive_blank_lines' => true,
+            'no_extra_blank_lines' => true,
             'no_leading_import_slash' => true,
             'no_leading_namespace_whitespace' => true,
             'no_multiline_whitespace_around_double_arrow' => true,
-            'no_multiline_whitespace_before_semicolons' => true,
+            'multiline_whitespace_before_semicolons' => true,
             'no_short_bool_cast' => true,
-            'no_short_echo_tag' => true,
+            'echo_tag_syntax' => ['format' => 'long'],
             'no_singleline_whitespace_before_semicolons' => true,
             'no_spaces_around_offset' => true,
             'no_trailing_comma_in_list_call' => true,
@@ -80,8 +76,8 @@ class Prooph extends Config
             'object_operator_without_whitespace' => true,
             'ordered_imports' => true,
             'phpdoc_indent' => true,
-            'phpdoc_inline_tag' => true,
-            'psr4' => true,
+            'phpdoc_inline_tag_normalizer' => true,
+            'psr_autoloading' => true,
             'return_type_declaration' => true,
             'semicolon_after_instruction' => true,
             'short_scalar_cast' => true,
@@ -95,7 +91,7 @@ class Prooph extends Config
             'switch_case_semicolon_to_colon' => true,
             'switch_case_space' => true,
             'ternary_operator_spaces' => true,
-            'trailing_comma_in_multiline_array' => true,
+            'trailing_comma_in_multiline' => ['elements' => ['arrays']],
             'trim_array_spaces' => true,
             'unary_operator_spaces' => true,
             'visibility_required' => true,
@@ -107,8 +103,6 @@ class Prooph extends Config
 $config = new Prooph();
 $config->getFinder()->in(__DIR__);
 
-$cacheDir = getenv('TRAVIS') ? getenv('HOME') . '/.php-cs-fixer' : __DIR__;
-
-$config->setCacheFile($cacheDir . '/.php_cs.cache');
+$config->setCacheFile(__DIR__ . '/.php_cs.cache');
 
 return $config;

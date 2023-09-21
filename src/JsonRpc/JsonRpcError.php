@@ -24,14 +24,16 @@ namespace Humus\Amqp\JsonRpc;
 
 final class JsonRpcError implements Error
 {
-    const ERROR_CODE_32700 = -32700;
-    const ERROR_CODE_32600 = -32600;
-    const ERROR_CODE_32601 = -32601;
-    const ERROR_CODE_32602 = -32602;
-    const ERROR_CODE_32603 = -32603;
+    public const ERROR_CODE_32700 = -32700;
+    public const ERROR_CODE_32600 = -32600;
+    public const ERROR_CODE_32601 = -32601;
+    public const ERROR_CODE_32602 = -32602;
+    public const ERROR_CODE_32603 = -32603;
 
     private int $code;
+
     private string $message;
+
     /**
      * @var array|bool|float|int|null|string
      */

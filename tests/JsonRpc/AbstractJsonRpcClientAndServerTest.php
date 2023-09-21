@@ -39,11 +39,13 @@ use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use HumusTest\Amqp\TestAsset\ArrayLogger;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\NullLogger;
 
 abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
+    use ProphecyTrait;
 
     private JsonRpcErrorFactory $errorFactory;
 
@@ -123,14 +125,14 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $this->assertCount(4, $loggerResult);
 
         $this->assertEquals('info', $loggerResult[0]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[0]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[0]['message']);
 
         $this->assertEquals('debug', $loggerResult[1]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
         $this->assertEquals('1', $loggerResult[1]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[2]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[2]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[2]['message']);
 
         $this->assertEquals('debug', $loggerResult[3]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[3]['message']);
@@ -399,7 +401,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $this->assertCount(5, $loggerResult);
 
         $this->assertEquals('info', $loggerResult[0]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[0]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[0]['message']);
 
         $this->assertEquals('debug', $loggerResult[1]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[1]['message']);
@@ -410,7 +412,7 @@ abstract class AbstractJsonRpcClientAndServerTest extends TestCase implements Ca
         $this->assertEquals('invalid body', $loggerResult[2]['context']['exception_message']);
 
         $this->assertEquals('info', $loggerResult[3]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
 
         $this->assertEquals('debug', $loggerResult[4]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);

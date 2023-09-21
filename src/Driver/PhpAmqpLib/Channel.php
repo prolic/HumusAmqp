@@ -35,8 +35,11 @@ use PhpAmqpLib\Message\AMQPMessage;
 final class Channel implements ChannelInterface
 {
     private AbstractConnection $connection;
+
     private AMQPChannel $channel;
+
     private int $prefetchCount;
+
     private int $prefetchSize;
 
     public function __construct(AbstractConnection $connection, AMQPChannel $channel)
@@ -94,7 +97,7 @@ final class Channel implements ChannelInterface
     public function qos(int $size, int $count): void
     {
         $this->channel->basic_qos($size, $count, false);
-        $this->prefechSize = $size;
+        $this->prefetchSize = $size;
         $this->prefetchCount = $count;
     }
 

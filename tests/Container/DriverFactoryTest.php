@@ -25,10 +25,13 @@ namespace HumusTest\Amqp\Container;
 use Humus\Amqp\Container\DriverFactory;
 use Humus\Amqp\Driver\Driver;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 
 class DriverFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

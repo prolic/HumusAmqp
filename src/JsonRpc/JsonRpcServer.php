@@ -38,8 +38,11 @@ use Throwable;
 final class JsonRpcServer extends AbstractConsumer
 {
     private Exchange $exchange;
+
     private string $appId;
+
     private bool $returnTrace;
+
     private ErrorFactory $errorFactory;
 
     /**

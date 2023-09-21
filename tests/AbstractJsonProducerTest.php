@@ -32,15 +32,21 @@ use HumusTest\Amqp\Helper\CanCreateConnection;
 use HumusTest\Amqp\Helper\DeleteOnTearDownTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 abstract class AbstractJsonProducerTest extends TestCase implements CanCreateConnection
 {
     use DeleteOnTearDownTrait;
+    use ProphecyTrait;
 
     protected Channel $channel;
+
     protected Exchange $exchange;
+
     protected Queue $queue;
+
     protected JsonProducer $producer;
+
     protected array $results = [];
 
     protected function setUp(): void
@@ -338,7 +344,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
             $message = $e->getMessage();
         }
 
-        $this->assertRegExp('/NOT_FOUND - no exchange \'invalid-test-exchange\' in vhost \'\/humus-amqp-test\'$/', $message);
+        $this->assertMatchesRegularExpression('/NOT_FOUND - no exchange \'invalid-test-exchange\' in vhost \'\/humus-amqp-test\'$/', $message);
     }
 
     /**
@@ -410,6 +416,7 @@ abstract class AbstractJsonProducerTest extends TestCase implements CanCreateCon
         $producer = new JsonProducer($exchange->reveal());
 
         $message = new class() implements \JsonSerializable {
+            #[\ReturnTypeWillChange]
             public function jsonSerialize()
             {
                 throw new \Exception('foo');

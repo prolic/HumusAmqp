@@ -23,11 +23,15 @@ declare(strict_types=1);
 namespace Humus\Amqp\Driver\AmqpExtension;
 
 use AMQPBasicProperties;
+use AMQPEnvelope;
 use Humus\Amqp\Envelope as EnvelopeInterface;
 
 final class Envelope implements EnvelopeInterface
 {
-    private AMQPBasicProperties $envelope;
+    /**
+     * @var AMQPBasicProperties|AMQPEnvelope
+     **/
+    private $envelope;
 
     public function __construct(AMQPBasicProperties $envelope)
     {
@@ -46,7 +50,7 @@ final class Envelope implements EnvelopeInterface
 
     public function getDeliveryTag(): int
     {
-        return $this->envelope->getDeliveryTag();
+        return (int) $this->envelope->getDeliveryTag();
     }
 
     public function getDeliveryMode(): int
@@ -56,7 +60,7 @@ final class Envelope implements EnvelopeInterface
 
     public function getExchangeName(): string
     {
-        return $this->envelope->getExchangeName();
+        return (string) $this->envelope->getExchangeName();
     }
 
     public function isRedelivery(): bool
@@ -66,17 +70,17 @@ final class Envelope implements EnvelopeInterface
 
     public function getContentType(): string
     {
-        return $this->envelope->getContentType();
+        return (string) $this->envelope->getContentType();
     }
 
     public function getContentEncoding(): string
     {
-        return $this->envelope->getContentEncoding();
+        return (string) $this->envelope->getContentEncoding();
     }
 
     public function getType(): string
     {
-        return $this->envelope->getType();
+        return (string) $this->envelope->getType();
     }
 
     public function getTimestamp(): int
@@ -96,27 +100,27 @@ final class Envelope implements EnvelopeInterface
 
     public function getUserId(): string
     {
-        return $this->envelope->getUserId();
+        return (string) $this->envelope->getUserId();
     }
 
     public function getAppId(): string
     {
-        return $this->envelope->getAppId();
+        return (string) $this->envelope->getAppId();
     }
 
     public function getMessageId(): string
     {
-        return $this->envelope->getMessageId();
+        return (string) $this->envelope->getMessageId();
     }
 
     public function getReplyTo(): string
     {
-        return $this->envelope->getReplyTo();
+        return (string) $this->envelope->getReplyTo();
     }
 
     public function getCorrelationId(): string
     {
-        return $this->envelope->getCorrelationId();
+        return (string) $this->envelope->getCorrelationId();
     }
 
     public function getHeaders(): array

@@ -25,18 +25,31 @@ namespace Humus\Amqp;
 class ConnectionOptions extends AbstractOptions
 {
     protected string $host = 'localhost';
+
     protected int $port = 5672;
+
     protected string $login = 'guest';
+
     protected string $password = 'guest';
+
     protected string $vhost = '/';
+
     protected bool $persistent = false;
+
     protected float $connectTimeout = 1.00; //secs
+
     protected float $readTimeout = 1.00; // secs
+
     protected float $writeTimeout = 1.00; // secs
+
     protected int $heartbeat = 0;
+
     protected ?string $cacert = null;
+
     protected ?string $cert = null;
+
     protected ?string $key = null;
+
     protected ?bool $verify = null;
 
     public function setHost(string $host): void

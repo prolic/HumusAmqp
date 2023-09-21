@@ -29,10 +29,13 @@ use Humus\Amqp\Exchange;
 use Humus\Amqp\JsonProducer;
 use Humus\Amqp\PlainProducer;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 
 class ProducerFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

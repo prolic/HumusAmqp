@@ -32,6 +32,7 @@ use Humus\Amqp\Queue as QueueInterface;
 final class Channel implements ChannelInterface
 {
     private Connection $connection;
+
     private AMQPChannel $channel;
 
     public function __construct(Connection $amqpConnection)

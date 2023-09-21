@@ -29,12 +29,15 @@ use Humus\Amqp\Console\Helper\ContainerHelper;
 use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class SetupFabricCommandTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

@@ -90,8 +90,11 @@ final class ProducerFactory implements ProvidesDefaultOptions, RequiresConfigId,
                 return new PlainProducer($exchange, $options['attributes']);
             default:
                 throw new Exception\InvalidArgumentException(
-                    sprintf('Unknown producer type %s requested', $options['type']
-                ));
+                    sprintf(
+                        'Unknown producer type %s requested',
+                        $options['type']
+                    )
+                );
         }
     }
 

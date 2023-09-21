@@ -48,18 +48,16 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
+        $this->addToCleanUp($exchange);
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
         $queue->setName('test-queue');
         $queue->declareQueue();
         $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -102,49 +100,49 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[1]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
 
         $this->assertEquals('debug', $loggerResult[2]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
         $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[3]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
 
         $this->assertEquals('debug', $loggerResult[4]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
         $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[5]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
 
         $this->assertEquals('debug', $loggerResult[6]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
         $this->assertEquals('message #4', $loggerResult[6]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[7]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[7]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[7]['message']);
 
         $this->assertEquals('debug', $loggerResult[8]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[8]['message']);
         $this->assertEquals('message #5', $loggerResult[8]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[9]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[9]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[9]['message']);
 
         $this->assertEquals('debug', $loggerResult[10]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[10]['message']);
         $this->assertEquals('message #6', $loggerResult[10]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[11]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[11]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[11]['message']);
 
         $this->assertEquals('debug', $loggerResult[12]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[12]['message']);
         $this->assertEquals('message #7', $loggerResult[12]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[13]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[13]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[13]['message']);
     }
 
     /**
@@ -156,18 +154,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange2');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange2');
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -264,18 +262,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange3');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange3');
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -316,18 +314,19 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange4');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
-        $queue->setName('test-queue');
-        $queue->declareQueue();
-        $queue->bind('test-exchange');
-
         $this->addToCleanUp($queue);
+
+        $queue->setName('test-queue');
+        $queue->setFlags(Constants::AMQP_DURABLE);
+        $queue->declareQueue();
+        $queue->bind('test-exchange4');
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -379,7 +378,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #3', $loggerResult[2]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[3]['level']);
-        $this->assertRegExp('/^Acknowledged 3 messages at.+/', $loggerResult[3]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 3 messages at.+/', $loggerResult[3]['message']);
 
         $this->assertEquals('debug', $loggerResult[4]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
@@ -390,7 +389,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #5', $loggerResult[5]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[6]['level']);
-        $this->assertRegExp('/^Acknowledged 2 messages at.+/', $loggerResult[6]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 2 messages at.+/', $loggerResult[6]['message']);
     }
 
     /**
@@ -402,15 +401,19 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange5');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->setFlags(Constants::AMQP_DURABLE);
         $queue->declareQueue();
-        $queue->bind('test-exchange');
+        $queue->bind('test-exchange5');
 
         for ($i = 1; $i < 3; $i++) {
             $exchange->publish('message #' . $i);
@@ -439,15 +442,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
 
         $consumer->consume(3);
 
+        $connection = $this->createConnection(new ConnectionOptions(['read_timeout' => 1]));
         $ch = $connection->newChannel(); // create new channel, old one is closed
         $queue = $ch->newQueue();
         $queue->setName('test-queue');
 
         $envelope = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotNull($envelope);
         $this->assertEquals('message #1', $envelope->getBody());
         $this->assertTrue($envelope->isRedelivery());
 
         $envelope = $queue->get(Constants::AMQP_AUTOACK);
+        $this->assertNotNull($envelope);
         $this->assertEquals('message #2', $envelope->getBody());
         $this->assertTrue($envelope->isRedelivery());
 
@@ -474,10 +480,10 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #2', $loggerResult[1]['context']['body']);
 
         $this->assertEquals('error', $loggerResult[2]['level']);
-        $this->assertRegExp('/^Exception.+/', $loggerResult[2]['message']);
+        $this->assertMatchesRegularExpression('/^Exception.+/', $loggerResult[2]['message']);
 
         $this->assertEquals('info', $loggerResult[3]['level']);
-        $this->assertRegExp('/^Not acknowledged 2 messages at.+/', $loggerResult[3]['message']);
+        $this->assertMatchesRegularExpression('/^Not acknowledged 2 messages at.+/', $loggerResult[3]['message']);
     }
 
     /**
@@ -489,18 +495,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange6');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange6');
 
         for ($i = 1; $i < 8; $i++) {
             $exchange->publish('message #' . $i);
@@ -560,7 +566,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #3', $loggerResult[2]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[3]['level']);
-        $this->assertRegExp('/^Not acknowledged 3 messages at.+/', $loggerResult[3]['message']);
+        $this->assertMatchesRegularExpression('/^Not acknowledged 3 messages at.+/', $loggerResult[3]['message']);
 
         $this->assertEquals('debug', $loggerResult[4]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
@@ -575,14 +581,14 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #6', $loggerResult[6]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[7]['level']);
-        $this->assertRegExp('/^Not acknowledged 3 messages at.+/', $loggerResult[7]['message']);
+        $this->assertMatchesRegularExpression('/^Not acknowledged 3 messages at.+/', $loggerResult[7]['message']);
 
         $this->assertEquals('debug', $loggerResult[8]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[8]['message']);
         $this->assertEquals('message #7', $loggerResult[8]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[9]['level']);
-        $this->assertRegExp('/^Not acknowledged 1 messages at.+/', $loggerResult[9]['message']);
+        $this->assertMatchesRegularExpression('/^Not acknowledged 1 messages at.+/', $loggerResult[9]['message']);
     }
 
     /**
@@ -594,18 +600,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange7');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange7');
 
         for ($i = 1; $i < 7; $i++) {
             $exchange->publish('message #' . $i);
@@ -652,18 +658,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange8');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange8');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -745,18 +751,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange9');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange9');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -838,18 +844,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange10');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange10');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -931,18 +937,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange11');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange11');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -1002,7 +1008,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('Exception during flushDeferred: foo', $loggerResult[3]['message']);
 
         $this->assertEquals('info', $loggerResult[4]['level']);
-        $this->assertRegExp('/^Not acknowledged 3 messages at.+/', $loggerResult[4]['message']);
+        $this->assertMatchesRegularExpression('/^Not acknowledged 3 messages at.+/', $loggerResult[4]['message']);
     }
 
     /**
@@ -1014,18 +1020,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange12');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange12');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -1074,21 +1080,21 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[1]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
 
         $this->assertEquals('debug', $loggerResult[2]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
         $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[3]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
 
         $this->assertEquals('debug', $loggerResult[4]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
         $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[5]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
 
         $this->assertEquals('debug', $loggerResult[6]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
@@ -1099,7 +1105,7 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('Shutdown message received', $loggerResult[7]['message']);
 
         $this->assertEquals('info', $loggerResult[8]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[8]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[8]['message']);
     }
 
     /**
@@ -1111,18 +1117,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange13');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange13');
 
         for ($i = 1; $i < 4; $i++) {
             $exchange->publish('message #' . $i);
@@ -1186,21 +1192,21 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('message #1', $loggerResult[0]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[1]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[1]['message']);
 
         $this->assertEquals('debug', $loggerResult[2]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[2]['message']);
         $this->assertEquals('message #2', $loggerResult[2]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[3]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[3]['message']);
 
         $this->assertEquals('debug', $loggerResult[4]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[4]['message']);
         $this->assertEquals('message #3', $loggerResult[4]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[5]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[5]['message']);
 
         $this->assertEquals('debug', $loggerResult[6]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[6]['message']);
@@ -1211,35 +1217,35 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $this->assertEquals('Reconfigure message received', $loggerResult[7]['message']);
 
         $this->assertEquals('info', $loggerResult[8]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[8]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[8]['message']);
 
         $this->assertEquals('debug', $loggerResult[9]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[9]['message']);
         $this->assertEquals('message #4', $loggerResult[9]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[10]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[10]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[10]['message']);
 
         $this->assertEquals('debug', $loggerResult[11]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[11]['message']);
         $this->assertEquals('message #5', $loggerResult[11]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[12]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[12]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[12]['message']);
 
         $this->assertEquals('debug', $loggerResult[13]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[13]['message']);
         $this->assertEquals('message #6', $loggerResult[13]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[14]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[14]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[14]['message']);
 
         $this->assertEquals('debug', $loggerResult[15]['level']);
         $this->assertEquals('Handling delivery of message', $loggerResult[15]['message']);
         $this->assertEquals('message #7', $loggerResult[15]['context']['body']);
 
         $this->assertEquals('info', $loggerResult[16]['level']);
-        $this->assertRegExp('/^Acknowledged 1 messages at.+/', $loggerResult[16]['message']);
+        $this->assertMatchesRegularExpression('/^Acknowledged 1 messages at.+/', $loggerResult[16]['message']);
     }
 
     /**
@@ -1251,18 +1257,18 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
-        $exchange->setName('test-exchange');
+        $this->addToCleanUp($exchange);
+
+        $exchange->setName('test-exchange14');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
-        $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
+        $queue->bind('test-exchange14');
 
         $exchange->publish(
             json_encode([
@@ -1324,18 +1330,19 @@ abstract class AbstractCallbackConsumerTest extends TestCase implements CanCreat
         $channel = $connection->newChannel();
 
         $exchange = $channel->newExchange();
+        $this->addToCleanUp($exchange);
+
         $exchange->setName('test-exchange');
         $exchange->setType('direct');
         $exchange->declareExchange();
 
-        $this->addToCleanUp($exchange);
-
         $queue = $channel->newQueue();
+        $this->addToCleanUp($queue);
+
         $queue->setName('test-queue');
         $queue->declareQueue();
+        $queue->setFlags(Constants::AMQP_DURABLE);
         $queue->bind('test-exchange');
-
-        $this->addToCleanUp($queue);
 
         $exchange->publish(
             json_encode(['invalid']),

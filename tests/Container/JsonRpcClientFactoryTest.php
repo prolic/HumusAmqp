@@ -30,10 +30,13 @@ use Humus\Amqp\JsonRpc\ErrorFactory;
 use Humus\Amqp\JsonRpc\JsonRpcClient;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 
 class JsonRpcClientFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

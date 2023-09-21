@@ -31,6 +31,7 @@ use PhpAmqpLib\Connection\AbstractConnection as PhpAmqplibAbstractConnection;
 abstract class AbstractConnection implements ConnectionInterface
 {
     protected PhpAmqplibAbstractConnection $connection;
+
     protected ConnectionOptions $options;
 
     public function getResource(): PhpAmqplibAbstractConnection

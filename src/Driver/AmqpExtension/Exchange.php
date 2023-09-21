@@ -35,6 +35,7 @@ use Humus\Amqp\Exchange as ExchangeInterface;
 final class Exchange implements ExchangeInterface
 {
     private Channel $channel;
+
     private AMQPExchange $exchange;
 
     public function __construct(Channel $channel)
@@ -78,7 +79,11 @@ final class Exchange implements ExchangeInterface
      */
     public function getArgument(string $key)
     {
-        return $this->exchange->getArgument($key);
+        try {
+            return $this->exchange->getArgument($key);
+        } catch (\AMQPExchangeException $e) {
+            return false;
+        }
     }
 
     public function getArguments(): array

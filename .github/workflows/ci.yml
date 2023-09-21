@@ -1,0 +1,56 @@
+name: PHP Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ["7.4", "8.0", "8.1", "8.2"]
+        amqp-version: ["v1.11.0", "v2.1.0"]
+        composer-flags: ["", "--prefer-lowest --prefer-stable"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: RabbitMQ in GitHub Actions
+        uses: Namoshek/rabbitmq-github-action@v1.1.0
+        with:
+          version: "3"
+          ports: "5672:5672 5671:5671"
+          certificates: ${{ github.workspace }}/provision/test_certs
+          config: ${{ github.workspace }}/provision/rabbitmq.config
+          definitions: ${{ github.workspace }}/provision/definitions.json
+          container-name: "rabbitmq"
+
+      - name: Set up PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: amqp-${{ matrix.amqp-version }}
+          tools: composer:v2
+          coverage: "xdebug"
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer update --prefer-dist ${{ matrix.composer-flags }}
+
+      - name: Run tests
+        run: XDEBUG_MODE=coverage ./vendor/bin/phpunit --exclude-group=ssl --coverage-text --coverage-clover ./build/logs/clover.xml
+
+      # - name: Upload coverage
+      #   run: php vendor/bin/php-coveralls -v
+      #   if: ${{ matrix.php-version }} == '8.1'

@@ -30,10 +30,13 @@ use Humus\Amqp\Exchange;
 use Humus\Amqp\Queue;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 
 class QueueFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

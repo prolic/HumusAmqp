@@ -38,20 +38,20 @@ final class DeliveryResult extends Enum
     /**
      * Flag for message ack
      */
-    const MSG_ACK = 0;
+    public const MSG_ACK = 0;
 
     /**
      * Flag for message defer
      */
-    const MSG_DEFER = 1;
+    public const MSG_DEFER = 1;
 
     /**
      * Flag for reject and drop
      */
-    const MSG_REJECT = 2;
+    public const MSG_REJECT = 2;
 
     /**
      * Flag for reject and requeue
      */
-    const MSG_REJECT_REQUEUE = 3;
+    public const MSG_REJECT_REQUEUE = 3;
 }

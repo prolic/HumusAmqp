@@ -33,7 +33,7 @@ abstract class AbstractConnectionTest extends TestCase implements CanCreateConne
     {
         return new ConnectionOptions([
             'vhost' => '/humus-amqp-test',
-            'host' => 'localhost',
+            'host' => 'rabbitmq',
             'port' => 5672,
             'login' => 'invalid',
             'password' => 'invalid',

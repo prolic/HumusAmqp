@@ -90,6 +90,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
             case Driver::AMQP_EXTENSION():
                 $connection = new \Humus\Amqp\Driver\AmqpExtension\Connection($options);
                 $connection->connect();
+
                 break;
             case Driver::PHP_AMQP_LIB():
             default:
@@ -107,14 +108,17 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                     case 'lazy':
                     case LazyConnection::class:
                         $connection = new LazyConnection($options);
+
                         break;
                     case 'lazy_socket':
                     case LazySocketConnection::class:
                         $connection = new LazySocketConnection($options);
+
                         break;
                     case 'socket':
                     case SocketConnection::class:
                         $connection = new SocketConnection($options);
+
                         break;
                     case 'ssl':
                     case SslConnection::class:
@@ -122,6 +126,7 @@ final class ConnectionFactory implements ProvidesDefaultOptions, RequiresConfigI
                     case 'stream':
                     case StreamConnection::class:
                         $connection = new StreamConnection($options);
+
                         break;
                     default:
                         throw new Exception\InvalidArgumentException(

@@ -26,13 +26,15 @@ use Humus\Amqp\Exception;
 
 final class JsonRpcResponse implements Response
 {
-    const JSONRPC_VERSION = '2.0';
+    public const JSONRPC_VERSION = '2.0';
 
     /**
      * @var array|string|int|float|bool|null
      */
     private $result;
+
     private ?Error $error = null;
+
     private ?string $id;
 
     /**

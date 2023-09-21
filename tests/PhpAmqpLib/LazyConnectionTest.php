@@ -44,6 +44,8 @@ final class LazyConnectionTest extends AbstractConnectionTest
             $options = new ConnectionOptions();
         }
 
+        $options->setLogin('testuser');
+        $options->setPassword('testpw');
         $options->setVhost('/humus-amqp-test');
 
         return new LazyConnection($options);

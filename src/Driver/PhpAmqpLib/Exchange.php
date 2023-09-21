@@ -32,9 +32,13 @@ use PhpAmqpLib\Wire\AMQPTable;
 final class Exchange implements ExchangeInterface
 {
     private Channel $channel;
+
     private string $name = '';
+
     private string $type = '';
+
     private int $flags = Constants::AMQP_NOPARAM;
+
     private array $arguments = [];
 
     public function __construct(Channel $channel)
@@ -152,7 +156,8 @@ final class Exchange implements ExchangeInterface
     public function publish(
         string $message,
         string $routingKey = '',
-        int $flags = Constants::AMQP_NOPARAM, array $attributes = []
+        int $flags = Constants::AMQP_NOPARAM,
+        array $attributes = []
     ): void {
         $attributes['user_id'] = $this->getConnection()->getOptions()->login();
         $message = new AMQPMessage($message, $attributes);

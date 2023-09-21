@@ -39,7 +39,9 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
     use DeleteOnTearDownTrait;
 
     protected Channel $channel;
+
     protected Exchange $exchange;
+
     protected Queue $queue;
 
     protected function setUp(): void
@@ -313,7 +315,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
             'content_encoding' => 'UTF-8',
             'message_id' => 'some message id',
             'app_id' => 'app id',
-            'user_id' => 'guest', // must be same as login data
+            'user_id' => 'testuser', // must be same as login data
             'delivery_mode' => 1,
             'priority' => 5,
             'timestamp' => 25,
@@ -333,7 +335,7 @@ abstract class AbstractQueueTest extends TestCase implements CanCreateConnection
         $this->assertEquals('UTF-8', $msg->getContentEncoding());
         $this->assertEquals('some message id', $msg->getMessageId());
         $this->assertEquals('app id', $msg->getAppId());
-        $this->assertEquals('guest', $msg->getUserId());
+        $this->assertEquals('testuser', $msg->getUserId());
         $this->assertEquals(1, $msg->getDeliveryMode());
         $this->assertEquals(1, $msg->getDeliveryTag());
         $this->assertEquals(5, $msg->getPriority());

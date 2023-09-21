@@ -28,12 +28,15 @@ use Humus\Amqp\Constants;
 use Humus\Amqp\Producer;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class PublishMessageCommandTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */

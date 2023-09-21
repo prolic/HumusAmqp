@@ -37,15 +37,15 @@ final class FlushDeferredResult extends Enum
     /**
      * Flag for message ack all deferred messages
      */
-    const MSG_ACK = 0;
+    public const MSG_ACK = 0;
 
     /**
      * Flag for reject and drop all deferred messages
      */
-    const MSG_REJECT = 1;
+    public const MSG_REJECT = 1;
 
     /**
      * Flag for reject and requeue all deferred messages
      */
-    const MSG_REJECT_REQUEUE = 2;
+    public const MSG_REJECT_REQUEUE = 2;
 }

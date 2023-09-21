@@ -97,6 +97,7 @@ class ShowCommand extends AbstractCommand
             case 'json_rpc_clients':
             case 'json_rpc_servers':
                 $this->listType($input, $output, $config, $type);
+
                 break;
             case 'all':
                 foreach ($this->knownTypes as $type) {
@@ -105,6 +106,7 @@ class ShowCommand extends AbstractCommand
                     }
                     $this->listType($input, $output, $config, $type);
                 }
+
                 break;
         }
 

@@ -37,7 +37,9 @@ final class ExchangeFactory implements ProvidesDefaultOptions, RequiresConfigId,
     use ConfigurationTrait;
 
     private string $exchangeName;
+
     private ?Channel $channel;
+
     private bool $autoSetupFabric;
 
     /**

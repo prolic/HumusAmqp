@@ -39,7 +39,9 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     use DeleteOnTearDownTrait;
 
     protected Exchange $exchange;
+
     protected Queue $queue;
+
     protected Channel $channel;
 
     protected function setUp(): void
@@ -99,10 +101,10 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
      */
     public function it_declares_and_deletes_exchange(): void
     {
-        $this->addToCleanUp($this->exchange);
         $this->exchange->setType('direct');
         $this->exchange->setName('test');
         $this->exchange->declareExchange();
+        $this->addToCleanUp($this->exchange);
     }
 
     /**
@@ -111,7 +113,6 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
      */
     public function it_declares_exchange_with_arguments(): void
     {
-        $this->addToCleanUp($this->exchange);
         $this->exchange->setType('direct');
         $this->exchange->setName('test');
         $this->exchange->setArguments([
@@ -126,6 +127,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
             'bool' => true,
         ]);
         $this->exchange->declareExchange();
+        $this->addToCleanUp($this->exchange);
     }
 
     /**
@@ -143,7 +145,6 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
      */
     public function it_binds_and_unbinds_to_exchange(): void
     {
-        $this->addToCleanUp($this->exchange);
         $this->exchange->setType('direct');
         $this->exchange->setName('test');
 
@@ -152,10 +153,11 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
-        $this->addToCleanUp($exchange2);
 
         $this->exchange->declareExchange();
+        $this->addToCleanUp($this->exchange);
         $exchange2->declareExchange();
+        $this->addToCleanUp($exchange2);
 
         $this->exchange->bind($exchange2->getName());
 
@@ -177,10 +179,10 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
-        $this->addToCleanUp($exchange2);
 
         $this->exchange->declareExchange();
         $exchange2->declareExchange();
+        $this->addToCleanUp($exchange2);
 
         $this->exchange->bind($exchange2->getName(), 'routing_key');
 
@@ -202,10 +204,10 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
-        $this->addToCleanUp($exchange2);
 
         $this->exchange->declareExchange();
         $exchange2->declareExchange();
+        $this->addToCleanUp($exchange2);
 
         $this->exchange->bind($exchange2->getName(), '', [
             'foo' => 'bar',
@@ -247,10 +249,10 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $exchange2 = $channel->newExchange();
         $exchange2->setType('direct');
         $exchange2->setName('foo');
-        $this->addToCleanUp($exchange2);
 
         $this->exchange->declareExchange();
         $exchange2->declareExchange();
+        $this->addToCleanUp($exchange2);
 
         $this->exchange->bind($exchange2->getName(), 'routing_key', ['foo' => 'bar']);
 
@@ -368,7 +370,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $this->assertEquals('Message returned: NO_ROUTE, message body:message 4', $result[4]);
         $this->assertEquals('Message acked', $result[5]);
         $this->assertEquals(ChannelException::class, $result[6]);
-        $this->assertRegExp("/.+no exchange 'non-existent' in vhost '.+'/", $result[7]);
+        $this->assertMatchesRegularExpression("/.+no exchange 'non-existent' in vhost '.+'/", $result[7]);
 
         restore_error_handler();
     }
@@ -396,6 +398,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $this->exchange->setType('topic');
         $this->exchange->setName('test-exchange');
         $this->exchange->declareExchange();
+        $this->addToCleanUp($this->exchange);
 
         $this->exchange->getChannel()->setConfirmCallback(
             function (): bool {
@@ -437,11 +440,17 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
     {
         $result = [];
 
-        $this->exchange->setType('topic');
-        $this->exchange->setName('test-exchange');
-        $this->exchange->declareExchange();
+        $connection = $this->createConnection();
+        $channel = $connection->newChannel();
+        $exchange = $channel->newExchange();
+        $exchange->setType('topic');
+        $exchange->setName('test-exchange');
+        $exchange->declareExchange();
+        $this->addToCleanUp($exchange);
 
-        $queue = $this->channel->newQueue();
+        $queue = $channel->newQueue();
+
+        $queue = $channel->newQueue();
         $queue->setName('test-mandatory');
         $queue->setFlags(Constants::AMQP_AUTODELETE);
         $queue->declareQueue();
@@ -451,15 +460,15 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         $this->assertNull($queue->get());
 
         try {
-            $this->channel->waitForBasicReturn(1);
+            $channel->waitForBasicReturn(1);
         } catch (\Exception $e) {
             $result[] = get_class($e);
         }
 
-        $this->exchange->publish('message #1', 'routing.key', Constants::AMQP_MANDATORY);
-        $this->exchange->publish('message #2', 'routing.key', Constants::AMQP_MANDATORY);
+        $exchange->publish('message #1', 'routing.key', Constants::AMQP_MANDATORY);
+        $exchange->publish('message #2', 'routing.key', Constants::AMQP_MANDATORY);
 
-        $this->channel->setReturnCallback(
+        $channel->setReturnCallback(
             function (
                 int $replyCode,
                 string $replyText,
@@ -476,7 +485,7 @@ abstract class AbstractExchangeTest extends TestCase implements CanCreateConnect
         );
 
         try {
-            $this->channel->waitForBasicReturn();
+            $channel->waitForBasicReturn();
         } catch (\Exception $e) {
             $result[] = get_class($e);
         }

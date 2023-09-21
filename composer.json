@@ -1,69 +1,78 @@
 {
-    "name": "prolic/humus-amqp",
-    "type": "library",
-    "description": "PHP-AMQP library with RabbitMQ Extensions",
-    "keywords": ["rabbit", "rabbitmq", "queue", "amqp", "humus", "messaging"],
-    "homepage": "https://github.com/prolic/HumusAmqp",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Sascha-Oliver Prolic",
-            "email": "saschaprolic@googlemail.com"
-        }
-    ],
-    "require": {
-        "php": "^7.4 || ^8.0",
-        "ext-json": "*",
-        "beberlei/assert": "^3.2.7",
-        "marc-mabe/php-enum": "^4.2",
-        "psr/log": "^1.0 || ^2.0 || ^3.0"
-    },
-    "require-dev": {
-        "ext-pcntl": "*",
-        "laminas/laminas-servicemanager": "^3.0",
-        "malukenho/docheader": "^0.1.8",
-        "php-amqplib/php-amqplib": "^2.11",
-        "php-coveralls/php-coveralls": "^2.4",
-        "php-mock/php-mock-phpunit": "^2.6",
-        "phpspec/prophecy": "^1.10",
-        "phpunit/phpunit": "^8.5",
-        "prooph/php-cs-fixer-config": "^0.4.0",
-        "psr/container": "^1.0",
-        "sandrokeil/interop-config": "^1.0 || ^2.0",
-        "symfony/console": "^5.0"
-    },
-    "conflict": {
-        "sandrokeil/interop-config": "<1.0",
-        "container-interop/container-interop": "<1.2"
-    },
-    "suggest": {
-        "ext-pcntl": "For process control management",
-        "ext-amqp": ">= 1.9.3 For usage together with php amqp extension",
-        "php-amqplib/php-amqplib": ">= 2.11 For usage together with php-amqplib",
-        "symfony/console": "For usage of the provided console tool",
-        "psr/container": "For usage of provided factories",
-        "sandrokeil/interop-config": "For usage of provided factories"
-    },
-    "autoload": {
-        "psr-4": {
-            "Humus\\Amqp\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "HumusTest\\Amqp\\": "tests/"
-        }
-    },
-    "bin": [
-        "bin/humus-amqp"
-    ],
-    "scripts": {
-        "check": [
-            "@cs",
-            "@test"
-        ],
-        "cs": "php-cs-fixer fix -v --diff --dry-run",
-        "cs-fix": "php-cs-fixer fix -v --diff",
-        "test": "phpunit"
+  "name": "prolic/humus-amqp",
+  "type": "library",
+  "description": "PHP-AMQP library with RabbitMQ Extensions",
+  "keywords": [
+    "rabbit",
+    "rabbitmq",
+    "queue",
+    "amqp",
+    "humus",
+    "messaging"
+  ],
+  "homepage": "https://github.com/prolic/HumusAmqp",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sascha-Oliver Prolic",
+      "email": "saschaprolic@googlemail.com"
     }
+  ],
+  "require": {
+    "php": "^7.4 || ^8.0",
+    "ext-json": "*",
+    "beberlei/assert": "^3.2.7",
+    "marc-mabe/php-enum": "^4.7",
+    "psr/log": "^1.0 || ^2.0 || ^3.0"
+  },
+  "require-dev": {
+    "ext-pcntl": "*",
+    "laminas/laminas-servicemanager": "^3.0",
+    "malukenho/docheader": "^0.1.8 || ^1.0",
+    "php-amqplib/php-amqplib": "^3.0",
+    "php-coveralls/php-coveralls": "^2.4",
+    "php-mock/php-mock-phpunit": "^2.6",
+    "phpspec/prophecy": "^1.17",
+    "phpunit/phpunit": "^9.6",
+    "prooph/php-cs-fixer-config": "^0.5.0",
+    "psr/container": "^1.0",
+    "sandrokeil/interop-config": "^1.0 || ^2.0",
+    "symfony/console": "^5.4 || ^6.3",
+    "phpspec/prophecy-phpunit": "^2.0"
+  },
+  "conflict": {
+    "sandrokeil/interop-config": "<1.0",
+    "container-interop/container-interop": "<1.2"
+  },
+  "suggest": {
+    "ext-pcntl": "For process control management",
+    "ext-amqp": ">= 1.9.3 For usage together with php amqp extension",
+    "php-amqplib/php-amqplib": ">= 2.11 For usage together with php-amqplib",
+    "symfony/console": "For usage of the provided console tool",
+    "psr/container": "For usage of provided factories",
+    "sandrokeil/interop-config": "For usage of provided factories"
+  },
+  "autoload": {
+    "psr-4": {
+      "Humus\\Amqp\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HumusTest\\Amqp\\": "tests/",
+      "AMQPBasicProperties\\": "stubs/amqp/"
+    }
+  },
+  "bin": [
+    "bin/humus-amqp"
+  ],
+  "scripts": {
+    "check": [
+      "@cs",
+      "@test"
+    ],
+    "cs": "php-cs-fixer fix -v --diff --dry-run",
+    "cs-fix": "php-cs-fixer fix -v --diff",
+    "test": "phpunit"
+  }
 }
