@@ -147,7 +147,7 @@ final class Envelope implements EnvelopeInterface
         return [];
     }
 
-    public function getHeader(string $header): ?string
+    public function getHeader(string $header)
     {
         $headers = $this->getHeaders();
 
