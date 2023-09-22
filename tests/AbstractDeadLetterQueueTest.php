@@ -95,7 +95,7 @@ abstract class AbstractDeadLetterQueueTest extends TestCase implements CanCreate
             'expiration' => 1000,
         ]);
 
-        usleep(1000000);
+        usleep(2000000); // allow time for dead lettering 
 
         $msg = $this->queue->get(Constants::AMQP_AUTOACK);
         $this->assertNull($msg); // message expired
