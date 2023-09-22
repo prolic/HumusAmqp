@@ -165,9 +165,9 @@ interface Envelope
      * Get a specific message header.
      *
      * @param string $header Name of the header to get the value from.
-     * @return string|null The contents of the specified header, null if header not set
+     * @return mixed The contents of the specified header, null if header not set
      */
-    public function getHeader(string $header): ?string;
+    public function getHeader(string $header);
 
     /**
      * Check whether a specific message header is set.

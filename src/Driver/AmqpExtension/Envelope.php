@@ -128,7 +128,7 @@ final class Envelope implements EnvelopeInterface
         return $this->envelope->getHeaders();
     }
 
-    public function getHeader(string $header): ?string
+    public function getHeader(string $header)
     {
         if (! $this->hasHeader($header)) {
             return null;
