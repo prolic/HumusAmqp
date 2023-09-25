@@ -11,14 +11,14 @@ PHP 7.4 AMQP library
 
 ## Overview
 
-PHP 7.4 AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.
+PHP 7.4+ AMQP libray supporting multiple drivers and providing full-featured Consumer, Producer, and JSON-RPC Client / Server implementations.
 
 The JSON-RPC part implements [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification).
 
 Current supported drivers are: [php-amqp](https://github.com/pdezwart/php-amqp) and [PhpAmqpLib](https://github.com/php-amqplib/php-amqplib).
 
 php-amqp needs at least to be v1.9.3
-php-amqplib needs at least to be v2.11.0
+php-amqplib needs at least to be v3
 
 This library ships with `psr/container` factories that help you setting up everything.
 
@@ -37,15 +37,14 @@ You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "
 
     $exchangeName = 'test-exchange';
     $exchange = ExchangeFactory::$exchangeName($container);
-    
-    $exchange->publish('test-message');
 
+    $exchange->publish('test-message');
 
 ### Queue
 
     $queueName = 'test-queue';
     $queue = QueueFactory::$queueName($container);
-    
+
     $message = $queue->get();
     $queue->ack($message->getDeliveryTag());
 
@@ -53,7 +52,7 @@ You can install prolic/humus-amqp via composer by adding `"prolic/humus-amqp": "
 
     $producerName = 'test-producer';
     $producer = ProducerFactory::$producerName($container);
-    
+
     $producer->confirmSelect();
     $producer->publish(['foo' => 'bar'], 'my-routing-key');
     $producer->waitForConfirm();
@@ -84,20 +83,19 @@ This is a slight BC break, but the old behaviour was so problematic, that I had 
 
 ### AMQP-Extension
 
-1) We recommend using php-amqp >=v1.9.3 or compiling it from master, if you encounter any problems with the amqp extension, check
-their issue tracker, first. 
+1. We recommend using php-amqp >=v1.9.3 or compiling it from master, if you encounter any problems with the amqp extension, check
+   their issue tracker, first.
 
 The ext-amqp driver is the most performant.
 
-
 ### PhpAmqpLib
 
-1) When using php-amqplib as driver, it's worth point out, that a StreamConnection (same goes for SSLConnection) does not
-have the possibility to timeout. If you want to let the consumer timeout, when no more messages are received, you should
-use the SocketConnection instead (assuming you don't need an SSL connection).
+1. When using php-amqplib as driver, it's worth point out, that a StreamConnection (same goes for SSLConnection) does not
+   have the possibility to timeout. If you want to let the consumer timeout, when no more messages are received, you should
+   use the SocketConnection instead (assuming you don't need an SSL connection).
 
-2) When using php-amqplib as driver and you're using the LazyConnection, you should not create the channel yourself, call
-instead `$channel = $connection->newChannel()`
+2. When using php-amqplib as driver and you're using the LazyConnection, you should not create the channel yourself, call
+   instead `$channel = $connection->newChannel()`
 
 ## Support
 
